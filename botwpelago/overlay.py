@@ -49,7 +49,7 @@ class Overlay:
         self.win.update_idletasks()
         w, h = self.win.winfo_reqwidth(), self.win.winfo_reqheight()
         sw = self.win.winfo_screenwidth()
-        self.win.geometry(f"{w}x{h}+{(sw - w) // 2}+48")
+        self.win.geometry(f"{w}x{h}+{sw - w - 24}+48")   # haut-droite
         self.win.deiconify()
         self.win.attributes("-topmost", True)
         self.win.after(self.duration, self._next)
