@@ -37,12 +37,16 @@ def _load_gate_items() -> dict:
         return json.load(fh)
 
 def _load_pouch_items() -> dict:
-    """Table de loot des items de poche livrables en live (type/sub par actor name)."""
-    try:
-        with open(_DATA_DIR / "pouch_items.json", encoding="utf-8") as fh:
-            return json.load(fh).get("items", {})
-    except FileNotFoundError:
-        return {}
+    """Base d'items de poche livrables en live (type/sub par actor name).
+    botw_items.json (base complète, ~130 ingrédients) + pouch_items.json (overrides manuels)."""
+    merged: dict = {}
+    for fname in ("botw_items.json", "pouch_items.json"):
+        try:
+            with open(_DATA_DIR / fname, encoding="utf-8") as fh:
+                merged.update(json.load(fh).get("items", {}))
+        except FileNotFoundError:
+            pass
+    return merged
 
 _LOCATIONS   = _load_locations()
 _GATE_ITEMS  = _load_gate_items()
