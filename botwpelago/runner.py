@@ -10,10 +10,17 @@ import queue
 import threading
 from typing import Optional
 
-from BotWClient.BotWClient import build_client
+from BotWClient.BotWClient import build_client, resolve_provider_root
+from BotWClient.providers.save_file import reset_ap_state
 from .config import Config
 
 _ROOT_LOGGER = "BotWClient"
+
+
+def reset_progress(cfg: Config) -> int:
+    """Réinitialise l'état AP persisté (pour une nouvelle seed). Retourne le nb de fichiers supprimés."""
+    root = resolve_provider_root(cfg.cemu_folder or None, cfg.user_slot or None, cfg.save_path or None)
+    return reset_ap_state(root)
 
 
 def cemu_status() -> dict:

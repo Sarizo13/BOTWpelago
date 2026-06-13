@@ -154,13 +154,13 @@ def find_save_file(
         return None
 
     candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    if cemu_slot:
-        log.info("Slot %s: found %d sub-save(s):", cemu_slot, len(candidates))
-    else:
-        log.info("Found %d save(s) across all slots:", len(candidates))
+    scope = f"slot {cemu_slot}" if cemu_slot else "tous slots"
+    log.info("Save sélectionnée (%s, la plus récente sur %d) : %s",
+             scope, len(candidates), candidates[0])
+    # détail complet uniquement en debug
     for i, c in enumerate(candidates):
-        marker = " <-- selected (most recent)" if i == 0 else ""
-        log.info("  [%d] %s%s", i + 1, c, marker)
+        marker = " <-- selected" if i == 0 else ""
+        log.debug("  [%d] %s%s", i + 1, c, marker)
     return candidates[0]
 
 
@@ -336,6 +336,16 @@ def _parser() -> argparse.ArgumentParser:
     return p
 
 
+def resolve_provider_root(cemu: Optional[str] = None, slot: Optional[str] = None,
+                          save: Optional[str] = None) -> Path:
+    """Localise la racine save : --save > --slot > auto-détection. Partagé par build_client + reset."""
+    if save:
+        return Path(save)
+    if slot:
+        return _find_slot_dir(cemu, slot) or Path("__missing__")
+    return find_save_file(cemu) or Path("game_data.sav")
+
+
 def _ws_url(connect: str) -> str:
     """Schéma WebSocket : localhost -> ws:// (pas de TLS), sinon -> wss:// (archipelago.gg).
     Un schéma explicite (ws:// / wss://) dans `connect` est respecté tel quel."""
@@ -355,24 +365,13 @@ def build_client(connect: str, name: str, password: str = "",
     en attachant le bridge mémoire si Cemu tourne. Réutilisé par le CLI et par l'appli GUI.
     Retourne (client, bridge | None).
     """
-    # spoiler-log du randomizer (optionnel, auto-détecté)
-    rando: Optional[RandoReader] = None
-    if rando_log:
-        rando = RandoReader(Path(rando_log))
-    else:
-        for root in _search_roots(cemu):
-            spoiler = find_spoiler_log(root)
-            if spoiler:
-                rando = RandoReader(spoiler)
-                break
+    # spoiler-log d'un randomizer TIERS (Waikuteru/Melonspeedrun) — chargé UNIQUEMENT
+    # si explicitement fourni. Pas d'auto-détection : sans ça, on chargeait un vieux
+    # spoiler sans rapport avec la seed AP (logs "Seed HZZE…" trompeurs).
+    rando: Optional[RandoReader] = RandoReader(Path(rando_log)) if rando_log else None
 
     # localisation de la save : --save > --slot > auto-détection
-    if save:
-        provider_root = Path(save)
-    elif slot:
-        provider_root = _find_slot_dir(cemu, slot) or Path("__missing__")
-    else:
-        provider_root = find_save_file(cemu) or Path("game_data.sav")
+    provider_root = resolve_provider_root(cemu, slot, save)
 
     # bridge mémoire (injection live si Cemu tourne)
     bridge = CemuMemoryBridge()

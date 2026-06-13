@@ -53,6 +53,22 @@ def pouch_item_info(item_name: str) -> Optional[dict]:
     """Retourne {'type':int, 'sub':int?} pour un item livrable en live, ou None."""
     return _POUCH_ITEMS.get(item_name)
 
+
+def reset_ap_state(provider_root: Path) -> int:
+    """Supprime l'état AP persisté (file d'attente + item_index) pour repartir de zéro
+    sur une nouvelle seed. Retourne le nombre de fichiers supprimés."""
+    qdir = provider_root if provider_root.is_dir() else provider_root.parent
+    n = 0
+    for name in ("ap_pending_items.json", "ap_client_state.json"):
+        f = qdir / name
+        if f.exists():
+            try:
+                f.unlink()
+                n += 1
+            except OSError:
+                pass
+    return n
+
 # flag_hash (int) → ap_id
 _LOC_HASH_TO_AP_ID: dict[int, int] = {
     int(loc["flag_hash"], 16): loc["ap_id"]
@@ -497,7 +513,14 @@ class DeferredSaveInjector(ItemInjector):
             )
         if injected:
             names = ", ".join(s.ap_item_name for s in injected)
-            log.info("[ACTION] Items injectes : %s — rechargez votre sauvegarde !", names)
+            # un reload n'est nécessaire QUE pour les flags (Paraglider, capacités…) ;
+            # les items de poche / rubis sont déjà appliqués en live.
+            needs_reload = any(isinstance(a, InjectionSpec.SetFlag)
+                               for s in injected for a in s.actions)
+            if self._bridge and self._bridge.is_attached and not needs_reload:
+                log.info("[OK] Items appliqués en jeu : %s", names)
+            else:
+                log.info("[ACTION] Items injectés : %s — rechargez la save pour les flags/capacités.", names)
         return injected
 
     def _inject_pending(self) -> list[InjectionSpec]:
@@ -507,7 +530,7 @@ class DeferredSaveInjector(ItemInjector):
         if p is None:
             return []
         from BotWClient.item_map import get_spec as _get_spec
-        log.info("Save idle — injecting %d item(s) into %s", len(self._queue), p.name)
+        log.info("Injection de %d item(s)…", len(self._queue))
         injected:  list[InjectionSpec] = []
         remaining: list[dict]          = []
         for entry in self._queue:

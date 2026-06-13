@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 
 from .config import Config
-from .runner import ClientRunner, cemu_status
+from .runner import ClientRunner, cemu_status, reset_progress
 from . import __version__
 
 
@@ -68,9 +68,13 @@ class App:
         self.browse_btn.grid(row=r, column=2, **pad)
         r += 1
 
-        # bouton pré-vol "Vérifier Cemu"
-        self.check_btn = ttk.Button(frm, text="Vérifier Cemu", command=self._check_cemu)
-        self.check_btn.grid(row=r, column=1, sticky="w", **pad)
+        # boutons pré-vol "Vérifier Cemu" + "Réinitialiser progression"
+        btns = ttk.Frame(frm)
+        btns.grid(row=r, column=1, columnspan=2, sticky="w", **pad)
+        self.check_btn = ttk.Button(btns, text="Vérifier Cemu", command=self._check_cemu)
+        self.check_btn.pack(side="left")
+        self.reset_btn = ttk.Button(btns, text="Réinitialiser (nouvelle seed)", command=self._reset)
+        self.reset_btn.pack(side="left", padx=(8, 0))
         r += 1
 
         ttk.Checkbutton(frm, text="Se connecter au lancement",
@@ -113,6 +117,20 @@ class App:
         if st.get("folder"):
             self.vars["cemu_folder"].set(st["folder"])
             self._append(f"Dossier Cemu auto-détecté : {st['folder']}")
+
+    def _reset(self) -> None:
+        """Efface l'état AP persisté (file d'attente + item_index) pour repartir de zéro."""
+        if self.runner.is_running:
+            self._append("⚠ Déconnecte-toi avant de réinitialiser.")
+            return
+        cfg = self._collect_cfg()
+        try:
+            n = reset_progress(cfg)
+        except Exception as exc:  # noqa: BLE001
+            self._append(f"⚠ Réinitialisation impossible : {exc}")
+            return
+        self._append(f"Progression AP réinitialisée ({n} fichier(s) supprimé(s)). "
+                     "À la prochaine connexion, tous les items seront re-reçus.")
 
     def _check_cemu(self) -> None:
         """Pré-vol : Cemu lancé ? appli en admin ? injection live attendue ?"""
@@ -185,6 +203,7 @@ class App:
             if str(ent["state"]) != field_state:
                 ent["state"] = field_state
         self.browse_btn["state"] = field_state
+        self.reset_btn["state"] = field_state
         self.root.after(200, self._poll)
 
 
