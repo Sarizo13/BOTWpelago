@@ -11,6 +11,7 @@ from tkinter import ttk, filedialog
 
 from .config import Config
 from .runner import ClientRunner, cemu_status, reset_progress
+from .overlay import Overlay
 from . import __version__
 
 
@@ -26,6 +27,7 @@ class App:
         self._entries: list[ttk.Entry] = []
         self._build_widgets()
         self._autodetect_cemu()
+        self.overlay = Overlay(self.root) if self.cfg.overlay_enabled else None
         self._poll()  # boucle de rafraichissement UI
 
         if self.cfg.auto_connect and self.cfg.slot:
@@ -45,6 +47,7 @@ class App:
             "cemu_folder": tk.StringVar(value=self.cfg.cemu_folder),
         }
         self.auto_var = tk.BooleanVar(value=self.cfg.auto_connect)
+        self.overlay_var = tk.BooleanVar(value=self.cfg.overlay_enabled)
 
         rows = [
             ("Serveur AP (host:port)", "server", False),
@@ -79,6 +82,9 @@ class App:
 
         ttk.Checkbutton(frm, text="Se connecter au lancement",
                         variable=self.auto_var).grid(row=r, column=1, sticky="w", **pad)
+        r += 1
+        ttk.Checkbutton(frm, text="Overlay « objet reçu » par-dessus le jeu",
+                        variable=self.overlay_var).grid(row=r, column=1, sticky="w", **pad)
         r += 1
 
         # bouton connexion + statut
@@ -153,6 +159,7 @@ class App:
         self.cfg.password = self.vars["password"].get()
         self.cfg.cemu_folder = self.vars["cemu_folder"].get().strip()
         self.cfg.auto_connect = self.auto_var.get()
+        self.cfg.overlay_enabled = self.overlay_var.get()
         self.cfg.save()
         return self.cfg
 
@@ -177,14 +184,27 @@ class App:
         self.log.see("end")
         self.log["state"] = "disabled"
 
+    def _maybe_overlay(self, line: str) -> None:
+        """Affiche un toast overlay quand une ligne '[Item] <nom>' passe dans le journal."""
+        if not self.overlay_var.get() or not line.startswith("[Item] "):
+            return
+        name = line[len("[Item] "):].split("  —")[0].split("  -")[0].strip()
+        if not name:
+            return
+        if self.overlay is None:
+            self.overlay = Overlay(self.root)
+        self.overlay.notify(name)
+
     def _poll(self) -> None:
         # vide la queue de logs
         q = self.runner.log_queue
         while not q.empty():
             try:
-                self._append(q.get_nowait())
+                line = q.get_nowait()
             except Exception:
                 break
+            self._append(line)
+            self._maybe_overlay(line)
         # statut + libelle bouton + grisage des champs
         running = self.runner.is_running
         if running:

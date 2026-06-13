@@ -30,6 +30,7 @@ class Config:
     # Divers
     graphic_packs_folder: str = ""          # dossier Cemu/graphicPacks (pour install future du pack)
     auto_connect: bool = False              # se connecter au lancement
+    overlay_enabled: bool = True            # toast "objet reçu" par-dessus le jeu
 
     @classmethod
     def load(cls) -> "Config":
