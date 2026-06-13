@@ -1,0 +1,78 @@
+# ── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+.venv/
+venv/
+env/
+
+# ── Build / AP output ───────────────────────────────────────────────────────
+output/
+*.zip
+*.apbotw
+*.apworld
+
+# ── BOTWpelago config locale (peut contenir un mot de passe AP) ──────────────
+.botwpelago/
+
+# ── Réglages locaux Claude Code (perso) — on garde CLAUDE.md, pas les settings ──
+.claude/settings.local.json
+
+# ── Contenu DÉRIVÉ DU JEU — NE JAMAIS COMMITTER (copyright Nintendo) ──────────
+tmp/
+*.rpx
+*.wud
+*.wux
+*.nsp
+*.xci
+*.bin
+*.sarc
+*.ssarc
+*.pack
+*.byml
+*.sav
+snapshots/
+flag_names.txt
+config.xml
+
+# ── Outils / randomizers TIERS (copyright de leurs auteurs) ──────────────────
+BOTW Randomizer by Waikuteru*/
+Melonspeedrun rando/
+botw-rando-repo/
+
+# ── Cemu / émulateur ──────────────────────────────────────────────────────────
+graphic_packs/
+mlc01/
+*.ini
+cemu_title_list.xml
+
+# ── Éditeurs ──────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+*~
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Secrets / config locale ─────────────────────────────────────────────────
+*.env
+config_local.py
+apconfig.yaml
+
+# ── Artefacts de test ─────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/

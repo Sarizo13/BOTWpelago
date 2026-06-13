@@ -1,0 +1,18 @@
+{
+  "_comment": "Table de loot d'items de poche livrables en live (live_create_item). 'type' = PouchItemType (7=Material/ingredient). 'sub' optionnel (+0x210) ; omis = herite d'un template propre. 'label' = libelle FR indicatif. Tous ces actor names sont confirmes valides en BotW WiiU v208.",
+  "items": {
+    "Item_Fruit_A":      {"type": 7, "label": "Pomme"},
+    "Item_Fruit_J":      {"type": 7, "label": "Noix de palme"},
+    "Item_Fruit_K":      {"type": 7, "label": "Noix"},
+    "Item_Mushroom_A":   {"type": 7, "label": "Champignon Hylien"},
+    "Item_MushroomGet_D":{"type": 7, "label": "Truffe"},
+    "Item_PlantGet_A":   {"type": 7, "label": "Carotte d'Hyrule"},
+    "Item_PlantGet_E":   {"type": 7, "label": "Citrouille"},
+    "Item_Meat_01":      {"type": 7, "label": "Viande crue"},
+    "Item_Meat_02":      {"type": 7, "label": "Viande crue de qualite"},
+    "Item_FishGet_A":    {"type": 7, "label": "Achigan d'Hyrule"},
+    "Item_Ore_C":        {"type": 7, "label": "Silex"},
+    "Item_Ore_D":        {"type": 7, "label": "Ambre"},
+    "Item_Enemy_01":     {"type": 7, "label": "Gelee Chuchu"}
+  }
+}

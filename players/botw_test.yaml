@@ -1,0 +1,19 @@
+# BotW Archipelago — YAML de test
+# Placer ce fichier dans le dossier "players/" de l'installation Archipelago,
+# puis lancer : python Archipelago.py Generate --player_files_path players/
+
+name: BotWPlayer
+game: "The Legend of Zelda: Breath of the Wild"
+
+"The Legend of Zelda: Breath of the Wild":
+  # Nombre de sanctuaires requis pour valider le goal (0-120)
+  required_shrine_count: 20
+
+  # Inclut les 15 tours comme checks supplémentaires
+  include_towers: true
+
+  # Place les capacités de Champions dans le pool AP multiworld
+  randomize_champion_abilities: true
+
+  # Place la Master Sword dans le pool AP multiworld
+  randomize_master_sword: true

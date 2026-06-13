@@ -1,0 +1,1082 @@
+[
+  {
+    "dungeon_id": 0,
+    "flag_name": "Clear_Dungeon000",
+    "flag_hash": "0xF7A9CD64",
+    "ap_id": 6081000,
+    "name": "Tah Muhl Shrine",
+    "monk": "Tah Muhl",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 1,
+    "flag_name": "Clear_Dungeon001",
+    "flag_hash": "0x80AEFDF2",
+    "ap_id": 6081001,
+    "name": "Jee Noh Shrine",
+    "monk": "Jee Noh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 2,
+    "flag_name": "Clear_Dungeon002",
+    "flag_hash": "0x19A7AC48",
+    "ap_id": 6081002,
+    "name": "Sah Dahaj Shrine",
+    "monk": "Sah Dahaj",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 3,
+    "flag_name": "Clear_Dungeon003",
+    "flag_hash": "0x6EA09CDE",
+    "ap_id": 6081003,
+    "name": "Hawa Koth Shrine",
+    "monk": "Hawa Koth",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 4,
+    "flag_name": "Clear_Dungeon004",
+    "flag_hash": "0xF0C4097D",
+    "ap_id": 6081004,
+    "name": "Zalta Wa Shrine",
+    "monk": "Zalta Wa",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 5,
+    "flag_name": "Clear_Dungeon005",
+    "flag_hash": "0x87C339EB",
+    "ap_id": 6081005,
+    "name": "Ne'ez Yohma Shrine",
+    "monk": "Ne'ez Yohma",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 6,
+    "flag_name": "Clear_Dungeon006",
+    "flag_hash": "0x1ECA6851",
+    "ap_id": 6081006,
+    "name": "Yah Rin Shrine",
+    "monk": "Yah Rin",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 7,
+    "flag_name": "Clear_Dungeon007",
+    "flag_hash": "0x69CD58C7",
+    "ap_id": 6081007,
+    "name": "Bosh Kala Shrine",
+    "monk": "Bosh Kala",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 8,
+    "flag_name": "Clear_Dungeon008",
+    "flag_hash": "0xF9724556",
+    "ap_id": 6081008,
+    "name": "Bareeda Naag Shrine",
+    "monk": "Bareeda Naag",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 9,
+    "flag_name": "Clear_Dungeon009",
+    "flag_hash": "0x8E7575C0",
+    "ap_id": 6081009,
+    "name": "Owa Daim Shrine",
+    "monk": "Owa Daim",
+    "region": "Great Plateau"
+  },
+  {
+    "dungeon_id": 10,
+    "flag_name": "Clear_Dungeon010",
+    "flag_hash": "0xEEB2FC25",
+    "ap_id": 6081010,
+    "name": "Kay Noh Shrine",
+    "monk": "Kay Noh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 11,
+    "flag_name": "Clear_Dungeon011",
+    "flag_hash": "0x99B5CCB3",
+    "ap_id": 6081011,
+    "name": "Monya Toma Shrine",
+    "monk": "Monya Toma",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 12,
+    "flag_name": "Clear_Dungeon012",
+    "flag_hash": "0x00BC9D09",
+    "ap_id": 6081012,
+    "name": "Voo Lota Shrine",
+    "monk": "Voo Lota",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 13,
+    "flag_name": "Clear_Dungeon013",
+    "flag_hash": "0x77BBAD9F",
+    "ap_id": 6081013,
+    "name": "Katosa Aug Shrine",
+    "monk": "Katosa Aug",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 14,
+    "flag_name": "Clear_Dungeon014",
+    "flag_hash": "0xE9DF383C",
+    "ap_id": 6081014,
+    "name": "Kam Urog Shrine",
+    "monk": "Kam Urog",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 15,
+    "flag_name": "Clear_Dungeon015",
+    "flag_hash": "0x9ED808AA",
+    "ap_id": 6081015,
+    "name": "Toto Sah Shrine",
+    "monk": "Toto Sah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 16,
+    "flag_name": "Clear_Dungeon016",
+    "flag_hash": "0x07D15910",
+    "ap_id": 6081016,
+    "name": "Rucco Maag Shrine",
+    "monk": "Rucco Maag",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 17,
+    "flag_name": "Clear_Dungeon017",
+    "flag_hash": "0x70D66986",
+    "ap_id": 6081017,
+    "name": "Shee Vaneer Shrine",
+    "monk": "Shee Vaneer",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 18,
+    "flag_name": "Clear_Dungeon018",
+    "flag_hash": "0xE0697417",
+    "ap_id": 6081018,
+    "name": "Rok Uwog Shrine",
+    "monk": "Rok Uwog",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 19,
+    "flag_name": "Clear_Dungeon019",
+    "flag_hash": "0x976E4481",
+    "ap_id": 6081019,
+    "name": "Dow Na'eh Shrine",
+    "monk": "Dow Na'eh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 20,
+    "flag_name": "Clear_Dungeon020",
+    "flag_hash": "0xC59FAFE6",
+    "ap_id": 6081020,
+    "name": "Sheem Dagoze Shrine",
+    "monk": "Sheem Dagoze",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 21,
+    "flag_name": "Clear_Dungeon021",
+    "flag_hash": "0xB2989F70",
+    "ap_id": 6081021,
+    "name": "Toh Yahsa Shrine",
+    "monk": "Toh Yahsa",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 22,
+    "flag_name": "Clear_Dungeon022",
+    "flag_hash": "0x2B91CECA",
+    "ap_id": 6081022,
+    "name": "Keo Ruug Shrine",
+    "monk": "Keo Ruug",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 23,
+    "flag_name": "Clear_Dungeon023",
+    "flag_hash": "0x5C96FE5C",
+    "ap_id": 6081023,
+    "name": "Sheh Rata Shrine",
+    "monk": "Sheh Rata",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 24,
+    "flag_name": "Clear_Dungeon024",
+    "flag_hash": "0xC2F26BFF",
+    "ap_id": 6081024,
+    "name": "Mezza Lo Shrine",
+    "monk": "Mezza Lo",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 25,
+    "flag_name": "Clear_Dungeon025",
+    "flag_hash": "0xB5F55B69",
+    "ap_id": 6081025,
+    "name": "Kayra Mah Shrine",
+    "monk": "Kayra Mah",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 26,
+    "flag_name": "Clear_Dungeon026",
+    "flag_hash": "0x2CFC0AD3",
+    "ap_id": 6081026,
+    "name": "Shae Mo'sah Shrine",
+    "monk": "Shae Mo'sah",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 27,
+    "flag_name": "Clear_Dungeon027",
+    "flag_hash": "0x5BFB3A45",
+    "ap_id": 6081027,
+    "name": "Rota Ooh Shrine",
+    "monk": "Rota Ooh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 28,
+    "flag_name": "Clear_Dungeon028",
+    "flag_hash": "0xCB4427D4",
+    "ap_id": 6081028,
+    "name": "Shora Hah Shrine",
+    "monk": "Shora Hah",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 29,
+    "flag_name": "Clear_Dungeon029",
+    "flag_hash": "0xBC431742",
+    "ap_id": 6081029,
+    "name": "Hila Rao Shrine",
+    "monk": "Hila Rao",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 30,
+    "flag_name": "Clear_Dungeon030",
+    "flag_hash": "0xDC849EA7",
+    "ap_id": 6081030,
+    "name": "Joloo Nah Shrine",
+    "monk": "Joloo Nah",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 31,
+    "flag_name": "Clear_Dungeon031",
+    "flag_hash": "0xAB83AE31",
+    "ap_id": 6081031,
+    "name": "Mo'a Keet Shrine",
+    "monk": "Mo'a Keet",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 32,
+    "flag_name": "Clear_Dungeon032",
+    "flag_hash": "0x328AFF8B",
+    "ap_id": 6081032,
+    "name": "Dako Tah Shrine",
+    "monk": "Dako Tah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 33,
+    "flag_name": "Clear_Dungeon033",
+    "flag_hash": "0x458DCF1D",
+    "ap_id": 6081033,
+    "name": "Daka Tuss Shrine",
+    "monk": "Daka Tuss",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 34,
+    "flag_name": "Clear_Dungeon034",
+    "flag_hash": "0xDBE95ABE",
+    "ap_id": 6081034,
+    "name": "Kah Yah Shrine",
+    "monk": "Kah Yah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 35,
+    "flag_name": "Clear_Dungeon035",
+    "flag_hash": "0xACEE6A28",
+    "ap_id": 6081035,
+    "name": "Akh Va'quot Shrine",
+    "monk": "Akh Va'quot",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 36,
+    "flag_name": "Clear_Dungeon036",
+    "flag_hash": "0x35E73B92",
+    "ap_id": 6081036,
+    "name": "Sho Dantu Shrine",
+    "monk": "Sho Dantu",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 37,
+    "flag_name": "Clear_Dungeon037",
+    "flag_hash": "0x42E00B04",
+    "ap_id": 6081037,
+    "name": "Shae Loya Shrine",
+    "monk": "Shae Loya",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 38,
+    "flag_name": "Clear_Dungeon038",
+    "flag_hash": "0xD25F1695",
+    "ap_id": 6081038,
+    "name": "Oman Au Shrine",
+    "monk": "Oman Au",
+    "region": "Great Plateau"
+  },
+  {
+    "dungeon_id": 39,
+    "flag_name": "Clear_Dungeon039",
+    "flag_hash": "0xA5582603",
+    "ap_id": 6081039,
+    "name": "Myahm Agana Shrine",
+    "monk": "Myahm Agana",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 40,
+    "flag_name": "Clear_Dungeon040",
+    "flag_hash": "0x93C50860",
+    "ap_id": 6081040,
+    "name": "Kaam Ya'tak Shrine",
+    "monk": "Kaam Ya'tak",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 41,
+    "flag_name": "Clear_Dungeon041",
+    "flag_hash": "0xE4C238F6",
+    "ap_id": 6081041,
+    "name": "Ja Baij Shrine",
+    "monk": "Ja Baij",
+    "region": "Great Plateau"
+  },
+  {
+    "dungeon_id": 42,
+    "flag_name": "Clear_Dungeon042",
+    "flag_hash": "0x7DCB694C",
+    "ap_id": 6081042,
+    "name": "Rin Oyaa Shrine",
+    "monk": "Rin Oyaa",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 43,
+    "flag_name": "Clear_Dungeon043",
+    "flag_hash": "0x0ACC59DA",
+    "ap_id": 6081043,
+    "name": "Kuh Takkar Shrine",
+    "monk": "Kuh Takkar",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 44,
+    "flag_name": "Clear_Dungeon044",
+    "flag_hash": "0x94A8CC79",
+    "ap_id": 6081044,
+    "name": "Shee Venath Shrine",
+    "monk": "Shee Venath",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 45,
+    "flag_name": "Clear_Dungeon045",
+    "flag_hash": "0xE3AFFCEF",
+    "ap_id": 6081045,
+    "name": "Ha Dahamar Shrine",
+    "monk": "Ha Dahamar",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 46,
+    "flag_name": "Clear_Dungeon046",
+    "flag_hash": "0x7AA6AD55",
+    "ap_id": 6081046,
+    "name": "Shada Naw Shrine",
+    "monk": "Shada Naw",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 47,
+    "flag_name": "Clear_Dungeon047",
+    "flag_hash": "0x0DA19DC3",
+    "ap_id": 6081047,
+    "name": "Ree Dahee Shrine",
+    "monk": "Ree Dahee",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 48,
+    "flag_name": "Clear_Dungeon048",
+    "flag_hash": "0x9D1E8052",
+    "ap_id": 6081048,
+    "name": "Ze Kasho Shrine",
+    "monk": "Ze Kasho",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 49,
+    "flag_name": "Clear_Dungeon049",
+    "flag_hash": "0xEA19B0C4",
+    "ap_id": 6081049,
+    "name": "Kaya Wan Shrine",
+    "monk": "Kaya Wan",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 50,
+    "flag_name": "Clear_Dungeon050",
+    "flag_hash": "0x8ADE3921",
+    "ap_id": 6081050,
+    "name": "Shai Utoh Shrine",
+    "monk": "Shai Utoh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 51,
+    "flag_name": "Clear_Dungeon051",
+    "flag_hash": "0xFDD909B7",
+    "ap_id": 6081051,
+    "name": "Maka Rah Shrine",
+    "monk": "Maka Rah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 52,
+    "flag_name": "Clear_Dungeon052",
+    "flag_hash": "0x64D0580D",
+    "ap_id": 6081052,
+    "name": "Gee Ha'rah Shrine",
+    "monk": "Gee Ha'rah",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 53,
+    "flag_name": "Clear_Dungeon053",
+    "flag_hash": "0x13D7689B",
+    "ap_id": 6081053,
+    "name": "Sha Warvo Shrine",
+    "monk": "Sha Warvo",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 54,
+    "flag_name": "Clear_Dungeon054",
+    "flag_hash": "0x8DB3FD38",
+    "ap_id": 6081054,
+    "name": "Ka'o Makagh Shrine",
+    "monk": "Ka'o Makagh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 55,
+    "flag_name": "Clear_Dungeon055",
+    "flag_hash": "0xFAB4CDAE",
+    "ap_id": 6081055,
+    "name": "Dunba Taag Shrine",
+    "monk": "Dunba Taag",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 56,
+    "flag_name": "Clear_Dungeon056",
+    "flag_hash": "0x63BD9C14",
+    "ap_id": 6081056,
+    "name": "Mirro Shaz Shrine",
+    "monk": "Mirro Shaz",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 57,
+    "flag_name": "Clear_Dungeon057",
+    "flag_hash": "0x14BAAC82",
+    "ap_id": 6081057,
+    "name": "Wahgo Katta Shrine",
+    "monk": "Wahgo Katta",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 58,
+    "flag_name": "Clear_Dungeon058",
+    "flag_hash": "0x8405B113",
+    "ap_id": 6081058,
+    "name": "Mogg Latan Shrine",
+    "monk": "Mogg Latan",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 59,
+    "flag_name": "Clear_Dungeon059",
+    "flag_hash": "0xF3028185",
+    "ap_id": 6081059,
+    "name": "Kah Okeo Shrine",
+    "monk": "Kah Okeo",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 60,
+    "flag_name": "Clear_Dungeon060",
+    "flag_hash": "0xA1F36AE2",
+    "ap_id": 6081060,
+    "name": "Daqo Chisay Shrine",
+    "monk": "Daqo Chisay",
+    "region": "Gerudo Town"
+  },
+  {
+    "dungeon_id": 61,
+    "flag_name": "Clear_Dungeon061",
+    "flag_hash": "0xD6F45A74",
+    "ap_id": 6081061,
+    "name": "Shoda Sah Shrine",
+    "monk": "Shoda Sah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 62,
+    "flag_name": "Clear_Dungeon062",
+    "flag_hash": "0x4FFD0BCE",
+    "ap_id": 6081062,
+    "name": "Sha Gehma Shrine",
+    "monk": "Sha Gehma",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 63,
+    "flag_name": "Clear_Dungeon063",
+    "flag_hash": "0x38FA3B58",
+    "ap_id": 6081063,
+    "name": "Kema Zoos Shrine",
+    "monk": "Kema Zoos",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 64,
+    "flag_name": "Clear_Dungeon064",
+    "flag_hash": "0xA69EAEFB",
+    "ap_id": 6081064,
+    "name": "Daqa Koh Shrine",
+    "monk": "Daqa Koh",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 65,
+    "flag_name": "Clear_Dungeon065",
+    "flag_hash": "0xD1999E6D",
+    "ap_id": 6081065,
+    "name": "Keh Namut Shrine",
+    "monk": "Keh Namut",
+    "region": "Great Plateau"
+  },
+  {
+    "dungeon_id": 66,
+    "flag_name": "Clear_Dungeon066",
+    "flag_hash": "0x4890CFD7",
+    "ap_id": 6081066,
+    "name": "Kah Mael Shrine",
+    "monk": "Kah Mael",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 67,
+    "flag_name": "Clear_Dungeon067",
+    "flag_hash": "0x3F97FF41",
+    "ap_id": 6081067,
+    "name": "Qua Raym Shrine",
+    "monk": "Qua Raym",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 68,
+    "flag_name": "Clear_Dungeon068",
+    "flag_hash": "0xAF28E2D0",
+    "ap_id": 6081068,
+    "name": "Ya Naga Shrine",
+    "monk": "Ya Naga",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 69,
+    "flag_name": "Clear_Dungeon069",
+    "flag_hash": "0xD82FD246",
+    "ap_id": 6081069,
+    "name": "Ishto Soh Shrine",
+    "monk": "Ishto Soh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 70,
+    "flag_name": "Clear_Dungeon070",
+    "flag_hash": "0xB8E85BA3",
+    "ap_id": 6081070,
+    "name": "Soh Kofi Shrine",
+    "monk": "Soh Kofi",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 71,
+    "flag_name": "Clear_Dungeon071",
+    "flag_hash": "0xCFEF6B35",
+    "ap_id": 6081071,
+    "name": "Pumaag Nitae Shrine",
+    "monk": "Pumaag Nitae",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 72,
+    "flag_name": "Clear_Dungeon072",
+    "flag_hash": "0x56E63A8F",
+    "ap_id": 6081072,
+    "name": "Dah Kaso Shrine",
+    "monk": "Dah Kaso",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 73,
+    "flag_name": "Clear_Dungeon073",
+    "flag_hash": "0x21E10A19",
+    "ap_id": 6081073,
+    "name": "Katah Chuki Shrine",
+    "monk": "Katah Chuki",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 74,
+    "flag_name": "Clear_Dungeon074",
+    "flag_hash": "0xBF859FBA",
+    "ap_id": 6081074,
+    "name": "Noya Neha Shrine",
+    "monk": "Noya Neha",
+    "region": "Gerudo Highlands"
+  },
+  {
+    "dungeon_id": 75,
+    "flag_name": "Clear_Dungeon075",
+    "flag_hash": "0xC882AF2C",
+    "ap_id": 6081075,
+    "name": "Dah Hesho Shrine",
+    "monk": "Dah Hesho",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 76,
+    "flag_name": "Clear_Dungeon076",
+    "flag_hash": "0x518BFE96",
+    "ap_id": 6081076,
+    "name": "Sasa Kai Shrine",
+    "monk": "Sasa Kai",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 77,
+    "flag_name": "Clear_Dungeon077",
+    "flag_hash": "0x268CCE00",
+    "ap_id": 6081077,
+    "name": "Ke'nai Shakah Shrine",
+    "monk": "Ke'nai Shakah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 78,
+    "flag_name": "Clear_Dungeon078",
+    "flag_hash": "0xB633D391",
+    "ap_id": 6081078,
+    "name": "Mijah Rokee Shrine",
+    "monk": "Mijah Rokee",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 79,
+    "flag_name": "Clear_Dungeon079",
+    "flag_hash": "0xC134E307",
+    "ap_id": 6081079,
+    "name": "Namika Ozz Shrine",
+    "monk": "Namika Ozz",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 80,
+    "flag_name": "Clear_Dungeon080",
+    "flag_hash": "0x3F70476C",
+    "ap_id": 6081080,
+    "name": "Shoqa Tatone Shrine",
+    "monk": "Shoqa Tatone",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 81,
+    "flag_name": "Clear_Dungeon081",
+    "flag_hash": "0x487777FA",
+    "ap_id": 6081081,
+    "name": "Muwo Jeem Shrine",
+    "monk": "Muwo Jeem",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 82,
+    "flag_name": "Clear_Dungeon082",
+    "flag_hash": "0xD17E2640",
+    "ap_id": 6081082,
+    "name": "Chaas Qeta Shrine",
+    "monk": "Chaas Qeta",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 83,
+    "flag_name": "Clear_Dungeon083",
+    "flag_hash": "0xA67916D6",
+    "ap_id": 6081083,
+    "name": "Tena Ko'sah Shrine",
+    "monk": "Tena Ko'sah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 84,
+    "flag_name": "Clear_Dungeon084",
+    "flag_hash": "0x381D8375",
+    "ap_id": 6081084,
+    "name": "Tutsuwa Nima Shrine",
+    "monk": "Tutsuwa Nima",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 85,
+    "flag_name": "Clear_Dungeon085",
+    "flag_hash": "0x4F1AB3E3",
+    "ap_id": 6081085,
+    "name": "Kema Kosassa Shrine",
+    "monk": "Kema Kosassa",
+    "region": "Gerudo Highlands"
+  },
+  {
+    "dungeon_id": 86,
+    "flag_name": "Clear_Dungeon086",
+    "flag_hash": "0xD613E259",
+    "ap_id": 6081086,
+    "name": "Goma Asaagh Shrine",
+    "monk": "Goma Asaagh",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 87,
+    "flag_name": "Clear_Dungeon087",
+    "flag_hash": "0xA114D2CF",
+    "ap_id": 6081087,
+    "name": "Mozo Shenno Shrine",
+    "monk": "Mozo Shenno",
+    "region": "Gerudo Highlands"
+  },
+  {
+    "dungeon_id": 88,
+    "flag_name": "Clear_Dungeon088",
+    "flag_hash": "0x31ABCF5E",
+    "ap_id": 6081088,
+    "name": "Hia Miu Shrine",
+    "monk": "Hia Miu",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 89,
+    "flag_name": "Clear_Dungeon089",
+    "flag_hash": "0x46ACFFC8",
+    "ap_id": 6081089,
+    "name": "Saas Ko'sah Shrine",
+    "monk": "Saas Ko'sah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 90,
+    "flag_name": "Clear_Dungeon090",
+    "flag_hash": "0x266B762D",
+    "ap_id": 6081090,
+    "name": "Suma Sahma Shrine",
+    "monk": "Suma Sahma",
+    "region": "Gerudo Highlands"
+  },
+  {
+    "dungeon_id": 91,
+    "flag_name": "Clear_Dungeon091",
+    "flag_hash": "0x516C46BB",
+    "ap_id": 6081091,
+    "name": "Gorae Torr Shrine",
+    "monk": "Gorae Torr",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 92,
+    "flag_name": "Clear_Dungeon092",
+    "flag_hash": "0xC8651701",
+    "ap_id": 6081092,
+    "name": "Maag No'rah Shrine",
+    "monk": "Maag No'rah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 93,
+    "flag_name": "Clear_Dungeon093",
+    "flag_hash": "0xBF622797",
+    "ap_id": 6081093,
+    "name": "Raqa Zunzo Shrine",
+    "monk": "Raqa Zunzo",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 94,
+    "flag_name": "Clear_Dungeon094",
+    "flag_hash": "0x2106B234",
+    "ap_id": 6081094,
+    "name": "Tho Kayu Shrine",
+    "monk": "Tho Kayu",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 95,
+    "flag_name": "Clear_Dungeon095",
+    "flag_hash": "0x560182A2",
+    "ap_id": 6081095,
+    "name": "Kuhn Sidajj Shrine",
+    "monk": "Kuhn Sidajj",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 96,
+    "flag_name": "Clear_Dungeon096",
+    "flag_hash": "0xCF08D318",
+    "ap_id": 6081096,
+    "name": "Qukah Nata Shrine",
+    "monk": "Qukah Nata",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 97,
+    "flag_name": "Clear_Dungeon097",
+    "flag_hash": "0xB80FE38E",
+    "ap_id": 6081097,
+    "name": "Korgu Chideh Shrine",
+    "monk": "Korgu Chideh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 98,
+    "flag_name": "Clear_Dungeon098",
+    "flag_hash": "0x28B0FE1F",
+    "ap_id": 6081098,
+    "name": "Daag Chokah Shrine",
+    "monk": "Daag Chokah",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 99,
+    "flag_name": "Clear_Dungeon099",
+    "flag_hash": "0x5FB7CE89",
+    "ap_id": 6081099,
+    "name": "Ta'loh Naeg Shrine",
+    "monk": "Ta'loh Naeg",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 100,
+    "flag_name": "Clear_Dungeon100",
+    "flag_hash": "0xF66BA753",
+    "ap_id": 6081100,
+    "name": "Keeha Yoog Shrine",
+    "monk": "Keeha Yoog",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 101,
+    "flag_name": "Clear_Dungeon101",
+    "flag_hash": "0x816C97C5",
+    "ap_id": 6081101,
+    "name": "Dagah Keek Shrine",
+    "monk": "Dagah Keek",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 102,
+    "flag_name": "Clear_Dungeon102",
+    "flag_hash": "0x1865C67F",
+    "ap_id": 6081102,
+    "name": "Zuna Kai Shrine",
+    "monk": "Zuna Kai",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 103,
+    "flag_name": "Clear_Dungeon103",
+    "flag_hash": "0x6F62F6E9",
+    "ap_id": 6081103,
+    "name": "Dila Maag Shrine",
+    "monk": "Dila Maag",
+    "region": "Eldin"
+  },
+  {
+    "dungeon_id": 104,
+    "flag_name": "Clear_Dungeon104",
+    "flag_hash": "0xF106634A",
+    "ap_id": 6081104,
+    "name": "Lanno Kooh Shrine",
+    "monk": "Lanno Kooh",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 105,
+    "flag_name": "Clear_Dungeon105",
+    "flag_hash": "0x860153DC",
+    "ap_id": 6081105,
+    "name": "Tu Ka'loh Shrine",
+    "monk": "Tu Ka'loh",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 106,
+    "flag_name": "Clear_Dungeon106",
+    "flag_hash": "0x1F080266",
+    "ap_id": 6081106,
+    "name": "Maag Halan Shrine",
+    "monk": "Maag Halan",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 107,
+    "flag_name": "Clear_Dungeon107",
+    "flag_hash": "0x680F32F0",
+    "ap_id": 6081107,
+    "name": "Misae Suma Shrine",
+    "monk": "Misae Suma",
+    "region": "Gerudo Town"
+  },
+  {
+    "dungeon_id": 108,
+    "flag_name": "Clear_Dungeon108",
+    "flag_hash": "0xF8B02F61",
+    "ap_id": 6081108,
+    "name": "Ketoh Wawai Shrine",
+    "monk": "Ketoh Wawai",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 109,
+    "flag_name": "Clear_Dungeon109",
+    "flag_hash": "0x8FB71FF7",
+    "ap_id": 6081109,
+    "name": "Ritaag Zumo Shrine",
+    "monk": "Ritaag Zumo",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 110,
+    "flag_name": "Clear_Dungeon110",
+    "flag_hash": "0xEF709612",
+    "ap_id": 6081110,
+    "name": "Korsh O'hu Shrine",
+    "monk": "Korsh O'hu",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 111,
+    "flag_name": "Clear_Dungeon111",
+    "flag_hash": "0x9877A684",
+    "ap_id": 6081111,
+    "name": "Tawa Jinn Shrine",
+    "monk": "Tawa Jinn",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 112,
+    "flag_name": "Clear_Dungeon112",
+    "flag_hash": "0x017EF73E",
+    "ap_id": 6081112,
+    "name": "Lakna Rokee Shrine",
+    "monk": "Lakna Rokee",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 113,
+    "flag_name": "Clear_Dungeon113",
+    "flag_hash": "0x7679C7A8",
+    "ap_id": 6081113,
+    "name": "Shae Katha Shrine",
+    "monk": "Shae Katha",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 114,
+    "flag_name": "Clear_Dungeon114",
+    "flag_hash": "0xE81D520B",
+    "ap_id": 6081114,
+    "name": "Shai Yota Shrine",
+    "monk": "Shai Yota",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 115,
+    "flag_name": "Clear_Dungeon115",
+    "flag_hash": "0x9F1A629D",
+    "ap_id": 6081115,
+    "name": "Rona Kachta Shrine",
+    "monk": "Rona Kachta",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 116,
+    "flag_name": "Clear_Dungeon116",
+    "flag_hash": "0x06133327",
+    "ap_id": 6081116,
+    "name": "Qaza Tokki Shrine",
+    "monk": "Qaza Tokki",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 117,
+    "flag_name": "Clear_Dungeon117",
+    "flag_hash": "0x711403B1",
+    "ap_id": 6081117,
+    "name": "Jitan Sa'mi Shrine",
+    "monk": "Jitan Sa'mi",
+    "region": "Hyrule World"
+  },
+  {
+    "dungeon_id": 118,
+    "flag_name": "Clear_Dungeon118",
+    "flag_hash": "0xE1AB1E20",
+    "ap_id": 6081118,
+    "name": "To Quomo Shrine",
+    "monk": "To Quomo",
+    "region": "Hebra"
+  },
+  {
+    "dungeon_id": 119,
+    "flag_name": "Clear_Dungeon119",
+    "flag_hash": "0x96AC2EB6",
+    "ap_id": 6081119,
+    "name": "Tahno O'ah Shrine",
+    "monk": "Tahno O'ah",
+    "region": "Hyrule World"
+  }
+]

@@ -1,0 +1,2078 @@
+[
+  {
+    "dungeon_id": 0,
+    "shrine_name": "Tah Muhl Shrine",
+    "clear_flag": "Clear_Dungeon000",
+    "tboxes": [
+      {
+        "hash_id": 79753044,
+        "hash_id_hex": "0x04C0EF54",
+        "drop_actor": "Item_Enemy_16",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1015560256,
+        "hash_id_hex": "0x3C883840",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      },
+      {
+        "hash_id": 1061208573,
+        "hash_id_hex": "0x3F40C1FD",
+        "drop_actor": "Weapon_Sword_060",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3853713592,
+        "hash_id_hex": "0xE5B300B8",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 1,
+    "shrine_name": "Jee Noh Shrine",
+    "clear_flag": "Clear_Dungeon001",
+    "tboxes": [
+      {
+        "hash_id": 3852730446,
+        "hash_id_hex": "0xE5A4004E",
+        "drop_actor": "Obj_KorokNuts",
+        "spoiler_item": "Korok Seed"
+      }
+    ],
+    "randomizer_spoiler_item": "Korok Seed"
+  },
+  {
+    "dungeon_id": 2,
+    "shrine_name": "Sah Dahaj Shrine",
+    "clear_flag": "Clear_Dungeon002",
+    "tboxes": [
+      {
+        "hash_id": 2489506180,
+        "hash_id_hex": "0x9462D984",
+        "drop_actor": "Obj_ArrowBundle_A_01",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 3,
+    "shrine_name": "Hawa Koth Shrine",
+    "clear_flag": "Clear_Dungeon003",
+    "tboxes": [
+      {
+        "hash_id": 638977289,
+        "hash_id_hex": "0x26160509",
+        "drop_actor": "Item_Material_08",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2441275272,
+        "hash_id_hex": "0x9182E788",
+        "drop_actor": "Item_Enemy_15",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3284159718,
+        "hash_id_hex": "0xC3C04CE6",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 4,
+    "shrine_name": "Zalta Wa Shrine",
+    "clear_flag": "Clear_Dungeon004",
+    "tboxes": [
+      {
+        "hash_id": 3918894197,
+        "hash_id_hex": "0xE9959475",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 5,
+    "shrine_name": "Ne'ez Yohma Shrine",
+    "clear_flag": "Clear_Dungeon005",
+    "tboxes": [
+      {
+        "hash_id": 4248817833,
+        "hash_id_hex": "0xFD3FD0A9",
+        "drop_actor": "Item_Enemy_43",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 6,
+    "shrine_name": "Yah Rin Shrine",
+    "clear_flag": "Clear_Dungeon006",
+    "tboxes": [
+      {
+        "hash_id": 1735097170,
+        "hash_id_hex": "0x676B7B52",
+        "drop_actor": "Weapon_Sword_019",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4049467582,
+        "hash_id_hex": "0xF15DF8BE",
+        "drop_actor": "Weapon_Spear_017",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 7,
+    "shrine_name": "Bosh Kala Shrine",
+    "clear_flag": "Clear_Dungeon007",
+    "tboxes": [
+      {
+        "hash_id": 2677842568,
+        "hash_id_hex": "0x9F9CA288",
+        "drop_actor": "Armor_160_Head",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4073483487,
+        "hash_id_hex": "0xF2CC6CDF",
+        "drop_actor": "Obj_StaminaUtuwa_A_01",
+        "spoiler_item": "Stamina Vessel"
+      }
+    ],
+    "randomizer_spoiler_item": "Stamina Vessel"
+  },
+  {
+    "dungeon_id": 8,
+    "shrine_name": "Bareeda Naag Shrine",
+    "clear_flag": "Clear_Dungeon008",
+    "tboxes": [
+      {
+        "hash_id": 159148495,
+        "hash_id_hex": "0x097C69CF",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      },
+      {
+        "hash_id": 3513544036,
+        "hash_id_hex": "0xD16C6D64",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 9,
+    "shrine_name": "Owa Daim Shrine",
+    "clear_flag": "Clear_Dungeon009",
+    "tboxes": [
+      {
+        "hash_id": 1182477274,
+        "hash_id_hex": "0x467B2BDA",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 10,
+    "shrine_name": "Kay Noh Shrine",
+    "clear_flag": "Clear_Dungeon010",
+    "tboxes": [
+      {
+        "hash_id": 1396031621,
+        "hash_id_hex": "0x5335C085",
+        "drop_actor": "Obj_KorokNuts",
+        "spoiler_item": "Korok Seed"
+      },
+      {
+        "hash_id": 3287407663,
+        "hash_id_hex": "0xC3F1DC2F",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": "Korok Seed"
+  },
+  {
+    "dungeon_id": 11,
+    "shrine_name": "Monya Toma Shrine",
+    "clear_flag": "Clear_Dungeon011",
+    "tboxes": [
+      {
+        "hash_id": 2144851240,
+        "hash_id_hex": "0x7FD7D528",
+        "drop_actor": "Weapon_Shield_007",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 12,
+    "shrine_name": "Voo Lota Shrine",
+    "clear_flag": "Clear_Dungeon012",
+    "tboxes": [
+      {
+        "hash_id": 2260374746,
+        "hash_id_hex": "0x86BA94DA",
+        "drop_actor": "Armor_045_Head",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2875625519,
+        "hash_id_hex": "0xAB66902F",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 13,
+    "shrine_name": "Katosa Aug Shrine",
+    "clear_flag": "Clear_Dungeon013",
+    "tboxes": [
+      {
+        "hash_id": 130001776,
+        "hash_id_hex": "0x07BFAB70",
+        "drop_actor": "Weapon_Spear_016",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 14,
+    "shrine_name": "Kam Urog Shrine",
+    "clear_flag": "Clear_Dungeon014",
+    "tboxes": [
+      {
+        "hash_id": 2374996813,
+        "hash_id_hex": "0x8D8F934D",
+        "drop_actor": "PutRupee_Silver",
+        "spoiler_item": "Silver Rupee"
+      },
+      {
+        "hash_id": 3513966293,
+        "hash_id_hex": "0xD172DED5",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Silver Rupee"
+  },
+  {
+    "dungeon_id": 15,
+    "shrine_name": "Toto Sah Shrine",
+    "clear_flag": "Clear_Dungeon015",
+    "tboxes": [
+      {
+        "hash_id": 1319070279,
+        "hash_id_hex": "0x4E9F6A47",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1345302867,
+        "hash_id_hex": "0x502FB153",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 16,
+    "shrine_name": "Rucco Maag Shrine",
+    "clear_flag": "Clear_Dungeon016",
+    "tboxes": [
+      {
+        "hash_id": 1708460808,
+        "hash_id_hex": "0x65D50B08",
+        "drop_actor": "Weapon_Sword_044",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2731610075,
+        "hash_id_hex": "0xA2D10FDB",
+        "drop_actor": "Weapon_Shield_040",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 17,
+    "shrine_name": "Shee Vaneer Shrine",
+    "clear_flag": "Clear_Dungeon017",
+    "tboxes": [
+      {
+        "hash_id": 4140941963,
+        "hash_id_hex": "0xF6D1C28B",
+        "drop_actor": "Weapon_Bow_028",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 18,
+    "shrine_name": "Rok Uwog Shrine",
+    "clear_flag": "Clear_Dungeon018",
+    "tboxes": [
+      {
+        "hash_id": 1203458803,
+        "hash_id_hex": "0x47BB52F3",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4120858762,
+        "hash_id_hex": "0xF59F508A",
+        "drop_actor": "Weapon_Spear_027",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 19,
+    "shrine_name": "Dow Na'eh Shrine",
+    "clear_flag": "Clear_Dungeon019",
+    "tboxes": [
+      {
+        "hash_id": 896824088,
+        "hash_id_hex": "0x35747318",
+        "drop_actor": "Weapon_Bow_009",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1114850190,
+        "hash_id_hex": "0x4273438E",
+        "drop_actor": "Obj_KorokNuts",
+        "spoiler_item": "Korok Seed"
+      },
+      {
+        "hash_id": 1961782765,
+        "hash_id_hex": "0x74EE6DED",
+        "drop_actor": "Weapon_Lsword_036",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": "Korok Seed"
+  },
+  {
+    "dungeon_id": 20,
+    "shrine_name": "Sheem Dagoze Shrine",
+    "clear_flag": "Clear_Dungeon020",
+    "tboxes": [
+      {
+        "hash_id": 2966651740,
+        "hash_id_hex": "0xB0D3835C",
+        "drop_actor": "Weapon_Spear_005",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 21,
+    "shrine_name": "Toh Yahsa Shrine",
+    "clear_flag": "Clear_Dungeon021",
+    "tboxes": [
+      {
+        "hash_id": 651697158,
+        "hash_id_hex": "0x26D81C06",
+        "drop_actor": "Weapon_Spear_029",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1608635741,
+        "hash_id_hex": "0x5FE1D55D",
+        "drop_actor": "Weapon_Shield_003",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 22,
+    "shrine_name": "Keo Ruug Shrine",
+    "clear_flag": "Clear_Dungeon022",
+    "tboxes": [
+      {
+        "hash_id": 944710900,
+        "hash_id_hex": "0x384F24F4",
+        "drop_actor": "Weapon_Shield_037",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 23,
+    "shrine_name": "Sheh Rata Shrine",
+    "clear_flag": "Clear_Dungeon023",
+    "tboxes": [
+      {
+        "hash_id": 1274382149,
+        "hash_id_hex": "0x4BF58745",
+        "drop_actor": "Weapon_Lsword_024",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3463086557,
+        "hash_id_hex": "0xCE6A81DD",
+        "drop_actor": "Item_Enemy_05",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 24,
+    "shrine_name": "Mezza Lo Shrine",
+    "clear_flag": "Clear_Dungeon024",
+    "tboxes": [
+      {
+        "hash_id": 114738522,
+        "hash_id_hex": "0x06D6C55A",
+        "drop_actor": "Weapon_Lsword_034",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 25,
+    "shrine_name": "Kayra Mah Shrine",
+    "clear_flag": "Clear_Dungeon025",
+    "tboxes": [
+      {
+        "hash_id": 2928701109,
+        "hash_id_hex": "0xAE906EB5",
+        "drop_actor": "Weapon_Sword_015",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3410031031,
+        "hash_id_hex": "0xCB40F1B7",
+        "drop_actor": "Weapon_Spear_035",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 26,
+    "shrine_name": "Shae Mo'sah Shrine",
+    "clear_flag": "Clear_Dungeon026",
+    "tboxes": [
+      {
+        "hash_id": 1306359972,
+        "hash_id_hex": "0x4DDD78A4",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1749408352,
+        "hash_id_hex": "0x6845DA60",
+        "drop_actor": "Weapon_Sword_013",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2775322850,
+        "hash_id_hex": "0xA56C10E2",
+        "drop_actor": "Weapon_Shield_005",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2783782463,
+        "hash_id_hex": "0xA5ED263F",
+        "drop_actor": "Weapon_Sword_019",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 27,
+    "shrine_name": "Rota Ooh Shrine",
+    "clear_flag": "Clear_Dungeon027",
+    "tboxes": [
+      {
+        "hash_id": 2001786182,
+        "hash_id_hex": "0x7750D546",
+        "drop_actor": "Weapon_Spear_050",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3566506040,
+        "hash_id_hex": "0xD4949038",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 28,
+    "shrine_name": "Shora Hah Shrine",
+    "clear_flag": "Clear_Dungeon028",
+    "tboxes": [
+      {
+        "hash_id": 223462799,
+        "hash_id_hex": "0x0D51C58F",
+        "drop_actor": "Armor_008_Head",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 304910307,
+        "hash_id_hex": "0x122C8FE3",
+        "drop_actor": "Weapon_Lsword_012",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1249330112,
+        "hash_id_hex": "0x4A7743C0",
+        "drop_actor": "Weapon_Lsword_019",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3281368662,
+        "hash_id_hex": "0xC395B656",
+        "drop_actor": "Item_Enemy_31",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3826616279,
+        "hash_id_hex": "0xE41587D7",
+        "drop_actor": "Weapon_Spear_050",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4196993938,
+        "hash_id_hex": "0xFA290B92",
+        "drop_actor": "Weapon_Bow_027",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 29,
+    "shrine_name": "Hila Rao Shrine",
+    "clear_flag": "Clear_Dungeon029",
+    "tboxes": [
+      {
+        "hash_id": 771359327,
+        "hash_id_hex": "0x2DFA025F",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      },
+      {
+        "hash_id": 2545300147,
+        "hash_id_hex": "0x97B632B3",
+        "drop_actor": "PutRupee_Silver",
+        "spoiler_item": "Silver Rupee"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 30,
+    "shrine_name": "Joloo Nah Shrine",
+    "clear_flag": "Clear_Dungeon030",
+    "tboxes": [
+      {
+        "hash_id": 296010651,
+        "hash_id_hex": "0x11A4C39B",
+        "drop_actor": "Item_Enemy_28",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2758576440,
+        "hash_id_hex": "0xA46C8938",
+        "drop_actor": "Weapon_Bow_026",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 31,
+    "shrine_name": "Mo'a Keet Shrine",
+    "clear_flag": "Clear_Dungeon031",
+    "tboxes": [
+      {
+        "hash_id": 418217937,
+        "hash_id_hex": "0x18ED7FD1",
+        "drop_actor": "Item_Enemy_15",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4073019342,
+        "hash_id_hex": "0xF2C557CE",
+        "drop_actor": "Item_Enemy_01",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 32,
+    "shrine_name": "Dako Tah Shrine",
+    "clear_flag": "Clear_Dungeon032",
+    "tboxes": [
+      {
+        "hash_id": 1366576292,
+        "hash_id_hex": "0x51744CA4",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      },
+      {
+        "hash_id": 2298702348,
+        "hash_id_hex": "0x89036A0C",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2917484848,
+        "hash_id_hex": "0xADE54930",
+        "drop_actor": "Armor_005_Head",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4223476174,
+        "hash_id_hex": "0xFBBD21CE",
+        "drop_actor": "Weapon_Bow_040",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 33,
+    "shrine_name": "Daka Tuss Shrine",
+    "clear_flag": "Clear_Dungeon033",
+    "tboxes": [
+      {
+        "hash_id": 1852894353,
+        "hash_id_hex": "0x6E70EC91",
+        "drop_actor": "Weapon_Spear_006",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 34,
+    "shrine_name": "Kah Yah Shrine",
+    "clear_flag": "Clear_Dungeon034",
+    "tboxes": [
+      {
+        "hash_id": 445242426,
+        "hash_id_hex": "0x1A89DC3A",
+        "drop_actor": "Item_Ore_I",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1223731997,
+        "hash_id_hex": "0x48F0AB1D",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 35,
+    "shrine_name": "Akh Va'quot Shrine",
+    "clear_flag": "Clear_Dungeon035",
+    "tboxes": [
+      {
+        "hash_id": 450234134,
+        "hash_id_hex": "0x1AD60716",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2699775799,
+        "hash_id_hex": "0xA0EB4F37",
+        "drop_actor": "Weapon_Spear_034",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4270154666,
+        "hash_id_hex": "0xFE8563AA",
+        "drop_actor": "Weapon_Shield_015",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 36,
+    "shrine_name": "Sho Dantu Shrine",
+    "clear_flag": "Clear_Dungeon036",
+    "tboxes": [
+      {
+        "hash_id": 962037740,
+        "hash_id_hex": "0x395787EC",
+        "drop_actor": "Weapon_Spear_008",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 37,
+    "shrine_name": "Shae Loya Shrine",
+    "clear_flag": "Clear_Dungeon037",
+    "tboxes": [
+      {
+        "hash_id": 3612472744,
+        "hash_id_hex": "0xD751F5A8",
+        "drop_actor": "Weapon_Lsword_054",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3658282587,
+        "hash_id_hex": "0xDA0CF65B",
+        "drop_actor": "Weapon_Lsword_023",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 38,
+    "shrine_name": "Oman Au Shrine",
+    "clear_flag": "Clear_Dungeon038",
+    "tboxes": [
+      {
+        "hash_id": 3375369818,
+        "hash_id_hex": "0xC9300E5A",
+        "drop_actor": "Obj_ArrowNormal_A_01",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 39,
+    "shrine_name": "Myahm Agana Shrine",
+    "clear_flag": "Clear_Dungeon039",
+    "tboxes": [
+      {
+        "hash_id": 2175434126,
+        "hash_id_hex": "0x81AA7D8E",
+        "drop_actor": "Weapon_Lsword_016",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 40,
+    "shrine_name": "Kaam Ya'tak Shrine",
+    "clear_flag": "Clear_Dungeon040",
+    "tboxes": [
+      {
+        "hash_id": 616546705,
+        "hash_id_hex": "0x24BFC191",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1402060224,
+        "hash_id_hex": "0x5391BDC0",
+        "drop_actor": "Obj_KorokNuts",
+        "spoiler_item": "Korok Seed"
+      },
+      {
+        "hash_id": 2202095126,
+        "hash_id_hex": "0x83414E16",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      },
+      {
+        "hash_id": 2914122144,
+        "hash_id_hex": "0xADB1F9A0",
+        "drop_actor": "Weapon_Sword_035",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3497573834,
+        "hash_id_hex": "0xD078BDCA",
+        "drop_actor": "Weapon_Shield_023",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": "Korok Seed"
+  },
+  {
+    "dungeon_id": 41,
+    "shrine_name": "Ja Baij Shrine",
+    "clear_flag": "Clear_Dungeon041",
+    "tboxes": [
+      {
+        "hash_id": 235083489,
+        "hash_id_hex": "0x0E0316E1",
+        "drop_actor": "Weapon_Spear_015",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4192706961,
+        "hash_id_hex": "0xF9E7A191",
+        "drop_actor": "Obj_KorokNuts",
+        "spoiler_item": "Korok Seed"
+      }
+    ],
+    "randomizer_spoiler_item": "Korok Seed"
+  },
+  {
+    "dungeon_id": 42,
+    "shrine_name": "Rin Oyaa Shrine",
+    "clear_flag": "Clear_Dungeon042",
+    "tboxes": [
+      {
+        "hash_id": 2081482182,
+        "hash_id_hex": "0x7C10E5C6",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 43,
+    "shrine_name": "Kuh Takkar Shrine",
+    "clear_flag": "Clear_Dungeon043",
+    "tboxes": [
+      {
+        "hash_id": 294526304,
+        "hash_id_hex": "0x118E1D60",
+        "drop_actor": "Weapon_Sword_022",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 44,
+    "shrine_name": "Shee Venath Shrine",
+    "clear_flag": "Clear_Dungeon044",
+    "tboxes": [
+      {
+        "hash_id": 1221975918,
+        "hash_id_hex": "0x48D5DF6E",
+        "drop_actor": "Weapon_Lsword_005",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 45,
+    "shrine_name": "Ha Dahamar Shrine",
+    "clear_flag": "Clear_Dungeon045",
+    "tboxes": [
+      {
+        "hash_id": 787648808,
+        "hash_id_hex": "0x2EF29128",
+        "drop_actor": "Weapon_Spear_022",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 46,
+    "shrine_name": "Shada Naw Shrine",
+    "clear_flag": "Clear_Dungeon046",
+    "tboxes": [
+      {
+        "hash_id": 2733670140,
+        "hash_id_hex": "0xA2F07EFC",
+        "drop_actor": "Item_Enemy_24",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 47,
+    "shrine_name": "Ree Dahee Shrine",
+    "clear_flag": "Clear_Dungeon047",
+    "tboxes": [
+      {
+        "hash_id": 1203109046,
+        "hash_id_hex": "0x47B5FCB6",
+        "drop_actor": "Armor_017_Lower",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 48,
+    "shrine_name": "Ze Kasho Shrine",
+    "clear_flag": "Clear_Dungeon048",
+    "tboxes": [
+      {
+        "hash_id": 2075859436,
+        "hash_id_hex": "0x7BBB19EC",
+        "drop_actor": "Weapon_Sword_051",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 49,
+    "shrine_name": "Kaya Wan Shrine",
+    "clear_flag": "Clear_Dungeon049",
+    "tboxes": [
+      {
+        "hash_id": 4012296241,
+        "hash_id_hex": "0xEF26C831",
+        "drop_actor": "Weapon_Sword_029",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4214849996,
+        "hash_id_hex": "0xFB3981CC",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 50,
+    "shrine_name": "Shai Utoh Shrine",
+    "clear_flag": "Clear_Dungeon050",
+    "tboxes": [
+      {
+        "hash_id": 923248764,
+        "hash_id_hex": "0x3707A87C",
+        "drop_actor": "Weapon_Sword_029",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3173256521,
+        "hash_id_hex": "0xBD240D49",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 51,
+    "shrine_name": "Maka Rah Shrine",
+    "clear_flag": "Clear_Dungeon051",
+    "tboxes": [
+      {
+        "hash_id": 1297119120,
+        "hash_id_hex": "0x4D507790",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2905879506,
+        "hash_id_hex": "0xAD3433D2",
+        "drop_actor": "Weapon_Lsword_018",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 4272783493,
+        "hash_id_hex": "0xFEAD8085",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 52,
+    "shrine_name": "Gee Ha'rah Shrine",
+    "clear_flag": "Clear_Dungeon052",
+    "tboxes": [
+      {
+        "hash_id": 2975470194,
+        "hash_id_hex": "0xB15A1272",
+        "drop_actor": "Weapon_Spear_015",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 53,
+    "shrine_name": "Sha Warvo Shrine",
+    "clear_flag": "Clear_Dungeon053",
+    "tboxes": [
+      {
+        "hash_id": 287351360,
+        "hash_id_hex": "0x1120A240",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      },
+      {
+        "hash_id": 699967431,
+        "hash_id_hex": "0x29B8A7C7",
+        "drop_actor": "Obj_StaminaUtuwa_A_01",
+        "spoiler_item": "Stamina Vessel"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 54,
+    "shrine_name": "Ka'o Makagh Shrine",
+    "clear_flag": "Clear_Dungeon054",
+    "tboxes": [
+      {
+        "hash_id": 393155234,
+        "hash_id_hex": "0x176F12A2",
+        "drop_actor": "Weapon_Sword_016",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2042129072,
+        "hash_id_hex": "0x79B86AB0",
+        "drop_actor": "Weapon_Lsword_047",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3705447709,
+        "hash_id_hex": "0xDCDCA51D",
+        "drop_actor": "Obj_HeroSoul_Zora",
+        "spoiler_item": "Mipha's Grace"
+      }
+    ],
+    "randomizer_spoiler_item": "Mipha's Grace"
+  },
+  {
+    "dungeon_id": 55,
+    "shrine_name": "Dunba Taag Shrine",
+    "clear_flag": "Clear_Dungeon055",
+    "tboxes": [
+      {
+        "hash_id": 2319591679,
+        "hash_id_hex": "0x8A4228FF",
+        "drop_actor": "Weapon_Shield_017",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3047743907,
+        "hash_id_hex": "0xB5A8E1A3",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 56,
+    "shrine_name": "Mirro Shaz Shrine",
+    "clear_flag": "Clear_Dungeon056",
+    "tboxes": [
+      {
+        "hash_id": 309690636,
+        "hash_id_hex": "0x1275810C",
+        "drop_actor": "Weapon_Spear_047",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1168499415,
+        "hash_id_hex": "0x45A5E2D7",
+        "drop_actor": "Item_Enemy_31",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2340212918,
+        "hash_id_hex": "0x8B7CD0B6",
+        "drop_actor": "Weapon_Shield_033",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 57,
+    "shrine_name": "Wahgo Katta Shrine",
+    "clear_flag": "Clear_Dungeon057",
+    "tboxes": [
+      {
+        "hash_id": 322360761,
+        "hash_id_hex": "0x1336D5B9",
+        "drop_actor": "Weapon_Sword_060",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 58,
+    "shrine_name": "Mogg Latan Shrine",
+    "clear_flag": "Clear_Dungeon058",
+    "tboxes": [
+      {
+        "hash_id": 359699135,
+        "hash_id_hex": "0x157092BF",
+        "drop_actor": "Weapon_Spear_036",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 718693766,
+        "hash_id_hex": "0x2AD66586",
+        "drop_actor": "Item_Enemy_33",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3819328534,
+        "hash_id_hex": "0xE3A65416",
+        "drop_actor": "Item_Enemy_21",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 59,
+    "shrine_name": "Kah Okeo Shrine",
+    "clear_flag": "Clear_Dungeon059",
+    "tboxes": [
+      {
+        "hash_id": 889586639,
+        "hash_id_hex": "0x350603CF",
+        "drop_actor": "Weapon_Lsword_029",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2150412173,
+        "hash_id_hex": "0x802CAF8D",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2402635144,
+        "hash_id_hex": "0x8F354D88",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      },
+      {
+        "hash_id": 3055684308,
+        "hash_id_hex": "0xB6220AD4",
+        "drop_actor": "Item_Enemy_31",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3147218512,
+        "hash_id_hex": "0xBB96BE50",
+        "drop_actor": "Weapon_Sword_009",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3495362814,
+        "hash_id_hex": "0xD05700FE",
+        "drop_actor": "Item_Enemy_44",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 60,
+    "shrine_name": "Daqo Chisay Shrine",
+    "clear_flag": "Clear_Dungeon060",
+    "tboxes": [
+      {
+        "hash_id": 32387787,
+        "hash_id_hex": "0x01EE32CB",
+        "drop_actor": "Obj_IceArrow_A_03",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 61,
+    "shrine_name": "Shoda Sah Shrine",
+    "clear_flag": "Clear_Dungeon061",
+    "tboxes": [
+      {
+        "hash_id": 3299660229,
+        "hash_id_hex": "0xC4ACD1C5",
+        "drop_actor": "Obj_KorokNuts",
+        "spoiler_item": "Korok Seed"
+      },
+      {
+        "hash_id": 3647020470,
+        "hash_id_hex": "0xD9611DB6",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": "Korok Seed"
+  },
+  {
+    "dungeon_id": 62,
+    "shrine_name": "Sha Gehma Shrine",
+    "clear_flag": "Clear_Dungeon062",
+    "tboxes": [
+      {
+        "hash_id": 654507101,
+        "hash_id_hex": "0x2702FC5D",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 2591211974,
+        "hash_id_hex": "0x9A72C1C6",
+        "drop_actor": "Weapon_Sword_023",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 63,
+    "shrine_name": "Kema Zoos Shrine",
+    "clear_flag": "Clear_Dungeon063",
+    "tboxes": [
+      {
+        "hash_id": 987962398,
+        "hash_id_hex": "0x3AE31C1E",
+        "drop_actor": "Weapon_Bow_036",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 64,
+    "shrine_name": "Daqa Koh Shrine",
+    "clear_flag": "Clear_Dungeon064",
+    "tboxes": [
+      {
+        "hash_id": 3884443295,
+        "hash_id_hex": "0xE787E69F",
+        "drop_actor": "Weapon_Lsword_017",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 65,
+    "shrine_name": "Keh Namut Shrine",
+    "clear_flag": "Clear_Dungeon065",
+    "tboxes": [
+      {
+        "hash_id": 1490683918,
+        "hash_id_hex": "0x58DA080E",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 66,
+    "shrine_name": "Kah Mael Shrine",
+    "clear_flag": "Clear_Dungeon066",
+    "tboxes": [
+      {
+        "hash_id": 215071769,
+        "hash_id_hex": "0x0CD1BC19",
+        "drop_actor": "Weapon_Shield_030",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 67,
+    "shrine_name": "Qua Raym Shrine",
+    "clear_flag": "Clear_Dungeon067",
+    "tboxes": [
+      {
+        "hash_id": 2541023350,
+        "hash_id_hex": "0x9774F076",
+        "drop_actor": "Weapon_Lsword_015",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3617692800,
+        "hash_id_hex": "0xD7A19C80",
+        "drop_actor": "KeySmall",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 68,
+    "shrine_name": "Ya Naga Shrine",
+    "clear_flag": "Clear_Dungeon068",
+    "tboxes": [
+      {
+        "hash_id": 319620032,
+        "hash_id_hex": "0x130D03C0",
+        "drop_actor": "Weapon_Bow_029",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 69,
+    "shrine_name": "Ishto Soh Shrine",
+    "clear_flag": "Clear_Dungeon069",
+    "tboxes": [
+      {
+        "hash_id": 582159315,
+        "hash_id_hex": "0x22B30BD3",
+        "drop_actor": "Weapon_Spear_007",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 1505890884,
+        "hash_id_hex": "0x59C21244",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 70,
+    "shrine_name": "Soh Kofi Shrine",
+    "clear_flag": "Clear_Dungeon070",
+    "tboxes": [
+      {
+        "hash_id": 3032109463,
+        "hash_id_hex": "0xB4BA5197",
+        "drop_actor": "Weapon_Lsword_003",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 71,
+    "shrine_name": "Pumaag Nitae Shrine",
+    "clear_flag": "Clear_Dungeon071",
+    "tboxes": [
+      {
+        "hash_id": 3450862395,
+        "hash_id_hex": "0xCDAFFB3B",
+        "drop_actor": "Obj_IceArrow_A_03",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 72,
+    "shrine_name": "Dah Kaso Shrine",
+    "clear_flag": "Clear_Dungeon072",
+    "tboxes": [
+      {
+        "hash_id": 992999892,
+        "hash_id_hex": "0x3B2FF9D4",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 73,
+    "shrine_name": "Katah Chuki Shrine",
+    "clear_flag": "Clear_Dungeon073",
+    "tboxes": [
+      {
+        "hash_id": 628803076,
+        "hash_id_hex": "0x257AC604",
+        "drop_actor": "Item_Enemy_29",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 74,
+    "shrine_name": "Noya Neha Shrine",
+    "clear_flag": "Clear_Dungeon074",
+    "tboxes": [
+      {
+        "hash_id": 821435950,
+        "hash_id_hex": "0x30F61E2E",
+        "drop_actor": "Item_Enemy_02",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 75,
+    "shrine_name": "Dah Hesho Shrine",
+    "clear_flag": "Clear_Dungeon075",
+    "tboxes": [
+      {
+        "hash_id": 1908915428,
+        "hash_id_hex": "0x71C7BCE4",
+        "drop_actor": "Item_Enemy_31",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 76,
+    "shrine_name": "Sasa Kai Shrine",
+    "clear_flag": "Clear_Dungeon076",
+    "tboxes": [
+      {
+        "hash_id": 1835622564,
+        "hash_id_hex": "0x6D6960A4",
+        "drop_actor": "Item_Material_02",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 77,
+    "shrine_name": "Ke'nai Shakah Shrine",
+    "clear_flag": "Clear_Dungeon077",
+    "tboxes": [
+      {
+        "hash_id": 3073200707,
+        "hash_id_hex": "0xB72D5243",
+        "drop_actor": "Weapon_Spear_007",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 78,
+    "shrine_name": "Mijah Rokee Shrine",
+    "clear_flag": "Clear_Dungeon078",
+    "tboxes": [
+      {
+        "hash_id": 246330360,
+        "hash_id_hex": "0x0EAEB3F8",
+        "drop_actor": "Item_Enemy_18",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 79,
+    "shrine_name": "Namika Ozz Shrine",
+    "clear_flag": "Clear_Dungeon079",
+    "tboxes": [
+      {
+        "hash_id": 2855684808,
+        "hash_id_hex": "0xAA364AC8",
+        "drop_actor": "Weapon_Sword_009",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 80,
+    "shrine_name": "Shoqa Tatone Shrine",
+    "clear_flag": "Clear_Dungeon080",
+    "tboxes": [
+      {
+        "hash_id": 396797432,
+        "hash_id_hex": "0x17A6A5F8",
+        "drop_actor": "Weapon_Bow_027",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 81,
+    "shrine_name": "Muwo Jeem Shrine",
+    "clear_flag": "Clear_Dungeon081",
+    "tboxes": [
+      {
+        "hash_id": 3517324741,
+        "hash_id_hex": "0xD1A61DC5",
+        "drop_actor": "Obj_StaminaUtuwa_A_01",
+        "spoiler_item": "Stamina Vessel"
+      }
+    ],
+    "randomizer_spoiler_item": "Stamina Vessel"
+  },
+  {
+    "dungeon_id": 82,
+    "shrine_name": "Chaas Qeta Shrine",
+    "clear_flag": "Clear_Dungeon082",
+    "tboxes": [
+      {
+        "hash_id": 2231710576,
+        "hash_id_hex": "0x85053370",
+        "drop_actor": "Weapon_Sword_005",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 83,
+    "shrine_name": "Tena Ko'sah Shrine",
+    "clear_flag": "Clear_Dungeon083",
+    "tboxes": [
+      {
+        "hash_id": 3776874027,
+        "hash_id_hex": "0xE11E862B",
+        "drop_actor": "Weapon_Spear_033",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 84,
+    "shrine_name": "Tutsuwa Nima Shrine",
+    "clear_flag": "Clear_Dungeon084",
+    "tboxes": [
+      {
+        "hash_id": 1101189494,
+        "hash_id_hex": "0x41A2D176",
+        "drop_actor": "Weapon_Shield_035",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 85,
+    "shrine_name": "Kema Kosassa Shrine",
+    "clear_flag": "Clear_Dungeon085",
+    "tboxes": [
+      {
+        "hash_id": 4153981767,
+        "hash_id_hex": "0xF798BB47",
+        "drop_actor": "Obj_ElectricArrow_A_01",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 86,
+    "shrine_name": "Goma Asaagh Shrine",
+    "clear_flag": "Clear_Dungeon086",
+    "tboxes": [
+      {
+        "hash_id": 289382806,
+        "hash_id_hex": "0x113FA196",
+        "drop_actor": "Obj_AncientArrow_B_01",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 87,
+    "shrine_name": "Mozo Shenno Shrine",
+    "clear_flag": "Clear_Dungeon087",
+    "tboxes": [
+      {
+        "hash_id": 56897618,
+        "hash_id_hex": "0x03643052",
+        "drop_actor": "Armor_053_Upper",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 88,
+    "shrine_name": "Hia Miu Shrine",
+    "clear_flag": "Clear_Dungeon088",
+    "tboxes": [
+      {
+        "hash_id": 262007905,
+        "hash_id_hex": "0x0F9DEC61",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 89,
+    "shrine_name": "Saas Ko'sah Shrine",
+    "clear_flag": "Clear_Dungeon089",
+    "tboxes": [
+      {
+        "hash_id": 1249779666,
+        "hash_id_hex": "0x4A7E1FD2",
+        "drop_actor": "Obj_AncientArrow_B_01",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 90,
+    "shrine_name": "Suma Sahma Shrine",
+    "clear_flag": "Clear_Dungeon090",
+    "tboxes": [
+      {
+        "hash_id": 3298610380,
+        "hash_id_hex": "0xC49CCCCC",
+        "drop_actor": "Weapon_Sword_051",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 91,
+    "shrine_name": "Gorae Torr Shrine",
+    "clear_flag": "Clear_Dungeon091",
+    "tboxes": [
+      {
+        "hash_id": 1597604003,
+        "hash_id_hex": "0x5F3980A3",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 92,
+    "shrine_name": "Maag No'rah Shrine",
+    "clear_flag": "Clear_Dungeon092",
+    "tboxes": [
+      {
+        "hash_id": 682054227,
+        "hash_id_hex": "0x28A75253",
+        "drop_actor": "Obj_ArrowBundle_A_02",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 93,
+    "shrine_name": "Raqa Zunzo Shrine",
+    "clear_flag": "Clear_Dungeon093",
+    "tboxes": [
+      {
+        "hash_id": 3003260476,
+        "hash_id_hex": "0xB3021E3C",
+        "drop_actor": "Item_Ore_B",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 94,
+    "shrine_name": "Tho Kayu Shrine",
+    "clear_flag": "Clear_Dungeon094",
+    "tboxes": [
+      {
+        "hash_id": 3348821939,
+        "hash_id_hex": "0xC79AF7B3",
+        "drop_actor": "Obj_ElectricArrow_A_02",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 95,
+    "shrine_name": "Kuhn Sidajj Shrine",
+    "clear_flag": "Clear_Dungeon095",
+    "tboxes": [
+      {
+        "hash_id": 1547680732,
+        "hash_id_hex": "0x5C3FBBDC",
+        "drop_actor": "Item_Enemy_31",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 96,
+    "shrine_name": "Qukah Nata Shrine",
+    "clear_flag": "Clear_Dungeon096",
+    "tboxes": [
+      {
+        "hash_id": 731998508,
+        "hash_id_hex": "0x2BA1692C",
+        "drop_actor": "Weapon_Sword_041",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 97,
+    "shrine_name": "Korgu Chideh Shrine",
+    "clear_flag": "Clear_Dungeon097",
+    "tboxes": [
+      {
+        "hash_id": 2953061699,
+        "hash_id_hex": "0xB0042543",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 98,
+    "shrine_name": "Daag Chokah Shrine",
+    "clear_flag": "Clear_Dungeon098",
+    "tboxes": [
+      {
+        "hash_id": 3264264754,
+        "hash_id_hex": "0xC290BA32",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 99,
+    "shrine_name": "Ta'loh Naeg Shrine",
+    "clear_flag": "Clear_Dungeon099",
+    "tboxes": [
+      {
+        "hash_id": 1648376382,
+        "hash_id_hex": "0x62403A3E",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      },
+      {
+        "hash_id": 2577142135,
+        "hash_id_hex": "0x999C1177",
+        "drop_actor": "Weapon_Shield_016",
+        "spoiler_item": ""
+      },
+      {
+        "hash_id": 3163225088,
+        "hash_id_hex": "0xBC8AFC00",
+        "drop_actor": "Weapon_Bow_023",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 100,
+    "shrine_name": "Keeha Yoog Shrine",
+    "clear_flag": "Clear_Dungeon100",
+    "tboxes": [
+      {
+        "hash_id": 2835421124,
+        "hash_id_hex": "0xA90117C4",
+        "drop_actor": "Armor_180_Head",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 101,
+    "shrine_name": "Dagah Keek Shrine",
+    "clear_flag": "Clear_Dungeon101",
+    "tboxes": [
+      {
+        "hash_id": 849632171,
+        "hash_id_hex": "0x32A45BAB",
+        "drop_actor": "Weapon_Shield_009",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 102,
+    "shrine_name": "Zuna Kai Shrine",
+    "clear_flag": "Clear_Dungeon102",
+    "tboxes": [
+      {
+        "hash_id": 1161464155,
+        "hash_id_hex": "0x453A895B",
+        "drop_actor": "Weapon_Shield_034",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 103,
+    "shrine_name": "Dila Maag Shrine",
+    "clear_flag": "Clear_Dungeon103",
+    "tboxes": [
+      {
+        "hash_id": 3735012660,
+        "hash_id_hex": "0xDE9FC534",
+        "drop_actor": "Weapon_Bow_029",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 104,
+    "shrine_name": "Lanno Kooh Shrine",
+    "clear_flag": "Clear_Dungeon104",
+    "tboxes": [
+      {
+        "hash_id": 2852596923,
+        "hash_id_hex": "0xAA072CBB",
+        "drop_actor": "Weapon_Sword_033",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 105,
+    "shrine_name": "Tu Ka'loh Shrine",
+    "clear_flag": "Clear_Dungeon105",
+    "tboxes": [
+      {
+        "hash_id": 832725204,
+        "hash_id_hex": "0x31A260D4",
+        "drop_actor": "Weapon_Bow_040",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 106,
+    "shrine_name": "Maag Halan Shrine",
+    "clear_flag": "Clear_Dungeon106",
+    "tboxes": [
+      {
+        "hash_id": 1178382884,
+        "hash_id_hex": "0x463CB224",
+        "drop_actor": "Item_Enemy_31",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 107,
+    "shrine_name": "Misae Suma Shrine",
+    "clear_flag": "Clear_Dungeon107",
+    "tboxes": [
+      {
+        "hash_id": 3717856843,
+        "hash_id_hex": "0xDD99FE4B",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 108,
+    "shrine_name": "Ketoh Wawai Shrine",
+    "clear_flag": "Clear_Dungeon108",
+    "tboxes": [
+      {
+        "hash_id": 2936889658,
+        "hash_id_hex": "0xAF0D613A",
+        "drop_actor": "Item_Enemy_30",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 109,
+    "shrine_name": "Ritaag Zumo Shrine",
+    "clear_flag": "Clear_Dungeon109",
+    "tboxes": [
+      {
+        "hash_id": 883436885,
+        "hash_id_hex": "0x34A82D55",
+        "drop_actor": "Item_Enemy_31",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 110,
+    "shrine_name": "Korsh O'hu Shrine",
+    "clear_flag": "Clear_Dungeon110",
+    "tboxes": [
+      {
+        "hash_id": 1956105793,
+        "hash_id_hex": "0x7497CE41",
+        "drop_actor": "Obj_KorokNuts",
+        "spoiler_item": "Korok Seed"
+      }
+    ],
+    "randomizer_spoiler_item": "Korok Seed"
+  },
+  {
+    "dungeon_id": 111,
+    "shrine_name": "Tawa Jinn Shrine",
+    "clear_flag": "Clear_Dungeon111",
+    "tboxes": [
+      {
+        "hash_id": 4013064750,
+        "hash_id_hex": "0xEF32822E",
+        "drop_actor": "Weapon_Lsword_037",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 112,
+    "shrine_name": "Lakna Rokee Shrine",
+    "clear_flag": "Clear_Dungeon112",
+    "tboxes": [
+      {
+        "hash_id": 2561429726,
+        "hash_id_hex": "0x98AC50DE",
+        "drop_actor": "Weapon_Sword_017",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 113,
+    "shrine_name": "Shae Katha Shrine",
+    "clear_flag": "Clear_Dungeon113",
+    "tboxes": [
+      {
+        "hash_id": 50928817,
+        "hash_id_hex": "0x03091CB1",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  },
+  {
+    "dungeon_id": 114,
+    "shrine_name": "Shai Yota Shrine",
+    "clear_flag": "Clear_Dungeon114",
+    "tboxes": [
+      {
+        "hash_id": 2006054206,
+        "hash_id_hex": "0x7791F53E",
+        "drop_actor": "Weapon_Lsword_016",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 115,
+    "shrine_name": "Rona Kachta Shrine",
+    "clear_flag": "Clear_Dungeon115",
+    "tboxes": [
+      {
+        "hash_id": 3962878289,
+        "hash_id_hex": "0xEC34B951",
+        "drop_actor": "Weapon_Bow_006",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 116,
+    "shrine_name": "Qaza Tokki Shrine",
+    "clear_flag": "Clear_Dungeon116",
+    "tboxes": [
+      {
+        "hash_id": 2611637153,
+        "hash_id_hex": "0x9BAA6BA1",
+        "drop_actor": "Obj_KorokNuts",
+        "spoiler_item": "Korok Seed"
+      }
+    ],
+    "randomizer_spoiler_item": "Korok Seed"
+  },
+  {
+    "dungeon_id": 117,
+    "shrine_name": "Jitan Sa'mi Shrine",
+    "clear_flag": "Clear_Dungeon117",
+    "tboxes": [
+      {
+        "hash_id": 993230,
+        "hash_id_hex": "0x000F27CE",
+        "drop_actor": "Armor_048_Lower",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 118,
+    "shrine_name": "To Quomo Shrine",
+    "clear_flag": "Clear_Dungeon118",
+    "tboxes": [
+      {
+        "hash_id": 1922807999,
+        "hash_id_hex": "0x729BB8BF",
+        "drop_actor": "Weapon_Bow_036",
+        "spoiler_item": ""
+      }
+    ],
+    "randomizer_spoiler_item": ""
+  },
+  {
+    "dungeon_id": 119,
+    "shrine_name": "Tahno O'ah Shrine",
+    "clear_flag": "Clear_Dungeon119",
+    "tboxes": [
+      {
+        "hash_id": 3913217232,
+        "hash_id_hex": "0xE93EF4D0",
+        "drop_actor": "Obj_DungeonClearSeal",
+        "spoiler_item": "Spirit Orb"
+      }
+    ],
+    "randomizer_spoiler_item": "Spirit Orb"
+  }
+]

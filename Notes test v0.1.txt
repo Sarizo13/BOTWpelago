@@ -1,0 +1,106 @@
+PS D:\Project arch BOTW> python -m BotWClient.BotWClient --connect localhost:38281 --name BotWPlayer --slot 80000002
+[INFO] Slot dir: D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000002
+[INFO] Connecting to ws://localhost:38281 as 'BotWPlayer' …
+[INFO] Connected. Shrine target: 4  Champions: True  Sword: True
+[INFO] [Received] Item #6080100 (logical — no save injection)
+[INFO] [Item] Item #6080100
+[INFO] [AP] BotWPlayer (Team #1) playing The Legend of Zelda: Breath of the Wild has joined. Client(0.5.0), ['BotW'].
+[INFO] [AP] Now that you are connected, you can use !help to list commands to run via the server. If your client supports it, you may have additional local commands you can list with /help.
+[INFO] Save rotated → game_data.sav
+[INFO] [CHECK] [OK] Great Plateau Tower                     Great Plateau  (tour activee)
+[INFO] [AP] 1 sent 12 to 2 (6081307)
+[INFO] Save rotated → game_data.sav
+[INFO] Save rotated → game_data.sav
+[INFO] [CHECK] [OK] Oman Au Shrine                          Great Plateau  (sanctuaire valide)
+[INFO] [AP] 1 sent 40 to 2 (6081038)
+[INFO] Save rotated → game_data.sav
+[INFO] Save rotated → game_data.sav
+[INFO] [CHECK] [OK] Ja Baij Shrine                          Great Plateau  (sanctuaire valide)
+[INFO] [AP] 1 sent 13 to 2 (6081041)
+
+
+PS C:\ProgramData\Archipelago> .\ArchipelagoServer.exe output\AP_12102809481158388478.zip
+Archipelago (0.6.7) logging initialized on Windows-11-10.0.26200-SP0 process 56576 running Python 3.13.11 (frozen)
+Invalid or missing manifest file for C:\ProgramData\Archipelago\custom_worlds\Manual_BreathOfTheWild_Gurglemurgle.apworld. This apworld will stop working with Archipelago 0.7.0.
+There is no item named 'archipelago.json' in the archive - This might be the incorrect world version for this file
+Invalid or missing manifest file for C:\ProgramData\Archipelago\custom_worlds\botw.apworld. This apworld will stop working with Archipelago 0.7.0.
+compatible_version - This might be the incorrect world version for this file
+Invalid or missing manifest file for C:\ProgramData\Archipelago\custom_worlds\dsp.apworld. This apworld will stop working with Archipelago 0.7.0.
+There is no item named 'archipelago.json' in the archive - This might be the incorrect world version for this file
+Invalid or missing manifest file for C:\ProgramData\Archipelago\custom_worlds\manual_breathofthewild_jd.apworld. This apworld will stop working with Archipelago 0.7.0.
+There is no item named 'archipelago.json' in the archive - This might be the incorrect world version for this file
+Invalid or missing manifest file for C:\ProgramData\Archipelago\custom_worlds\pokemon_platinum.apworld. This apworld will stop working with Archipelago 0.7.0.
+There is no item named 'archipelago.json' in the archive - This might be the incorrect world version for this file
+worlds\pokemon_emerald\data.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+Loading embedded data package for game The Legend of Zelda: Breath of the Wild
+Loading embedded data package for game Minecraft
+Loading embedded data package for game Archipelago
+No save data found, starting a new game
+Hosting game at 176.129.131.172:38281 (No password)
+server listening on [::]:38281
+server listening on 0.0.0.0:38281
+connection open
+Notice (all): BotWPlayer (Team #1) playing The Legend of Zelda: Breath of the Wild has joined. Client(0.5.0), ['BotW'].
+Notice (Player BotWPlayer in team 1): Now that you are connected, you can use !help to list commands to run via the server. If your client supports it, you may have additional local commands you can list with /help.
+Notice (all): BotWPlayer (Team #1) has left the game. Client(0.5.0), ['BotW'].
+connection closed
+connection rejected (400 Bad Request)
+connection closed
+connection open
+Notice (all): Sarizomc (Team #1) playing Minecraft has joined. Client(0.6.1), [].
+Notice (Player Sarizomc in team 1): Now that you are connected, you can use !help to list commands to run via the server. If your client supports it, you may have additional local commands you can list with /help.
+Notice (all): Sarizomc (Team #1) has changed tags from [] to ['DeathLink'].
+connection open
+Notice (all): BotWPlayer (Team #1) playing The Legend of Zelda: Breath of the Wild has joined. Client(0.5.0), ['BotW'].
+Notice (Player BotWPlayer in team 1): Now that you are connected, you can use !help to list commands to run via the server. If your client supports it, you may have additional local commands you can list with /help.
+(Team #1) Sarizomc sent Rotten Flesh to Sarizomc (Getting Wood)
+(Team #1) Sarizomc sent Spirit Orb to BotWPlayer (Minecraft)
+(Team #1) Sarizomc sent 16 Porkchops to Sarizomc (Time to Mine!)
+(Team #1) Sarizomc sent 4 Diamond Ore to Sarizomc (Time to Strike!)
+Notice (all): BotWPlayer (Team #1) has left the game. Client(0.5.0), ['BotW'].
+connection closed
+connection open
+Notice (all): BotWPlayer (Team #1) playing The Legend of Zelda: Breath of the Wild has joined. Client(0.5.0), ['BotW'].
+Notice (Player BotWPlayer in team 1): Now that you are connected, you can use !help to list commands to run via the server. If your client supports it, you may have additional local commands you can list with /help.
+(Team #1) BotWPlayer sent Progressive Weapons to Sarizomc (Great Plateau Tower)
+(Team #1) BotWPlayer sent Structure Compass (Bastion Remnant) to Sarizomc (Oman Au Shrine)
+(Team #1) BotWPlayer sent Progressive Tools to Sarizomc (Ja Baij Shrine)
+
+
+
+PS D:\Project arch BOTW> python -m BotWClient.BotWClient --check-flags
+[INFO] Found 14 save(s) across all slots:
+[INFO]   [1] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000002\3\game_data.sav <-- selected (most recent)
+[INFO]   [2] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000002\2\game_data.sav
+[INFO]   [3] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000002\1\game_data.sav
+[INFO]   [4] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000002\0\game_data.sav
+[INFO]   [5] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000002\5\game_data.sav
+[INFO]   [6] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000002\4\game_data.sav
+[INFO]   [7] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000001\0\game_data.sav
+[INFO]   [8] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000001\1\game_data.sav
+[INFO]   [9] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000001\4\game_data.sav
+[INFO]   [10] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000001\2\game_data.sav
+[INFO]   [11] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000001\3\game_data.sav
+[INFO]   [12] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000001\5\game_data.sav
+[INFO]   [13] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000001\7\game_data.sav
+[INFO]   [14] D:\Emulateur\Cemu\cemu_1.18.1\mlc01\usr\save\00050000\101c9500\user\80000001\6\game_data.sav
+==============================================================
+BotW AP State  --  game_data.sav
+==============================================================
+
+Progression items (save flags):
+  [--] Paraglider                     (IsGet_PlayerStole2)
+  [--] Master Sword                   (Get_MasterSword_Finish)
+  [--] Revali's Gale                  (IsGet_Obj_HeroSoul_Rito)
+  [--] Daruk's Protection             (IsGet_Obj_HeroSoul_Goron)
+  [--] Mipha's Grace                  (IsGet_Obj_HeroSoul_Zora)
+  [--] Urbosa's Fury                  (IsGet_Obj_HeroSoul_Gerudo)
+
+DungeonClearCounter: 2  (required_shrine_count=20 -> not yet)
+
+Completed AP locations: 3 / 139
+
+  Great Plateau (3):
+    [OK] Oman Au Shrine
+    [OK] Ja Baij Shrine
+    [OK] Great Plateau Tower

@@ -1,0 +1,171 @@
+{
+  "_comment": "Items-gates BotW Archipelago. Tous les flags vérifiés contre la recette CRC32 (ascii, big-endian).",
+  "_roles": {
+    "ap_progression": "Item livré par l'AP. Le client FORCE le flag à 0 tant que l'item n'est pas reçu (rétention), puis le met à 1 à la réception. Sert de gate.",
+    "starting": "Donné/obtenu en vanilla, JAMAIS retenu. Présent ici pour documenter la décision."
+  },
+  "hash_recipe": "flag_id = crc32(name.encode('ascii')) & 0xFFFFFFFF, stocké big-endian, offset save = 12",
+
+  "items": [
+    {
+      "name": "Paraglider",
+      "ap_item_id": 6080000,
+      "flag_name": "IsGet_PlayerStole2",
+      "flag_hash": "0xFE4D1501",
+      "role": "ap_progression",
+      "gates": "leave_great_plateau",
+      "note": "LE gate principal. Sans paravoile, les falaises du Plateau sont infranchissables -> le joueur est forcé d'avancer dans le multiworld pour sortir."
+    },
+
+    {
+      "name": "Magnesis Rune",
+      "ap_item_id": 6080001,
+      "flag_name": "IsGet_Obj_Magnetglove",
+      "flag_hash": "0x795E7BBC",
+      "role": "starting",
+      "note": "NE PAS retenir : nécessaire pour résoudre les sanctuaires du Plateau (qui sont des checks)."
+    },
+    {
+      "name": "Stasis Rune",
+      "ap_item_id": 6080002,
+      "flag_name": "IsGet_Obj_StopTimer",
+      "flag_hash": "0x7504085D",
+      "role": "starting"
+    },
+    {
+      "name": "Cryonis Rune",
+      "ap_item_id": 6080003,
+      "flag_name": "IsGet_Obj_IceMaker",
+      "flag_hash": "0x5992B256",
+      "role": "starting"
+    },
+    {
+      "name": "Remote Bomb Rune",
+      "ap_item_id": 6080004,
+      "flag_name": "IsGet_Obj_RemoteBomb",
+      "flag_hash": "0x191BCCF9",
+      "role": "starting"
+    },
+    {
+      "name": "Camera Rune",
+      "ap_item_id": 6080005,
+      "flag_name": "IsGet_Obj_Camera",
+      "flag_hash": "0xF7DD3E03",
+      "role": "starting"
+    },
+
+    {
+      "name": "Master Sword",
+      "ap_item_id": 6080006,
+      "flag_name": "Get_MasterSword_Finish",
+      "flag_hash": "0x15AD023F",
+      "role": "ap_progression",
+      "note": "Condition de goal. Rétention optionnelle. (Get_MasterSword_Heart52 = le seuil vanilla des 13 coeurs.)"
+    },
+
+    {
+      "name": "Revali's Gale",
+      "ap_item_id": 6080010,
+      "flag_name": "IsGet_Obj_HeroSoul_Rito",
+      "flag_hash": "0x7DBA0908",
+      "role": "ap_progression",
+      "source_check": "Clear_RemainsWind",
+      "note": "Capacité de Prodige. Le joueur fait la bête (check sortant) mais ne reçoit la capacité que via l'AP."
+    },
+    {
+      "name": "Daruk's Protection",
+      "ap_item_id": 6080012,
+      "flag_name": "IsGet_Obj_HeroSoul_Goron",
+      "flag_hash": "0xFF48AA75",
+      "role": "ap_progression",
+      "source_check": "Clear_RemainsFire"
+    },
+    {
+      "name": "Mipha's Grace",
+      "ap_item_id": 6080011,
+      "flag_name": "IsGet_Obj_HeroSoul_Zora",
+      "flag_hash": "0x0D61D7D4",
+      "role": "ap_progression",
+      "source_check": "Clear_RemainsWater"
+    },
+    {
+      "name": "Urbosa's Fury",
+      "ap_item_id": 6080013,
+      "flag_name": "IsGet_Obj_HeroSoul_Gerudo",
+      "flag_hash": "0x8E7188D0",
+      "role": "ap_progression",
+      "source_check": "Clear_RemainsElectric"
+    },
+
+    {
+      "name": "Flamebreaker Armor",
+      "ap_item_id": 6080014,
+      "flag_name": null,
+      "flag_hash": null,
+      "role": "ap_progression_logical",
+      "gates": "eldin",
+      "note": "Gate logique : l'AP s'assure que le joueur a cet item avant que les locations Eldin soient accessibles. Injection physique non implémentée (TODO-5 — PouchItem)."
+    },
+    {
+      "name": "Snowquill Set",
+      "ap_item_id": 6080015,
+      "flag_name": null,
+      "flag_hash": null,
+      "role": "ap_progression_logical",
+      "gates": "hebra,gerudo_highlands",
+      "note": "Gate logique pour les régions froides (Hebra + Gerudo Highlands). TODO-5."
+    },
+    {
+      "name": "Vai Outfit",
+      "ap_item_id": 6080016,
+      "flag_name": null,
+      "flag_hash": null,
+      "role": "ap_progression_logical",
+      "gates": "gerudo_town",
+      "note": "Gate logique pour Gerudo Town (2 sanctuaires à l'intérieur). TODO-5."
+    }
+  ],
+
+  "filler_items": [
+    {"name": "Spirit Orb",           "ap_item_id": 6080100, "count": 80,
+     "inject": [
+       {"type": "add_porch", "item": "Obj_DungeonClearSeal", "amount": 1},
+       {"type": "add_s32",   "flag": "DungeonClearSealNum",  "amount": 1}
+     ]},
+    {"name": "Traveler's Sword",     "ap_item_id": 6080110, "count": 5},
+    {"name": "Soldier's Broadsword", "ap_item_id": 6080111, "count": 5},
+    {"name": "Knight's Broadsword",  "ap_item_id": 6080112, "count": 3},
+    {"name": "Traveler's Bow",       "ap_item_id": 6080113, "count": 3},
+    {"name": "Soldier's Shield",     "ap_item_id": 6080114, "count": 4},
+    {"name": "Arrows x10",      "ap_item_id": 6080120, "count": 8,
+     "inject": {"type": "add_porch", "item": "NormalArrow",  "amount": 10}},
+    {"name": "Bomb Arrows x5",  "ap_item_id": 6080121, "count": 4,
+     "inject": {"type": "add_porch", "item": "BombArrow_A",  "amount": 5}},
+    {"name": "Fire Arrows x5",  "ap_item_id": 6080122, "count": 3,
+     "inject": {"type": "add_porch", "item": "FireArrow",    "amount": 5}},
+    {"name": "Ice Arrows x5",   "ap_item_id": 6080123, "count": 3,
+     "inject": {"type": "add_porch", "item": "IceArrow",     "amount": 5}},
+    {"name": "Shock Arrows x5", "ap_item_id": 6080124, "count": 3,
+     "inject": {"type": "add_porch", "item": "ElectricArrow","amount": 5}},
+    {"name": "Rupees (100)",         "ap_item_id": 6080130, "count": 6,
+     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 100}},
+    {"name": "Rupees (300)",         "ap_item_id": 6080131, "count": 3,
+     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 300}},
+    {"name": "Hearty Durian",        "ap_item_id": 6080140, "count": 3},
+    {"name": "Endura Carrot",        "ap_item_id": 6080141, "count": 3}
+  ],
+
+  "goal": {
+    "name": "defeat_ganon",
+    "require_flags": [
+      "Get_MasterSword_Finish",
+      "IsGet_Obj_HeroSoul_Rito",
+      "IsGet_Obj_HeroSoul_Goron",
+      "IsGet_Obj_HeroSoul_Zora",
+      "IsGet_Obj_HeroSoul_Gerudo"
+    ],
+    "require_shrine_count": 20,
+    "shrine_counter": { "flag_name": "DungeonClearCounter", "flag_hash": "0xE605CE62" },
+    "note": "Le client n'envoie StatusUpdate(goal) que si TOUS les require_flags sont a 1 ET DungeonClearCounter >= require_shrine_count. require_shrine_count est une option .apworld. Le Bouclier Hylia (PouchItem, pas un flag) sera ajoute en v2."
+  }
+}
