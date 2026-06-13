@@ -633,6 +633,11 @@ class CemuMemoryBridge:
         """
         if not self.has_live_inventory:
             return False
+        # DÉFENSIF : si l'item est déjà en poche, on incrémente sa quantité au lieu de créer
+        # un doublon (garantit "pas de double stack" même en appel direct).
+        if self.live_find_item(item_name) is not None:
+            log.info("[Mem] (live) %s déjà présent — incrément quantité (+%d)", item_name, value)
+            return self.live_add_item_qty(item_name, value) is not None
         nodes = self._scan_pouch_nodes()
         if not nodes:
             return False

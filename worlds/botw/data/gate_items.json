@@ -5,7 +5,6 @@
     "starting": "Donné/obtenu en vanilla, JAMAIS retenu. Présent ici pour documenter la décision."
   },
   "hash_recipe": "flag_id = crc32(name.encode('ascii')) & 0xFFFFFFFF, stocké big-endian, offset save = 12",
-
   "items": [
     {
       "name": "Paraglider",
@@ -16,7 +15,6 @@
       "gates": "leave_great_plateau",
       "note": "LE gate principal. Sans paravoile, les falaises du Plateau sont infranchissables -> le joueur est forcé d'avancer dans le multiworld pour sortir."
     },
-
     {
       "name": "Magnesis Rune",
       "ap_item_id": 6080001,
@@ -53,7 +51,6 @@
       "flag_hash": "0xF7DD3E03",
       "role": "starting"
     },
-
     {
       "name": "Master Sword",
       "ap_item_id": 6080006,
@@ -62,7 +59,6 @@
       "role": "ap_progression",
       "note": "Condition de goal. Rétention optionnelle. (Get_MasterSword_Heart52 = le seuil vanilla des 13 coeurs.)"
     },
-
     {
       "name": "Revali's Gale",
       "ap_item_id": 6080010,
@@ -96,7 +92,6 @@
       "role": "ap_progression",
       "source_check": "Clear_RemainsElectric"
     },
-
     {
       "name": "Flamebreaker Armor",
       "ap_item_id": 6080014,
@@ -125,36 +120,1385 @@
       "note": "Gate logique pour Gerudo Town (2 sanctuaires à l'intérieur). TODO-5."
     }
   ],
-
   "filler_items": [
-    {"name": "Spirit Orb",           "ap_item_id": 6080100, "count": 80,
-     "inject": [
-       {"type": "add_porch", "item": "Obj_DungeonClearSeal", "amount": 1},
-       {"type": "add_s32",   "flag": "DungeonClearSealNum",  "amount": 1}
-     ]},
-    {"name": "Traveler's Sword",     "ap_item_id": 6080110, "count": 5},
-    {"name": "Soldier's Broadsword", "ap_item_id": 6080111, "count": 5},
-    {"name": "Knight's Broadsword",  "ap_item_id": 6080112, "count": 3},
-    {"name": "Traveler's Bow",       "ap_item_id": 6080113, "count": 3},
-    {"name": "Soldier's Shield",     "ap_item_id": 6080114, "count": 4},
-    {"name": "Arrows x10",      "ap_item_id": 6080120, "count": 8,
-     "inject": {"type": "add_porch", "item": "NormalArrow",  "amount": 10}},
-    {"name": "Bomb Arrows x5",  "ap_item_id": 6080121, "count": 4,
-     "inject": {"type": "add_porch", "item": "BombArrow_A",  "amount": 5}},
-    {"name": "Fire Arrows x5",  "ap_item_id": 6080122, "count": 3,
-     "inject": {"type": "add_porch", "item": "FireArrow",    "amount": 5}},
-    {"name": "Ice Arrows x5",   "ap_item_id": 6080123, "count": 3,
-     "inject": {"type": "add_porch", "item": "IceArrow",     "amount": 5}},
-    {"name": "Shock Arrows x5", "ap_item_id": 6080124, "count": 3,
-     "inject": {"type": "add_porch", "item": "ElectricArrow","amount": 5}},
-    {"name": "Rupees (100)",         "ap_item_id": 6080130, "count": 6,
-     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 100}},
-    {"name": "Rupees (300)",         "ap_item_id": 6080131, "count": 3,
-     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 300}},
-    {"name": "Hearty Durian",        "ap_item_id": 6080140, "count": 3},
-    {"name": "Endura Carrot",        "ap_item_id": 6080141, "count": 3}
+    {
+      "name": "Spirit Orb",
+      "ap_item_id": 6080100,
+      "count": 80,
+      "inject": [
+        {
+          "type": "add_porch",
+          "item": "Obj_DungeonClearSeal",
+          "amount": 1
+        },
+        {
+          "type": "add_s32",
+          "flag": "DungeonClearSealNum",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "name": "Arrows x10",
+      "ap_item_id": 6080120,
+      "count": 10,
+      "inject": {
+        "type": "add_porch",
+        "item": "NormalArrow",
+        "amount": 10
+      }
+    },
+    {
+      "name": "Bomb Arrows x5",
+      "ap_item_id": 6080121,
+      "count": 5,
+      "inject": {
+        "type": "add_porch",
+        "item": "BombArrow_A",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Fire Arrows x5",
+      "ap_item_id": 6080122,
+      "count": 4,
+      "inject": {
+        "type": "add_porch",
+        "item": "FireArrow",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Ice Arrows x5",
+      "ap_item_id": 6080123,
+      "count": 4,
+      "inject": {
+        "type": "add_porch",
+        "item": "IceArrow",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Shock Arrows x5",
+      "ap_item_id": 6080124,
+      "count": 4,
+      "inject": {
+        "type": "add_porch",
+        "item": "ElectricArrow",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Rupees (100)",
+      "ap_item_id": 6080130,
+      "count": 8,
+      "inject": {
+        "type": "add_s32",
+        "flag": "CurrentRupee",
+        "amount": 100
+      }
+    },
+    {
+      "name": "Rupees (300)",
+      "ap_item_id": 6080131,
+      "count": 4,
+      "inject": {
+        "type": "add_s32",
+        "flag": "CurrentRupee",
+        "amount": 300
+      }
+    },
+    {
+      "name": "Bokoblin Horn",
+      "ap_item_id": 6080200,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_00",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Bokoblin Fang",
+      "ap_item_id": 6080201,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_01",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Bokoblin Guts",
+      "ap_item_id": 6080202,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_02",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Lizalfos Horn",
+      "ap_item_id": 6080203,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_03",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Lizalfos Talon",
+      "ap_item_id": 6080204,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_04",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Lizalfos Tail",
+      "ap_item_id": 6080205,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_05",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Moblin Horn",
+      "ap_item_id": 6080206,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_06",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Moblin Fang",
+      "ap_item_id": 6080207,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_07",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Moblin Guts",
+      "ap_item_id": 6080208,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_08",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Lynel Horn",
+      "ap_item_id": 6080209,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_12",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Lynel Hoof",
+      "ap_item_id": 6080210,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_13",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Lynel Guts",
+      "ap_item_id": 6080211,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_14",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Red Chuchu Jelly",
+      "ap_item_id": 6080212,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_15",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Yellow Chuchu Jelly",
+      "ap_item_id": 6080213,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_16",
+        "amount": 2
+      }
+    },
+    {
+      "name": "White Chuchu Jelly",
+      "ap_item_id": 6080214,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_17",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Keese Wing",
+      "ap_item_id": 6080215,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_18",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Keese Eyeball",
+      "ap_item_id": 6080216,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_19",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Octorok Tentacle",
+      "ap_item_id": 6080217,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_20",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Octorok Eyeball",
+      "ap_item_id": 6080218,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_21",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Molduga Fin",
+      "ap_item_id": 6080219,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_24",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Molduga Guts",
+      "ap_item_id": 6080220,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_25",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Ancient Gear",
+      "ap_item_id": 6080221,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_26",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Ancient Screw",
+      "ap_item_id": 6080222,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_27",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Ancient Spring",
+      "ap_item_id": 6080223,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_28",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Ancient Shaft",
+      "ap_item_id": 6080224,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_29",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Ancient Core",
+      "ap_item_id": 6080225,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_30",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Giant Ancient Core",
+      "ap_item_id": 6080226,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_31",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Hinox Toenail",
+      "ap_item_id": 6080227,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_32",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Hinox Tooth",
+      "ap_item_id": 6080228,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_33",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Hinox Guts",
+      "ap_item_id": 6080229,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_34",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Dinraal's Scale",
+      "ap_item_id": 6080230,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_38",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Dinraal's Claw",
+      "ap_item_id": 6080231,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_39",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Chuchu Jelly",
+      "ap_item_id": 6080232,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_40",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Red Lizalfos Tail",
+      "ap_item_id": 6080233,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_41",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Icy Lizalfos Tail",
+      "ap_item_id": 6080234,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_42",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Yellow Lizalfos Tail",
+      "ap_item_id": 6080235,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_43",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Fire Keese Wing",
+      "ap_item_id": 6080236,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_44",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Electric Keese Wing",
+      "ap_item_id": 6080237,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_45",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Ice Keese Wing",
+      "ap_item_id": 6080238,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_46",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Shard of Dinraal's Fang",
+      "ap_item_id": 6080239,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_47",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Shard of Dinraal's Horn",
+      "ap_item_id": 6080240,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_48",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Naydra's Scale",
+      "ap_item_id": 6080241,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_49",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Naydra's Claw",
+      "ap_item_id": 6080242,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_50",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Shard of Naydra's Fang",
+      "ap_item_id": 6080243,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_51",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Shard of Naydra's Horn",
+      "ap_item_id": 6080244,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_52",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Farosh's Scale",
+      "ap_item_id": 6080245,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_53",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Farosh's Claw",
+      "ap_item_id": 6080246,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_54",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Shard of Farosh's Fang",
+      "ap_item_id": 6080247,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_55",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Shard of Farosh's Horn",
+      "ap_item_id": 6080248,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_56",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Octo Balloon",
+      "ap_item_id": 6080249,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Enemy_57",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Hyrule Bass",
+      "ap_item_id": 6080250,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_A",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Hearty Bass",
+      "ap_item_id": 6080251,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_B",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Chillfin Trout",
+      "ap_item_id": 6080252,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_C",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Voltfin Trout",
+      "ap_item_id": 6080253,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_D",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Mighty Carp",
+      "ap_item_id": 6080254,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_E",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Mighty Porgy",
+      "ap_item_id": 6080255,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_F",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Armored Porgy",
+      "ap_item_id": 6080256,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_G",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Armored Carp",
+      "ap_item_id": 6080257,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_H",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Hearty Salmon",
+      "ap_item_id": 6080258,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_I",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Sizzlefin Trout",
+      "ap_item_id": 6080259,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_J",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Hearty Blueshell Snail",
+      "ap_item_id": 6080260,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_K",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Staminoka Bass",
+      "ap_item_id": 6080261,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_L",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Sneaky River Snail",
+      "ap_item_id": 6080262,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_M",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Stealthfin Trout",
+      "ap_item_id": 6080263,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_X",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Sanke Carp",
+      "ap_item_id": 6080264,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_FishGet_Z",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Apple",
+      "ap_item_id": 6080265,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_A",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Wildberry",
+      "ap_item_id": 6080266,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_B",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Voltfruit",
+      "ap_item_id": 6080267,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_C",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Hearty Durian",
+      "ap_item_id": 6080268,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_D",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Fleet-Lotus Seeds",
+      "ap_item_id": 6080269,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_E",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Hydromelon",
+      "ap_item_id": 6080270,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_F",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Palm Fruit",
+      "ap_item_id": 6080271,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_G",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Mighty Bananas",
+      "ap_item_id": 6080272,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_H",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Spicy Pepper",
+      "ap_item_id": 6080273,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_I",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Fortified Pumpkin",
+      "ap_item_id": 6080274,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_J",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Acorn",
+      "ap_item_id": 6080275,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_K",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Chickaloo Tree Nut",
+      "ap_item_id": 6080276,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Fruit_L",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Razorclaw Crab",
+      "ap_item_id": 6080277,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_InsectGet_K",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Ironshell Crab",
+      "ap_item_id": 6080278,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_InsectGet_O",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Bright-Eyed Crab",
+      "ap_item_id": 6080279,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_InsectGet_Z",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Cane Sugar",
+      "ap_item_id": 6080280,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Material_01",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Goron Spice",
+      "ap_item_id": 6080281,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Material_02",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Hylian Rice",
+      "ap_item_id": 6080282,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Material_03",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Bird Egg",
+      "ap_item_id": 6080283,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Material_04",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Fresh Milk",
+      "ap_item_id": 6080284,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Material_05",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Goat Butter",
+      "ap_item_id": 6080285,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Material_06",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Tabantha Wheat",
+      "ap_item_id": 6080286,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Material_07",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Monster Extract",
+      "ap_item_id": 6080287,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Material_08",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Raw Meat",
+      "ap_item_id": 6080288,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Meat_01",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Raw Prime Meat",
+      "ap_item_id": 6080289,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Meat_02",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Raw Bird Drumstick",
+      "ap_item_id": 6080290,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Meat_06",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Raw Bird Thigh",
+      "ap_item_id": 6080291,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Meat_07",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Raw Gourmet Meat",
+      "ap_item_id": 6080292,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Meat_11",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Raw Whole Bird",
+      "ap_item_id": 6080293,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Meat_12",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Stamella Shroom",
+      "ap_item_id": 6080294,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_A",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Chillshroom",
+      "ap_item_id": 6080295,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_B",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Sunshroom",
+      "ap_item_id": 6080296,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_C",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Rushroom",
+      "ap_item_id": 6080297,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_D",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Hylian Shroom",
+      "ap_item_id": 6080298,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_E",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Hearty Truffle",
+      "ap_item_id": 6080299,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_F",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Zapshroom",
+      "ap_item_id": 6080300,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_H",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Silent Shroom",
+      "ap_item_id": 6080301,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_J",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Razorshroom",
+      "ap_item_id": 6080302,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_L",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Ironshroom",
+      "ap_item_id": 6080303,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_M",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Big Hearty Truffle",
+      "ap_item_id": 6080304,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_N",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Endura Shroom",
+      "ap_item_id": 6080305,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Mushroom_O",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Diamond",
+      "ap_item_id": 6080306,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_A",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Ruby",
+      "ap_item_id": 6080307,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_B",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Sapphire",
+      "ap_item_id": 6080308,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_C",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Topaz",
+      "ap_item_id": 6080309,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_D",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Opal",
+      "ap_item_id": 6080310,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_E",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Amber",
+      "ap_item_id": 6080311,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_F",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Luminous Stone",
+      "ap_item_id": 6080312,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_G",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Rock Salt",
+      "ap_item_id": 6080313,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_H",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Flint",
+      "ap_item_id": 6080314,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_I",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Star Fragment",
+      "ap_item_id": 6080315,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Ore_J",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Hyrule Herb",
+      "ap_item_id": 6080316,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_A",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Hearty Radish",
+      "ap_item_id": 6080317,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_B",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Big Hearty Radish",
+      "ap_item_id": 6080318,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_C",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Cool Safflina",
+      "ap_item_id": 6080319,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_E",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Warm Safflina",
+      "ap_item_id": 6080320,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_F",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Mighty Thistle",
+      "ap_item_id": 6080321,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_G",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Armoranth",
+      "ap_item_id": 6080322,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_H",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Blue Nightshade",
+      "ap_item_id": 6080323,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_I",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Silent Princess",
+      "ap_item_id": 6080324,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_J",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Electric Safflina",
+      "ap_item_id": 6080325,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_L",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Swift Carrot",
+      "ap_item_id": 6080326,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_M",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Swift Violet",
+      "ap_item_id": 6080327,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_O",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Endura Carrot",
+      "ap_item_id": 6080328,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_PlantGet_Q",
+        "amount": 3
+      }
+    }
   ],
-
   "goal": {
     "name": "defeat_ganon",
     "require_flags": [
@@ -165,7 +1509,10 @@
       "IsGet_Obj_HeroSoul_Gerudo"
     ],
     "require_shrine_count": 20,
-    "shrine_counter": { "flag_name": "DungeonClearCounter", "flag_hash": "0xE605CE62" },
+    "shrine_counter": {
+      "flag_name": "DungeonClearCounter",
+      "flag_hash": "0xE605CE62"
+    },
     "note": "Le client n'envoie StatusUpdate(goal) que si TOUS les require_flags sont a 1 ET DungeonClearCounter >= require_shrine_count. require_shrine_count est une option .apworld. Le Bouclier Hylia (PouchItem, pas un flag) sera ajoute en v2."
   }
 }

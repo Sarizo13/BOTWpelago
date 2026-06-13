@@ -95,16 +95,13 @@ class BotWWorld(World):
             for _ in range(data.count):
                 pool.append(self.create_item(name))
 
-        # Pad with filler to hit the target count.
-        filler_cycle = [n for n in filler_item_names if n != "Spirit Orb"]
-        fi = 0
-        while len(pool) < target:
-            # Alternate: 2 spirit orbs then 1 other filler
-            if len(pool) % 3 != 2 or not filler_cycle:
-                pool.append(self.create_item("Spirit Orb"))
-            else:
-                pool.append(self.create_item(filler_cycle[fi % len(filler_cycle)]))
-                fi += 1
+        # Pad with filler via tirage PONDÉRÉ (count = poids) pour des quantités/items variés :
+        # Spirit Orb domine (count élevé), les ~130 ingrédients apportent la variété.
+        names   = [n for n in filler_item_names if n in item_table]
+        weights = [max(1, item_table[n].count) for n in names]
+        if names:
+            while len(pool) < target:
+                pool.append(self.create_item(self.random.choices(names, weights=weights)[0]))
 
         self.multiworld.itempool += pool[:target]
 
