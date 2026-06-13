@@ -16,6 +16,36 @@ from .config import Config
 _ROOT_LOGGER = "BotWClient"
 
 
+def cemu_status() -> dict:
+    """Pré-vol : Cemu lancé ? appli en admin ? dossier d'install Cemu détecté ?"""
+    import ctypes
+    from ctypes import wintypes
+    from pathlib import Path
+    from BotWClient.memory_injector import _find_pid, _k32
+
+    pid = _find_pid("cemu.exe")
+    try:
+        is_admin = bool(ctypes.windll.shell32.IsUserAnAdmin())
+    except Exception:
+        is_admin = False
+
+    folder = ""
+    if pid:
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        h = _k32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        if h:
+            try:
+                buf = ctypes.create_unicode_buffer(1024)
+                size = wintypes.DWORD(1024)
+                if _k32.QueryFullProcessImageNameW(h, 0, buf, ctypes.byref(size)):
+                    folder = str(Path(buf.value).parent)
+            except Exception:
+                pass
+            finally:
+                _k32.CloseHandle(h)
+    return {"pid": pid, "admin": is_admin, "folder": folder}
+
+
 class _QueueHandler(logging.Handler):
     """Pousse chaque log formate dans une queue thread-safe (lue par l'UI)."""
     def __init__(self, q: "queue.Queue[str]") -> None:

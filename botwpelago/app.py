@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 
 from .config import Config
-from .runner import ClientRunner
+from .runner import ClientRunner, cemu_status
 from . import __version__
 
 
@@ -23,7 +23,9 @@ class App:
         root.title(f"BOTWpelago v{__version__}")
         root.minsize(560, 460)
 
+        self._entries: list[ttk.Entry] = []
         self._build_widgets()
+        self._autodetect_cemu()
         self._poll()  # boucle de rafraichissement UI
 
         if self.cfg.auto_connect and self.cfg.slot:
@@ -54,12 +56,21 @@ class App:
             ttk.Label(frm, text=label).grid(row=r, column=0, sticky="w", **pad)
             ent = ttk.Entry(frm, textvariable=self.vars[key], show="*" if secret else "")
             ent.grid(row=r, column=1, columnspan=2, sticky="ew", **pad)
+            self._entries.append(ent)
             r += 1
 
         # dossier Cemu + Parcourir
         ttk.Label(frm, text="Dossier Cemu (optionnel)").grid(row=r, column=0, sticky="w", **pad)
-        ttk.Entry(frm, textvariable=self.vars["cemu_folder"]).grid(row=r, column=1, sticky="ew", **pad)
-        ttk.Button(frm, text="Parcourir…", command=self._browse_cemu).grid(row=r, column=2, **pad)
+        cemu_ent = ttk.Entry(frm, textvariable=self.vars["cemu_folder"])
+        cemu_ent.grid(row=r, column=1, sticky="ew", **pad)
+        self._entries.append(cemu_ent)
+        self.browse_btn = ttk.Button(frm, text="Parcourir…", command=self._browse_cemu)
+        self.browse_btn.grid(row=r, column=2, **pad)
+        r += 1
+
+        # bouton pré-vol "Vérifier Cemu"
+        self.check_btn = ttk.Button(frm, text="Vérifier Cemu", command=self._check_cemu)
+        self.check_btn.grid(row=r, column=1, sticky="w", **pad)
         r += 1
 
         ttk.Checkbutton(frm, text="Se connecter au lancement",
@@ -69,7 +80,7 @@ class App:
         # bouton connexion + statut
         self.connect_btn = ttk.Button(frm, text="Connecter", command=self._toggle)
         self.connect_btn.grid(row=r, column=0, **pad)
-        self.status_var = tk.StringVar(value="Deconnecte")
+        self.status_var = tk.StringVar(value="Déconnecté")
         ttk.Label(frm, textvariable=self.status_var, font=("", 10, "bold")).grid(
             row=r, column=1, columnspan=2, sticky="w", **pad)
         r += 1
@@ -90,6 +101,33 @@ class App:
         d = filedialog.askdirectory(title="Dossier d'installation de Cemu")
         if d:
             self.vars["cemu_folder"].set(d)
+
+    def _autodetect_cemu(self) -> None:
+        """Si le dossier Cemu est vide, le déduire du process Cemu en cours (si lancé)."""
+        if self.vars["cemu_folder"].get().strip():
+            return
+        try:
+            st = cemu_status()
+        except Exception:
+            return
+        if st.get("folder"):
+            self.vars["cemu_folder"].set(st["folder"])
+            self._append(f"Dossier Cemu auto-détecté : {st['folder']}")
+
+    def _check_cemu(self) -> None:
+        """Pré-vol : Cemu lancé ? appli en admin ? injection live attendue ?"""
+        st = cemu_status()
+        if not st["pid"]:
+            self._append("⚠ Cemu n'est pas lancé — lance Cemu + BotW pour l'injection live.")
+            return
+        self._append(f"✓ Cemu détecté (pid {st['pid']}).")
+        if st["folder"] and not self.vars["cemu_folder"].get().strip():
+            self.vars["cemu_folder"].set(st["folder"])
+        if st["admin"]:
+            self._append("✓ Admin OK → injection live disponible.")
+        else:
+            self._append("⚠ PAS en admin → injection en mode save-file (reload requis). "
+                         "Relance BOTWpelago en administrateur pour l'injection live.")
 
     def _collect_cfg(self) -> Config:
         self.cfg.server = self.vars["server"].get().strip()
@@ -129,17 +167,24 @@ class App:
                 self._append(q.get_nowait())
             except Exception:
                 break
-        # statut + libelle bouton
-        if self.runner.is_running:
-            self.connect_btn["text"] = "Deconnecter"
+        # statut + libelle bouton + grisage des champs
+        running = self.runner.is_running
+        if running:
+            self.connect_btn["text"] = "Déconnecter"
             if self.runner.is_connected:
                 mode = "injection live" if self.runner.live_injection else "save-file"
-                self.status_var.set(f"Connecte ✓  ({mode})")
+                self.status_var.set(f"Connecté ✓  ({mode})")
             else:
                 self.status_var.set("Connexion…")
         else:
             self.connect_btn["text"] = "Connecter"
-            self.status_var.set("Deconnecte")
+            self.status_var.set("Déconnecté")
+
+        field_state = "disabled" if running else "normal"
+        for ent in self._entries:
+            if str(ent["state"]) != field_state:
+                ent["state"] = field_state
+        self.browse_btn["state"] = field_state
         self.root.after(200, self._poll)
 
 

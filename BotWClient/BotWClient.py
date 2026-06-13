@@ -336,6 +336,17 @@ def _parser() -> argparse.ArgumentParser:
     return p
 
 
+def _ws_url(connect: str) -> str:
+    """Schéma WebSocket : localhost -> ws:// (pas de TLS), sinon -> wss:// (archipelago.gg).
+    Un schéma explicite (ws:// / wss://) dans `connect` est respecté tel quel."""
+    if connect.startswith(("ws://", "wss://")):
+        return connect
+    host = connect.split("/", 1)[0]
+    if host.startswith(("localhost", "127.0.0.1")):
+        return f"ws://{connect}"
+    return f"wss://{connect}"
+
+
 def build_client(connect: str, name: str, password: str = "",
                  cemu: Optional[str] = None, slot: Optional[str] = None,
                  save: Optional[str] = None, rando_log: Optional[str] = None):
@@ -374,7 +385,7 @@ def build_client(connect: str, name: str, password: str = "",
     provider = SaveFileProvider(provider_root)
     injector = DeferredSaveInjector(provider_root, rando=rando, bridge=bridge)
     client   = BotWClient(
-        server_url = f"ws://{connect}",
+        server_url = _ws_url(connect),
         slot       = name,
         password   = password,
         provider   = provider,
