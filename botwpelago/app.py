@@ -78,6 +78,8 @@ class App:
         self.check_btn.pack(side="left")
         self.reset_btn = ttk.Button(btns, text="Réinitialiser (nouvelle seed)", command=self._reset)
         self.reset_btn.pack(side="left", padx=(8, 0))
+        self.testov_btn = ttk.Button(btns, text="Tester l'overlay", command=self._test_overlay)
+        self.testov_btn.pack(side="left", padx=(8, 0))
         r += 1
 
         ttk.Checkbutton(frm, text="Se connecter au lancement",
@@ -183,6 +185,14 @@ class App:
         self.log.insert("end", line + "\n")
         self.log.see("end")
         self.log["state"] = "disabled"
+
+    def _test_overlay(self) -> None:
+        """Affiche un toast d'exemple pour vérifier le rendu/position de l'overlay."""
+        if self.overlay is None:
+            self.overlay = Overlay(self.root)
+        for name in ("Pomme", "Furie de Revali", "Rubis (100)"):
+            self.overlay.notify(name)
+        self._append("Test overlay : 3 toasts envoyés (regarde en haut de l'écran).")
 
     def _maybe_overlay(self, line: str) -> None:
         """Affiche un toast overlay quand une ligne '[Item] <nom>' passe dans le journal."""
