@@ -1,1234 +1,3794 @@
 [
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon000",
-    "flag_hash": "0xF7A9CD64",
-    "ap_id": 6081000,
-    "name": "Tah Muhl Shrine",
-    "monk": "Tah Muhl",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon001",
-    "flag_hash": "0x80AEFDF2",
-    "ap_id": 6081001,
-    "name": "Jee Noh Shrine",
-    "monk": "Jee Noh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon002",
-    "flag_hash": "0x19A7AC48",
-    "ap_id": 6081002,
-    "name": "Sah Dahaj Shrine",
-    "monk": "Sah Dahaj",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon003",
-    "flag_hash": "0x6EA09CDE",
-    "ap_id": 6081003,
-    "name": "Hawa Koth Shrine",
-    "monk": "Hawa Koth",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon004",
-    "flag_hash": "0xF0C4097D",
-    "ap_id": 6081004,
-    "name": "Zalta Wa Shrine",
-    "monk": "Zalta Wa",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon005",
-    "flag_hash": "0x87C339EB",
-    "ap_id": 6081005,
-    "name": "Ne'ez Yohma Shrine",
-    "monk": "Ne'ez Yohma",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon006",
-    "flag_hash": "0x1ECA6851",
-    "ap_id": 6081006,
-    "name": "Yah Rin Shrine",
-    "monk": "Yah Rin",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon007",
-    "flag_hash": "0x69CD58C7",
-    "ap_id": 6081007,
-    "name": "Bosh Kala Shrine",
-    "monk": "Bosh Kala",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon008",
-    "flag_hash": "0xF9724556",
-    "ap_id": 6081008,
-    "name": "Bareeda Naag Shrine",
-    "monk": "Bareeda Naag",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon009",
-    "flag_hash": "0x8E7575C0",
-    "ap_id": 6081009,
-    "name": "Owa Daim Shrine",
-    "monk": "Owa Daim",
-    "region": "Great Plateau"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon010",
-    "flag_hash": "0xEEB2FC25",
-    "ap_id": 6081010,
-    "name": "Kay Noh Shrine",
-    "monk": "Kay Noh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon011",
-    "flag_hash": "0x99B5CCB3",
-    "ap_id": 6081011,
-    "name": "Monya Toma Shrine",
-    "monk": "Monya Toma",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon012",
-    "flag_hash": "0x00BC9D09",
-    "ap_id": 6081012,
-    "name": "Voo Lota Shrine",
-    "monk": "Voo Lota",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon013",
-    "flag_hash": "0x77BBAD9F",
-    "ap_id": 6081013,
-    "name": "Katosa Aug Shrine",
-    "monk": "Katosa Aug",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon014",
-    "flag_hash": "0xE9DF383C",
-    "ap_id": 6081014,
-    "name": "Kam Urog Shrine",
-    "monk": "Kam Urog",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon015",
-    "flag_hash": "0x9ED808AA",
-    "ap_id": 6081015,
-    "name": "Toto Sah Shrine",
-    "monk": "Toto Sah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon016",
-    "flag_hash": "0x07D15910",
-    "ap_id": 6081016,
-    "name": "Rucco Maag Shrine",
-    "monk": "Rucco Maag",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon017",
-    "flag_hash": "0x70D66986",
-    "ap_id": 6081017,
-    "name": "Shee Vaneer Shrine",
-    "monk": "Shee Vaneer",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon018",
-    "flag_hash": "0xE0697417",
-    "ap_id": 6081018,
-    "name": "Rok Uwog Shrine",
-    "monk": "Rok Uwog",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon019",
-    "flag_hash": "0x976E4481",
-    "ap_id": 6081019,
-    "name": "Dow Na'eh Shrine",
-    "monk": "Dow Na'eh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon020",
-    "flag_hash": "0xC59FAFE6",
-    "ap_id": 6081020,
-    "name": "Sheem Dagoze Shrine",
-    "monk": "Sheem Dagoze",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon021",
-    "flag_hash": "0xB2989F70",
-    "ap_id": 6081021,
-    "name": "Toh Yahsa Shrine",
-    "monk": "Toh Yahsa",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon022",
-    "flag_hash": "0x2B91CECA",
-    "ap_id": 6081022,
-    "name": "Keo Ruug Shrine",
-    "monk": "Keo Ruug",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon023",
-    "flag_hash": "0x5C96FE5C",
-    "ap_id": 6081023,
-    "name": "Sheh Rata Shrine",
-    "monk": "Sheh Rata",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon024",
-    "flag_hash": "0xC2F26BFF",
-    "ap_id": 6081024,
-    "name": "Mezza Lo Shrine",
-    "monk": "Mezza Lo",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon025",
-    "flag_hash": "0xB5F55B69",
-    "ap_id": 6081025,
-    "name": "Kayra Mah Shrine",
-    "monk": "Kayra Mah",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon026",
-    "flag_hash": "0x2CFC0AD3",
-    "ap_id": 6081026,
-    "name": "Shae Mo'sah Shrine",
-    "monk": "Shae Mo'sah",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon027",
-    "flag_hash": "0x5BFB3A45",
-    "ap_id": 6081027,
-    "name": "Rota Ooh Shrine",
-    "monk": "Rota Ooh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon028",
-    "flag_hash": "0xCB4427D4",
-    "ap_id": 6081028,
-    "name": "Shora Hah Shrine",
-    "monk": "Shora Hah",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon029",
-    "flag_hash": "0xBC431742",
-    "ap_id": 6081029,
-    "name": "Hila Rao Shrine",
-    "monk": "Hila Rao",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon030",
-    "flag_hash": "0xDC849EA7",
-    "ap_id": 6081030,
-    "name": "Joloo Nah Shrine",
-    "monk": "Joloo Nah",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon031",
-    "flag_hash": "0xAB83AE31",
-    "ap_id": 6081031,
-    "name": "Mo'a Keet Shrine",
-    "monk": "Mo'a Keet",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon032",
-    "flag_hash": "0x328AFF8B",
-    "ap_id": 6081032,
-    "name": "Dako Tah Shrine",
-    "monk": "Dako Tah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon033",
-    "flag_hash": "0x458DCF1D",
-    "ap_id": 6081033,
-    "name": "Daka Tuss Shrine",
-    "monk": "Daka Tuss",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon034",
-    "flag_hash": "0xDBE95ABE",
-    "ap_id": 6081034,
-    "name": "Kah Yah Shrine",
-    "monk": "Kah Yah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon035",
-    "flag_hash": "0xACEE6A28",
-    "ap_id": 6081035,
-    "name": "Akh Va'quot Shrine",
-    "monk": "Akh Va'quot",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon036",
-    "flag_hash": "0x35E73B92",
-    "ap_id": 6081036,
-    "name": "Sho Dantu Shrine",
-    "monk": "Sho Dantu",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon037",
-    "flag_hash": "0x42E00B04",
-    "ap_id": 6081037,
-    "name": "Shae Loya Shrine",
-    "monk": "Shae Loya",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon038",
-    "flag_hash": "0xD25F1695",
-    "ap_id": 6081038,
-    "name": "Oman Au Shrine",
-    "monk": "Oman Au",
-    "region": "Great Plateau"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon039",
-    "flag_hash": "0xA5582603",
-    "ap_id": 6081039,
-    "name": "Myahm Agana Shrine",
-    "monk": "Myahm Agana",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon040",
-    "flag_hash": "0x93C50860",
-    "ap_id": 6081040,
-    "name": "Kaam Ya'tak Shrine",
-    "monk": "Kaam Ya'tak",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon041",
-    "flag_hash": "0xE4C238F6",
-    "ap_id": 6081041,
-    "name": "Ja Baij Shrine",
-    "monk": "Ja Baij",
-    "region": "Great Plateau"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon042",
-    "flag_hash": "0x7DCB694C",
-    "ap_id": 6081042,
-    "name": "Rin Oyaa Shrine",
-    "monk": "Rin Oyaa",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon043",
-    "flag_hash": "0x0ACC59DA",
-    "ap_id": 6081043,
-    "name": "Kuh Takkar Shrine",
-    "monk": "Kuh Takkar",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon044",
-    "flag_hash": "0x94A8CC79",
-    "ap_id": 6081044,
-    "name": "Shee Venath Shrine",
-    "monk": "Shee Venath",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon045",
-    "flag_hash": "0xE3AFFCEF",
-    "ap_id": 6081045,
-    "name": "Ha Dahamar Shrine",
-    "monk": "Ha Dahamar",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon046",
-    "flag_hash": "0x7AA6AD55",
-    "ap_id": 6081046,
-    "name": "Shada Naw Shrine",
-    "monk": "Shada Naw",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon047",
-    "flag_hash": "0x0DA19DC3",
-    "ap_id": 6081047,
-    "name": "Ree Dahee Shrine",
-    "monk": "Ree Dahee",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon048",
-    "flag_hash": "0x9D1E8052",
-    "ap_id": 6081048,
-    "name": "Ze Kasho Shrine",
-    "monk": "Ze Kasho",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon049",
-    "flag_hash": "0xEA19B0C4",
-    "ap_id": 6081049,
-    "name": "Kaya Wan Shrine",
-    "monk": "Kaya Wan",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon050",
-    "flag_hash": "0x8ADE3921",
-    "ap_id": 6081050,
-    "name": "Shai Utoh Shrine",
-    "monk": "Shai Utoh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon051",
-    "flag_hash": "0xFDD909B7",
-    "ap_id": 6081051,
-    "name": "Maka Rah Shrine",
-    "monk": "Maka Rah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon052",
-    "flag_hash": "0x64D0580D",
-    "ap_id": 6081052,
-    "name": "Gee Ha'rah Shrine",
-    "monk": "Gee Ha'rah",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon053",
-    "flag_hash": "0x13D7689B",
-    "ap_id": 6081053,
-    "name": "Sha Warvo Shrine",
-    "monk": "Sha Warvo",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon054",
-    "flag_hash": "0x8DB3FD38",
-    "ap_id": 6081054,
-    "name": "Ka'o Makagh Shrine",
-    "monk": "Ka'o Makagh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon055",
-    "flag_hash": "0xFAB4CDAE",
-    "ap_id": 6081055,
-    "name": "Dunba Taag Shrine",
-    "monk": "Dunba Taag",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon056",
-    "flag_hash": "0x63BD9C14",
-    "ap_id": 6081056,
-    "name": "Mirro Shaz Shrine",
-    "monk": "Mirro Shaz",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon057",
-    "flag_hash": "0x14BAAC82",
-    "ap_id": 6081057,
-    "name": "Wahgo Katta Shrine",
-    "monk": "Wahgo Katta",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon058",
-    "flag_hash": "0x8405B113",
-    "ap_id": 6081058,
-    "name": "Mogg Latan Shrine",
-    "monk": "Mogg Latan",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon059",
-    "flag_hash": "0xF3028185",
-    "ap_id": 6081059,
-    "name": "Kah Okeo Shrine",
-    "monk": "Kah Okeo",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon060",
-    "flag_hash": "0xA1F36AE2",
-    "ap_id": 6081060,
-    "name": "Daqo Chisay Shrine",
-    "monk": "Daqo Chisay",
-    "region": "Gerudo Town"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon061",
-    "flag_hash": "0xD6F45A74",
-    "ap_id": 6081061,
-    "name": "Shoda Sah Shrine",
-    "monk": "Shoda Sah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon062",
-    "flag_hash": "0x4FFD0BCE",
-    "ap_id": 6081062,
-    "name": "Sha Gehma Shrine",
-    "monk": "Sha Gehma",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon063",
-    "flag_hash": "0x38FA3B58",
-    "ap_id": 6081063,
-    "name": "Kema Zoos Shrine",
-    "monk": "Kema Zoos",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon064",
-    "flag_hash": "0xA69EAEFB",
-    "ap_id": 6081064,
-    "name": "Daqa Koh Shrine",
-    "monk": "Daqa Koh",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon065",
-    "flag_hash": "0xD1999E6D",
-    "ap_id": 6081065,
-    "name": "Keh Namut Shrine",
-    "monk": "Keh Namut",
-    "region": "Great Plateau"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon066",
-    "flag_hash": "0x4890CFD7",
-    "ap_id": 6081066,
-    "name": "Kah Mael Shrine",
-    "monk": "Kah Mael",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon067",
-    "flag_hash": "0x3F97FF41",
-    "ap_id": 6081067,
-    "name": "Qua Raym Shrine",
-    "monk": "Qua Raym",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon068",
-    "flag_hash": "0xAF28E2D0",
-    "ap_id": 6081068,
-    "name": "Ya Naga Shrine",
-    "monk": "Ya Naga",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon069",
-    "flag_hash": "0xD82FD246",
-    "ap_id": 6081069,
-    "name": "Ishto Soh Shrine",
-    "monk": "Ishto Soh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon070",
-    "flag_hash": "0xB8E85BA3",
-    "ap_id": 6081070,
-    "name": "Soh Kofi Shrine",
-    "monk": "Soh Kofi",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon071",
-    "flag_hash": "0xCFEF6B35",
-    "ap_id": 6081071,
-    "name": "Pumaag Nitae Shrine",
-    "monk": "Pumaag Nitae",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon072",
-    "flag_hash": "0x56E63A8F",
-    "ap_id": 6081072,
-    "name": "Dah Kaso Shrine",
-    "monk": "Dah Kaso",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon073",
-    "flag_hash": "0x21E10A19",
-    "ap_id": 6081073,
-    "name": "Katah Chuki Shrine",
-    "monk": "Katah Chuki",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon074",
-    "flag_hash": "0xBF859FBA",
-    "ap_id": 6081074,
-    "name": "Noya Neha Shrine",
-    "monk": "Noya Neha",
-    "region": "Gerudo Highlands"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon075",
-    "flag_hash": "0xC882AF2C",
-    "ap_id": 6081075,
-    "name": "Dah Hesho Shrine",
-    "monk": "Dah Hesho",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon076",
-    "flag_hash": "0x518BFE96",
-    "ap_id": 6081076,
-    "name": "Sasa Kai Shrine",
-    "monk": "Sasa Kai",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon077",
-    "flag_hash": "0x268CCE00",
-    "ap_id": 6081077,
-    "name": "Ke'nai Shakah Shrine",
-    "monk": "Ke'nai Shakah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon078",
-    "flag_hash": "0xB633D391",
-    "ap_id": 6081078,
-    "name": "Mijah Rokee Shrine",
-    "monk": "Mijah Rokee",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon079",
-    "flag_hash": "0xC134E307",
-    "ap_id": 6081079,
-    "name": "Namika Ozz Shrine",
-    "monk": "Namika Ozz",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon080",
-    "flag_hash": "0x3F70476C",
-    "ap_id": 6081080,
-    "name": "Shoqa Tatone Shrine",
-    "monk": "Shoqa Tatone",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon081",
-    "flag_hash": "0x487777FA",
-    "ap_id": 6081081,
-    "name": "Muwo Jeem Shrine",
-    "monk": "Muwo Jeem",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon082",
-    "flag_hash": "0xD17E2640",
-    "ap_id": 6081082,
-    "name": "Chaas Qeta Shrine",
-    "monk": "Chaas Qeta",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon083",
-    "flag_hash": "0xA67916D6",
-    "ap_id": 6081083,
-    "name": "Tena Ko'sah Shrine",
-    "monk": "Tena Ko'sah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon084",
-    "flag_hash": "0x381D8375",
-    "ap_id": 6081084,
-    "name": "Tutsuwa Nima Shrine",
-    "monk": "Tutsuwa Nima",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon085",
-    "flag_hash": "0x4F1AB3E3",
-    "ap_id": 6081085,
-    "name": "Kema Kosassa Shrine",
-    "monk": "Kema Kosassa",
-    "region": "Gerudo Highlands"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon086",
-    "flag_hash": "0xD613E259",
-    "ap_id": 6081086,
-    "name": "Goma Asaagh Shrine",
-    "monk": "Goma Asaagh",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon087",
-    "flag_hash": "0xA114D2CF",
-    "ap_id": 6081087,
-    "name": "Mozo Shenno Shrine",
-    "monk": "Mozo Shenno",
-    "region": "Gerudo Highlands"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon088",
-    "flag_hash": "0x31ABCF5E",
-    "ap_id": 6081088,
-    "name": "Hia Miu Shrine",
-    "monk": "Hia Miu",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon089",
-    "flag_hash": "0x46ACFFC8",
-    "ap_id": 6081089,
-    "name": "Saas Ko'sah Shrine",
-    "monk": "Saas Ko'sah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon090",
-    "flag_hash": "0x266B762D",
-    "ap_id": 6081090,
-    "name": "Suma Sahma Shrine",
-    "monk": "Suma Sahma",
-    "region": "Gerudo Highlands"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon091",
-    "flag_hash": "0x516C46BB",
-    "ap_id": 6081091,
-    "name": "Gorae Torr Shrine",
-    "monk": "Gorae Torr",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon092",
-    "flag_hash": "0xC8651701",
-    "ap_id": 6081092,
-    "name": "Maag No'rah Shrine",
-    "monk": "Maag No'rah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon093",
-    "flag_hash": "0xBF622797",
-    "ap_id": 6081093,
-    "name": "Raqa Zunzo Shrine",
-    "monk": "Raqa Zunzo",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon094",
-    "flag_hash": "0x2106B234",
-    "ap_id": 6081094,
-    "name": "Tho Kayu Shrine",
-    "monk": "Tho Kayu",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon095",
-    "flag_hash": "0x560182A2",
-    "ap_id": 6081095,
-    "name": "Kuhn Sidajj Shrine",
-    "monk": "Kuhn Sidajj",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon096",
-    "flag_hash": "0xCF08D318",
-    "ap_id": 6081096,
-    "name": "Qukah Nata Shrine",
-    "monk": "Qukah Nata",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon097",
-    "flag_hash": "0xB80FE38E",
-    "ap_id": 6081097,
-    "name": "Korgu Chideh Shrine",
-    "monk": "Korgu Chideh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon098",
-    "flag_hash": "0x28B0FE1F",
-    "ap_id": 6081098,
-    "name": "Daag Chokah Shrine",
-    "monk": "Daag Chokah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon099",
-    "flag_hash": "0x5FB7CE89",
-    "ap_id": 6081099,
-    "name": "Ta'loh Naeg Shrine",
-    "monk": "Ta'loh Naeg",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon100",
-    "flag_hash": "0xF66BA753",
-    "ap_id": 6081100,
-    "name": "Keeha Yoog Shrine",
-    "monk": "Keeha Yoog",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon101",
-    "flag_hash": "0x816C97C5",
-    "ap_id": 6081101,
-    "name": "Dagah Keek Shrine",
-    "monk": "Dagah Keek",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon102",
-    "flag_hash": "0x1865C67F",
-    "ap_id": 6081102,
-    "name": "Zuna Kai Shrine",
-    "monk": "Zuna Kai",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon103",
-    "flag_hash": "0x6F62F6E9",
-    "ap_id": 6081103,
-    "name": "Dila Maag Shrine",
-    "monk": "Dila Maag",
-    "region": "Eldin"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon104",
-    "flag_hash": "0xF106634A",
-    "ap_id": 6081104,
-    "name": "Lanno Kooh Shrine",
-    "monk": "Lanno Kooh",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon105",
-    "flag_hash": "0x860153DC",
-    "ap_id": 6081105,
-    "name": "Tu Ka'loh Shrine",
-    "monk": "Tu Ka'loh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon106",
-    "flag_hash": "0x1F080266",
-    "ap_id": 6081106,
-    "name": "Maag Halan Shrine",
-    "monk": "Maag Halan",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon107",
-    "flag_hash": "0x680F32F0",
-    "ap_id": 6081107,
-    "name": "Misae Suma Shrine",
-    "monk": "Misae Suma",
-    "region": "Gerudo Town"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon108",
-    "flag_hash": "0xF8B02F61",
-    "ap_id": 6081108,
-    "name": "Ketoh Wawai Shrine",
-    "monk": "Ketoh Wawai",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon109",
-    "flag_hash": "0x8FB71FF7",
-    "ap_id": 6081109,
-    "name": "Ritaag Zumo Shrine",
-    "monk": "Ritaag Zumo",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon110",
-    "flag_hash": "0xEF709612",
-    "ap_id": 6081110,
-    "name": "Korsh O'hu Shrine",
-    "monk": "Korsh O'hu",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon111",
-    "flag_hash": "0x9877A684",
-    "ap_id": 6081111,
-    "name": "Tawa Jinn Shrine",
-    "monk": "Tawa Jinn",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon112",
-    "flag_hash": "0x017EF73E",
-    "ap_id": 6081112,
-    "name": "Lakna Rokee Shrine",
-    "monk": "Lakna Rokee",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon113",
-    "flag_hash": "0x7679C7A8",
-    "ap_id": 6081113,
-    "name": "Shae Katha Shrine",
-    "monk": "Shae Katha",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon114",
-    "flag_hash": "0xE81D520B",
-    "ap_id": 6081114,
-    "name": "Shai Yota Shrine",
-    "monk": "Shai Yota",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon115",
-    "flag_hash": "0x9F1A629D",
-    "ap_id": 6081115,
-    "name": "Rona Kachta Shrine",
-    "monk": "Rona Kachta",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon116",
-    "flag_hash": "0x06133327",
-    "ap_id": 6081116,
-    "name": "Qaza Tokki Shrine",
-    "monk": "Qaza Tokki",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon117",
-    "flag_hash": "0x711403B1",
-    "ap_id": 6081117,
-    "name": "Jitan Sa'mi Shrine",
-    "monk": "Jitan Sa'mi",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon118",
-    "flag_hash": "0xE1AB1E20",
-    "ap_id": 6081118,
-    "name": "To Quomo Shrine",
-    "monk": "To Quomo",
-    "region": "Hebra"
-  },
-  {
-    "category": "shrine",
-    "flag_name": "Clear_Dungeon119",
-    "flag_hash": "0x96AC2EB6",
-    "ap_id": 6081119,
-    "name": "Tahno O'ah Shrine",
-    "monk": "Tahno O'ah",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_01",
-    "flag_hash": "0x7BF47AB8",
-    "ap_id": 6081301,
-    "name": "Hebra Tower",
-    "region": "Hebra"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_02",
-    "flag_hash": "0xE2FD2B02",
-    "ap_id": 6081302,
-    "name": "Tabantha Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_03",
-    "flag_hash": "0x95FA1B94",
-    "ap_id": 6081303,
-    "name": "Gerudo Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_04",
-    "flag_hash": "0x0B9E8E37",
-    "ap_id": 6081304,
-    "name": "Wasteland Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_05",
-    "flag_hash": "0x7C99BEA1",
-    "ap_id": 6081305,
-    "name": "Woodland Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_06",
-    "flag_hash": "0xE590EF1B",
-    "ap_id": 6081306,
-    "name": "Central Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_07",
-    "flag_hash": "0x9297DF8D",
-    "ap_id": 6081307,
-    "name": "Great Plateau Tower",
-    "region": "Great Plateau"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_08",
-    "flag_hash": "0x0228C21C",
-    "ap_id": 6081308,
-    "name": "Dueling Peaks Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_09",
-    "flag_hash": "0x752FF28A",
-    "ap_id": 6081309,
-    "name": "Lake Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_10",
-    "flag_hash": "0x15E87B6F",
-    "ap_id": 6081310,
-    "name": "Eldin Tower",
-    "region": "Eldin"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_11",
-    "flag_hash": "0x62EF4BF9",
-    "ap_id": 6081311,
-    "name": "Akkala Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_12",
-    "flag_hash": "0xFBE61A43",
-    "ap_id": 6081312,
-    "name": "Lanayru Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_13",
-    "flag_hash": "0x8CE12AD5",
-    "ap_id": 6081313,
-    "name": "Hateno Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_14",
-    "flag_hash": "0x1285BF76",
-    "ap_id": 6081314,
-    "name": "Faron Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "tower",
-    "flag_name": "MapTower_15",
-    "flag_hash": "0x65828FE0",
-    "ap_id": 6081315,
-    "name": "Ridgeland Tower",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "beast",
-    "flag_name": "Clear_RemainsWind",
-    "flag_hash": "0x39D2BCDF",
-    "ap_id": 6081201,
-    "name": "Divine Beast Vah Medoh",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "beast",
-    "flag_name": "Clear_RemainsFire",
-    "flag_hash": "0x4007E1EE",
-    "ap_id": 6081202,
-    "name": "Divine Beast Vah Rudania",
-    "region": "Eldin"
-  },
-  {
-    "category": "beast",
-    "flag_name": "Clear_RemainsWater",
-    "flag_hash": "0xB742DD6C",
-    "ap_id": 6081203,
-    "name": "Divine Beast Vah Ruta",
-    "region": "Hyrule World"
-  },
-  {
-    "category": "beast",
-    "flag_name": "Clear_RemainsElectric",
-    "flag_hash": "0x18D100E9",
-    "ap_id": 6081204,
-    "name": "Divine Beast Vah Naboris",
-    "region": "Hyrule World"
-  }
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon000",
+  "flag_hash": "0xF7A9CD64",
+  "ap_id": 6081000,
+  "name": "Tah Muhl Shrine",
+  "monk": "Tah Muhl",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon001",
+  "flag_hash": "0x80AEFDF2",
+  "ap_id": 6081001,
+  "name": "Jee Noh Shrine",
+  "monk": "Jee Noh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon002",
+  "flag_hash": "0x19A7AC48",
+  "ap_id": 6081002,
+  "name": "Sah Dahaj Shrine",
+  "monk": "Sah Dahaj",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon003",
+  "flag_hash": "0x6EA09CDE",
+  "ap_id": 6081003,
+  "name": "Hawa Koth Shrine",
+  "monk": "Hawa Koth",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon004",
+  "flag_hash": "0xF0C4097D",
+  "ap_id": 6081004,
+  "name": "Zalta Wa Shrine",
+  "monk": "Zalta Wa",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon005",
+  "flag_hash": "0x87C339EB",
+  "ap_id": 6081005,
+  "name": "Ne'ez Yohma Shrine",
+  "monk": "Ne'ez Yohma",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon006",
+  "flag_hash": "0x1ECA6851",
+  "ap_id": 6081006,
+  "name": "Yah Rin Shrine",
+  "monk": "Yah Rin",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon007",
+  "flag_hash": "0x69CD58C7",
+  "ap_id": 6081007,
+  "name": "Bosh Kala Shrine",
+  "monk": "Bosh Kala",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon008",
+  "flag_hash": "0xF9724556",
+  "ap_id": 6081008,
+  "name": "Bareeda Naag Shrine",
+  "monk": "Bareeda Naag",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon009",
+  "flag_hash": "0x8E7575C0",
+  "ap_id": 6081009,
+  "name": "Owa Daim Shrine",
+  "monk": "Owa Daim",
+  "region": "Great Plateau"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon010",
+  "flag_hash": "0xEEB2FC25",
+  "ap_id": 6081010,
+  "name": "Kay Noh Shrine",
+  "monk": "Kay Noh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon011",
+  "flag_hash": "0x99B5CCB3",
+  "ap_id": 6081011,
+  "name": "Monya Toma Shrine",
+  "monk": "Monya Toma",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon012",
+  "flag_hash": "0x00BC9D09",
+  "ap_id": 6081012,
+  "name": "Voo Lota Shrine",
+  "monk": "Voo Lota",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon013",
+  "flag_hash": "0x77BBAD9F",
+  "ap_id": 6081013,
+  "name": "Katosa Aug Shrine",
+  "monk": "Katosa Aug",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon014",
+  "flag_hash": "0xE9DF383C",
+  "ap_id": 6081014,
+  "name": "Kam Urog Shrine",
+  "monk": "Kam Urog",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon015",
+  "flag_hash": "0x9ED808AA",
+  "ap_id": 6081015,
+  "name": "Toto Sah Shrine",
+  "monk": "Toto Sah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon016",
+  "flag_hash": "0x07D15910",
+  "ap_id": 6081016,
+  "name": "Rucco Maag Shrine",
+  "monk": "Rucco Maag",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon017",
+  "flag_hash": "0x70D66986",
+  "ap_id": 6081017,
+  "name": "Shee Vaneer Shrine",
+  "monk": "Shee Vaneer",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon018",
+  "flag_hash": "0xE0697417",
+  "ap_id": 6081018,
+  "name": "Rok Uwog Shrine",
+  "monk": "Rok Uwog",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon019",
+  "flag_hash": "0x976E4481",
+  "ap_id": 6081019,
+  "name": "Dow Na'eh Shrine",
+  "monk": "Dow Na'eh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon020",
+  "flag_hash": "0xC59FAFE6",
+  "ap_id": 6081020,
+  "name": "Sheem Dagoze Shrine",
+  "monk": "Sheem Dagoze",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon021",
+  "flag_hash": "0xB2989F70",
+  "ap_id": 6081021,
+  "name": "Toh Yahsa Shrine",
+  "monk": "Toh Yahsa",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon022",
+  "flag_hash": "0x2B91CECA",
+  "ap_id": 6081022,
+  "name": "Keo Ruug Shrine",
+  "monk": "Keo Ruug",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon023",
+  "flag_hash": "0x5C96FE5C",
+  "ap_id": 6081023,
+  "name": "Sheh Rata Shrine",
+  "monk": "Sheh Rata",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon024",
+  "flag_hash": "0xC2F26BFF",
+  "ap_id": 6081024,
+  "name": "Mezza Lo Shrine",
+  "monk": "Mezza Lo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon025",
+  "flag_hash": "0xB5F55B69",
+  "ap_id": 6081025,
+  "name": "Kayra Mah Shrine",
+  "monk": "Kayra Mah",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon026",
+  "flag_hash": "0x2CFC0AD3",
+  "ap_id": 6081026,
+  "name": "Shae Mo'sah Shrine",
+  "monk": "Shae Mo'sah",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon027",
+  "flag_hash": "0x5BFB3A45",
+  "ap_id": 6081027,
+  "name": "Rota Ooh Shrine",
+  "monk": "Rota Ooh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon028",
+  "flag_hash": "0xCB4427D4",
+  "ap_id": 6081028,
+  "name": "Shora Hah Shrine",
+  "monk": "Shora Hah",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon029",
+  "flag_hash": "0xBC431742",
+  "ap_id": 6081029,
+  "name": "Hila Rao Shrine",
+  "monk": "Hila Rao",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon030",
+  "flag_hash": "0xDC849EA7",
+  "ap_id": 6081030,
+  "name": "Joloo Nah Shrine",
+  "monk": "Joloo Nah",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon031",
+  "flag_hash": "0xAB83AE31",
+  "ap_id": 6081031,
+  "name": "Mo'a Keet Shrine",
+  "monk": "Mo'a Keet",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon032",
+  "flag_hash": "0x328AFF8B",
+  "ap_id": 6081032,
+  "name": "Dako Tah Shrine",
+  "monk": "Dako Tah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon033",
+  "flag_hash": "0x458DCF1D",
+  "ap_id": 6081033,
+  "name": "Daka Tuss Shrine",
+  "monk": "Daka Tuss",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon034",
+  "flag_hash": "0xDBE95ABE",
+  "ap_id": 6081034,
+  "name": "Kah Yah Shrine",
+  "monk": "Kah Yah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon035",
+  "flag_hash": "0xACEE6A28",
+  "ap_id": 6081035,
+  "name": "Akh Va'quot Shrine",
+  "monk": "Akh Va'quot",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon036",
+  "flag_hash": "0x35E73B92",
+  "ap_id": 6081036,
+  "name": "Sho Dantu Shrine",
+  "monk": "Sho Dantu",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon037",
+  "flag_hash": "0x42E00B04",
+  "ap_id": 6081037,
+  "name": "Shae Loya Shrine",
+  "monk": "Shae Loya",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon038",
+  "flag_hash": "0xD25F1695",
+  "ap_id": 6081038,
+  "name": "Oman Au Shrine",
+  "monk": "Oman Au",
+  "region": "Great Plateau"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon039",
+  "flag_hash": "0xA5582603",
+  "ap_id": 6081039,
+  "name": "Myahm Agana Shrine",
+  "monk": "Myahm Agana",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon040",
+  "flag_hash": "0x93C50860",
+  "ap_id": 6081040,
+  "name": "Kaam Ya'tak Shrine",
+  "monk": "Kaam Ya'tak",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon041",
+  "flag_hash": "0xE4C238F6",
+  "ap_id": 6081041,
+  "name": "Ja Baij Shrine",
+  "monk": "Ja Baij",
+  "region": "Great Plateau"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon042",
+  "flag_hash": "0x7DCB694C",
+  "ap_id": 6081042,
+  "name": "Rin Oyaa Shrine",
+  "monk": "Rin Oyaa",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon043",
+  "flag_hash": "0x0ACC59DA",
+  "ap_id": 6081043,
+  "name": "Kuh Takkar Shrine",
+  "monk": "Kuh Takkar",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon044",
+  "flag_hash": "0x94A8CC79",
+  "ap_id": 6081044,
+  "name": "Shee Venath Shrine",
+  "monk": "Shee Venath",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon045",
+  "flag_hash": "0xE3AFFCEF",
+  "ap_id": 6081045,
+  "name": "Ha Dahamar Shrine",
+  "monk": "Ha Dahamar",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon046",
+  "flag_hash": "0x7AA6AD55",
+  "ap_id": 6081046,
+  "name": "Shada Naw Shrine",
+  "monk": "Shada Naw",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon047",
+  "flag_hash": "0x0DA19DC3",
+  "ap_id": 6081047,
+  "name": "Ree Dahee Shrine",
+  "monk": "Ree Dahee",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon048",
+  "flag_hash": "0x9D1E8052",
+  "ap_id": 6081048,
+  "name": "Ze Kasho Shrine",
+  "monk": "Ze Kasho",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon049",
+  "flag_hash": "0xEA19B0C4",
+  "ap_id": 6081049,
+  "name": "Kaya Wan Shrine",
+  "monk": "Kaya Wan",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon050",
+  "flag_hash": "0x8ADE3921",
+  "ap_id": 6081050,
+  "name": "Shai Utoh Shrine",
+  "monk": "Shai Utoh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon051",
+  "flag_hash": "0xFDD909B7",
+  "ap_id": 6081051,
+  "name": "Maka Rah Shrine",
+  "monk": "Maka Rah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon052",
+  "flag_hash": "0x64D0580D",
+  "ap_id": 6081052,
+  "name": "Gee Ha'rah Shrine",
+  "monk": "Gee Ha'rah",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon053",
+  "flag_hash": "0x13D7689B",
+  "ap_id": 6081053,
+  "name": "Sha Warvo Shrine",
+  "monk": "Sha Warvo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon054",
+  "flag_hash": "0x8DB3FD38",
+  "ap_id": 6081054,
+  "name": "Ka'o Makagh Shrine",
+  "monk": "Ka'o Makagh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon055",
+  "flag_hash": "0xFAB4CDAE",
+  "ap_id": 6081055,
+  "name": "Dunba Taag Shrine",
+  "monk": "Dunba Taag",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon056",
+  "flag_hash": "0x63BD9C14",
+  "ap_id": 6081056,
+  "name": "Mirro Shaz Shrine",
+  "monk": "Mirro Shaz",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon057",
+  "flag_hash": "0x14BAAC82",
+  "ap_id": 6081057,
+  "name": "Wahgo Katta Shrine",
+  "monk": "Wahgo Katta",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon058",
+  "flag_hash": "0x8405B113",
+  "ap_id": 6081058,
+  "name": "Mogg Latan Shrine",
+  "monk": "Mogg Latan",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon059",
+  "flag_hash": "0xF3028185",
+  "ap_id": 6081059,
+  "name": "Kah Okeo Shrine",
+  "monk": "Kah Okeo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon060",
+  "flag_hash": "0xA1F36AE2",
+  "ap_id": 6081060,
+  "name": "Daqo Chisay Shrine",
+  "monk": "Daqo Chisay",
+  "region": "Gerudo Town"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon061",
+  "flag_hash": "0xD6F45A74",
+  "ap_id": 6081061,
+  "name": "Shoda Sah Shrine",
+  "monk": "Shoda Sah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon062",
+  "flag_hash": "0x4FFD0BCE",
+  "ap_id": 6081062,
+  "name": "Sha Gehma Shrine",
+  "monk": "Sha Gehma",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon063",
+  "flag_hash": "0x38FA3B58",
+  "ap_id": 6081063,
+  "name": "Kema Zoos Shrine",
+  "monk": "Kema Zoos",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon064",
+  "flag_hash": "0xA69EAEFB",
+  "ap_id": 6081064,
+  "name": "Daqa Koh Shrine",
+  "monk": "Daqa Koh",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon065",
+  "flag_hash": "0xD1999E6D",
+  "ap_id": 6081065,
+  "name": "Keh Namut Shrine",
+  "monk": "Keh Namut",
+  "region": "Great Plateau"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon066",
+  "flag_hash": "0x4890CFD7",
+  "ap_id": 6081066,
+  "name": "Kah Mael Shrine",
+  "monk": "Kah Mael",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon067",
+  "flag_hash": "0x3F97FF41",
+  "ap_id": 6081067,
+  "name": "Qua Raym Shrine",
+  "monk": "Qua Raym",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon068",
+  "flag_hash": "0xAF28E2D0",
+  "ap_id": 6081068,
+  "name": "Ya Naga Shrine",
+  "monk": "Ya Naga",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon069",
+  "flag_hash": "0xD82FD246",
+  "ap_id": 6081069,
+  "name": "Ishto Soh Shrine",
+  "monk": "Ishto Soh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon070",
+  "flag_hash": "0xB8E85BA3",
+  "ap_id": 6081070,
+  "name": "Soh Kofi Shrine",
+  "monk": "Soh Kofi",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon071",
+  "flag_hash": "0xCFEF6B35",
+  "ap_id": 6081071,
+  "name": "Pumaag Nitae Shrine",
+  "monk": "Pumaag Nitae",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon072",
+  "flag_hash": "0x56E63A8F",
+  "ap_id": 6081072,
+  "name": "Dah Kaso Shrine",
+  "monk": "Dah Kaso",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon073",
+  "flag_hash": "0x21E10A19",
+  "ap_id": 6081073,
+  "name": "Katah Chuki Shrine",
+  "monk": "Katah Chuki",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon074",
+  "flag_hash": "0xBF859FBA",
+  "ap_id": 6081074,
+  "name": "Noya Neha Shrine",
+  "monk": "Noya Neha",
+  "region": "Gerudo Highlands"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon075",
+  "flag_hash": "0xC882AF2C",
+  "ap_id": 6081075,
+  "name": "Dah Hesho Shrine",
+  "monk": "Dah Hesho",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon076",
+  "flag_hash": "0x518BFE96",
+  "ap_id": 6081076,
+  "name": "Sasa Kai Shrine",
+  "monk": "Sasa Kai",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon077",
+  "flag_hash": "0x268CCE00",
+  "ap_id": 6081077,
+  "name": "Ke'nai Shakah Shrine",
+  "monk": "Ke'nai Shakah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon078",
+  "flag_hash": "0xB633D391",
+  "ap_id": 6081078,
+  "name": "Mijah Rokee Shrine",
+  "monk": "Mijah Rokee",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon079",
+  "flag_hash": "0xC134E307",
+  "ap_id": 6081079,
+  "name": "Namika Ozz Shrine",
+  "monk": "Namika Ozz",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon080",
+  "flag_hash": "0x3F70476C",
+  "ap_id": 6081080,
+  "name": "Shoqa Tatone Shrine",
+  "monk": "Shoqa Tatone",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon081",
+  "flag_hash": "0x487777FA",
+  "ap_id": 6081081,
+  "name": "Muwo Jeem Shrine",
+  "monk": "Muwo Jeem",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon082",
+  "flag_hash": "0xD17E2640",
+  "ap_id": 6081082,
+  "name": "Chaas Qeta Shrine",
+  "monk": "Chaas Qeta",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon083",
+  "flag_hash": "0xA67916D6",
+  "ap_id": 6081083,
+  "name": "Tena Ko'sah Shrine",
+  "monk": "Tena Ko'sah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon084",
+  "flag_hash": "0x381D8375",
+  "ap_id": 6081084,
+  "name": "Tutsuwa Nima Shrine",
+  "monk": "Tutsuwa Nima",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon085",
+  "flag_hash": "0x4F1AB3E3",
+  "ap_id": 6081085,
+  "name": "Kema Kosassa Shrine",
+  "monk": "Kema Kosassa",
+  "region": "Gerudo Highlands"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon086",
+  "flag_hash": "0xD613E259",
+  "ap_id": 6081086,
+  "name": "Goma Asaagh Shrine",
+  "monk": "Goma Asaagh",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon087",
+  "flag_hash": "0xA114D2CF",
+  "ap_id": 6081087,
+  "name": "Mozo Shenno Shrine",
+  "monk": "Mozo Shenno",
+  "region": "Gerudo Highlands"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon088",
+  "flag_hash": "0x31ABCF5E",
+  "ap_id": 6081088,
+  "name": "Hia Miu Shrine",
+  "monk": "Hia Miu",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon089",
+  "flag_hash": "0x46ACFFC8",
+  "ap_id": 6081089,
+  "name": "Saas Ko'sah Shrine",
+  "monk": "Saas Ko'sah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon090",
+  "flag_hash": "0x266B762D",
+  "ap_id": 6081090,
+  "name": "Suma Sahma Shrine",
+  "monk": "Suma Sahma",
+  "region": "Gerudo Highlands"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon091",
+  "flag_hash": "0x516C46BB",
+  "ap_id": 6081091,
+  "name": "Gorae Torr Shrine",
+  "monk": "Gorae Torr",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon092",
+  "flag_hash": "0xC8651701",
+  "ap_id": 6081092,
+  "name": "Maag No'rah Shrine",
+  "monk": "Maag No'rah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon093",
+  "flag_hash": "0xBF622797",
+  "ap_id": 6081093,
+  "name": "Raqa Zunzo Shrine",
+  "monk": "Raqa Zunzo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon094",
+  "flag_hash": "0x2106B234",
+  "ap_id": 6081094,
+  "name": "Tho Kayu Shrine",
+  "monk": "Tho Kayu",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon095",
+  "flag_hash": "0x560182A2",
+  "ap_id": 6081095,
+  "name": "Kuhn Sidajj Shrine",
+  "monk": "Kuhn Sidajj",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon096",
+  "flag_hash": "0xCF08D318",
+  "ap_id": 6081096,
+  "name": "Qukah Nata Shrine",
+  "monk": "Qukah Nata",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon097",
+  "flag_hash": "0xB80FE38E",
+  "ap_id": 6081097,
+  "name": "Korgu Chideh Shrine",
+  "monk": "Korgu Chideh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon098",
+  "flag_hash": "0x28B0FE1F",
+  "ap_id": 6081098,
+  "name": "Daag Chokah Shrine",
+  "monk": "Daag Chokah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon099",
+  "flag_hash": "0x5FB7CE89",
+  "ap_id": 6081099,
+  "name": "Ta'loh Naeg Shrine",
+  "monk": "Ta'loh Naeg",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon100",
+  "flag_hash": "0xF66BA753",
+  "ap_id": 6081100,
+  "name": "Keeha Yoog Shrine",
+  "monk": "Keeha Yoog",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon101",
+  "flag_hash": "0x816C97C5",
+  "ap_id": 6081101,
+  "name": "Dagah Keek Shrine",
+  "monk": "Dagah Keek",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon102",
+  "flag_hash": "0x1865C67F",
+  "ap_id": 6081102,
+  "name": "Zuna Kai Shrine",
+  "monk": "Zuna Kai",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon103",
+  "flag_hash": "0x6F62F6E9",
+  "ap_id": 6081103,
+  "name": "Dila Maag Shrine",
+  "monk": "Dila Maag",
+  "region": "Eldin"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon104",
+  "flag_hash": "0xF106634A",
+  "ap_id": 6081104,
+  "name": "Lanno Kooh Shrine",
+  "monk": "Lanno Kooh",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon105",
+  "flag_hash": "0x860153DC",
+  "ap_id": 6081105,
+  "name": "Tu Ka'loh Shrine",
+  "monk": "Tu Ka'loh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon106",
+  "flag_hash": "0x1F080266",
+  "ap_id": 6081106,
+  "name": "Maag Halan Shrine",
+  "monk": "Maag Halan",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon107",
+  "flag_hash": "0x680F32F0",
+  "ap_id": 6081107,
+  "name": "Misae Suma Shrine",
+  "monk": "Misae Suma",
+  "region": "Gerudo Town"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon108",
+  "flag_hash": "0xF8B02F61",
+  "ap_id": 6081108,
+  "name": "Ketoh Wawai Shrine",
+  "monk": "Ketoh Wawai",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon109",
+  "flag_hash": "0x8FB71FF7",
+  "ap_id": 6081109,
+  "name": "Ritaag Zumo Shrine",
+  "monk": "Ritaag Zumo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon110",
+  "flag_hash": "0xEF709612",
+  "ap_id": 6081110,
+  "name": "Korsh O'hu Shrine",
+  "monk": "Korsh O'hu",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon111",
+  "flag_hash": "0x9877A684",
+  "ap_id": 6081111,
+  "name": "Tawa Jinn Shrine",
+  "monk": "Tawa Jinn",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon112",
+  "flag_hash": "0x017EF73E",
+  "ap_id": 6081112,
+  "name": "Lakna Rokee Shrine",
+  "monk": "Lakna Rokee",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon113",
+  "flag_hash": "0x7679C7A8",
+  "ap_id": 6081113,
+  "name": "Shae Katha Shrine",
+  "monk": "Shae Katha",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon114",
+  "flag_hash": "0xE81D520B",
+  "ap_id": 6081114,
+  "name": "Shai Yota Shrine",
+  "monk": "Shai Yota",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon115",
+  "flag_hash": "0x9F1A629D",
+  "ap_id": 6081115,
+  "name": "Rona Kachta Shrine",
+  "monk": "Rona Kachta",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon116",
+  "flag_hash": "0x06133327",
+  "ap_id": 6081116,
+  "name": "Qaza Tokki Shrine",
+  "monk": "Qaza Tokki",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon117",
+  "flag_hash": "0x711403B1",
+  "ap_id": 6081117,
+  "name": "Jitan Sa'mi Shrine",
+  "monk": "Jitan Sa'mi",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon118",
+  "flag_hash": "0xE1AB1E20",
+  "ap_id": 6081118,
+  "name": "To Quomo Shrine",
+  "monk": "To Quomo",
+  "region": "Hebra"
+ },
+ {
+  "category": "shrine",
+  "flag_name": "Clear_Dungeon119",
+  "flag_hash": "0x96AC2EB6",
+  "ap_id": 6081119,
+  "name": "Tahno O'ah Shrine",
+  "monk": "Tahno O'ah",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_01",
+  "flag_hash": "0x7BF47AB8",
+  "ap_id": 6081301,
+  "name": "Hebra Tower",
+  "region": "Hebra"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_02",
+  "flag_hash": "0xE2FD2B02",
+  "ap_id": 6081302,
+  "name": "Tabantha Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_03",
+  "flag_hash": "0x95FA1B94",
+  "ap_id": 6081303,
+  "name": "Gerudo Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_04",
+  "flag_hash": "0x0B9E8E37",
+  "ap_id": 6081304,
+  "name": "Wasteland Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_05",
+  "flag_hash": "0x7C99BEA1",
+  "ap_id": 6081305,
+  "name": "Woodland Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_06",
+  "flag_hash": "0xE590EF1B",
+  "ap_id": 6081306,
+  "name": "Central Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_07",
+  "flag_hash": "0x9297DF8D",
+  "ap_id": 6081307,
+  "name": "Great Plateau Tower",
+  "region": "Great Plateau"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_08",
+  "flag_hash": "0x0228C21C",
+  "ap_id": 6081308,
+  "name": "Dueling Peaks Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_09",
+  "flag_hash": "0x752FF28A",
+  "ap_id": 6081309,
+  "name": "Lake Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_10",
+  "flag_hash": "0x15E87B6F",
+  "ap_id": 6081310,
+  "name": "Eldin Tower",
+  "region": "Eldin"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_11",
+  "flag_hash": "0x62EF4BF9",
+  "ap_id": 6081311,
+  "name": "Akkala Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_12",
+  "flag_hash": "0xFBE61A43",
+  "ap_id": 6081312,
+  "name": "Lanayru Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_13",
+  "flag_hash": "0x8CE12AD5",
+  "ap_id": 6081313,
+  "name": "Hateno Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_14",
+  "flag_hash": "0x1285BF76",
+  "ap_id": 6081314,
+  "name": "Faron Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "tower",
+  "flag_name": "MapTower_15",
+  "flag_hash": "0x65828FE0",
+  "ap_id": 6081315,
+  "name": "Ridgeland Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "beast",
+  "flag_name": "Clear_RemainsWind",
+  "flag_hash": "0x39D2BCDF",
+  "ap_id": 6081201,
+  "name": "Divine Beast Vah Medoh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "beast",
+  "flag_name": "Clear_RemainsFire",
+  "flag_hash": "0x4007E1EE",
+  "ap_id": 6081202,
+  "name": "Divine Beast Vah Rudania",
+  "region": "Eldin"
+ },
+ {
+  "category": "beast",
+  "flag_name": "Clear_RemainsWater",
+  "flag_hash": "0xB742DD6C",
+  "ap_id": 6081203,
+  "name": "Divine Beast Vah Ruta",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "beast",
+  "flag_name": "Clear_RemainsElectric",
+  "flag_hash": "0x18D100E9",
+  "ap_id": 6081204,
+  "name": "Divine Beast Vah Naboris",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_AdeyaVillage",
+  "flag_hash": "0xBD432E2B",
+  "ap_id": 6081400,
+  "name": "Adeya Village",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_AkkareBigBridge",
+  "flag_hash": "0x4C2A4C64",
+  "ap_id": 6081401,
+  "name": "Akkare Big Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_AkkareGarrison",
+  "flag_hash": "0xC982B698",
+  "ap_id": 6081402,
+  "name": "Akkare Garrison",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_AkkareZhai",
+  "flag_hash": "0xCEEC3555",
+  "ap_id": 6081403,
+  "name": "Akkare Zhai",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_AkkareZhaiBridge",
+  "flag_hash": "0x5CCEE1D1",
+  "ap_id": 6081404,
+  "name": "Akkare Zhai Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_AncientLabo",
+  "flag_hash": "0xE03F8AA7",
+  "ap_id": 6081405,
+  "name": "Ancient Labo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_AnoleTunnel",
+  "flag_hash": "0x01459D59",
+  "ap_id": 6081406,
+  "name": "Anole Tunnel",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Assassin",
+  "flag_hash": "0xBA8FA3EC",
+  "ap_id": 6081407,
+  "name": "Assassin",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_BigBrotherBridge",
+  "flag_hash": "0xAB69FF8D",
+  "ap_id": 6081408,
+  "name": "Big Brother Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_BigTree",
+  "flag_hash": "0x852308C6",
+  "ap_id": 6081409,
+  "name": "Big Tree",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_BlindForest",
+  "flag_hash": "0x763A58D2",
+  "ap_id": 6081410,
+  "name": "Blind Forest",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_BraveFountain",
+  "flag_hash": "0x1855D45C",
+  "ap_id": 6081411,
+  "name": "Brave Fountain",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_BrosRock",
+  "flag_hash": "0x7B7427F3",
+  "ap_id": 6081412,
+  "name": "Bros Rock",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_CelebrationPark",
+  "flag_hash": "0x73FCF871",
+  "ap_id": 6081413,
+  "name": "Celebration Park",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_CentralExchange",
+  "flag_hash": "0xF4B71776",
+  "ap_id": 6081414,
+  "name": "Central Exchange",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ChirakaVillage",
+  "flag_hash": "0xD9393CCD",
+  "ap_id": 6081415,
+  "name": "Chiraka Village",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Cohorint",
+  "flag_hash": "0x95DB306C",
+  "ap_id": 6081416,
+  "name": "Cohorint",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Cokiri",
+  "flag_hash": "0x629DCD44",
+  "ap_id": 6081417,
+  "name": "Cokiri",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Corosseo",
+  "flag_hash": "0xF70A4075",
+  "ap_id": 6081418,
+  "name": "Corosseo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_DeathMountainHatago",
+  "flag_hash": "0x237A4D8A",
+  "ap_id": 6081419,
+  "name": "Death Mountain Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_DeathMountain_Entrance",
+  "flag_hash": "0xBA52D9E9",
+  "ap_id": 6081420,
+  "name": "Death Mountain Entrance",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_DodoraBridge",
+  "flag_hash": "0x2A87CD61",
+  "ap_id": 6081421,
+  "name": "Dodora Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_DragonAltar",
+  "flag_hash": "0xA8C3E430",
+  "ap_id": 6081422,
+  "name": "Dragon Altar",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_DragonMarsh",
+  "flag_hash": "0x1E4224F7",
+  "ap_id": 6081423,
+  "name": "Dragon Marsh",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon000",
+  "flag_hash": "0x9F65E395",
+  "ap_id": 6081424,
+  "name": "Dungeon000",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon001",
+  "flag_hash": "0xE862D303",
+  "ap_id": 6081425,
+  "name": "Dungeon001",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon002",
+  "flag_hash": "0x716B82B9",
+  "ap_id": 6081426,
+  "name": "Dungeon002",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon003",
+  "flag_hash": "0x066CB22F",
+  "ap_id": 6081427,
+  "name": "Dungeon003",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon004",
+  "flag_hash": "0x9808278C",
+  "ap_id": 6081428,
+  "name": "Dungeon004",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon005",
+  "flag_hash": "0xEF0F171A",
+  "ap_id": 6081429,
+  "name": "Dungeon005",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon006",
+  "flag_hash": "0x760646A0",
+  "ap_id": 6081430,
+  "name": "Dungeon006",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon007",
+  "flag_hash": "0x01017636",
+  "ap_id": 6081431,
+  "name": "Dungeon007",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon008",
+  "flag_hash": "0x91BE6BA7",
+  "ap_id": 6081432,
+  "name": "Dungeon008",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon009",
+  "flag_hash": "0xE6B95B31",
+  "ap_id": 6081433,
+  "name": "Dungeon009",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon010",
+  "flag_hash": "0x867ED2D4",
+  "ap_id": 6081434,
+  "name": "Dungeon010",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon011",
+  "flag_hash": "0xF179E242",
+  "ap_id": 6081435,
+  "name": "Dungeon011",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon012",
+  "flag_hash": "0x6870B3F8",
+  "ap_id": 6081436,
+  "name": "Dungeon012",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon013",
+  "flag_hash": "0x1F77836E",
+  "ap_id": 6081437,
+  "name": "Dungeon013",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon014",
+  "flag_hash": "0x811316CD",
+  "ap_id": 6081438,
+  "name": "Dungeon014",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon015",
+  "flag_hash": "0xF614265B",
+  "ap_id": 6081439,
+  "name": "Dungeon015",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon016",
+  "flag_hash": "0x6F1D77E1",
+  "ap_id": 6081440,
+  "name": "Dungeon016",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon017",
+  "flag_hash": "0x181A4777",
+  "ap_id": 6081441,
+  "name": "Dungeon017",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon018",
+  "flag_hash": "0x88A55AE6",
+  "ap_id": 6081442,
+  "name": "Dungeon018",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon019",
+  "flag_hash": "0xFFA26A70",
+  "ap_id": 6081443,
+  "name": "Dungeon019",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon020",
+  "flag_hash": "0xAD538117",
+  "ap_id": 6081444,
+  "name": "Dungeon020",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon021",
+  "flag_hash": "0xDA54B181",
+  "ap_id": 6081445,
+  "name": "Dungeon021",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon022",
+  "flag_hash": "0x435DE03B",
+  "ap_id": 6081446,
+  "name": "Dungeon022",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon023",
+  "flag_hash": "0x345AD0AD",
+  "ap_id": 6081447,
+  "name": "Dungeon023",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon024",
+  "flag_hash": "0xAA3E450E",
+  "ap_id": 6081448,
+  "name": "Dungeon024",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon025",
+  "flag_hash": "0xDD397598",
+  "ap_id": 6081449,
+  "name": "Dungeon025",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon026",
+  "flag_hash": "0x44302422",
+  "ap_id": 6081450,
+  "name": "Dungeon026",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon027",
+  "flag_hash": "0x333714B4",
+  "ap_id": 6081451,
+  "name": "Dungeon027",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon028",
+  "flag_hash": "0xA3880925",
+  "ap_id": 6081452,
+  "name": "Dungeon028",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon029",
+  "flag_hash": "0xD48F39B3",
+  "ap_id": 6081453,
+  "name": "Dungeon029",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon030",
+  "flag_hash": "0xB448B056",
+  "ap_id": 6081454,
+  "name": "Dungeon030",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon031",
+  "flag_hash": "0xC34F80C0",
+  "ap_id": 6081455,
+  "name": "Dungeon031",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon032",
+  "flag_hash": "0x5A46D17A",
+  "ap_id": 6081456,
+  "name": "Dungeon032",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon033",
+  "flag_hash": "0x2D41E1EC",
+  "ap_id": 6081457,
+  "name": "Dungeon033",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon034",
+  "flag_hash": "0xB325744F",
+  "ap_id": 6081458,
+  "name": "Dungeon034",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon035",
+  "flag_hash": "0xC42244D9",
+  "ap_id": 6081459,
+  "name": "Dungeon035",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon036",
+  "flag_hash": "0x5D2B1563",
+  "ap_id": 6081460,
+  "name": "Dungeon036",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon037",
+  "flag_hash": "0x2A2C25F5",
+  "ap_id": 6081461,
+  "name": "Dungeon037",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon038",
+  "flag_hash": "0xBA933864",
+  "ap_id": 6081462,
+  "name": "Dungeon038",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon039",
+  "flag_hash": "0xCD9408F2",
+  "ap_id": 6081463,
+  "name": "Dungeon039",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon040",
+  "flag_hash": "0xFB092691",
+  "ap_id": 6081464,
+  "name": "Dungeon040",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon041",
+  "flag_hash": "0x8C0E1607",
+  "ap_id": 6081465,
+  "name": "Dungeon041",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon042",
+  "flag_hash": "0x150747BD",
+  "ap_id": 6081466,
+  "name": "Dungeon042",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon043",
+  "flag_hash": "0x6200772B",
+  "ap_id": 6081467,
+  "name": "Dungeon043",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon044",
+  "flag_hash": "0xFC64E288",
+  "ap_id": 6081468,
+  "name": "Dungeon044",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon045",
+  "flag_hash": "0x8B63D21E",
+  "ap_id": 6081469,
+  "name": "Dungeon045",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon046",
+  "flag_hash": "0x126A83A4",
+  "ap_id": 6081470,
+  "name": "Dungeon046",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon047",
+  "flag_hash": "0x656DB332",
+  "ap_id": 6081471,
+  "name": "Dungeon047",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon048",
+  "flag_hash": "0xF5D2AEA3",
+  "ap_id": 6081472,
+  "name": "Dungeon048",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon049",
+  "flag_hash": "0x82D59E35",
+  "ap_id": 6081473,
+  "name": "Dungeon049",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon050",
+  "flag_hash": "0xE21217D0",
+  "ap_id": 6081474,
+  "name": "Dungeon050",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon051",
+  "flag_hash": "0x95152746",
+  "ap_id": 6081475,
+  "name": "Dungeon051",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon052",
+  "flag_hash": "0x0C1C76FC",
+  "ap_id": 6081476,
+  "name": "Dungeon052",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon053",
+  "flag_hash": "0x7B1B466A",
+  "ap_id": 6081477,
+  "name": "Dungeon053",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon054",
+  "flag_hash": "0xE57FD3C9",
+  "ap_id": 6081478,
+  "name": "Dungeon054",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon055",
+  "flag_hash": "0x9278E35F",
+  "ap_id": 6081479,
+  "name": "Dungeon055",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon056",
+  "flag_hash": "0x0B71B2E5",
+  "ap_id": 6081480,
+  "name": "Dungeon056",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon057",
+  "flag_hash": "0x7C768273",
+  "ap_id": 6081481,
+  "name": "Dungeon057",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon058",
+  "flag_hash": "0xECC99FE2",
+  "ap_id": 6081482,
+  "name": "Dungeon058",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon059",
+  "flag_hash": "0x9BCEAF74",
+  "ap_id": 6081483,
+  "name": "Dungeon059",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon060",
+  "flag_hash": "0xC93F4413",
+  "ap_id": 6081484,
+  "name": "Dungeon060",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon061",
+  "flag_hash": "0xBE387485",
+  "ap_id": 6081485,
+  "name": "Dungeon061",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon062",
+  "flag_hash": "0x2731253F",
+  "ap_id": 6081486,
+  "name": "Dungeon062",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon063",
+  "flag_hash": "0x503615A9",
+  "ap_id": 6081487,
+  "name": "Dungeon063",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon064",
+  "flag_hash": "0xCE52800A",
+  "ap_id": 6081488,
+  "name": "Dungeon064",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon065",
+  "flag_hash": "0xB955B09C",
+  "ap_id": 6081489,
+  "name": "Dungeon065",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon066",
+  "flag_hash": "0x205CE126",
+  "ap_id": 6081490,
+  "name": "Dungeon066",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon067",
+  "flag_hash": "0x575BD1B0",
+  "ap_id": 6081491,
+  "name": "Dungeon067",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon068",
+  "flag_hash": "0xC7E4CC21",
+  "ap_id": 6081492,
+  "name": "Dungeon068",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon069",
+  "flag_hash": "0xB0E3FCB7",
+  "ap_id": 6081493,
+  "name": "Dungeon069",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon070",
+  "flag_hash": "0xD0247552",
+  "ap_id": 6081494,
+  "name": "Dungeon070",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon071",
+  "flag_hash": "0xA72345C4",
+  "ap_id": 6081495,
+  "name": "Dungeon071",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon072",
+  "flag_hash": "0x3E2A147E",
+  "ap_id": 6081496,
+  "name": "Dungeon072",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon073",
+  "flag_hash": "0x492D24E8",
+  "ap_id": 6081497,
+  "name": "Dungeon073",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon074",
+  "flag_hash": "0xD749B14B",
+  "ap_id": 6081498,
+  "name": "Dungeon074",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon075",
+  "flag_hash": "0xA04E81DD",
+  "ap_id": 6081499,
+  "name": "Dungeon075",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon076",
+  "flag_hash": "0x3947D067",
+  "ap_id": 6081500,
+  "name": "Dungeon076",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon077",
+  "flag_hash": "0x4E40E0F1",
+  "ap_id": 6081501,
+  "name": "Dungeon077",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon078",
+  "flag_hash": "0xDEFFFD60",
+  "ap_id": 6081502,
+  "name": "Dungeon078",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon079",
+  "flag_hash": "0xA9F8CDF6",
+  "ap_id": 6081503,
+  "name": "Dungeon079",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon080",
+  "flag_hash": "0x57BC699D",
+  "ap_id": 6081504,
+  "name": "Dungeon080",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon081",
+  "flag_hash": "0x20BB590B",
+  "ap_id": 6081505,
+  "name": "Dungeon081",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon082",
+  "flag_hash": "0xB9B208B1",
+  "ap_id": 6081506,
+  "name": "Dungeon082",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon083",
+  "flag_hash": "0xCEB53827",
+  "ap_id": 6081507,
+  "name": "Dungeon083",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon084",
+  "flag_hash": "0x50D1AD84",
+  "ap_id": 6081508,
+  "name": "Dungeon084",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon085",
+  "flag_hash": "0x27D69D12",
+  "ap_id": 6081509,
+  "name": "Dungeon085",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon086",
+  "flag_hash": "0xBEDFCCA8",
+  "ap_id": 6081510,
+  "name": "Dungeon086",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon087",
+  "flag_hash": "0xC9D8FC3E",
+  "ap_id": 6081511,
+  "name": "Dungeon087",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon088",
+  "flag_hash": "0x5967E1AF",
+  "ap_id": 6081512,
+  "name": "Dungeon088",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon089",
+  "flag_hash": "0x2E60D139",
+  "ap_id": 6081513,
+  "name": "Dungeon089",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon090",
+  "flag_hash": "0x4EA758DC",
+  "ap_id": 6081514,
+  "name": "Dungeon090",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon091",
+  "flag_hash": "0x39A0684A",
+  "ap_id": 6081515,
+  "name": "Dungeon091",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon092",
+  "flag_hash": "0xA0A939F0",
+  "ap_id": 6081516,
+  "name": "Dungeon092",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon093",
+  "flag_hash": "0xD7AE0966",
+  "ap_id": 6081517,
+  "name": "Dungeon093",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon094",
+  "flag_hash": "0x49CA9CC5",
+  "ap_id": 6081518,
+  "name": "Dungeon094",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon095",
+  "flag_hash": "0x3ECDAC53",
+  "ap_id": 6081519,
+  "name": "Dungeon095",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon096",
+  "flag_hash": "0xA7C4FDE9",
+  "ap_id": 6081520,
+  "name": "Dungeon096",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon097",
+  "flag_hash": "0xD0C3CD7F",
+  "ap_id": 6081521,
+  "name": "Dungeon097",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon098",
+  "flag_hash": "0x407CD0EE",
+  "ap_id": 6081522,
+  "name": "Dungeon098",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon099",
+  "flag_hash": "0x377BE078",
+  "ap_id": 6081523,
+  "name": "Dungeon099",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon100",
+  "flag_hash": "0x9EA789A2",
+  "ap_id": 6081524,
+  "name": "Dungeon100",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon101",
+  "flag_hash": "0xE9A0B934",
+  "ap_id": 6081525,
+  "name": "Dungeon101",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon102",
+  "flag_hash": "0x70A9E88E",
+  "ap_id": 6081526,
+  "name": "Dungeon102",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon103",
+  "flag_hash": "0x07AED818",
+  "ap_id": 6081527,
+  "name": "Dungeon103",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon104",
+  "flag_hash": "0x99CA4DBB",
+  "ap_id": 6081528,
+  "name": "Dungeon104",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon105",
+  "flag_hash": "0xEECD7D2D",
+  "ap_id": 6081529,
+  "name": "Dungeon105",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon106",
+  "flag_hash": "0x77C42C97",
+  "ap_id": 6081530,
+  "name": "Dungeon106",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon107",
+  "flag_hash": "0x00C31C01",
+  "ap_id": 6081531,
+  "name": "Dungeon107",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon108",
+  "flag_hash": "0x907C0190",
+  "ap_id": 6081532,
+  "name": "Dungeon108",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon109",
+  "flag_hash": "0xE77B3106",
+  "ap_id": 6081533,
+  "name": "Dungeon109",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon110",
+  "flag_hash": "0x87BCB8E3",
+  "ap_id": 6081534,
+  "name": "Dungeon110",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon111",
+  "flag_hash": "0xF0BB8875",
+  "ap_id": 6081535,
+  "name": "Dungeon111",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon112",
+  "flag_hash": "0x69B2D9CF",
+  "ap_id": 6081536,
+  "name": "Dungeon112",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon113",
+  "flag_hash": "0x1EB5E959",
+  "ap_id": 6081537,
+  "name": "Dungeon113",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon114",
+  "flag_hash": "0x80D17CFA",
+  "ap_id": 6081538,
+  "name": "Dungeon114",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon115",
+  "flag_hash": "0xF7D64C6C",
+  "ap_id": 6081539,
+  "name": "Dungeon115",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon116",
+  "flag_hash": "0x6EDF1DD6",
+  "ap_id": 6081540,
+  "name": "Dungeon116",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon117",
+  "flag_hash": "0x19D82D40",
+  "ap_id": 6081541,
+  "name": "Dungeon117",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon118",
+  "flag_hash": "0x896730D1",
+  "ap_id": 6081542,
+  "name": "Dungeon118",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Dungeon119",
+  "flag_hash": "0xFE600047",
+  "ap_id": 6081543,
+  "name": "Dungeon119",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_DungeonMush",
+  "flag_hash": "0x25C12F63",
+  "ap_id": 6081544,
+  "name": "Dungeon Mush",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_EastDam",
+  "flag_hash": "0xD3D4FE4D",
+  "ap_id": 6081545,
+  "name": "East Dam",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_EastGerudoRuins",
+  "flag_hash": "0x4EDC4932",
+  "ap_id": 6081546,
+  "name": "East Gerudo Ruins",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_EastPostTownRuin",
+  "flag_hash": "0x90EFA510",
+  "ap_id": 6081547,
+  "name": "East Post Town Ruin",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Execution",
+  "flag_hash": "0x93C23BDF",
+  "ap_id": 6081548,
+  "name": "Execution",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_EzzuBridge",
+  "flag_hash": "0x3DEE43CC",
+  "ap_id": 6081549,
+  "name": "Ezzu Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FaronHatago000",
+  "flag_hash": "0xDA0163D5",
+  "ap_id": 6081550,
+  "name": "Faron Hatago000",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FaronHatago001",
+  "flag_hash": "0xAD065343",
+  "ap_id": 6081551,
+  "name": "Faron Hatago001",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FaronHatago002",
+  "flag_hash": "0x340F02F9",
+  "ap_id": 6081552,
+  "name": "Faron Hatago002",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FironeForestEntrance",
+  "flag_hash": "0x382AF36E",
+  "ap_id": 6081553,
+  "name": "Firone Forest Entrance",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FirstColony",
+  "flag_hash": "0xE27EA0E4",
+  "ap_id": 6081554,
+  "name": "First Colony",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FlamingoSpa",
+  "flag_hash": "0x8D8982B9",
+  "ap_id": 6081555,
+  "name": "Flamingo Spa",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FloriaBridge",
+  "flag_hash": "0xDBE04653",
+  "ap_id": 6081556,
+  "name": "Floria Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FlowerSandbank",
+  "flag_hash": "0x5B3D301C",
+  "ap_id": 6081557,
+  "name": "Flower Sandbank",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ForestHatago",
+  "flag_hash": "0x42D8F1BB",
+  "ap_id": 6081558,
+  "name": "Forest Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FrontGatePosttown",
+  "flag_hash": "0x3046920F",
+  "ap_id": 6081559,
+  "name": "Front Gate Posttown",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_FrozenCave",
+  "flag_hash": "0x8A36F4DD",
+  "ap_id": 6081560,
+  "name": "Frozen Cave",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GameBalling",
+  "flag_hash": "0xC17F8588",
+  "ap_id": 6081561,
+  "name": "Game Balling",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GameBitalockGolf",
+  "flag_hash": "0xDCBF49EE",
+  "ap_id": 6081562,
+  "name": "Game Bitalock Golf",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GameGutsCriff",
+  "flag_hash": "0x37D054D1",
+  "ap_id": 6081563,
+  "name": "Game Guts Criff",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GameMarathon",
+  "flag_hash": "0xEDE11B4B",
+  "ap_id": 6081564,
+  "name": "Game Marathon",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GameShiledSurf",
+  "flag_hash": "0x13DF032F",
+  "ap_id": 6081565,
+  "name": "Game Shiled Surf",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GameYabusame",
+  "flag_hash": "0xB444AF7F",
+  "ap_id": 6081566,
+  "name": "Game Yabusame",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GameZarashiRace",
+  "flag_hash": "0xB07FF371",
+  "ap_id": 6081567,
+  "name": "Game Zarashi Race",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GarakishiVillage",
+  "flag_hash": "0x86377B7E",
+  "ap_id": 6081568,
+  "name": "Garakishi Village",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GatakaraGarrison",
+  "flag_hash": "0xC7D9E847",
+  "ap_id": 6081569,
+  "name": "Gatakara Garrison",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Gerudo",
+  "flag_hash": "0x7E6AC510",
+  "ap_id": 6081570,
+  "name": "Gerudo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GerudoCanyon_Entrance",
+  "flag_hash": "0x11CA12B8",
+  "ap_id": 6081571,
+  "name": "Gerudo Canyon Entrance",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GerudoDesert_Entrance",
+  "flag_hash": "0x3CB06C8D",
+  "ap_id": 6081572,
+  "name": "Gerudo Desert Entrance",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GerudoFossil",
+  "flag_hash": "0x8470BBA5",
+  "ap_id": 6081573,
+  "name": "Gerudo Fossil",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GerudoHatago",
+  "flag_hash": "0x84B55727",
+  "ap_id": 6081574,
+  "name": "Gerudo Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Goron",
+  "flag_hash": "0xEB962EE5",
+  "ap_id": 6081575,
+  "name": "Goron",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GoronBridge",
+  "flag_hash": "0x6B3090C4",
+  "ap_id": 6081576,
+  "name": "Goron Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_GutinizaPlainTomb",
+  "flag_hash": "0xF105FC93",
+  "ap_id": 6081577,
+  "name": "Gutiniza Plain Tomb",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HachijoBridge",
+  "flag_hash": "0x61ECF5D8",
+  "ap_id": 6081578,
+  "name": "Hachijo Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Hatago001",
+  "flag_hash": "0xB5BACC44",
+  "ap_id": 6081579,
+  "name": "Hatago001",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Hateno",
+  "flag_hash": "0xB91EC523",
+  "ap_id": 6081580,
+  "name": "Hateno",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HatenoGate",
+  "flag_hash": "0x5B065726",
+  "ap_id": 6081581,
+  "name": "Hateno Gate",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HatenoLabo",
+  "flag_hash": "0x704A8CEE",
+  "ap_id": 6081582,
+  "name": "Hateno Labo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HebraBottomRemains",
+  "flag_hash": "0xFAAB284D",
+  "ap_id": 6081583,
+  "name": "Hebra Bottom Remains",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HebraRemains",
+  "flag_hash": "0xE66F047B",
+  "ap_id": 6081584,
+  "name": "Hebra Remains",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HeburaFossil",
+  "flag_hash": "0x3BA1E6CD",
+  "ap_id": 6081585,
+  "name": "Hebura Fossil",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HeburaLodge",
+  "flag_hash": "0xB46D4340",
+  "ap_id": 6081586,
+  "name": "Hebura Lodge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HopesPlateau",
+  "flag_hash": "0xA4E25E17",
+  "ap_id": 6081587,
+  "name": "Hopes Plateau",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyralBridge",
+  "flag_hash": "0x506D96B6",
+  "ap_id": 6081588,
+  "name": "Hyral Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle",
+  "flag_hash": "0xCB844395",
+  "ap_id": 6081589,
+  "name": "Hyrule Castle",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastleTown",
+  "flag_hash": "0x47CF0CE2",
+  "ap_id": 6081590,
+  "name": "Hyrule Castle Town",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Hall_0",
+  "flag_hash": "0xF579C518",
+  "ap_id": 6081591,
+  "name": "Hyrule Castle Hall 0",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Hall_1",
+  "flag_hash": "0x827EF58E",
+  "ap_id": 6081592,
+  "name": "Hyrule Castle Hall 1",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Hall_2",
+  "flag_hash": "0x1B77A434",
+  "ap_id": 6081593,
+  "name": "Hyrule Castle Hall 2",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_0",
+  "flag_hash": "0xFB739F5D",
+  "ap_id": 6081594,
+  "name": "Hyrule Castle Room 0",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_1",
+  "flag_hash": "0x8C74AFCB",
+  "ap_id": 6081595,
+  "name": "Hyrule Castle Room 1",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_10",
+  "flag_hash": "0xF8E1B0B6",
+  "ap_id": 6081596,
+  "name": "Hyrule Castle Room 10",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_11",
+  "flag_hash": "0x8FE68020",
+  "ap_id": 6081597,
+  "name": "Hyrule Castle Room 11",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_2",
+  "flag_hash": "0x157DFE71",
+  "ap_id": 6081598,
+  "name": "Hyrule Castle Room 2",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_3",
+  "flag_hash": "0x627ACEE7",
+  "ap_id": 6081599,
+  "name": "Hyrule Castle Room 3",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_4",
+  "flag_hash": "0xFC1E5B44",
+  "ap_id": 6081600,
+  "name": "Hyrule Castle Room 4",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_5",
+  "flag_hash": "0x8B196BD2",
+  "ap_id": 6081601,
+  "name": "Hyrule Castle Room 5",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_6",
+  "flag_hash": "0x12103A68",
+  "ap_id": 6081602,
+  "name": "Hyrule Castle Room 6",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_7",
+  "flag_hash": "0x65170AFE",
+  "ap_id": 6081603,
+  "name": "Hyrule Castle Room 7",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_8",
+  "flag_hash": "0xF5A8176F",
+  "ap_id": 6081604,
+  "name": "Hyrule Castle Room 8",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCastle_Room_9",
+  "flag_hash": "0x82AF27F9",
+  "ap_id": 6081605,
+  "name": "Hyrule Castle Room 9",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleCentralPlace",
+  "flag_hash": "0xEFC46622",
+  "ap_id": 6081606,
+  "name": "Hyrule Central Place",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleDepthHatago",
+  "flag_hash": "0x30DCE738",
+  "ap_id": 6081607,
+  "name": "Hyrule Depth Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleGarrison",
+  "flag_hash": "0x05768B36",
+  "ap_id": 6081608,
+  "name": "Hyrule Garrison",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleGround",
+  "flag_hash": "0x29693CD5",
+  "ap_id": 6081609,
+  "name": "Hyrule Ground",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleLabo",
+  "flag_hash": "0xC19B4064",
+  "ap_id": 6081610,
+  "name": "Hyrule Labo",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyrulePark",
+  "flag_hash": "0x96FB7E0B",
+  "ap_id": 6081611,
+  "name": "Hyrule Park",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyrulePlace",
+  "flag_hash": "0x5C4D1750",
+  "ap_id": 6081612,
+  "name": "Hyrule Place",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleTemple",
+  "flag_hash": "0x97185F06",
+  "ap_id": 6081613,
+  "name": "Hyrule Temple",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleTower",
+  "flag_hash": "0x765AE3FD",
+  "ap_id": 6081614,
+  "name": "Hyrule Tower",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleWater",
+  "flag_hash": "0xD3635047",
+  "ap_id": 6081615,
+  "name": "Hyrule Water",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_HyruleWestHatago",
+  "flag_hash": "0xCAB23D6F",
+  "ap_id": 6081616,
+  "name": "Hyrule West Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_IceHouse",
+  "flag_hash": "0x2E573FA2",
+  "ap_id": 6081617,
+  "name": "Ice House",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_IceLake",
+  "flag_hash": "0x493163ED",
+  "ap_id": 6081618,
+  "name": "Ice Lake",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_JogoBridge",
+  "flag_hash": "0x0EA2F805",
+  "ap_id": 6081619,
+  "name": "Jogo Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_JokuBridge",
+  "flag_hash": "0x9AA32ECA",
+  "ap_id": 6081620,
+  "name": "Joku Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Kakariko",
+  "flag_hash": "0xD8B7A1E2",
+  "ap_id": 6081621,
+  "name": "Kakariko",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_KaturaCastle",
+  "flag_hash": "0x384FC3A6",
+  "ap_id": 6081622,
+  "name": "Katura Castle",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_KingValley",
+  "flag_hash": "0x1E278D65",
+  "ap_id": 6081623,
+  "name": "King Valley",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_KingfisherSpa",
+  "flag_hash": "0xC1D8C92C",
+  "ap_id": 6081624,
+  "name": "Kingfisher Spa",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_KochuBridge",
+  "flag_hash": "0xB58D951C",
+  "ap_id": 6081625,
+  "name": "Kochu Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_KumSpa",
+  "flag_hash": "0x94E41520",
+  "ap_id": 6081626,
+  "name": "Kum Spa",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_KunaiBridge",
+  "flag_hash": "0xCB7F8EFB",
+  "ap_id": 6081627,
+  "name": "Kunai Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LakeFloria",
+  "flag_hash": "0xD8CE1BAD",
+  "ap_id": 6081628,
+  "name": "Lake Floria",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LakeHylia",
+  "flag_hash": "0xB106E3D2",
+  "ap_id": 6081629,
+  "name": "Lake Hylia",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LanayruEastEntrance",
+  "flag_hash": "0x64556CDF",
+  "ap_id": 6081630,
+  "name": "Lanayru East Entrance",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LanayruWestEntrance",
+  "flag_hash": "0x34AF6C3E",
+  "ap_id": 6081631,
+  "name": "Lanayru West Entrance",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LeMarbeBridge",
+  "flag_hash": "0xD3ACB37D",
+  "ap_id": 6081632,
+  "name": "Le Marbe Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LightningPlateau",
+  "flag_hash": "0x658ED94C",
+  "ap_id": 6081633,
+  "name": "Lightning Plateau",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LittleBrotherBridge",
+  "flag_hash": "0x791C7D90",
+  "ap_id": 6081634,
+  "name": "Little Brother Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LomeiIslands",
+  "flag_hash": "0x9F1FF60D",
+  "ap_id": 6081635,
+  "name": "Lomei Islands",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_LostForest",
+  "flag_hash": "0x5FB1238C",
+  "ap_id": 6081636,
+  "name": "Lost Forest",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower01",
+  "flag_hash": "0x40F556E8",
+  "ap_id": 6081637,
+  "name": "Map Tower01",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower02",
+  "flag_hash": "0xD9FC0752",
+  "ap_id": 6081638,
+  "name": "Map Tower02",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower03",
+  "flag_hash": "0xAEFB37C4",
+  "ap_id": 6081639,
+  "name": "Map Tower03",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower04",
+  "flag_hash": "0x309FA267",
+  "ap_id": 6081640,
+  "name": "Map Tower04",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower05",
+  "flag_hash": "0x479892F1",
+  "ap_id": 6081641,
+  "name": "Map Tower05",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower06",
+  "flag_hash": "0xDE91C34B",
+  "ap_id": 6081642,
+  "name": "Map Tower06",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower07",
+  "flag_hash": "0xA996F3DD",
+  "ap_id": 6081643,
+  "name": "Map Tower07",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower08",
+  "flag_hash": "0x3929EE4C",
+  "ap_id": 6081644,
+  "name": "Map Tower08",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower09",
+  "flag_hash": "0x4E2EDEDA",
+  "ap_id": 6081645,
+  "name": "Map Tower09",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower10",
+  "flag_hash": "0x2EE9573F",
+  "ap_id": 6081646,
+  "name": "Map Tower10",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower11",
+  "flag_hash": "0x59EE67A9",
+  "ap_id": 6081647,
+  "name": "Map Tower11",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower12",
+  "flag_hash": "0xC0E73613",
+  "ap_id": 6081648,
+  "name": "Map Tower12",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower13",
+  "flag_hash": "0xB7E00685",
+  "ap_id": 6081649,
+  "name": "Map Tower13",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower14",
+  "flag_hash": "0x29849326",
+  "ap_id": 6081650,
+  "name": "Map Tower14",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MapTower15",
+  "flag_hash": "0x5E83A3B0",
+  "ap_id": 6081651,
+  "name": "Map Tower15",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MaronSpring",
+  "flag_hash": "0x9510E305",
+  "ap_id": 6081652,
+  "name": "Maron Spring",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MarritaExchange",
+  "flag_hash": "0x7CF7D4AD",
+  "ap_id": 6081653,
+  "name": "Marrita Exchange",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MasazuBridge",
+  "flag_hash": "0xA89C3E9D",
+  "ap_id": 6081654,
+  "name": "Masazu Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MinakkareBridge",
+  "flag_hash": "0x33DEDAF1",
+  "ap_id": 6081655,
+  "name": "Minakkare Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MinakkareBridgeEast",
+  "flag_hash": "0x894E01B7",
+  "ap_id": 6081656,
+  "name": "Minakkare Bridge East",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_MinakkareBridgeWest",
+  "flag_hash": "0x7457367F",
+  "ap_id": 6081657,
+  "name": "Minakkare Bridge West",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Mine",
+  "flag_hash": "0xFAE08218",
+  "ap_id": 6081658,
+  "name": "Mine",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_NantanCastle",
+  "flag_hash": "0x8367F7F5",
+  "ap_id": 6081659,
+  "name": "Nantan Castle",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_NishojiBridge",
+  "flag_hash": "0x7939D480",
+  "ap_id": 6081660,
+  "name": "Nishoji Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_NorthHatelHatago",
+  "flag_hash": "0x5C907154",
+  "ap_id": 6081661,
+  "name": "North Hatel Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Oasis",
+  "flag_hash": "0x0FA7B37F",
+  "ap_id": 6081662,
+  "name": "Oasis",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_OrdinBridge",
+  "flag_hash": "0x1A1649A5",
+  "ap_id": 6081663,
+  "name": "Ordin Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_OrdinFossil",
+  "flag_hash": "0xD865CFA4",
+  "ap_id": 6081664,
+  "name": "Ordin Fossil",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_OsanjoBridge",
+  "flag_hash": "0xF1CAB1A7",
+  "ap_id": 6081665,
+  "name": "Osanjo Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_PostTownRuin",
+  "flag_hash": "0x6360E32F",
+  "ap_id": 6081666,
+  "name": "Post Town Ruin",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_PowerFountain",
+  "flag_hash": "0x1CC23004",
+  "ap_id": 6081667,
+  "name": "Power Fountain",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_RemainsElectric",
+  "flag_hash": "0x18F92F82",
+  "ap_id": 6081668,
+  "name": "Remains Electric",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_RemainsFire",
+  "flag_hash": "0x8AD5EF4A",
+  "ap_id": 6081669,
+  "name": "Remains Fire",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_RemainsWater",
+  "flag_hash": "0x66336893",
+  "ap_id": 6081670,
+  "name": "Remains Water",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_RemainsWind",
+  "flag_hash": "0xF300B27B",
+  "ap_id": 6081671,
+  "name": "Remains Wind",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_RirikendoBridge",
+  "flag_hash": "0xD451777C",
+  "ap_id": 6081672,
+  "name": "Ririkendo Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Rito",
+  "flag_hash": "0xA262D614",
+  "ap_id": 6081673,
+  "name": "Rito",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_RitoHatago",
+  "flag_hash": "0x79431CD8",
+  "ap_id": 6081674,
+  "name": "Rito Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_RiverSideHatago",
+  "flag_hash": "0xA313005E",
+  "ap_id": 6081675,
+  "name": "River Side Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_RonronCity",
+  "flag_hash": "0x8F067283",
+  "ap_id": 6081676,
+  "name": "Ronron City",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_SaihokuCastle",
+  "flag_hash": "0x80F9FD06",
+  "ap_id": 6081677,
+  "name": "Saihoku Castle",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_SarjonBridge",
+  "flag_hash": "0x71A002E7",
+  "ap_id": 6081678,
+  "name": "Sarjon Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ShichijoBridge",
+  "flag_hash": "0xE12F0AFE",
+  "ap_id": 6081679,
+  "name": "Shichijo Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ShigonDam",
+  "flag_hash": "0x4E798832",
+  "ap_id": 6081680,
+  "name": "Shigon Dam",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ShijoBridge",
+  "flag_hash": "0x57C1E588",
+  "ap_id": 6081681,
+  "name": "Shijo Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ShinyarkiVillage",
+  "flag_hash": "0x40060961",
+  "ap_id": 6081682,
+  "name": "Shinyarki Village",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_SnowStatue",
+  "flag_hash": "0xA31A50AA",
+  "ap_id": 6081683,
+  "name": "Snow Statue",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_SojijiPark",
+  "flag_hash": "0x8AE6EDD7",
+  "ap_id": 6081684,
+  "name": "Sojiji Park",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_SotonkaBridge",
+  "flag_hash": "0x46F6E384",
+  "ap_id": 6081685,
+  "name": "Sotonka Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_SouthGerudoLegacy",
+  "flag_hash": "0xD8E21026",
+  "ap_id": 6081686,
+  "name": "South Gerudo Legacy",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_SouthMine",
+  "flag_hash": "0xD8F19A2A",
+  "ap_id": 6081687,
+  "name": "South Mine",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_StartPoint",
+  "flag_hash": "0xC409B5E2",
+  "ap_id": 6081688,
+  "name": "Start Point",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_StonePillers",
+  "flag_hash": "0x0FE7E6AB",
+  "ap_id": 6081689,
+  "name": "Stone Pillers",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_SusukadiBridge",
+  "flag_hash": "0x94DDF95C",
+  "ap_id": 6081690,
+  "name": "Susukadi Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TabantaBridge",
+  "flag_hash": "0x2FA52B7E",
+  "ap_id": 6081691,
+  "name": "Tabanta Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TabantaBridgeHatago",
+  "flag_hash": "0x62FFFA64",
+  "ap_id": 6081692,
+  "name": "Tabanta Bridge Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TabantaCrater",
+  "flag_hash": "0x8C8E9401",
+  "ap_id": 6081693,
+  "name": "Tabanta Crater",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TabantaHatago",
+  "flag_hash": "0xED1341FD",
+  "ap_id": 6081694,
+  "name": "Tabanta Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TabantaVillage",
+  "flag_hash": "0x99277060",
+  "ap_id": 6081695,
+  "name": "Tabanta Village",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TamourHatago",
+  "flag_hash": "0x16B9C598",
+  "ap_id": 6081696,
+  "name": "Tamour Hatago",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TamourHatago2",
+  "flag_hash": "0xE4171CBE",
+  "ap_id": 6081697,
+  "name": "Tamour Hatago2",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TaserakaBridge",
+  "flag_hash": "0x1A2CADF2",
+  "ap_id": 6081698,
+  "name": "Taseraka Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_Taura",
+  "flag_hash": "0x4695D38C",
+  "ap_id": 6081699,
+  "name": "Taura",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TimesShrine",
+  "flag_hash": "0x095288B6",
+  "ap_id": 6081700,
+  "name": "Times Shrine",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ToriaBridge",
+  "flag_hash": "0x6C034B60",
+  "ap_id": 6081701,
+  "name": "Toria Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TotsugeBridge",
+  "flag_hash": "0x8B62694A",
+  "ap_id": 6081702,
+  "name": "Totsuge Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_TurasuBridge",
+  "flag_hash": "0xD78F2EAC",
+  "ap_id": 6081703,
+  "name": "Turasu Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_UMiiVillage",
+  "flag_hash": "0x26DAEEF2",
+  "ap_id": 6081704,
+  "name": "UMii Village",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_UMiiVillageShopBougu",
+  "flag_hash": "0x3187BBA5",
+  "ap_id": 6081705,
+  "name": "UMii Village Shop Bougu",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_UMiiVillageShopJewel",
+  "flag_hash": "0x3B930E2C",
+  "ap_id": 6081706,
+  "name": "UMii Village Shop Jewel",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_UMiiVillageShopYadoya",
+  "flag_hash": "0xD2180CE8",
+  "ap_id": 6081707,
+  "name": "UMii Village Shop Yadoya",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_UMiiVillageShopYorozu",
+  "flag_hash": "0x29AD3D74",
+  "ap_id": 6081708,
+  "name": "UMii Village Shop Yorozu",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ValleyVillage",
+  "flag_hash": "0x1F4BC09C",
+  "ap_id": 6081709,
+  "name": "Valley Village",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_WeaponCureSpring",
+  "flag_hash": "0xBFDD2802",
+  "ap_id": 6081710,
+  "name": "Weapon Cure Spring",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_WeaponCureSpring_02",
+  "flag_hash": "0x298B03FE",
+  "ap_id": 6081711,
+  "name": "Weapon Cure Spring 02",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_WeaponCureSpring_03",
+  "flag_hash": "0x5E8C3368",
+  "ap_id": 6081712,
+  "name": "Weapon Cure Spring 03",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_WeaponCureSpring_04",
+  "flag_hash": "0xC0E8A6CB",
+  "ap_id": 6081713,
+  "name": "Weapon Cure Spring 04",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_WetGarrison",
+  "flag_hash": "0x3F3D559E",
+  "ap_id": 6081714,
+  "name": "Wet Garrison",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_WhiteZora",
+  "flag_hash": "0xFF6F7AE4",
+  "ap_id": 6081715,
+  "name": "White Zora",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_WisdomFountain",
+  "flag_hash": "0xEA6E852B",
+  "ap_id": 6081716,
+  "name": "Wisdom Fountain",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_XekuBridge",
+  "flag_hash": "0x2CD6F581",
+  "ap_id": 6081717,
+  "name": "Xeku Bridge",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_YashinoLegacy",
+  "flag_hash": "0x5C7246C7",
+  "ap_id": 6081718,
+  "name": "Yashino Legacy",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "location",
+  "flag_name": "Location_ZonauLegacy",
+  "flag_hash": "0x4A46741A",
+  "ap_id": 6081719,
+  "name": "Zonau Legacy",
+  "region": "Hyrule World"
+ }
 ]
