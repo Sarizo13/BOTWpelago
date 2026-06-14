@@ -16,10 +16,12 @@ Prérequis :
 from __future__ import annotations
 
 import ctypes
+import json
 import logging
 import struct
 import zlib
 from ctypes import wintypes
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
@@ -169,13 +171,19 @@ class CemuMemoryBridge:
         bridge.detach()
     """
 
-    def __init__(self, exe_name: str = "cemu.exe") -> None:
+    def __init__(self, exe_name: str = "cemu.exe",
+                 template_store: Optional[Path] = None) -> None:
         self.exe_name   = exe_name
         self._pid:      Optional[int]   = None
         self._handle:   Optional[int]   = None
         self._gd_base:  Optional[int]   = None  # adresse host du début du buffer
         self._rupees_addr: Optional[int] = None  # adresse live du compteur de rubis
         self._inv_base:    Optional[int] = None  # adresse live du tableau PouchItem
+        # Cache local des templates PouchItem (par type) — survit aux sessions et permet
+        # la création live même quand l'inventaire courant n'a aucun item du même type.
+        self._template_store = template_store or (
+            Path.home() / ".botwpelago" / "pouch_templates.json")
+        self._templates: dict[str, dict] = self._load_templates()
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -196,6 +204,7 @@ class CemuMemoryBridge:
             return False
         log.info("[Mem] game_data localise @ 0x%012X (pid=%d)", self._gd_base, self._pid)
         self._locate_live_inventory()
+        self._auto_capture_templates()
         return True
 
     def detach(self) -> None:
@@ -624,6 +633,55 @@ class CemuMemoryBridge:
             cands[nodes[i + 1]["host"] + self._NODE_OFF_NEXT - nxt] += 1
         return cands.most_common(1)[0][0] if cands else None
 
+    @staticmethod
+    def _node_is_selfref(raw: bytes, guest_base: int) -> bool:
+        """Le pointeur interne @+0x64 retombe dans [guest_base, guest_base+stride)."""
+        p64 = struct.unpack_from(">I", raw, 0x64)[0]
+        return guest_base <= p64 < guest_base + _ITEM_STRIDE
+
+    def _load_templates(self) -> dict[str, dict]:
+        try:
+            return json.loads(self._template_store.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+
+    def _save_templates(self) -> None:
+        try:
+            self._template_store.parent.mkdir(parents=True, exist_ok=True)
+            self._template_store.write_text(
+                json.dumps(self._templates), encoding="utf-8")
+        except Exception as exc:  # noqa: BLE001
+            log.debug("[Mem] sauvegarde templates impossible: %s", exc)
+
+    def _auto_capture_templates(self) -> None:
+        """Met en cache un nœud-template propre par type présent dans l'inventaire live.
+        Appelé à chaque attach : jouer une fois avec des matériaux suffit à alimenter le
+        cache, qui sert ensuite à créer ces types même sur une save vide."""
+        if self._inv_base is None:
+            return
+        nodes = self._scan_pouch_nodes()
+        if not nodes:
+            return
+        base = self._derive_heap_base(nodes)
+        if base is None:
+            return
+        added = []
+        for n in nodes:
+            if not n["name"] or n["type"] == 0xFFFFFFFF or n["sub"] == 0xA:
+                continue
+            g = n["host"] - base
+            if not self._node_is_selfref(n["raw"], g):
+                continue
+            key = str(n["type"])
+            if key in self._templates:
+                continue
+            self._templates[key] = {"base": g, "hex": n["raw"].hex()}
+            added.append(n["type"])
+        if added:
+            self._save_templates()
+            log.info("[Mem] Templates PouchItem mis en cache (types %s) — création live "
+                     "possible même sur inventaire vide", sorted(set(added)))
+
     def live_create_item(self, item_name: str, item_type: int,
                           subtype: Optional[int] = None, value: int = 1) -> bool:
         """
@@ -648,56 +706,81 @@ class CemuMemoryBridge:
         def g2h(g): return g + base
         def h2g(h): return h - base
 
-        # template : même type, self-ref, en préférant le même subtype (évite les plats cuisinés)
         def is_selfref(n):
-            p64 = struct.unpack_from(">I", n["raw"], 0x64)[0]
-            ng = h2g(n["host"])
-            return ng <= p64 < ng + _ITEM_STRIDE
-        same_type = [n for n in nodes if n["name"] and n["type"] == item_type and is_selfref(n)]
-        if not same_type:
-            log.warning("[Mem] (live) pas de template type=%d pour %s — fallback save-file",
-                        item_type, item_name)
-            return False
-        # éviter les plats cuisinés (sub=0xA) comme template (icône calculée depuis la recette).
-        template = (
-            (subtype is not None and next((n for n in same_type if n["sub"] == subtype), None))
-            or next((n for n in same_type if n["sub"] != 0xA), None)
-            or same_type[0]
-        )
+            return self._node_is_selfref(n["raw"], h2g(n["host"]))
 
-        # nœud libre (type == 0xFFFFFFFF, nom vide)
+        # ── 1) Source de CONTENU (clone) : nœud live du même type, sinon template caché ──
+        same_type = [n for n in nodes if n["name"] and n["type"] == item_type and is_selfref(n)]
+        if same_type:
+            # éviter les plats cuisinés (sub=0xA) comme template (icône calculée depuis la recette)
+            content = (
+                (subtype is not None and next((n for n in same_type if n["sub"] == subtype), None))
+                or next((n for n in same_type if n["sub"] != 0xA), None)
+                or same_type[0]
+            )
+            content_raw, content_Tg = content["raw"], h2g(content["host"])
+            anchor = content                          # splice après ce même nœud (comportement éprouvé)
+        else:
+            tpl = self._templates.get(str(item_type))
+            if tpl is None:
+                log.warning("[Mem] (live) aucun template type=%d (ni live ni cache) pour %s "
+                            "— fallback save-file", item_type, item_name)
+                return False
+            content_raw, content_Tg = bytes.fromhex(tpl["hex"]), int(tpl["base"])
+            # ancre = nœud live de type <= item_type le plus haut (garde la liste triée)
+            live_sr = [n for n in nodes
+                       if n["name"] and n["type"] != 0xFFFFFFFF and is_selfref(n)]
+            lower = [n for n in live_sr if n["type"] <= item_type]
+            if not lower:
+                log.warning("[Mem] (live) pas d'ancre de liste pour %s — fallback save-file",
+                            item_name)
+                return False
+            anchor = max(lower, key=lambda n: (n["type"], n["slot"]))
+            log.info("[Mem] (live) template caché type=%d utilisé pour %s (ancre: %s)",
+                     item_type, item_name, anchor["name"])
+
+        # ── 2) Nœud libre cible ──
         free = next((n for n in nodes if n["type"] == 0xFFFFFFFF and not n["name"]), None)
         if free is None:
             log.warning("[Mem] (live) aucun nœud libre pour %s — fallback save-file", item_name)
             return False
 
-        T_h, F_h = template["host"], free["host"]
-        T_g, F_g = h2g(T_h), h2g(F_h)
+        F_h = free["host"]
+        F_g = h2g(F_h)
+        A_h = anchor["host"]
+        A_g = h2g(A_h)
 
-        # clone + re-base des pointeurs internes auto-référents
-        raw = bytearray(template["raw"])
+        # ── 3) Clone + re-base des pointeurs internes auto-référents (content_Tg -> F_g) ──
+        raw = bytearray(content_raw)
         for off in range(0, _ITEM_STRIDE, 4):
             w = struct.unpack_from(">I", raw, off)[0]
-            if T_g <= w < T_g + _ITEM_STRIDE:
-                struct.pack_into(">I", raw, off, F_g + (w - T_g))
+            if content_Tg <= w < content_Tg + _ITEM_STRIDE:
+                struct.pack_into(">I", raw, off, F_g + (w - content_Tg))
         # identité
         nb = item_name.encode("ascii")[:63]; nb += b"\x00" * (64 - len(nb))
         raw[self._NODE_OFF_NAME:self._NODE_OFF_NAME + 64] = nb
         struct.pack_into(">i", raw, self._NODE_OFF_VAL, value)
         if subtype is not None:
             struct.pack_into(">i", raw, self._NODE_OFF_SUB, subtype)
-        # liste primaire : F entre T et T.next  (le clone a déjà F.next = T.next via la copie)
-        T_next = struct.unpack_from(">I", template["raw"], self._NODE_OFF_NEXT)[0]
-        on_node_h = g2h(T_next - self._NODE_OFF_NEXT)
-        struct.pack_into(">I", raw, self._NODE_OFF_NEXT, T_next)
-        struct.pack_into(">I", raw, self._NODE_OFF_PREV, T_g + self._NODE_OFF_NEXT)
-        # liste secondaire : F.+0x21C hérite de l'ancien T.+0x21C (déjà dans le clone)
+
+        # ── 4) Splice F juste après l'ancre A, dans LES DEUX listes ──
+        # Relire les liens frais de A (le snapshot peut être légèrement périmé).
+        a_links = self._read(A_h + self._NODE_OFF_NEXT, 4)            # A.next  (-> &next.0x204)
+        a_sec   = self._read(A_h + self._NODE_OFF_SEC, 4)             # A.sec   (-> &next2.0x08)
+        if not a_links or not a_sec:
+            return False
+        A_next = struct.unpack(">I", a_links)[0]
+        A_sec  = struct.unpack(">I", a_sec)[0]
+        on_node_h = g2h(A_next - self._NODE_OFF_NEXT)                 # nœud suivant (liste primaire)
+        struct.pack_into(">I", raw, self._NODE_OFF_NEXT, A_next)              # F.next = A.next
+        struct.pack_into(">I", raw, self._NODE_OFF_PREV, A_g + self._NODE_OFF_NEXT)  # F.prev = &A.next
+        struct.pack_into(">I", raw, self._NODE_OFF_SEC,  A_sec)              # F.sec  = A.sec
 
         ok = self._write(F_h, bytes(raw))
-        ok &= self._write(T_h + self._NODE_OFF_NEXT, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
+        ok &= self._write(A_h + self._NODE_OFF_NEXT, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
         ok &= self._write(on_node_h + self._NODE_OFF_PREV, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
-        ok &= self._write(T_h + self._NODE_OFF_SEC, struct.pack(">I", F_g + self._NODE_OFF_NAME))
+        ok &= self._write(A_h + self._NODE_OFF_SEC, struct.pack(">I", F_g + self._NODE_OFF_NAME))
         if ok:
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s",
-                     item_name, item_type, value, template["name"])
+                     item_name, item_type, value, anchor["name"])
         return bool(ok)

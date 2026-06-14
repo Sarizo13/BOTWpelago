@@ -77,6 +77,7 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 - Outgoing item checks: client sends `LocationChecks(ap_id)`. No injection needed for outgoing.
 - Incoming ap_progression items: inject by setting flag to 1 when save is idle (title screen).
 - Gate enforcement: force flag to 0 until item received from AP (flag retention).
+- **Templates PouchItem cachés**: `live_create_item` clone un nœud du même type. Si l'inventaire n'en a aucun (save vide), il utilise un template caché dans `~/.botwpelago/pouch_templates.json` (auto-capturé à chaque attach sur inventaire peuplé ; ou `tools/capture_pouch_templates.py`). Adresses stockées en GUEST (vtables 0x10xxxxxx constantes en v208) → re-basées sur le nœud libre cible. Splice après une ancre live de type ≤ (liste triée).
 - **Baseline checks**: au 1er poll le provider snapshot les checks déjà vrais (ap_baseline.json dans le queue_dir) → jamais ré-émis. Effacée par reset_ap_state. Évite de re-balancer toute la progression/intro à la connexion.
 
 ## AP Protocol
