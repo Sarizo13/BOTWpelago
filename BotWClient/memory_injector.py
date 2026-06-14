@@ -624,14 +624,35 @@ class CemuMemoryBridge:
             nodes.append(dict(slot=slot, host=a, name=name, type=typ, sub=sub, raw=raw))
         return nodes
 
+    def _count_selfref(self, nodes: list[dict], base: int) -> int:
+        """Nombre de nœuds dont le pointeur interne +0x64 est cohérent avec `base`."""
+        return sum(1 for n in nodes
+                   if self._node_is_selfref(n["raw"], n["host"] - base))
+
     def _derive_heap_base(self, nodes: list[dict]) -> Optional[int]:
-        """cemu_mem_base tel que guest = host - base. Via adjacence tableau/liste."""
+        """cemu_mem_base tel que guest = host - base.
+
+        On collecte des candidats par adjacence tableau/liste (next @+0x204 et prev @+0x208),
+        puis on RETIENT celui qui maximise la cohérence interne (nb de nœuds self-ref via
+        +0x64). L'adjacence seule échoue sur inventaire fragmenté (slot[i].next ≠ slot[i+1]) ;
+        le critère self-ref tranche de façon fiable."""
         from collections import Counter
         cands: Counter = Counter()
         for i in range(len(nodes) - 1):
             nxt = struct.unpack_from(">I", nodes[i]["raw"], self._NODE_OFF_NEXT)[0]
             cands[nodes[i + 1]["host"] + self._NODE_OFF_NEXT - nxt] += 1
-        return cands.most_common(1)[0][0] if cands else None
+            prv = struct.unpack_from(">I", nodes[i + 1]["raw"], self._NODE_OFF_PREV)[0]
+            cands[nodes[i]["host"] + self._NODE_OFF_NEXT - prv] += 1
+        if not cands:
+            return None
+        # candidat qui maximise les nœuds self-ref ; départage par fréquence d'adjacence
+        best = max(cands, key=lambda b: (self._count_selfref(nodes, b), cands[b]))
+        n_sr = self._count_selfref(nodes, best)
+        if n_sr == 0:
+            log.warning("[Mem] base du tas douteuse (0 nœud self-ref sur %d)", len(nodes))
+            return None
+        log.debug("[Mem] base tas 0x%X (%d/%d nœuds self-ref)", best, n_sr, len(nodes))
+        return best
 
     @staticmethod
     def _node_is_selfref(raw: bytes, guest_base: int) -> bool:
@@ -667,8 +688,8 @@ class CemuMemoryBridge:
             return
         added = []
         for n in nodes:
-            if not n["name"] or n["type"] == 0xFFFFFFFF or n["sub"] == 0xA:
-                continue
+            if not n["name"] or n["type"] >= 0x20 or n["sub"] == 0xA:
+                continue  # type valide = 0..~9 ; >=0x20 (ou 0xFFFFFFFF) = nœud aberrant/libre
             g = n["host"] - base
             if not self._node_is_selfref(n["raw"], g):
                 continue
