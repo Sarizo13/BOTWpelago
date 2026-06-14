@@ -21,6 +21,7 @@ LOC_FILES = [PROJECT / "data" / "locations.json",
              PROJECT / "worlds" / "botw" / "data" / "locations.json"]
 LOCATION_BASE_ID = 6_081_400   # plage dédiée aux "lieux" (towers s'arrêtent à 6081315)
 QUEST_BASE_ID    = 6_082_000   # plage dédiée aux "quêtes/défis"
+MEMORY_BASE_ID   = 6_082_500   # plage dédiée aux "souvenirs"
 
 # flags de quête à EXCLURE (dev, goal, sous-étapes, doublons bêtes)
 QUEST_EXCLUDE = re.compile(
@@ -97,10 +98,18 @@ def main() -> None:
         lambda f: readable(re.sub(r"_Finish(ed)?$", "", f)),
         lambda f: "Hyrule World")
 
-    merged = existing + locs + quests
+    # souvenirs (IsGet_MemoryPhoto_NNN)
+    memories = add_batch(
+        [f for f in all_flags if f.startswith("IsGet_MemoryPhoto_")],
+        "memory", MEMORY_BASE_ID,
+        lambda f: "Souvenir " + f[len("IsGet_MemoryPhoto_"):],
+        lambda f: "Hyrule World")
+
+    merged = existing + locs + quests + memories
     for path in LOC_FILES:
         path.write_text(json.dumps(merged, ensure_ascii=False, indent=1), encoding="utf-8")
-        print(f"  écrit {path}  ({len(existing)} base + {len(locs)} lieux + {len(quests)} quêtes = {len(merged)})")
+        print(f"  écrit {path}  ({len(existing)} base + {len(locs)} lieux + {len(quests)} quêtes "
+              f"+ {len(memories)} souvenirs = {len(merged)})")
 
     print("\nAperçu quêtes:")
     for l in quests[:6]:

@@ -23,7 +23,7 @@ Two components: Python `.apworld` (server) + Python client (reads Cemu's `game_d
 | `BotWClient/providers/save_file.py` | SaveFileProvider + DeferredSaveInjector |
 | `BotWClient/save_parser.py` | Binary parser for game_data.sav |
 | `BotWClient/item_map.py` | AP item ID → InjectionSpec |
-| `data/locations.json` | 637 AP locations: 120 shrines + 15 towers + 4 beasts + 320 lieux + 178 quêtes (générés par tools/build_locations.py) |
+| `data/locations.json` | 651 AP locations: 120 shrines + 15 towers + 4 beasts + 320 lieux + 178 quêtes + 14 souvenirs (générés par tools/build_locations.py) |
 | `data/gate_items.json` | Key items: Paraglider, Master Sword, 4 Champions + runes |
 | `data/shrines.json` | 120 shrines indexed by dungeon_id |
 | `docs/memory_map.md` | Save file format, flag hash recipe, flag names |
@@ -47,7 +47,7 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 
 ## ID Ranges
 - Items: `6_080_000` (Paraglider) ... `6_080_013` (Champions) + `6_080_100`+ (filler)
-- Locations: shrines `6_081_000`–`6_081_119`; beasts `6_081_201`–`6_081_204`; towers `6_081_301`+; lieux (Location_*) `6_081_400`+; quêtes (*_Finish) `6_082_000`+
+- Locations: shrines `6_081_000`–`6_081_119`; beasts `6_081_201`–`6_081_204`; towers `6_081_301`+; lieux (Location_*) `6_081_400`+; quêtes (*_Finish) `6_082_000`+; souvenirs (IsGet_MemoryPhoto_*) `6_082_500`+
 - Filler items: ingrédients `6_080_200`+ (générés depuis data/botw_items.json via tools/build_loot_table.py)
 
 ## Key Flag Names (verified)

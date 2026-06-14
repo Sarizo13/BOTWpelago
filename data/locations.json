@@ -5214,5 +5214,117 @@
   "ap_id": 6082177,
   "name": "yorozu",
   "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_000",
+  "flag_hash": "0x72C7ED5E",
+  "ap_id": 6082500,
+  "name": "Souvenir 000",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_001",
+  "flag_hash": "0x05C0DDC8",
+  "ap_id": 6082501,
+  "name": "Souvenir 001",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_002",
+  "flag_hash": "0x9CC98C72",
+  "ap_id": 6082502,
+  "name": "Souvenir 002",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_003",
+  "flag_hash": "0xEBCEBCE4",
+  "ap_id": 6082503,
+  "name": "Souvenir 003",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_004",
+  "flag_hash": "0x75AA2947",
+  "ap_id": 6082504,
+  "name": "Souvenir 004",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_005",
+  "flag_hash": "0x02AD19D1",
+  "ap_id": 6082505,
+  "name": "Souvenir 005",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_006",
+  "flag_hash": "0x9BA4486B",
+  "ap_id": 6082506,
+  "name": "Souvenir 006",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_007",
+  "flag_hash": "0xECA378FD",
+  "ap_id": 6082507,
+  "name": "Souvenir 007",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_008",
+  "flag_hash": "0x7C1C656C",
+  "ap_id": 6082508,
+  "name": "Souvenir 008",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_009",
+  "flag_hash": "0x0B1B55FA",
+  "ap_id": 6082509,
+  "name": "Souvenir 009",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_010",
+  "flag_hash": "0x6BDCDC1F",
+  "ap_id": 6082510,
+  "name": "Souvenir 010",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_011",
+  "flag_hash": "0x1CDBEC89",
+  "ap_id": 6082511,
+  "name": "Souvenir 011",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_012",
+  "flag_hash": "0x85D2BD33",
+  "ap_id": 6082512,
+  "name": "Souvenir 012",
+  "region": "Hyrule World"
+ },
+ {
+  "category": "memory",
+  "flag_name": "IsGet_MemoryPhoto_013",
+  "flag_hash": "0xF2D58DA5",
+  "ap_id": 6082513,
+  "name": "Souvenir 013",
+  "region": "Hyrule World"
  }
 ]
