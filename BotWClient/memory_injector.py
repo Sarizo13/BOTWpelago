@@ -596,32 +596,42 @@ class CemuMemoryBridge:
         return ok
 
     # ── Création LIVE d'un nouvel item (insertion dans la liste PauseMenuDataMgr) ──
-    # Recette validée en jeu (cf. docs/status.md "live NEW-ITEM insertion") : on clone un
-    # item-template du même type, on re-base ses pointeurs internes auto-référents, on
-    # écrit le nom + la valeur, puis on splice le nœud dans LES DEUX listes (primaire
-    # +0x204/+0x208 ET secondaire +0x21C — le splice primaire seul gèle le jeu).
-    _NODE_OFF_NAME = 0x08
-    _NODE_OFF_TYPE = 0x20C
-    _NODE_OFF_SUB  = 0x210
-    _NODE_OFF_VAL  = 0x214
-    _NODE_OFF_NEXT = 0x204
-    _NODE_OFF_PREV = 0x208
-    _NODE_OFF_SEC  = 0x21C
+    # CADRAGE CORRIGÉ (2026-06-14, via hexdump) : le VRAI début de nœud est 0x20 AVANT le
+    # motif du nom (FixedSafeString @+0x20). Le header PouchItem (vtable/liens/type/value)
+    # précède le nom. Offsets depuis le vrai début S = (motif - 0x20) :
+    _NODE_HEADER_OFF = 0x20    # le motif "10 ?? ?? ?? 00 00 00 40" est à +0x20 du vrai début
+    _NODE_OFF_VTABLE = 0x00    # vtable PouchItem 0x1021B5D4
+    _NODE_OFF_NEXT = 0x04
+    _NODE_OFF_PREV = 0x08
+    _NODE_OFF_TYPE = 0x0C
+    _NODE_OFF_SUB  = 0x10
+    _NODE_OFF_VAL  = 0x14
+    _NODE_OFF_SEC  = 0x1C      # liste secondaire (intrusive) : champ "next"
+    _NODE_OFF_SECHOOK = 0x28   # cible des pointeurs de la liste secondaire (= région du nom, vérifié hexdump)
+    _NODE_OFF_NAME = 0x28      # buffer du FixedSafeString
 
     def _scan_pouch_nodes(self) -> list[dict]:
-        """Liste les nœuds PouchItem (host, name, type, raw 0x220) depuis _inv_base."""
+        """Liste les nœuds PouchItem (host=vrai début, name, type, sub, raw 0x220).
+
+        On détecte toujours le motif du nom (FixedSafeString), mais on cadre le nœud sur
+        son vrai début (motif - 0x20) pour lire type/value/liens du BON item."""
         if self._inv_base is None:
             return []
         nodes = []
         for slot in range(self._PORCH_SLOTS):
-            a = self._inv_base + slot * _ITEM_STRIDE
-            raw = self._read(a, _ITEM_STRIDE)
-            if not raw or not self._matches_item_pattern(raw[:8]):
+            a = self._inv_base + slot * _ITEM_STRIDE          # position du motif (nom)
+            head = self._read(a, 8)
+            if not self._matches_item_pattern(head):
                 break
-            name = raw[8:8+40].split(b"\x00")[0].decode("ascii", errors="replace")
+            host = a - self._NODE_HEADER_OFF                  # vrai début du nœud
+            raw = self._read(host, _ITEM_STRIDE)
+            if not raw:
+                break
+            name = raw[self._NODE_OFF_NAME:self._NODE_OFF_NAME + 40] \
+                .split(b"\x00")[0].decode("ascii", errors="replace")
             typ = struct.unpack_from(">I", raw, self._NODE_OFF_TYPE)[0]
             sub = struct.unpack_from(">I", raw, self._NODE_OFF_SUB)[0]
-            nodes.append(dict(slot=slot, host=a, name=name, type=typ, sub=sub, raw=raw))
+            nodes.append(dict(slot=slot, host=host, name=name, type=typ, sub=sub, raw=raw))
         return nodes
 
     def _count_selfref(self, nodes: list[dict], base: int) -> int:
@@ -656,9 +666,16 @@ class CemuMemoryBridge:
 
     @staticmethod
     def _node_is_selfref(raw: bytes, guest_base: int) -> bool:
-        """Le pointeur interne @+0x64 retombe dans [guest_base, guest_base+stride)."""
-        p64 = struct.unpack_from(">I", raw, 0x64)[0]
-        return guest_base <= p64 < guest_base + _ITEM_STRIDE
+        """Au moins 3 pointeurs internes de la structure du nom (>=0x20) retombent dans
+        [guest_base, guest_base+stride) — robuste au cadrage exact."""
+        cnt = 0
+        for off in range(0x20, _ITEM_STRIDE, 4):
+            w = struct.unpack_from(">I", raw, off)[0]
+            if guest_base <= w < guest_base + _ITEM_STRIDE:
+                cnt += 1
+                if cnt >= 3:
+                    return True
+        return False
 
     def _load_templates(self) -> dict[str, dict]:
         try:
@@ -800,7 +817,7 @@ class CemuMemoryBridge:
         ok = self._write(F_h, bytes(raw))
         ok &= self._write(A_h + self._NODE_OFF_NEXT, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
         ok &= self._write(on_node_h + self._NODE_OFF_PREV, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
-        ok &= self._write(A_h + self._NODE_OFF_SEC, struct.pack(">I", F_g + self._NODE_OFF_NAME))
+        ok &= self._write(A_h + self._NODE_OFF_SEC, struct.pack(">I", F_g + self._NODE_OFF_SECHOOK))
         if ok:
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s",
                      item_name, item_type, value, anchor["name"])
