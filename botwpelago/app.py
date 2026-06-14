@@ -45,6 +45,7 @@ class App:
             "slot":        tk.StringVar(value=self.cfg.slot),
             "password":    tk.StringVar(value=self.cfg.password),
             "cemu_folder": tk.StringVar(value=self.cfg.cemu_folder),
+            "save_path":   tk.StringVar(value=self.cfg.save_path),
         }
         self.auto_var = tk.BooleanVar(value=self.cfg.auto_connect)
         self.overlay_var = tk.BooleanVar(value=self.cfg.overlay_enabled)
@@ -69,6 +70,15 @@ class App:
         self._entries.append(cemu_ent)
         self.browse_btn = ttk.Button(frm, text="Parcourir…", command=self._browse_cemu)
         self.browse_btn.grid(row=r, column=2, **pad)
+        r += 1
+
+        # dossier de save dédié (profil) — surveille UNIQUEMENT ce dossier (save propre/neuve)
+        ttk.Label(frm, text="Dossier de save dédié (optionnel)").grid(row=r, column=0, sticky="w", **pad)
+        save_ent = ttk.Entry(frm, textvariable=self.vars["save_path"])
+        save_ent.grid(row=r, column=1, sticky="ew", **pad)
+        self._entries.append(save_ent)
+        self.browse_save_btn = ttk.Button(frm, text="Parcourir…", command=self._browse_save)
+        self.browse_save_btn.grid(row=r, column=2, **pad)
         r += 1
 
         # boutons pré-vol "Vérifier Cemu" + "Réinitialiser progression"
@@ -111,6 +121,12 @@ class App:
         d = filedialog.askdirectory(title="Dossier d'installation de Cemu")
         if d:
             self.vars["cemu_folder"].set(d)
+
+    def _browse_save(self) -> None:
+        d = filedialog.askdirectory(
+            title="Dossier de save dédié (ex: .../user/80000003 — profil neuf pour l'AP)")
+        if d:
+            self.vars["save_path"].set(d)
 
     def _autodetect_cemu(self) -> None:
         """Si le dossier Cemu est vide, le déduire du process Cemu en cours (si lancé)."""
@@ -158,6 +174,7 @@ class App:
         self.cfg.slot = self.vars["slot"].get().strip()
         self.cfg.password = self.vars["password"].get()
         self.cfg.cemu_folder = self.vars["cemu_folder"].get().strip()
+        self.cfg.save_path = self.vars["save_path"].get().strip()
         self.cfg.auto_connect = self.auto_var.get()
         self.cfg.overlay_enabled = self.overlay_var.get()
         self.cfg.save()
@@ -223,6 +240,7 @@ class App:
             if str(ent["state"]) != field_state:
                 ent["state"] = field_state
         self.browse_btn["state"] = field_state
+        self.browse_save_btn["state"] = field_state
         self.reset_btn["state"] = field_state
         self.root.after(200, self._poll)
 
