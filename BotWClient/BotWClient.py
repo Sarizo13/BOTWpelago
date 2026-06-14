@@ -338,12 +338,22 @@ def _parser() -> argparse.ArgumentParser:
 
 def resolve_provider_root(cemu: Optional[str] = None, slot: Optional[str] = None,
                           save: Optional[str] = None) -> Path:
-    """Localise la racine save : --save > --slot > auto-détection. Partagé par build_client + reset."""
+    """Localise la racine save : --save > --slot > auto-détection. Partagé par build_client + reset.
+
+    Sans --slot/--save : renvoie le DOSSIER DE PROFIL (…/<profile>/) et non un fichier figé,
+    pour que le provider relise le sous-save le plus récent à chaque poll (BotW alterne 0..7)."""
     if save:
         return Path(save)
     if slot:
         return _find_slot_dir(cemu, slot) or Path("__missing__")
-    return find_save_file(cemu) or Path("game_data.sav")
+    f = find_save_file(cemu)
+    if f is not None:
+        # f = …/<profile>/<n>/game_data.sav  -> remonter au dossier de profil (suit la rotation)
+        profile_dir = f.parent.parent
+        if profile_dir.is_dir():
+            return profile_dir
+        return f
+    return Path("game_data.sav")
 
 
 def _ws_url(connect: str) -> str:
