@@ -31,8 +31,27 @@ def readable(s: str) -> str:
     return s.replace("_", " ").strip()
 
 
+# Routage région heuristique (conservateur). Ordre = priorité.
+# NB: gates de tenues "souples" en BotW -> surtout du flavor de logique. Inconnu -> Hyrule World.
+REGION_RULES = [
+    ("Gerudo Town",       r"^Gerudo$|GerudoTown"),
+    ("Gerudo Highlands",  r"GerudoSummit|GerudoHighland|MountGranajh|Risoka|Sturnida|Gerudo.*Mountain"),
+    ("Eldin",             r"Eldin|DeathMountain|Goron|Darb|Medingo|Gorae|Daruk|Cephla|Abandoned.*Mine|Isle ?of ?Rabac|Gut ?Check"),
+    ("Hebra",             r"Hebra|Tabantha|Rito|Snowfield|Pikida|Biron|Talonto|Selmie|Flight ?Range|Coldsnap|Sturnida"),
+]
+
+
+def classify_region(loc_suffix: str) -> str:
+    for region, pat in REGION_RULES:
+        if re.search(pat, loc_suffix, re.I):
+            return region
+    return "Hyrule World"
+
+
 def main() -> None:
-    existing = json.loads(LOC_FILES[0].read_text(encoding="utf-8"))
+    loaded = json.loads(LOC_FILES[0].read_text(encoding="utf-8"))
+    # idempotent : on repart des locations NON-"location" (139 sanctuaires/tours/bêtes)
+    existing = [l for l in loaded if l["category"] != "location"]
     existing_flags = {l["flag_name"] for l in existing}
     existing_ids = {l["ap_id"] for l in existing}
 
@@ -48,13 +67,14 @@ def main() -> None:
             continue
         while apid in existing_ids:
             apid += 1
+        suffix = f[len("Location_"):]
         new.append({
             "category": "location",
             "flag_name": f,
             "flag_hash": crc(f),
             "ap_id": apid,
-            "name": readable(f[len("Location_"):]),
-            "region": "Hyrule World",
+            "name": readable(suffix),
+            "region": classify_region(suffix),
         })
         apid += 1
 

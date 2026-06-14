@@ -1389,7 +1389,7 @@
   "flag_hash": "0x237A4D8A",
   "ap_id": 6081419,
   "name": "Death Mountain Hatago",
-  "region": "Hyrule World"
+  "region": "Eldin"
  },
  {
   "category": "location",
@@ -1397,7 +1397,7 @@
   "flag_hash": "0xBA52D9E9",
   "ap_id": 6081420,
   "name": "Death Mountain Entrance",
-  "region": "Hyrule World"
+  "region": "Eldin"
  },
  {
   "category": "location",
@@ -2597,7 +2597,7 @@
   "flag_hash": "0x7E6AC510",
   "ap_id": 6081570,
   "name": "Gerudo",
-  "region": "Hyrule World"
+  "region": "Gerudo Town"
  },
  {
   "category": "location",
@@ -2637,7 +2637,7 @@
   "flag_hash": "0xEB962EE5",
   "ap_id": 6081575,
   "name": "Goron",
-  "region": "Hyrule World"
+  "region": "Eldin"
  },
  {
   "category": "location",
@@ -2645,7 +2645,7 @@
   "flag_hash": "0x6B3090C4",
   "ap_id": 6081576,
   "name": "Goron Bridge",
-  "region": "Hyrule World"
+  "region": "Eldin"
  },
  {
   "category": "location",
@@ -2701,7 +2701,7 @@
   "flag_hash": "0xFAAB284D",
   "ap_id": 6081583,
   "name": "Hebra Bottom Remains",
-  "region": "Hyrule World"
+  "region": "Hebra"
  },
  {
   "category": "location",
@@ -2709,7 +2709,7 @@
   "flag_hash": "0xE66F047B",
   "ap_id": 6081584,
   "name": "Hebra Remains",
-  "region": "Hyrule World"
+  "region": "Hebra"
  },
  {
   "category": "location",
@@ -3421,7 +3421,7 @@
   "flag_hash": "0xA262D614",
   "ap_id": 6081673,
   "name": "Rito",
-  "region": "Hyrule World"
+  "region": "Hebra"
  },
  {
   "category": "location",
@@ -3429,7 +3429,7 @@
   "flag_hash": "0x79431CD8",
   "ap_id": 6081674,
   "name": "Rito Hatago",
-  "region": "Hyrule World"
+  "region": "Hebra"
  },
  {
   "category": "location",
