@@ -20,6 +20,11 @@ FLAG_NAMES = PROJECT / "flag_names.txt"
 LOC_FILES = [PROJECT / "data" / "locations.json",
              PROJECT / "worlds" / "botw" / "data" / "locations.json"]
 LOCATION_BASE_ID = 6_081_400   # plage dédiée aux "lieux" (towers s'arrêtent à 6081315)
+QUEST_BASE_ID    = 6_082_000   # plage dédiée aux "quêtes/défis"
+
+# flags de quête à EXCLURE (dev, goal, sous-étapes, doublons bêtes)
+QUEST_EXCLUDE = re.compile(
+    r"TestQuest|^Test|GanonQuest|_Relic_|_Intro_|_Playing_|_Ready_|Demo_Finish|^OPDemo|_Step", re.I)
 
 
 def crc(name: str) -> str:
@@ -50,42 +55,56 @@ def classify_region(loc_suffix: str) -> str:
 
 def main() -> None:
     loaded = json.loads(LOC_FILES[0].read_text(encoding="utf-8"))
-    # idempotent : on repart des locations NON-"location" (139 sanctuaires/tours/bêtes)
-    existing = [l for l in loaded if l["category"] != "location"]
+    # idempotent : on repart des 139 de base (sanctuaires/tours/bêtes)
+    existing = [l for l in loaded if l["category"] in ("shrine", "tower", "beast")]
     existing_flags = {l["flag_name"] for l in existing}
     existing_ids = {l["ap_id"] for l in existing}
+    used_names = {l["name"] for l in existing}
 
-    loc_flags = sorted({
-        line.strip() for line in FLAG_NAMES.read_text(encoding="ascii", errors="ignore").splitlines()
-        if line.strip().startswith("Location_")
-    })
+    all_flags = [line.strip() for line in
+                 FLAG_NAMES.read_text(encoding="ascii", errors="ignore").splitlines() if line.strip()]
 
-    new = []
-    apid = LOCATION_BASE_ID
-    for f in loc_flags:
-        if f in existing_flags:
-            continue
-        while apid in existing_ids:
+    def add_batch(flags, category, base_id, name_fn, region_fn):
+        out = []
+        apid = base_id
+        for f in sorted(set(flags)):
+            if f in existing_flags:
+                continue
+            nm = name_fn(f)
+            if not nm or nm in used_names:
+                continue
+            used_names.add(nm)
+            while apid in existing_ids:
+                apid += 1
+            out.append({"category": category, "flag_name": f, "flag_hash": crc(f),
+                        "ap_id": apid, "name": nm, "region": region_fn(f)})
+            existing_ids.add(apid)
             apid += 1
-        suffix = f[len("Location_"):]
-        new.append({
-            "category": "location",
-            "flag_name": f,
-            "flag_hash": crc(f),
-            "ap_id": apid,
-            "name": readable(suffix),
-            "region": classify_region(suffix),
-        })
-        apid += 1
+        return out
 
-    merged = existing + new
+    # lieux découverts (Location_*)
+    locs = add_batch(
+        [f for f in all_flags if f.startswith("Location_")],
+        "location", LOCATION_BASE_ID,
+        lambda f: readable(f[len("Location_"):]),
+        lambda f: classify_region(f[len("Location_"):]))
+
+    # quêtes / défis (*_Finish / *_Finished, hors dev/goal/sous-étapes/bêtes)
+    quests = add_batch(
+        [f for f in all_flags if (f.endswith("_Finish") or f.endswith("_Finished"))
+         and not QUEST_EXCLUDE.search(f)],
+        "quest", QUEST_BASE_ID,
+        lambda f: readable(re.sub(r"_Finish(ed)?$", "", f)),
+        lambda f: "Hyrule World")
+
+    merged = existing + locs + quests
     for path in LOC_FILES:
         path.write_text(json.dumps(merged, ensure_ascii=False, indent=1), encoding="utf-8")
-        print(f"  écrit {path}  ({len(existing)} existantes + {len(new)} lieux = {len(merged)})")
+        print(f"  écrit {path}  ({len(existing)} base + {len(locs)} lieux + {len(quests)} quêtes = {len(merged)})")
 
-    print("\nAperçu nouveaux lieux:")
-    for l in new[:6]:
-        print(f"  {l['ap_id']}  {l['flag_name']:32s} {l['flag_hash']}  {l['name']}")
+    print("\nAperçu quêtes:")
+    for l in quests[:6]:
+        print(f"  {l['ap_id']}  {l['flag_name']:32s} {l['name']}")
 
 
 if __name__ == "__main__":
