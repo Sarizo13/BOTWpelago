@@ -58,7 +58,14 @@ class Overlay:
         if not _HAVE_WIN:
             return
         try:
-            self._hwnd = self.win.winfo_id()
+            hwnd = self.win.winfo_id()
+            try:                       # remonter à la fenêtre racine (Tk peut envelopper)
+                root = _user32.GetAncestor(hwnd, 2)   # GA_ROOT
+                if root:
+                    hwnd = root
+            except Exception:
+                pass
+            self._hwnd = hwnd
             ex = _user32.GetWindowLongW(self._hwnd, _GWL_EXSTYLE)
             ex |= _WS_EX_TOPMOST | _WS_EX_NOACTIVATE | _WS_EX_TOOLWINDOW
             _user32.SetWindowLongW(self._hwnd, _GWL_EXSTYLE, ex)

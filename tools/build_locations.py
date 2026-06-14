@@ -23,9 +23,13 @@ LOCATION_BASE_ID = 6_081_400   # plage dédiée aux "lieux" (towers s'arrêtent 
 QUEST_BASE_ID    = 6_082_000   # plage dédiée aux "quêtes/défis"
 MEMORY_BASE_ID   = 6_082_500   # plage dédiée aux "souvenirs"
 
-# flags de quête à EXCLURE (dev, goal, sous-étapes, doublons bêtes)
+# flags de quête à EXCLURE (dev, goal, sous-étapes, doublons bêtes, ÉVÉNEMENTS INTERNES de l'intro)
 QUEST_EXCLUDE = re.compile(
-    r"TestQuest|^Test|GanonQuest|_Relic_|_Intro_|_Playing_|_Ready_|Demo_Finish|^OPDemo|_Step", re.I)
+    r"TestQuest|^Test|GanonQuest|_Relic_|_Intro_|_Playing_|_Ready_|Demo_Finish|^OPDemo|_Step"
+    r"|ChoiceExclude|_Choice|FirstTower|^Npc_King_|Tutorial|_Attention", re.I)
+
+# flags "lieu" à EXCLURE : internes / découverts d'office au démarrage forcé (pas de vrais checks)
+LOC_EXCLUDE = re.compile(r"^StartPoint$|^HopesPlateau$|Test|Demo|Dummy", re.I)
 
 
 def crc(name: str) -> str:
@@ -83,9 +87,10 @@ def main() -> None:
             apid += 1
         return out
 
-    # lieux découverts (Location_*)
+    # lieux découverts (Location_*) — hors internes/intro
     locs = add_batch(
-        [f for f in all_flags if f.startswith("Location_")],
+        [f for f in all_flags if f.startswith("Location_")
+         and not LOC_EXCLUDE.search(f[len("Location_"):])],
         "location", LOCATION_BASE_ID,
         lambda f: readable(f[len("Location_"):]),
         lambda f: classify_region(f[len("Location_"):]))

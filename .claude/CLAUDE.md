@@ -23,7 +23,7 @@ Two components: Python `.apworld` (server) + Python client (reads Cemu's `game_d
 | `BotWClient/providers/save_file.py` | SaveFileProvider + DeferredSaveInjector |
 | `BotWClient/save_parser.py` | Binary parser for game_data.sav |
 | `BotWClient/item_map.py` | AP item ID → InjectionSpec |
-| `data/locations.json` | 651 AP locations: 120 shrines + 15 towers + 4 beasts + 320 lieux + 178 quêtes + 14 souvenirs (générés par tools/build_locations.py) |
+| `data/locations.json` | 646 AP locations: 120 shrines + 15 towers + 4 beasts + 318 lieux + 175 quêtes + 14 souvenirs (générés par tools/build_locations.py ; flags internes/intro exclus) |
 | `data/gate_items.json` | Key items: Paraglider, Master Sword, 4 Champions + runes |
 | `data/shrines.json` | 120 shrines indexed by dungeon_id |
 | `docs/memory_map.md` | Save file format, flag hash recipe, flag names |
@@ -77,6 +77,7 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 - Outgoing item checks: client sends `LocationChecks(ap_id)`. No injection needed for outgoing.
 - Incoming ap_progression items: inject by setting flag to 1 when save is idle (title screen).
 - Gate enforcement: force flag to 0 until item received from AP (flag retention).
+- **Baseline checks**: au 1er poll le provider snapshot les checks déjà vrais (ap_baseline.json dans le queue_dir) → jamais ré-émis. Effacée par reset_ap_state. Évite de re-balancer toute la progression/intro à la connexion.
 
 ## AP Protocol
 Client sends: `Connect`, `LocationChecks`, `StatusUpdate`

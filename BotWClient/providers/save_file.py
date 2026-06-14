@@ -63,7 +63,7 @@ def reset_ap_state(provider_root: Path) -> int:
     sur une nouvelle seed. Retourne le nombre de fichiers supprimés."""
     qdir = provider_root if provider_root.is_dir() else provider_root.parent
     n = 0
-    for name in ("ap_pending_items.json", "ap_client_state.json"):
+    for name in ("ap_pending_items.json", "ap_client_state.json", "ap_baseline.json"):
         f = qdir / name
         if f.exists():
             try:
@@ -280,6 +280,9 @@ class SaveFileProvider(GameStateProvider):
         self._mtime     = 0.0
         self._save:     Optional[ParsedSave] = None
         self._reported: set[int] = set()
+        qdir            = save_path if save_path.is_dir() else save_path.parent
+        self._baseline_path = qdir / "ap_baseline.json"
+        self._baselined = False
 
     def _resolve(self) -> Optional[Path]:
         """Return the game_data.sav to read (handles both exact-file and slot-dir)."""
@@ -313,10 +316,37 @@ class SaveFileProvider(GameStateProvider):
             log.warning("Save parse error: %s", exc)
             return False
 
+    def _apply_baseline(self) -> None:
+        """Au 1er poll : charge (ou capture) la baseline = checks déjà faits au démarrage
+        du run. Ils ne seront jamais ré-émis (anti-spam au démarrage + flags d'intro).
+        Effacée par « Réinitialiser (nouvelle seed) » → re-capturée au prochain run."""
+        self._baselined = True
+        if self._save is None:
+            return
+        if self._baseline_path.exists():
+            try:
+                ids = json.loads(self._baseline_path.read_text(encoding="utf-8"))
+                self._reported.update(int(i) for i in ids)
+                log.info("[Baseline] %d check(s) déjà faits ignorés (run en cours)", len(ids))
+                return
+            except Exception:
+                pass
+        done = [ap_id for fhash, ap_id in _LOC_HASH_TO_AP_ID.items()
+                if self._save.get_bool(fhash)]
+        self._reported.update(done)
+        try:
+            self._baseline_path.write_text(json.dumps(done), encoding="utf-8")
+        except Exception:
+            pass
+        log.info("[Baseline] %d check(s) déjà faits au démarrage ignorés "
+                 "(seuls les NOUVEAUX compteront)", len(done))
+
     def poll(self) -> list[int]:
         self._reload()
         if self._save is None:
             return []
+        if not self._baselined:
+            self._apply_baseline()
         new: list[int] = []
         for fhash, ap_id in _LOC_HASH_TO_AP_ID.items():
             if ap_id not in self._reported and self._save.get_bool(fhash):
