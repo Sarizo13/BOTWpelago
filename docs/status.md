@@ -16,6 +16,12 @@ plus optional hard-enforcement via a romfs mod.
 
 ---
 
+> **Naming / file-location note (reconciled).** Older sections below refer to
+> `memory_bridge.py` as a "drafted, unvalidated" v2 component. It shipped as
+> **`BotWClient/memory_injector.py`** (`CemuMemoryBridge`) and is now implemented and wired
+> (live rupee + PouchItem injection — see §1b). The "item received" overlay (§1c) shipped as
+> **`botwpelago/overlay.py`**, not `BotWClient/overlay.py`.
+
 ## 1. SOLVED — facts now established (do not re-litigate)
 
 ### Save format

@@ -32,7 +32,7 @@ from typing import Optional, Set
 
 import websockets
 
-from BotWClient.providers.base import GameStateProvider, ItemInjector
+from BotWClient.providers.base import GameStateProvider
 from BotWClient.providers.save_file import (
     SaveFileProvider, DeferredSaveInjector,
     ap_state_report, get_location_info, _current_save_in_slot,
