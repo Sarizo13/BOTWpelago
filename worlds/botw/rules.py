@@ -22,11 +22,6 @@ from typing import TYPE_CHECKING
 
 from worlds.generic.Rules import set_rule
 
-from .regions import (
-    REGION_GREAT_PLATEAU, REGION_HYRULE_WORLD,
-    REGION_ELDIN, REGION_HEBRA, REGION_GERUDO_HIGHLAND, REGION_GERUDO_TOWN,
-)
-
 if TYPE_CHECKING:
     from . import BotWWorld
 
@@ -38,7 +33,7 @@ CHAMPION_NAMES = [
 ]
 
 
-def set_rules(world: "BotWWorld", regions: dict) -> None:
+def set_rules(world: BotWWorld, regions: dict) -> None:
     player = world.player
     mw     = world.multiworld
 
