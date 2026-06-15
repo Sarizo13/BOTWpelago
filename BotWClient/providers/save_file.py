@@ -620,19 +620,22 @@ class DeferredSaveInjector(ItemInjector):
                     all_ok = False
 
             elif isinstance(action, InjectionSpec.AddPouchItem):
-                ok = False
-                # 1) bump instantané si l'item est DÉJÀ en poche (le jeu le connaît → persiste)
+                # BotW a 2 inventaires : le RECORD PorchItem (gd_base, sauvegardé/rechargé)
+                # et le RUNTIME (affiché, non sérialisé). On écrit les DEUX :
+                #  (a) record gd_base -> persistance (compte/icône corrects, un seul stack,
+                #      zéro fantôme — c'est la voie officielle du jeu).
+                persisted = self._bridge.add_porch_item(action.item_name, action.amount)
+                #  (b) runtime live -> affichage instantané SI l'item est déjà en poche.
+                #      (Pas de live_create_item ici : un nœud runtime créé = fantôme non
+                #      persistant. Les NOUVEAUX types s'affichent au rechargement.)
+                shown_live = False
                 if self._bridge.has_live_inventory:
-                    new_val = self._bridge.live_add_item_qty(action.item_name, action.amount)
-                    ok = new_val is not None
-                # 2) sinon : enregistrement PorchItem du jeu (gd_base). FIABLE — c'est ce que
-                #    le jeu sérialise et recharge (icône/compte corrects, un seul stack). La
-                #    création de nœud live (live_create_item) est volontairement écartée du flux
-                #    AP : elle fabrique des nœuds runtime non persistés → fantômes + pertes.
-                if not ok:
-                    ok = self._bridge.add_porch_item(action.item_name, action.amount)
-                if ok:
-                    log.info("  [Mem] %s  +%d %s", spec.ap_item_name, action.amount, action.item_name)
+                    shown_live = self._bridge.live_add_item_qty(
+                        action.item_name, action.amount) is not None
+                if persisted:
+                    how = "live + sauvé" if shown_live else "sauvé (visible au rechargement)"
+                    log.info("  [Mem] %s  +%d %s (%s)",
+                             spec.ap_item_name, action.amount, action.item_name, how)
                 else:
                     all_ok = False
 
