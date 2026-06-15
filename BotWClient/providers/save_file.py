@@ -626,9 +626,12 @@ class DeferredSaveInjector(ItemInjector):
                     new_val = self._bridge.live_add_item_qty(action.item_name, action.amount)
                     ok = new_val is not None
                     # 2) sinon, création d'un nouvel item live (insertion dans la liste)
+                    #    SAUF les key-items (type 9 : spirit orbs…) que le jeu gère lui-même
+                    #    comme des singletons → un nœud créé en plus = stack fantôme sans
+                    #    image. Pour eux on passe par le disque (incrémente le vrai compteur).
                     if not ok:
                         info = pouch_item_info(action.item_name)
-                        if info:
+                        if info and info.get("type") != 9:
                             ok = self._bridge.live_create_item(
                                 action.item_name, info["type"], info.get("sub"), action.amount)
                 if ok:
