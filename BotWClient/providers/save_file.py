@@ -537,7 +537,7 @@ class DeferredSaveInjector(ItemInjector):
         Safe to call even when not can_inject_now — will skip item injection
         but still log pending count.
         """
-        retained  = self._enforce_retention()
+        self._enforce_retention()
         injected  = self._inject_pending() if self.can_inject_now else []
 
         if self._queue and not self.can_inject_now:

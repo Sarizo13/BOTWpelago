@@ -1,10 +1,16 @@
 # Agent Brief — BotW Archipelago (Cemu / Wii U)
 
-> **How to use this file.** Open the repo (`d:\Project arch BOTW`) in VS Code,
-> then in Claude Code: *"Read `docs/AGENT_BRIEF.md` and start with P0."*
-> This brief is the single source of truth for the project's current direction.
-> Where it conflicts with `CLAUDE.md` / `memory_map.md` / `README.md`, **this file wins**
-> until those docs are reconciled (that is task P0).
+> **⚠️ HISTORICAL / SUPERSEDED — kept for context only.**
+> The current source of truth is **[`docs/status.md`](status.md)** (plus `CLAUDE.md` / `README.md`).
+> Several "blockers" below are now **solved** — do **not** action the P0/P1 tasks as if open:
+> - The **hash recipe is solved & proven**: `flag_id = zlib.crc32(name.encode("ascii")) & 0xFFFFFFFF`,
+>   stored big-endian (P1 done — see `status.md` §1).
+> - Detection, gating and the goal condition are **wired** (P0–P3 essentially done).
+> - The live-memory component shipped as **`BotWClient/memory_injector.py`** — this brief calls it
+>   `memory_bridge.py` / `providers/memory_bridge.py`, **which do not exist**.
+> - Cemu: **any** version works for the save-file path; only **BotW 1.5.0** is pinned (not "Cemu 2.x").
+>
+> Read `docs/status.md` first. Everything below is historical rationale and the original task plan.
 
 ---
 

@@ -22,7 +22,6 @@ import struct
 import zlib
 import logging
 from dataclasses import dataclass, field
-from typing import Optional
 
 log = logging.getLogger("BotW.SaveParser")
 
@@ -164,7 +163,7 @@ def inspect_save(data: bytes) -> str:
     saved = parse(data)
     bool_count = sum(1 for v in saved.flags.values() if v in (0, 1))
     set_count  = sum(1 for v in saved.flags.values() if v == 1)
-    out.append(f"── Flag summary ──")
+    out.append("── Flag summary ──")
     out.append(f"  Total entries : {len(saved.flags):,}")
     out.append(f"  Bool (0 or 1) : {bool_count:,}  ({100*bool_count/len(saved.flags):.1f}%)")
     out.append(f"  Set to True   : {set_count:,}")
