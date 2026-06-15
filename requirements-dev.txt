@@ -1,0 +1,9 @@
+# Tooling, tests and game-data extraction (NOT required to run the client).
+-r requirements.txt
+
+pytest>=8
+ruff>=0.6
+
+# oead: SARC / BYML / MSBT extraction for the scripts in tools/ (extract_*.py …).
+# NEVER used on game_data.sav (that is a custom binary — see BotWClient/save_parser.py).
+oead

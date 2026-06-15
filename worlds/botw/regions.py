@@ -15,9 +15,9 @@ Anything with an empty or unrecognised region defaults to Hyrule World.
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING
 
-from BaseClasses import Region, Entrance
+from BaseClasses import Entrance, Region
 
 from .locations import BotWLocation, location_table
 
@@ -42,7 +42,7 @@ _ALL_REGIONS = {
 }
 
 
-def create_regions(world: "BotWWorld") -> Dict[str, Region]:
+def create_regions(world: BotWWorld) -> dict[str, Region]:
     player = world.player
     mw = world.multiworld
 
@@ -50,7 +50,7 @@ def create_regions(world: "BotWWorld") -> Dict[str, Region]:
     menu = Region("Menu", player, mw)
 
     # Create all game regions.
-    regions: Dict[str, Region] = {
+    regions: dict[str, Region] = {
         name: Region(name, player, mw) for name in _ALL_REGIONS
     }
 

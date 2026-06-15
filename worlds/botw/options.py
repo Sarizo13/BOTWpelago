@@ -1,15 +1,11 @@
 from dataclasses import dataclass
-from Options import Toggle, DefaultOnToggle, Range, PerGameCommonOptions
+
+from Options import DefaultOnToggle, PerGameCommonOptions, Range
 
 
 class IncludeTowers(DefaultOnToggle):
     """Include the 15 Sheikah Tower activations as location checks."""
     display_name = "Include Sheikah Towers"
-
-
-class IncludeKorokSeeds(Toggle):
-    """Include Korok Seed locations. Off by default — 900 checks makes games very long."""
-    display_name = "Include Korok Seeds"
 
 
 class RequiredShrineCount(Range):
@@ -43,7 +39,6 @@ class RandomizeMasterSword(DefaultOnToggle):
 @dataclass
 class BotWOptions(PerGameCommonOptions):
     include_towers: IncludeTowers
-    include_korok_seeds: IncludeKorokSeeds
     required_shrine_count: RequiredShrineCount
     randomize_champion_abilities: RandomizeChampionAbilities
     randomize_master_sword: RandomizeMasterSword

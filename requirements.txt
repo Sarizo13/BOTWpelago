@@ -1,0 +1,4 @@
+# Runtime dependency for the BotW Archipelago client (BotWClient / botwpelago).
+# Everything else used at runtime — ctypes, tkinter, asyncio, json, zlib — is part
+# of the Python 3.11+ standard library.
+websockets>=12

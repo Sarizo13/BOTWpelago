@@ -37,12 +37,16 @@ def _load_gate_items() -> dict:
         return json.load(fh)
 
 def _load_pouch_items() -> dict:
-    """Table de loot des items de poche livrables en live (type/sub par actor name)."""
-    try:
-        with open(_DATA_DIR / "pouch_items.json", encoding="utf-8") as fh:
-            return json.load(fh).get("items", {})
-    except FileNotFoundError:
-        return {}
+    """Base d'items de poche livrables en live (type/sub par actor name).
+    botw_items.json (base complète, ~130 ingrédients) + pouch_items.json (overrides manuels)."""
+    merged: dict = {}
+    for fname in ("botw_items.json", "pouch_items.json"):
+        try:
+            with open(_DATA_DIR / fname, encoding="utf-8") as fh:
+                merged.update(json.load(fh).get("items", {}))
+        except FileNotFoundError:
+            pass
+    return merged
 
 _LOCATIONS   = _load_locations()
 _GATE_ITEMS  = _load_gate_items()
@@ -52,6 +56,22 @@ _POUCH_ITEMS = _load_pouch_items()
 def pouch_item_info(item_name: str) -> Optional[dict]:
     """Retourne {'type':int, 'sub':int?} pour un item livrable en live, ou None."""
     return _POUCH_ITEMS.get(item_name)
+
+
+def reset_ap_state(provider_root: Path) -> int:
+    """Supprime l'état AP persisté (file d'attente + item_index) pour repartir de zéro
+    sur une nouvelle seed. Retourne le nombre de fichiers supprimés."""
+    qdir = provider_root if provider_root.is_dir() else provider_root.parent
+    n = 0
+    for name in ("ap_pending_items.json", "ap_client_state.json", "ap_baseline.json"):
+        f = qdir / name
+        if f.exists():
+            try:
+                f.unlink()
+                n += 1
+            except OSError:
+                pass
+    return n
 
 # flag_hash (int) → ap_id
 _LOC_HASH_TO_AP_ID: dict[int, int] = {
@@ -260,6 +280,9 @@ class SaveFileProvider(GameStateProvider):
         self._mtime     = 0.0
         self._save:     Optional[ParsedSave] = None
         self._reported: set[int] = set()
+        qdir            = save_path if save_path.is_dir() else save_path.parent
+        self._baseline_path = qdir / "ap_baseline.json"
+        self._baselined = False
 
     def _resolve(self) -> Optional[Path]:
         """Return the game_data.sav to read (handles both exact-file and slot-dir)."""
@@ -293,10 +316,37 @@ class SaveFileProvider(GameStateProvider):
             log.warning("Save parse error: %s", exc)
             return False
 
+    def _apply_baseline(self) -> None:
+        """Au 1er poll : charge (ou capture) la baseline = checks déjà faits au démarrage
+        du run. Ils ne seront jamais ré-émis (anti-spam au démarrage + flags d'intro).
+        Effacée par « Réinitialiser (nouvelle seed) » → re-capturée au prochain run."""
+        self._baselined = True
+        if self._save is None:
+            return
+        if self._baseline_path.exists():
+            try:
+                ids = json.loads(self._baseline_path.read_text(encoding="utf-8"))
+                self._reported.update(int(i) for i in ids)
+                log.info("[Baseline] %d check(s) déjà faits ignorés (run en cours)", len(ids))
+                return
+            except Exception:
+                pass
+        done = [ap_id for fhash, ap_id in _LOC_HASH_TO_AP_ID.items()
+                if self._save.get_bool(fhash)]
+        self._reported.update(done)
+        try:
+            self._baseline_path.write_text(json.dumps(done), encoding="utf-8")
+        except Exception:
+            pass
+        log.info("[Baseline] %d check(s) déjà faits au démarrage ignorés "
+                 "(seuls les NOUVEAUX compteront)", len(done))
+
     def poll(self) -> list[int]:
         self._reload()
         if self._save is None:
             return []
+        if not self._baselined:
+            self._apply_baseline()
         new: list[int] = []
         for fhash, ap_id in _LOC_HASH_TO_AP_ID.items():
             if ap_id not in self._reported and self._save.get_bool(fhash):
@@ -497,7 +547,14 @@ class DeferredSaveInjector(ItemInjector):
             )
         if injected:
             names = ", ".join(s.ap_item_name for s in injected)
-            log.info("[ACTION] Items injectes : %s — rechargez votre sauvegarde !", names)
+            # un reload n'est nécessaire QUE pour les flags (Paraglider, capacités…) ;
+            # les items de poche / rubis sont déjà appliqués en live.
+            needs_reload = any(isinstance(a, InjectionSpec.SetFlag)
+                               for s in injected for a in s.actions)
+            if self._bridge and self._bridge.is_attached and not needs_reload:
+                log.info("[OK] Items appliqués en jeu : %s", names)
+            else:
+                log.info("[ACTION] Items injectés : %s — rechargez la save pour les flags/capacités.", names)
         return injected
 
     def _inject_pending(self) -> list[InjectionSpec]:
@@ -507,7 +564,7 @@ class DeferredSaveInjector(ItemInjector):
         if p is None:
             return []
         from BotWClient.item_map import get_spec as _get_spec
-        log.info("Save idle — injecting %d item(s) into %s", len(self._queue), p.name)
+        log.info("Injection de %d item(s)…", len(self._queue))
         injected:  list[InjectionSpec] = []
         remaining: list[dict]          = []
         for entry in self._queue:

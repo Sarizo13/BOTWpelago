@@ -2,23 +2,24 @@
 The Legend of Zelda: Breath of the Wild — Archipelago World
 BotW 1.5.0 Wii U / Cemu.
 
-Locations : 120 shrines + 15 towers + 4 Divine Beasts = 139 (towers optional)
+Locations : 646 — 120 shrines + 15 towers + 4 Divine Beasts + 318 lieux
+            + 175 quêtes + 14 souvenirs (towers optional)
 Items     : Paraglider + Master Sword + 4 Champions (progression) + Spirit Orbs + filler
 Goal      : Defeat Calamity Ganon (Master Sword + 4 Champions + N shrines cleared)
 """
 from __future__ import annotations
 
-import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from BaseClasses import Item, ItemClassification, Tutorial
-from worlds.AutoWorld import World, WebWorld
+from BaseClasses import ItemClassification, Tutorial
 
-from .items   import BotWItem, BotWItemData, item_table, item_name_to_id, filler_item_names
-from .locations import BotWLocation, location_table, location_name_to_id, shrine_locations, tower_locations
-from .regions import create_regions
-from .rules   import set_rules
+from worlds.AutoWorld import WebWorld, World
+
+from .items import BotWItem, filler_item_names, item_name_to_id, item_table
+from .locations import BotWLocation, location_name_to_id
 from .options import BotWOptions
+from .regions import create_regions
+from .rules import set_rules
 
 GAME_NAME = "The Legend of Zelda: Breath of the Wild"
 
@@ -56,8 +57,8 @@ class BotWWorld(World):
     options:            BotWOptions
     web               = BotWWebWorld()
 
-    item_name_to_id:     Dict[str, int] = item_name_to_id
-    location_name_to_id: Dict[str, int] = location_name_to_id
+    item_name_to_id:     dict[str, int] = item_name_to_id
+    location_name_to_id: dict[str, int] = location_name_to_id
 
     item_name_groups = {
         "Champions": {"Revali's Gale", "Daruk's Protection", "Mipha's Grace", "Urbosa's Fury"},
@@ -84,7 +85,7 @@ class BotWWorld(World):
         ]
         target = len(active_locs)
 
-        pool: List[BotWItem] = []
+        pool: list[BotWItem] = []
 
         # Add all progression items (except excluded).
         for name, data in item_table.items():
@@ -95,16 +96,13 @@ class BotWWorld(World):
             for _ in range(data.count):
                 pool.append(self.create_item(name))
 
-        # Pad with filler to hit the target count.
-        filler_cycle = [n for n in filler_item_names if n != "Spirit Orb"]
-        fi = 0
-        while len(pool) < target:
-            # Alternate: 2 spirit orbs then 1 other filler
-            if len(pool) % 3 != 2 or not filler_cycle:
-                pool.append(self.create_item("Spirit Orb"))
-            else:
-                pool.append(self.create_item(filler_cycle[fi % len(filler_cycle)]))
-                fi += 1
+        # Pad with filler via tirage PONDÉRÉ (count = poids) pour des quantités/items variés :
+        # Spirit Orb domine (count élevé), les ~130 ingrédients apportent la variété.
+        names   = [n for n in filler_item_names if n in item_table]
+        weights = [max(1, item_table[n].count) for n in names]
+        if names:
+            while len(pool) < target:
+                pool.append(self.create_item(self.random.choices(names, weights=weights)[0]))
 
         self.multiworld.itempool += pool[:target]
 
@@ -141,7 +139,7 @@ class BotWWorld(World):
 
     # ── Slot data (sent to client at connect) ─────────────────────────────────
 
-    def fill_slot_data(self) -> Dict[str, Any]:
+    def fill_slot_data(self) -> dict[str, Any]:
         """
         Sent to the BotW client via AP Connected message.
         The client uses this to know which flags to poll and which gates to enforce.

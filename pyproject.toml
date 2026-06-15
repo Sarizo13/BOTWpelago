@@ -1,0 +1,23 @@
+# Dev-tooling configuration for the BotW Archipelago project.
+#
+# This repository is an Archipelago world (worlds/botw) plus a client (BotWClient,
+# botwpelago), meant to be dropped into an Archipelago install — it is not a
+# standalone installable package, so no [build-system] is declared. This file only
+# configures the shared dev tooling (ruff, pytest).
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# The world package re-exports symbols for the Archipelago API surface.
+"worlds/botw/__init__.py" = ["F401"]
+
+[tool.pytest.ini_options]
+# Tests live at the top level (not under worlds/botw/) so collection never imports
+# worlds/botw/__init__.py, which requires the Archipelago framework on the path.
+testpaths = ["tests"]
+python_files = ["test_*.py"]

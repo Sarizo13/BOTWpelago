@@ -1,80 +1,98 @@
 # BotW Archipelago
 
-Archipelago multiworld randomizer support for **The Legend of Zelda: Breath of the Wild** (Wii U / Cemu).
+Archipelago multiworld randomizer support for **The Legend of Zelda: Breath of the Wild**
+(Wii U / Cemu, game version **1.5.0**).
 
-## Architecture
+Two halves: a Python `.apworld` (server-side logic) and a Python client that reads Cemu's
+`game_data.sav` (and, when available, Cemu's live memory) to detect checks and inject
+received items.
+
+## Repository layout
 
 ```
-worlds/botw/          # .apworld — AP server-side Python logic
-BotWClient/           # AP client — reads Cemu memory, talks to AP server
-data/                 # Static JSON data (shrines, items)
-docs/                 # Memory map, setup guide
+worlds/botw/     # .apworld — AP server-side logic (items, locations, rules, regions)
+BotWClient/      # AP client — save parsing, WebSocket to AP server, Cemu memory injection
+botwpelago/      # Tkinter GUI that wraps BotWClient (python -m botwpelago)
+data/            # Generated JSON data (locations, items, flag maps…)
+tools/           # Build pipeline + reverse-engineering scripts
+docs/            # Status brief, memory map, setup guide
 ```
 
 ## Components
 
-| Component | Language | Role |
-|-----------|----------|------|
-| `worlds/botw` | Python 3.11+ | AP World: items, locations, logic, rules |
-| `BotWClient/BotWClient.py` | Python 3.11+ | AP Client: reads Cemu via pymem, WebSocket to AP |
-| `data/shrines.json` | JSON | All 120 shrine definitions with region and AP IDs |
+| Component | Role |
+|-----------|------|
+| `worlds/botw/` | AP World: item pool, 646 locations, access rules, region graph |
+| `BotWClient/BotWClient.py` | AP client: WebSocket protocol, check polling, item injection |
+| `BotWClient/save_parser.py` | Parser for `game_data.sav` (custom big-endian binary — **not** BYML) |
+| `BotWClient/memory_injector.py` | Optional live Cemu memory bridge (rupees + PouchItem injection) |
+| `botwpelago/` | GUI launcher + desktop "item received" overlay |
 
-## How It Works
+## How it works
 
-1. **AP Server** generates a multiworld seed using the `botw` world.
-2. **Player** launches BotW on Cemu, then runs `BotWClient.py`.
-3. **Client** attaches to `cemu.exe` via `pymem`, polls shrine/event flags in memory.
-4. When a check is detected → client sends `LocationChecked` to AP server.
-5. AP server sends back items → client writes them into Cemu memory.
+1. The **AP server** generates a multiworld seed using the `botw` world.
+2. The player launches BotW on Cemu, then the client (`python -m botwpelago`, or the CLI
+   `python -m BotWClient.BotWClient`).
+3. The client reads `game_data.sav` and polls completion flags (`Clear_DungeonNNN`,
+   `MapTower_NN`, `Clear_Remains*`, plus place / quest / memory flags).
+4. On a flag flipping `0 → 1`, the client sends `LocationChecks(ap_id)` to the server.
+5. Received items are injected: flag items (Paraglider, Champions, Master Sword…) by
+   setting their save flag while idle at the title screen; inventory items and rupees live
+   via the memory bridge when it is attached to Cemu.
 
-## Locations (checks)
+Progression gating uses **flag retention**: `ap_progression` flags are forced to `0` until
+AP delivers the matching item (e.g. no Paraglider ⇒ stuck on the Great Plateau).
 
-| Category | Count | Notes |
-|----------|-------|-------|
-| Shrines (inner chest) | 120 | Core checks |
-| Divine Beast completions | 4 | Vah Medoh, Vah Rudania, Vah Ruta, Vah Naboris |
-| Sheikah Towers | 15 | Optional (toggle in options) |
-| Major side quests | ~10 | Optional (toggle in options) |
-| Korok Seeds | up to 900 | Optional, off by default |
+## Locations (646 checks)
 
-## Key Items
+| Category | Count | Flag pattern |
+|----------|-------|--------------|
+| Shrines | 120 | `Clear_DungeonNNN` |
+| Sheikah Towers | 15 (optional toggle) | `MapTower_NN` |
+| Divine Beasts | 4 | `Clear_Remains{Wind\|Fire\|Water\|Electric}` |
+| Places discovered | 318 | `Location_*` |
+| Quests & side challenges | 175 | `*_Finish` |
+| Memories / photos | 14 | `IsGet_MemoryPhoto_*` |
 
-- **Paraglider** — required to leave Great Plateau
-- **Runes** — Magnesis, Stasis, Cryonis, Remote Bomb
-- **Champion Abilities** — Revali's Gale, Mipha's Grace, Daruk's Protection, Urbosa's Fury
-- **Spirit Orbs** — 4 = 1 Heart Container or Stamina Vessel at statue
-- **Key Armor** — Flamebreaker (Death Mountain), Gerudo Vai Outfit (Gerudo Town), etc.
+## Key items
+
+- **Paraglider** (`IsGet_PlayerStole2`) — required to leave the Great Plateau.
+- **Runes** (Magnesis, Stasis, Cryonis, Remote Bomb, Camera) — **starting items**, never in
+  the pool (needed to clear the Plateau shrines, which are themselves checks).
+- **Champion Abilities** — Revali's Gale, Daruk's Protection, Mipha's Grace, Urbosa's Fury.
+- **Master Sword** (`Get_MasterSword_Finish`).
+- **Spirit Orbs** + ingredient/filler items.
+
+## Goal
+
+Defeat Calamity Ganon: the Master Sword + the 4 Champion Abilities (when randomized) and
+`DungeonClearCounter >= Required Shrine Count` (an apworld option, evaluated client-side).
 
 ## Setup
 
-See [docs/setup.md](docs/setup.md).
+See [docs/setup.md](docs/setup.md). Current state, proofs and design notes live in
+[docs/status.md](docs/status.md) (the authoritative handoff brief).
 
 ## Dependencies
 
+Runtime client:
+
 ```
-pip install oead websockets
+pip install websockets
 ```
 
-| Software | Pinned version |
-|----------|----------------|
-| Cemu | 2.0 – 2.4 |
+(`ctypes`, `tkinter`, `asyncio`, `zlib` are part of the standard library.)
+
+The data/extraction scripts in `tools/` additionally use `oead` — **only** for reading game
+packs, never on `game_data.sav`.
+
+| Software | Version |
+|----------|---------|
 | BotW (Wii U) | **1.5.0** (all regions) |
-
-No memory scanning required — the client reads Cemu's `game_data.sav` (BYML).
-
-## Status
-
-> **WIP — scaffold only.** Logic rules, memory addresses, and item/location counts are incomplete.
-
-### TODO
-- [ ] Verify all 120 shrine memory flag addresses (see [docs/memory_map.md](docs/memory_map.md))
-- [ ] Complete access rules for all regions
-- [ ] Implement item injection (write to Cemu memory)
-- [ ] Test with real Cemu session
-- [ ] Submit .apworld to Archipelago upstream
+| Cemu | any version for the save-file path; live-memory path validated on 1.18.1 / v208 |
 
 ## References
 
 - [ArchipelagoMW](https://github.com/ArchipelagoMW/Archipelago) — AP framework
 - [MelonSpeedruns/BotwRandomizer](https://github.com/MelonSpeedruns/BotwRandomizer) — existing BotW randomizer
-- [Cemu Emulator](https://cemu.info) — Wii U emulator
+- [Cemu](https://cemu.info) — Wii U emulator

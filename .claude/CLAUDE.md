@@ -23,7 +23,7 @@ Two components: Python `.apworld` (server) + Python client (reads Cemu's `game_d
 | `BotWClient/providers/save_file.py` | SaveFileProvider + DeferredSaveInjector |
 | `BotWClient/save_parser.py` | Binary parser for game_data.sav |
 | `BotWClient/item_map.py` | AP item ID → InjectionSpec |
-| `data/locations.json` | 139 AP locations: 120 shrines + 15 towers + 4 beasts |
+| `data/locations.json` | 646 AP locations: 120 shrines + 15 towers + 4 beasts + 318 lieux + 175 quêtes + 14 souvenirs (générés par tools/build_locations.py ; flags internes/intro exclus) |
 | `data/gate_items.json` | Key items: Paraglider, Master Sword, 4 Champions + runes |
 | `data/shrines.json` | 120 shrines indexed by dungeon_id |
 | `docs/memory_map.md` | Save file format, flag hash recipe, flag names |
@@ -47,7 +47,8 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 
 ## ID Ranges
 - Items: `6_080_000` (Paraglider) ... `6_080_013` (Champions) + `6_080_100`+ (filler)
-- Locations: shrines `6_081_000`–`6_081_119`; beasts `6_081_201`–`6_081_204`; towers `6_081_301`+
+- Locations: shrines `6_081_000`–`6_081_119`; beasts `6_081_201`–`6_081_204`; towers `6_081_301`+; lieux (Location_*) `6_081_400`+; quêtes (*_Finish) `6_082_000`+; souvenirs (IsGet_MemoryPhoto_*) `6_082_500`+
+- Filler items: ingrédients `6_080_200`+ (générés depuis data/botw_items.json via tools/build_loot_table.py)
 
 ## Key Flag Names (verified)
 | Item | Flag | Hash |
@@ -76,6 +77,8 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 - Outgoing item checks: client sends `LocationChecks(ap_id)`. No injection needed for outgoing.
 - Incoming ap_progression items: inject by setting flag to 1 when save is idle (title screen).
 - Gate enforcement: force flag to 0 until item received from AP (flag retention).
+- **Templates PouchItem cachés**: `live_create_item` clone un nœud du même type. Si l'inventaire n'en a aucun (save vide), il utilise un template caché dans `~/.botwpelago/pouch_templates.json` (auto-capturé à chaque attach sur inventaire peuplé ; ou `tools/capture_pouch_templates.py`). Adresses stockées en GUEST (vtables 0x10xxxxxx constantes en v208) → re-basées sur le nœud libre cible. Splice après une ancre live de type ≤ (liste triée).
+- **Baseline checks**: au 1er poll le provider snapshot les checks déjà vrais (ap_baseline.json dans le queue_dir) → jamais ré-émis. Effacée par reset_ap_state. Évite de re-balancer toute la progression/intro à la connexion.
 
 ## AP Protocol
 Client sends: `Connect`, `LocationChecks`, `StatusUpdate`

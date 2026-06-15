@@ -10,10 +10,9 @@ Filler: Spirit Orbs + weapons/arrows/food to fill remaining location slots.
 """
 from __future__ import annotations
 
-import json
 import importlib.resources as _pkg
+import json
 from dataclasses import dataclass
-from typing import Dict, Optional, List
 
 from BaseClasses import Item, ItemClassification
 
@@ -22,10 +21,10 @@ ITEM_BASE_ID  = 6_080_000
 
 @dataclass
 class BotWItemData:
-    code: Optional[int]
+    code: int | None
     classification: ItemClassification
-    flag_name: Optional[str] = None   # present only for flag-injectable items
-    flag_hash: Optional[int] = None
+    flag_name: str | None = None   # present only for flag-injectable items
+    flag_hash: int | None = None
     count: int = 1                    # pool copies
 
 
@@ -36,10 +35,10 @@ class BotWItem(Item):
 _LOGICAL_ROLES = {"ap_progression", "ap_progression_logical"}
 
 
-def _load_gate_items() -> Dict[str, BotWItemData]:
+def _load_gate_items() -> dict[str, BotWItemData]:
     ref = _pkg.files(__package__).joinpath("data/gate_items.json")
     raw = json.loads(ref.read_text(encoding="utf-8"))
-    result: Dict[str, BotWItemData] = {}
+    result: dict[str, BotWItemData] = {}
     for entry in raw["items"]:
         if entry["role"] not in _LOGICAL_ROLES:
             continue
@@ -56,12 +55,12 @@ def _load_gate_items() -> Dict[str, BotWItemData]:
 # ── Item table ────────────────────────────────────────────────────────────────
 
 # Progression (flag-backed + logical — all ap_progression* entries from gate_items.json)
-_progression: Dict[str, BotWItemData] = _load_gate_items()
+_progression: dict[str, BotWItemData] = _load_gate_items()
 
-def _load_filler_items() -> Dict[str, BotWItemData]:
+def _load_filler_items() -> dict[str, BotWItemData]:
     ref = _pkg.files(__package__).joinpath("data/gate_items.json")
     raw = json.loads(ref.read_text(encoding="utf-8"))
-    result: Dict[str, BotWItemData] = {}
+    result: dict[str, BotWItemData] = {}
     for entry in raw.get("filler_items", []):
         result[entry["name"]] = BotWItemData(
             code=entry["ap_item_id"],
@@ -71,14 +70,14 @@ def _load_filler_items() -> Dict[str, BotWItemData]:
     return result
 
 
-_filler: Dict[str, BotWItemData] = _load_filler_items()
+_filler: dict[str, BotWItemData] = _load_filler_items()
 
-item_table: Dict[str, BotWItemData] = {**_progression, **_filler}
+item_table: dict[str, BotWItemData] = {**_progression, **_filler}
 
-item_name_to_id: Dict[str, int] = {
+item_name_to_id: dict[str, int] = {
     name: data.code for name, data in item_table.items() if data.code is not None
 }
 
 # Public lists
-progression_item_names: List[str] = list(_progression.keys())
-filler_item_names:      List[str] = list(_filler.keys())
+progression_item_names: list[str] = list(_progression.keys())
+filler_item_names:      list[str] = list(_filler.keys())
