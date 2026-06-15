@@ -621,31 +621,19 @@ class DeferredSaveInjector(ItemInjector):
 
             elif isinstance(action, InjectionSpec.AddPouchItem):
                 ok = False
+                # 1) bump instantané si l'item est DÉJÀ en poche (le jeu le connaît → persiste)
                 if self._bridge.has_live_inventory:
-                    # 1) item déjà présent → on incrémente la quantité (instantané)
                     new_val = self._bridge.live_add_item_qty(action.item_name, action.amount)
                     ok = new_val is not None
-                    # 2) sinon, création d'un nouvel item live (insertion dans la liste)
-                    #    SAUF les key-items (type 9 : spirit orbs…) que le jeu gère lui-même
-                    #    comme des singletons → un nœud créé en plus = stack fantôme sans
-                    #    image. Pour eux on passe par le disque (incrémente le vrai compteur).
-                    if not ok:
-                        info = pouch_item_info(action.item_name)
-                        if info and info.get("type") != 9:
-                            ok = self._bridge.live_create_item(
-                                action.item_name, info["type"], info.get("sub"), action.amount)
+                # 2) sinon : enregistrement PorchItem du jeu (gd_base). FIABLE — c'est ce que
+                #    le jeu sérialise et recharge (icône/compte corrects, un seul stack). La
+                #    création de nœud live (live_create_item) est volontairement écartée du flux
+                #    AP : elle fabrique des nœuds runtime non persistés → fantômes + pertes.
+                if not ok:
+                    ok = self._bridge.add_porch_item(action.item_name, action.amount)
                 if ok:
                     log.info("  [Mem] %s  +%d %s", spec.ap_item_name, action.amount, action.item_name)
-                # 3) création live impossible (pool de nœuds plein) :
-                #    on écrit le DISQUE seulement au menu titre (sinon l'auto-save écraserait),
-                #    sinon on garde l'item en file → re-tenté, et reçu dès le retour au menu.
-                elif p is not None and self._save_is_idle and \
-                        _add_porch_item_to_save(p, action.item_name, action.amount):
-                    log.info("  [Disque] %s  +%d %s — apparaît au prochain chargement de la save",
-                             spec.ap_item_name, action.amount, action.item_name)
                 else:
-                    log.info("  [Attente] %s : pool d'items plein — sera reçu au menu titre BotW",
-                             action.item_name)
                     all_ok = False
 
             else:
