@@ -515,10 +515,10 @@ class DeferredSaveInjector(ItemInjector):
         self._received.add(ap_item_id)
 
     @property
-    def can_inject_now(self) -> bool:
-        # Memory bridge attached = injection always possible (no reload needed)
-        if self._bridge and self._bridge.is_attached:
-            return True
+    def _save_is_idle(self) -> bool:
+        """True si la save n'a pas bougé depuis SAFE_WRITE_IDLE_SECONDS (≈ menu titre BotW).
+        Indépendant du bridge — sert à savoir quand on peut écrire le DISQUE sans risque
+        d'être écrasé par une auto-save du jeu."""
         p = self._resolve()
         if p is None:
             return False
@@ -530,6 +530,13 @@ class DeferredSaveInjector(ItemInjector):
             self._last_mtime = mtime
             self._last_change_time = time.monotonic()
         return (time.monotonic() - self._last_change_time) >= SAFE_WRITE_IDLE_SECONDS
+
+    @property
+    def can_inject_now(self) -> bool:
+        # Memory bridge attached = injection always possible (no reload needed)
+        if self._bridge and self._bridge.is_attached:
+            return True
+        return self._save_is_idle
 
     def flush(self) -> list[InjectionSpec]:
         """
@@ -589,10 +596,10 @@ class DeferredSaveInjector(ItemInjector):
         Otherwise: write to save file (requires game reload).
         """
         if self._bridge and self._bridge.is_attached:
-            return self._apply_actions_memory(spec)
+            return self._apply_actions_memory(spec, p)
         return self._apply_actions_savefile(p, spec)
 
-    def _apply_actions_memory(self, spec: InjectionSpec) -> bool:
+    def _apply_actions_memory(self, spec: InjectionSpec, p: Optional[Path] = None) -> bool:
         """Inject directly into Cemu's live memory — items appear immediately in-game."""
         all_ok = True
         for action in spec.actions:
@@ -624,12 +631,18 @@ class DeferredSaveInjector(ItemInjector):
                         if info:
                             ok = self._bridge.live_create_item(
                                 action.item_name, info["type"], info.get("sub"), action.amount)
-                # 3) dernier recours : save-file (nécessite reload)
-                if not ok:
-                    ok = self._bridge.add_porch_item(action.item_name, action.amount)
                 if ok:
                     log.info("  [Mem] %s  +%d %s", spec.ap_item_name, action.amount, action.item_name)
+                # 3) création live impossible (pool de nœuds plein) :
+                #    on écrit le DISQUE seulement au menu titre (sinon l'auto-save écraserait),
+                #    sinon on garde l'item en file → re-tenté, et reçu dès le retour au menu.
+                elif p is not None and self._save_is_idle and \
+                        _add_porch_item_to_save(p, action.item_name, action.amount):
+                    log.info("  [Disque] %s  +%d %s — apparaît au prochain chargement de la save",
+                             spec.ap_item_name, action.amount, action.item_name)
                 else:
+                    log.info("  [Attente] %s : pool d'items plein — sera reçu au menu titre BotW",
+                             action.item_name)
                     all_ok = False
 
             else:
