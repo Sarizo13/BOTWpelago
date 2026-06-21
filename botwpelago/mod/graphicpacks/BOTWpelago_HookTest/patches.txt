@@ -1,0 +1,31 @@
+[BOTWpelago_HookTest_V208]
+moduleMatches = 0x6267BFD0
+
+.origin = codecave
+
+# Magic pour localiser le compteur en memoire ("BBPE"), puis le compteur juste apres.
+_magic:
+.int 0x42425045
+_counter:
+.int 0
+.align 4
+
+# Hook par-frame : appele depuis la fonction de swap GX2 (FUN_031FA9C0), executee
+# chaque frame. On incremente _counter puis on rejoue l'instruction d'origine.
+frameCounterHook:
+stwu r1, -0x10(r1)
+stw r11, 0x8(r1)
+stw r12, 0xc(r1)
+lis r11, _counter@ha
+lwz r12, _counter@l(r11)
+addi r12, r12, 1
+stw r12, _counter@l(r11)
+lwz r11, 0x8(r1)
+lwz r12, 0xc(r1)
+addi r1, r1, 0x10
+mr r31, r3
+blr
+
+# Hook : remplace 'mr r31, r3' @0x031FA9CC (le mflr juste au-dessus a deja sauve LR,
+# donc le bla peut ecraser LR sans danger ; le blr du codecave revient a 0x031FA9D0).
+0x031FA9CC = bla frameCounterHook

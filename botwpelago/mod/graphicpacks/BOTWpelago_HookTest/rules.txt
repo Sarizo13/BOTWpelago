@@ -1,0 +1,6 @@
+[Definition]
+titleIds = 00050000101C9300,00050000101C9400,00050000101C9500
+name = "BOTWpelago — Hook Test (per-frame)"
+path = "The Legend of Zelda: Breath of the Wild/BOTWpelago/Hook Test"
+description = Test de hook par-frame : incremente un compteur dans le codecave a chaque frame (swap GX2). Sans effet de jeu. A activer pour valider le point de hook, puis desactiver.
+version = 7
