@@ -1,45 +1,105 @@
-[BOTWpelago_HookTest_V208]
+[BOTWpelago_GiveItem_V208]
 moduleMatches = 0x6267BFD0
 
 .origin = codecave
 
-_msg:
-.string "BOTWPELAGO_FRAME %d\n"
+; ── Mailbox (trouvee par Python via le marqueur) ──
+_marker:
+.string "BOTWPELAGOMBX1"
 .align 4
-_counter:
+_trigger:
 .int 0
+_ss_cstr:
+.int 0
+_ss_vtab:
+.int 0
+_name:
+.string "Item_Fruit_A"
+.align 4
 
-; hook par-frame (swap GX2) : incremente _counter, OSReport tous les 128 frames.
-; remplace 'mr r31, r3' @0x031FA9CC. Preserve r0 (LR du jeu) / r3 / r4 / r11 / r12.
-frameCounterHook:
-stwu r1, -0x20(r1)
-stw r0, 0x1c(r1)
-mflr r0
+; ── Hook par-frame (swap GX2 @0x031FA9CC, remplace 'mr r31,r3') ──
+; Si _trigger != 0 : addItem(mgr=*(0x10469978), &SafeString{&_name,0x1021B58C},
+;   type=7, list=mgr+0x4c, count=1, 0,0,0) puis _trigger=0.
+frameItemHook:
+stwu r1, -0x80(r1)
+stw r11, 0x10(r1)
+stw r12, 0x14(r1)
+lis r11, _trigger@ha
+lwz r12, _trigger@l(r11)
+cmpwi r12, 0
+bne _do
+lwz r12, 0x14(r1)
+lwz r11, 0x10(r1)
+addi r1, r1, 0x80
+mr r31, r3
+blr
+_do:
 stw r0, 0x18(r1)
-stw r3, 0x14(r1)
-stw r4, 0x10(r1)
-stw r11, 0xc(r1)
-stw r12, 0x8(r1)
-lis r11, _counter@ha
-lwz r12, _counter@l(r11)
-addi r12, r12, 1
-stw r12, _counter@l(r11)
-andi. r11, r12, 0x7F
-bne _skip
-lis r3, _msg@ha
-addi r3, r3, _msg@l
-mr r4, r12
-bl import.coreinit.OSReport
-_skip:
-lwz r0, 0x18(r1)
-mtlr r0
+mflr r0
+stw r0, 0x1c(r1)
+stw r3, 0x20(r1)
+stw r4, 0x24(r1)
+stw r5, 0x28(r1)
+stw r6, 0x2c(r1)
+stw r7, 0x30(r1)
+stw r8, 0x34(r1)
+stw r9, 0x38(r1)
+stw r10, 0x3c(r1)
+lis r3, 0x1047
+lwz r3, -0x6688(r3)
+cmpwi r3, 0
+beq _clear
+stw r3, 0x44(r1)
+addi r3, r3, 0x10
+lis r12, 0x030B
+ori r12, r12, 0xB668
+mtctr r12
+bctrl
+lis r5, _name@ha
+addi r5, r5, _name@l
+lis r6, _ss_cstr@ha
+addi r6, r6, _ss_cstr@l
+stw r5, 0(r6)
+lis r5, 0x1021
+ori r5, r5, 0xB58C
+stw r5, 4(r6)
+lwz r3, 0x44(r1)
+mr r4, r6
+li r5, 7
+addi r6, r3, 0x4c
+li r7, 1
+li r8, 0
+li r9, 0
+li r10, 0
+lis r12, 0x02EB
+ori r12, r12, 0x3DD0
+mtctr r12
+bctrl
+lwz r3, 0x44(r1)
+addi r3, r3, 0x10
+lis r12, 0x030B
+ori r12, r12, 0xB69C
+mtctr r12
+bctrl
+_clear:
+li r0, 0
+lis r11, _trigger@ha
+stw r0, _trigger@l(r11)
+lwz r3, 0x20(r1)
+lwz r4, 0x24(r1)
+lwz r5, 0x28(r1)
+lwz r6, 0x2c(r1)
+lwz r7, 0x30(r1)
+lwz r8, 0x34(r1)
+lwz r9, 0x38(r1)
+lwz r10, 0x3c(r1)
 lwz r0, 0x1c(r1)
-lwz r3, 0x14(r1)
-lwz r4, 0x10(r1)
-lwz r11, 0xc(r1)
-lwz r12, 0x8(r1)
-addi r1, r1, 0x20
+mtlr r0
+lwz r0, 0x18(r1)
+lwz r11, 0x10(r1)
+lwz r12, 0x14(r1)
+addi r1, r1, 0x80
 mr r31, r3
 blr
 
-0x031FA9CC = bla frameCounterHook
+0x031FA9CC = bla frameItemHook
