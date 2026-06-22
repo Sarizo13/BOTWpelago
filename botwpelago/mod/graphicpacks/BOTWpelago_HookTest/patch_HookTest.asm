@@ -8,10 +8,6 @@ _marker:
 .align 4
 _trigger:
 .int 0
-_ss_cstr:
-.int 0
-_ss_vtab:
-.int 0
 _name:
 .string "Item_Fruit_H"
 .align 4
@@ -42,39 +38,13 @@ stw r8, 0x34(r1)
 stw r9, 0x38(r1)
 stw r10, 0x3c(r1)
 lis r3, 0x1047
-lwz r3, -0x6688(r3)
-stw r3, 0x44(r1)
-cmpwi r3, 0
-beq _clear
-addi r3, r3, 0x10
-lis r12, 0x030B
-ori r12, r12, 0xB648
-mtctr r12
-bctrl
-lis r5, _name@ha
-addi r5, r5, _name@l
-lis r6, _ss_cstr@ha
-addi r6, r6, _ss_cstr@l
-stw r5, 0(r6)
-lis r5, 0x1021
-ori r5, r5, 0xB58C
-stw r5, 4(r6)
-lwz r3, 0x44(r1)
-li r4, 7
-mr r5, r6
-addi r6, r3, 0x4c
-li r7, 1
-li r8, 0
-li r9, 0
-li r10, 0
-lis r12, 0x02EB
-ori r12, r12, 0x0A50
-mtctr r12
-bctrl
-lwz r3, 0x44(r1)
-addi r3, r3, 0x10
-lis r12, 0x030B
-ori r12, r12, 0xB67C
+lwz r3, -0x357c(r3)
+lis r4, _name@ha
+addi r4, r4, _name@l
+lis r5, 0x1791
+ori r5, r5, 0x9F47
+lis r12, 0x0310
+ori r12, r12, 0xE824
 mtctr r12
 bctrl
 _clear:
