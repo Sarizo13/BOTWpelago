@@ -3,14 +3,13 @@ moduleMatches = 0x6267BFD0
 
 .origin = codecave
 
-; Magic "BBPE" pour localiser le compteur, puis le compteur juste apres.
+; magic BBPE (1111573061 = 0x42425045) puis le compteur juste apres
 _magic:
-.int 0x42425045
+.int 1111573061
 _counter:
 .int 0
 
-; Hook par-frame depuis la fonction de swap GX2 (executee chaque frame).
-; Incremente _counter puis rejoue l'instruction d'origine et revient.
+; hook par-frame depuis le swap GX2 ; incremente _counter et rejoue mr r31,r3
 frameCounterHook:
 stwu r1, -0x10(r1)
 stw r11, 0x8(r1)
@@ -25,5 +24,4 @@ addi r1, r1, 0x10
 mr r31, r3
 blr
 
-; remplace 'mr r31, r3' @0x031FA9CC ; le mflr au-dessus a deja sauve LR donc bla est sur.
 0x031FA9CC = bla frameCounterHook
