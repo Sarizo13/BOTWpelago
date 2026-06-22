@@ -13,13 +13,7 @@ _ss_cstr:
 _ss_vtab:
 .int 0
 _name:
-.string "Item_Fruit_A"
-.align 4
-_msgPre:
-.string "MBOXPRE vt=%08x\n"
-.align 4
-_msgPost:
-.string "MBOXPOST ssret=%08x\n"
+.string "Item_Fruit_H"
 .align 4
 
 frameItemHook:
@@ -47,6 +41,11 @@ stw r7, 0x30(r1)
 stw r8, 0x34(r1)
 stw r9, 0x38(r1)
 stw r10, 0x3c(r1)
+lis r3, 0x1047
+lwz r3, -0x6688(r3)
+stw r3, 0x44(r1)
+cmpwi r3, 0
+beq _clear
 lis r5, _name@ha
 addi r5, r5, _name@l
 lis r6, _ss_cstr@ha
@@ -55,22 +54,18 @@ stw r5, 0(r6)
 lis r5, 0x1021
 ori r5, r5, 0xB58C
 stw r5, 4(r6)
-lis r3, _msgPre@ha
-addi r3, r3, _msgPre@l
-mr r4, r5
-bl import.coreinit.OSReport
-lis r6, _ss_cstr@ha
-addi r6, r6, _ss_cstr@l
-lwz r4, 4(r6)
-lwz r12, 0x1c(r4)
+lwz r3, 0x44(r1)
+mr r4, r6
+li r5, 7
+addi r6, r3, 0x4c
+li r7, 1
+li r8, 0
+li r9, 0
+li r10, 0
+lis r12, 0x02EB
+ori r12, r12, 0x3DD0
 mtctr r12
-mr r3, r6
 bctrl
-mr r0, r3
-lis r3, _msgPost@ha
-addi r3, r3, _msgPost@l
-mr r4, r0
-bl import.coreinit.OSReport
 _clear:
 li r0, 0
 lis r11, _trigger@ha
