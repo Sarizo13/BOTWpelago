@@ -46,6 +46,11 @@ lwz r3, -0x6688(r3)
 stw r3, 0x44(r1)
 cmpwi r3, 0
 beq _clear
+addi r3, r3, 0x10
+lis r12, 0x030B
+ori r12, r12, 0xB648
+mtctr r12
+bctrl
 lis r5, _name@ha
 addi r5, r5, _name@l
 lis r6, _ss_cstr@ha
@@ -55,15 +60,21 @@ lis r5, 0x1021
 ori r5, r5, 0xB58C
 stw r5, 4(r6)
 lwz r3, 0x44(r1)
-mr r4, r6
-li r5, 7
+li r4, 7
+mr r5, r6
 addi r6, r3, 0x4c
 li r7, 1
 li r8, 0
 li r9, 0
 li r10, 0
 lis r12, 0x02EB
-ori r12, r12, 0x3DD0
+ori r12, r12, 0x0A50
+mtctr r12
+bctrl
+lwz r3, 0x44(r1)
+addi r3, r3, 0x10
+lis r12, 0x030B
+ori r12, r12, 0xB67C
 mtctr r12
 bctrl
 _clear:
