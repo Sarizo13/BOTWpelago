@@ -184,6 +184,7 @@ class BotWClient:
     connected:   bool       = False
     slot_data:   dict       = field(default_factory=dict)
     checked:     Set[int]   = field(default_factory=set)
+    slot_locations: Set[int] = field(default_factory=set)  # all location ids in this slot
     item_index:  int        = 0   # next expected item index from server
 
     async def run(self) -> None:
@@ -218,6 +219,9 @@ class BotWClient:
             self.connected = True
             self.slot_data = msg.get("slot_data", {})
             self.checked   = set(msg.get("checked_locations", []))
+            # The slot's full location set (mode-aware) = checked ∪ missing. The client
+            # polls every known flag but only emits checks that belong to this slot.
+            self.slot_locations = self.checked | set(msg.get("missing_locations", []))
             # Restore item_index from disk so restarts don't re-queue old items.
             self.item_index = self.injector.load_item_index()
             # Restore previously received items into the injector's received set.
@@ -266,7 +270,9 @@ class BotWClient:
             if not self.connected or not self.provider.is_available:
                 continue
 
-            new = [ap_id for ap_id in self.provider.poll() if ap_id not in self.checked]
+            new = [ap_id for ap_id in self.provider.poll()
+                   if ap_id not in self.checked
+                   and (not self.slot_locations or ap_id in self.slot_locations)]
             if new:
                 self.checked.update(new)
                 for ap_id in new:

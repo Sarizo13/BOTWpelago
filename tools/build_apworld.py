@@ -23,7 +23,7 @@ DEFAULT_INSTALL = Path(r"C:/ProgramData/Archipelago")
 # Files shipped in the apworld. Only what the world loads at runtime.
 PY_FILES = ["__init__.py", "items.py", "locations.py", "options.py", "regions.py", "rules.py"]
 EXTRA = ["archipelago.json"]
-DATA = ["gate_items.json", "shrine_chests.json"]
+DATA = ["gate_items.json", "shrine_chests.json", "locations.json"]
 
 
 def build() -> Path:

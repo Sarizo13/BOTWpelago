@@ -28,15 +28,21 @@ BOTWpelago (the player app)  ─►  reads the config  ─►  drives the embedd
 - Received items are injected live into Cemu's memory (rupees / pouch items) or via save
   flags (Paraglider, Champions, Master Sword) at the title screen.
 
-## Locations — 205 shrine chests
+## Locations & game modes
 
-| Set | Count | Detection flag |
-|-----|-------|----------------|
-| Base shrine chests | 186 | `CDungeon_TBox_Dungeon_{Stone\|Wood\|Iron}_<HashId>` |
-| DLC shrine chests | 19 (optional toggle) | same |
+The `game_mode` YAML option selects which location categories are active checks:
 
-Shrine *completion* is **not** a check — the player still explores and solves shrines freely
-(and shrine clears feed the goal counter).
+| Mode | Active categories | ~Checks |
+|------|-------------------|---------|
+| `all_shrines` | shrine completion + Divine Beasts | 124 |
+| `normal` (default) | Sheikah Towers + shrine chests + memories + quests + places + Divine Beasts | 712 |
+| `all` | everything above + shrine completion | 832 |
+
+Counts are base-game; `include_dlc_shrines` adds 19 DLC shrine chests. Each location is detected
+by its gamedata flag (shrines `Clear_DungeonNNN`, chests `CDungeon_TBox_Dungeon_<Material>_<HashId>`,
+towers `MapTower_NN`, beasts `Clear_Remains*`, etc.). Only **shrine chests** need the rando to place
+a green-rupee placeholder; the other categories are detected directly. The client polls every known
+flag and emits only the checks the server says belong to the slot, so it is mode-agnostic.
 
 ## Items & plateau
 

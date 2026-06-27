@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 
 from BaseClasses import Entrance, Region
 
-from .locations import BotWLocation, location_table
+from .locations import BotWLocation, active_locations
 
 if TYPE_CHECKING:
     from . import BotWWorld
@@ -54,12 +54,11 @@ def create_regions(world: BotWWorld) -> dict[str, Region]:
         name: Region(name, player, mw) for name in _ALL_REGIONS
     }
 
+    mode_key    = world.options.game_mode.current_key
     include_dlc = bool(world.options.include_dlc_shrines)
 
-    # Assign each shrine-chest location to its region (region pre-baked in data).
-    for loc_name, loc_data in location_table.items():
-        if loc_data.dlc and not include_dlc:
-            continue
+    # Assign each ACTIVE location (per game mode + DLC toggle) to its region.
+    for loc_name, loc_data in active_locations(mode_key, include_dlc).items():
         # Route to the correct region; unknown/empty → Hyrule World.
         r_name = loc_data.region if loc_data.region in _ALL_REGIONS else REGION_HYRULE_WORLD
         region = regions[r_name]
