@@ -36,7 +36,7 @@ import websockets
 from BotWClient.providers.base import GameStateProvider
 from BotWClient.providers.save_file import (
     SaveFileProvider, DeferredSaveInjector,
-    ap_state_report, get_location_info, _current_save_in_slot,
+    ap_state_report, get_location_info, _current_save_in_slot, reset_ap_state,
 )
 from BotWClient.item_map import get_spec
 from BotWClient.rando_reader import RandoReader, find_spoiler_log
@@ -56,12 +56,12 @@ GAME_NAME  = "The Legend of Zelda: Breath of the Wild"
 AP_VERSION = {"major": 0, "minor": 5, "build": 0, "class": "Version"}
 
 BOTW_TITLE_IDS = ["101c9400", "101c9500", "101c9300"]  # USA / EUR / JPN
-CEMU_SLOT_IDS  = [f"8000000{i}" for i in range(1, 7)]
 
 # Path up to the user-slot directory (one level above the numbered sub-saves).
 # Structure: {cemu_root}/mlc01/usr/save/00050000/{tid}/user/{slot}/{sub}/game_data.sav
 # where {sub} is a digit folder (0, 1, 2, …).
 _SLOT_SUBPATH = "mlc01/usr/save/00050000/{tid}/user/{slot}"
+_USER_SUBPATH = "mlc01/usr/save/00050000/{tid}/user"
 
 POLL_INTERVAL   = 2.0   # seconds
 INJECT_INTERVAL = 5.0   # seconds
@@ -120,7 +120,6 @@ def find_save_file(
                 When given, only that slot is scanned — ignoring other saves.
                 When omitted, all slots are scanned and the most recent is used.
     """
-    slots_to_scan = [cemu_slot] if cemu_slot else CEMU_SLOT_IDS
     candidates: list[Path] = []
     for root in _search_roots(cemu_hint):
         bases = [root]
@@ -130,8 +129,17 @@ def find_save_file(
             pass
         for base in bases:
             for tid in BOTW_TITLE_IDS:
-                for slot in slots_to_scan:
-                    slot_dir = base / _SLOT_SUBPATH.format(tid=tid, slot=slot)
+                user_dir = base / _USER_SUBPATH.format(tid=tid)
+                if not user_dir.is_dir():
+                    continue
+                # cemu_slot demandé → ce profil seul ; sinon TOUS les profils découverts
+                # dynamiquement (ne pas coder en dur 80000001..06 — rate 80000010, etc.).
+                try:
+                    slot_dirs = ([user_dir / cemu_slot] if cemu_slot
+                                 else [d for d in user_dir.iterdir() if d.is_dir()])
+                except PermissionError:
+                    continue
+                for slot_dir in slot_dirs:
                     if not slot_dir.exists():
                         continue
                     try:
@@ -370,6 +378,9 @@ def _parser() -> argparse.ArgumentParser:
                    help="Cemu user-slot to monitor exclusively, e.g. 80000002. "
                         "Use this when you have multiple saves and only one is for AP.")
     p.add_argument("--save",      default=None, help="Direct path to game_data.sav (overrides --slot)")
+    p.add_argument("--reset",     action="store_true",
+                   help="Réinitialise l'état AP (file d'attente + items reçus) avant de "
+                        "connecter — tous les items seront re-livrés à la reconnexion.")
     p.add_argument("--rando-log", default=None, metavar="PATH",
                    help="Path to the Melonspeedruns randomizer spoiler-log.txt. "
                         "Auto-detected from the Cemu graphicPacks folder if omitted.")
@@ -536,6 +547,10 @@ def main() -> None:
     if not args.name:
         print("ERROR: --name <slot> is required.")
         sys.exit(1)
+
+    if args.reset:
+        n = reset_ap_state(resolve_provider_root(args.cemu, args.slot, args.save))
+        log.info("[Reset] État AP effacé (%d fichier(s)). Tous les items seront re-livrés.", n)
 
     client, _ = build_client(
         connect=args.connect, name=args.name, password=args.password,

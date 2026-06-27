@@ -543,35 +543,23 @@ class DeferredSaveInjector(ItemInjector):
 
     @property
     def can_inject_now(self) -> bool:
-        # Memory bridge attached = injection always possible (no reload needed)
-        if self._bridge and self._bridge.is_attached:
-            return True
+        # Delivery writes the save FILE, so it is only safe when the save is idle
+        # (title screen) — otherwise the game's auto-save clobbers it.
         return self._save_is_idle
 
     def flush(self) -> list[InjectionSpec]:
         """
-        Inject queued items AND enforce flag retention.
-        Safe to call even when not can_inject_now — will skip item injection
-        but still log pending count.
+        Deliver queued items (one consistent path: write the save FILE while idle)
+        AND enforce flag retention. Live memory delivery is NOT used: it is lost when
+        the player returns to the title without an auto-save, and can't be reconciled
+        with the save-file write without double-counting.
         """
         self._enforce_retention()
-        injected  = self._inject_pending() if self.can_inject_now else []
-
-        if self._queue and not self.can_inject_now:
-            log.info(
-                "[Pending] %d item(s) waiting — retournez au menu titre BotW pour les recevoir",
-                len(self._queue),
-            )
+        injected = self._inject_pending()
         if injected:
             names = ", ".join(s.ap_item_name for s in injected)
-            # un reload n'est nécessaire QUE pour les flags (Paraglider, capacités…) ;
-            # les items de poche / rubis sont déjà appliqués en live.
-            needs_reload = any(isinstance(a, InjectionSpec.SetFlag)
-                               for s in injected for a in s.actions)
-            if self._bridge and self._bridge.is_attached and not needs_reload:
-                log.info("[OK] Items appliqués en jeu : %s", names)
-            else:
-                log.info("[ACTION] Items injectés : %s — rechargez la save pour les flags/capacités.", names)
+            log.info("[ACTION] %d item(s) écrits dans la save : %s — RECHARGE la save pour les appliquer.",
+                     len(injected), names)
         return injected
 
     def _inject_pending(self) -> list[InjectionSpec]:
@@ -580,35 +568,32 @@ class DeferredSaveInjector(ItemInjector):
         p = self._resolve()
         if p is None:
             return []
+        # All items persist only when written to the IDLE save file (title screen).
+        if not self._save_is_idle:
+            log.info("[Pending] %d item(s) en attente — passe au MENU TITRE de BotW "
+                     "puis recharge la save pour les recevoir.", len(self._queue))
+            return []
         from BotWClient.item_map import get_spec as _get_spec
-        log.info("Injection de %d item(s)…", len(self._queue))
         injected:  list[InjectionSpec] = []
         remaining: list[dict]          = []
         for entry in self._queue:
-            ap_id = entry["ap_item_id"]
-            spec  = _get_spec(ap_id)
+            spec = _get_spec(entry["ap_item_id"])
             if not spec.actions:
-                log.warning("No injection actions for %s (id=%d) — skipped", spec.ap_item_name, ap_id)
+                log.warning("No injection actions for %s — skipped", spec.ap_item_name)
                 continue
-            ok = self._apply_actions(p, spec)
-            if ok:
+            if self._apply_actions_savefile(p, spec):
                 injected.append(spec)
             else:
                 remaining.append(entry)
+        if injected:
+            log.info("Injection de %d item(s) dans la save…", len(injected))
         self._queue = remaining
         self._persist_queue()
         return injected
 
-    def _apply_actions(self, p: Path, spec: InjectionSpec) -> bool:
-        """
-        Apply all actions in a spec.
-        When memory bridge is attached: inject directly into Cemu's RAM (instant, no reload).
-        Otherwise: write to save file (requires game reload).
-        """
-        if self._bridge and self._bridge.is_attached:
-            return self._apply_actions_memory(spec, p)
-        return self._apply_actions_savefile(p, spec)
-
+    # NOTE: _apply_actions_memory (live injection) is retained as a capability but is
+    # NOT used for delivery — see flush(): all items are written to the idle save file
+    # for a single, consistent, loss-free path. Kept for a possible future live-preview.
     def _apply_actions_memory(self, spec: InjectionSpec, p: Optional[Path] = None) -> bool:
         """Inject directly into Cemu's live memory — items appear immediately in-game."""
         all_ok = True
