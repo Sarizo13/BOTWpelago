@@ -273,8 +273,9 @@ class BotWClient:
                          spec.ap_item_name,
                          f"  — {spec.display_note}" if spec.display_note else "")
 
-        elif cmd == "Bounce":
-            # DeathLink : un autre joueur est mort → on tue Link (sauf si c'est nous).
+        elif cmd == "Bounced":
+            # DeathLink : le serveur rediffuse les Bounce sous le nom "Bounced".
+            # Un autre joueur est mort → on tue Link (sauf si c'est nous).
             if self.death_link and "DeathLink" in msg.get("tags", []):
                 data = msg.get("data", {})
                 if data.get("source") != self.slot:

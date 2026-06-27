@@ -83,9 +83,12 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 - **Baseline checks**: au 1er poll le provider snapshot les checks déjà vrais (ap_baseline.json dans le queue_dir) → jamais ré-émis. Effacée par reset_ap_state. Évite de re-balancer toute la progression/intro à la connexion.
 
 ## AP Protocol
-Client sends: `Connect`, `LocationChecks`, `StatusUpdate`
-Server sends: `Connected`, `ReceivedItems`, `PrintJSON`
+Client sends: `Connect`, `ConnectUpdate` (tags), `LocationChecks`, `StatusUpdate`, `Bounce` (DeathLink)
+Server sends: `Connected`, `ReceivedItems`, `PrintJSON`, `Bounced` (DeathLink relay)
 All messages: JSON arrays `[{"cmd": "...", ...}]`
+- **DeathLink** : on ENVOIE `cmd:"Bounce"` mais le serveur rediffuse en `cmd:"Bounced"` — le
+  handler de réception DOIT écouter `"Bounced"` (piège classique). Tag `DeathLink` requis pour
+  recevoir (ajouté via ConnectUpdate). End-to-end validé (2 slots) le 2026-06-28.
 
 ## TODO (from docs/status.md)
 - TODO-7: Fill `region` field in data/locations.json for full region graph
