@@ -3,8 +3,9 @@ moduleMatches = 0x6267BFD0
 
 # DeathLink codecave for BOTWpelago / Archipelago.
 # Player life object is a stable global pointer at *(0x10463F38); the HP is a float
-# at lifeObj+0x64 (read by getLife @ 0x02D49974). We hook the per-frame GX2 swap
-# (0x031FA9CC, same thread as the game logic, no allocation -> safe) and each frame:
+# at lifeObj+0x64 (read by getLife @ 0x02D49974). We hook the heart-UI update
+# (0x02D9D31C = 'mr r31, r3', the function @ 0x02D9D310 that itself loads *(0x10463F38))
+# which runs on the game thread, no allocation -> safe. Each call:
 #   - KILL    : if _kill != 0  -> write 0.0 to HP (Link dies), clear _kill.
 #   - DETECT  : if HP == 0      -> set _died = 1 (the client reads it -> Bounce).
 # The client locates this cave by the magic string and reads/writes _died (+16) /
@@ -69,4 +70,9 @@ addi r1, r1, 0x20
 mr r31, r3
 blr
 
+# WIP — both hook points tried (0x031FA9CC swap, 0x02D9D31C heart-UI) run the codecave
+# only ONCE then stop/freeze: Cemu's recompiler doesn't re-run a bla-codecave hook on
+# these BotW instructions (the documented wall that got the native approach shelved).
+# Next direction: pure-Python DeathLink using the player life-object global 0x10463F38
+# (no codecave) — needs the bridge to map guest 0x10xxxxxx (RPX .data) to a host address.
 0x031FA9CC = bla dlHook
