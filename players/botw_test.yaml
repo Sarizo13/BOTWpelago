@@ -8,6 +8,9 @@ game: "The Legend of Zelda: Breath of the Wild"
   # Mode de jeu : all_shrines | normal | all
   game_mode: normal
 
+  # DeathLink : mourir envoie une mort aux autres / en recevoir tue Link
+  death_link: false
+
   # Nombre de sanctuaires requis pour valider le goal (0-120), vérifié côté client
   required_shrine_count: 20
 

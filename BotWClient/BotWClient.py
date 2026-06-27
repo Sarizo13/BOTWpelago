@@ -26,6 +26,7 @@ import json
 import logging
 import os
 import sys
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Set
@@ -186,6 +187,8 @@ class BotWClient:
     checked:     Set[int]   = field(default_factory=set)
     slot_locations: Set[int] = field(default_factory=set)  # all location ids in this slot
     item_index:  int        = 0   # next expected item index from server
+    death_link:  bool       = False
+    _ignore_death_until: float = 0.0   # ignore self-death right after a received DeathLink
 
     async def run(self) -> None:
         log.info("Connecting to %s as '%s' …", self.server_url, self.slot)
@@ -228,11 +231,17 @@ class BotWClient:
             for item in msg.get("items", []):
                 self.injector.mark_received(item["item"])
             log.info(
-                "Connected. Shrine target: %d  Champions: %s  Sword: %s",
+                "Connected. Mode: %s  Shrine target: %d  Champions: %s  Sword: %s",
+                self.slot_data.get("game_mode", "?"),
                 self.slot_data.get("required_shrine_count", "?"),
                 self.slot_data.get("randomize_champion_abilities", "?"),
                 self.slot_data.get("randomize_master_sword", "?"),
             )
+            # DeathLink : on (dés)active le tag selon le slot_data.
+            self.death_link = bool(self.slot_data.get("death_link", False))
+            if self.death_link:
+                await ws.send(_pkt([{"cmd": "ConnectUpdate", "tags": ["BotW", "DeathLink"]}]))
+                log.info("DeathLink ACTIF.")
             if self.rando and self.rando.is_loaded:
                 for line in self.rando.summary().splitlines():
                     log.info("[Rando] %s", line)
@@ -255,6 +264,16 @@ class BotWClient:
                 log.info("[Item] %s%s",
                          spec.ap_item_name,
                          f"  — {spec.display_note}" if spec.display_note else "")
+
+        elif cmd == "Bounce":
+            # DeathLink : un autre joueur est mort → on tue Link (sauf si c'est nous).
+            if self.death_link and "DeathLink" in msg.get("tags", []):
+                data = msg.get("data", {})
+                if data.get("source") != self.slot:
+                    cause = data.get("cause") or f"{data.get('source','?')} est mort"
+                    log.info("[DeathLink] %s — Link meurt.", cause)
+                    self._ignore_death_until = time.monotonic() + 8.0
+                    self._kill_player()
 
         elif cmd == "PrintJSON":
             log.info("[AP] %s", "".join(p.get("text", "") for p in msg.get("data", [])))
@@ -301,6 +320,31 @@ class BotWClient:
                self.provider.is_goal_complete(required):
                 await ws.send(_pkt([{"cmd": "StatusUpdate", "status": 30}]))
                 log.info("Goal complete! StatusUpdate(30) sent.")
+
+            # DeathLink — détecte notre mort et la diffuse (sauf si on vient d'être tué
+            # par un DeathLink reçu, pour ne pas la renvoyer en boucle).
+            if self.death_link:
+                bridge = self.injector._bridge
+                if bridge and bridge.is_attached and bridge.poll_player_death():
+                    if time.monotonic() >= self._ignore_death_until:
+                        await self._send_death(ws)
+
+    # ── DeathLink helpers ───────────────────────────────────────────────────────
+
+    def _kill_player(self) -> None:
+        bridge = self.injector._bridge
+        if bridge and bridge.is_attached and bridge.kill_player():
+            return
+        log.warning("[DeathLink] Impossible de tuer Link (Cemu non attaché ou patch natif absent).")
+
+    async def _send_death(self, ws) -> None:
+        await ws.send(_pkt([{
+            "cmd":  "Bounce",
+            "tags": ["DeathLink"],
+            "data": {"time": time.time(), "source": self.slot,
+                     "cause": f"{self.slot} (BotW) est tombé au combat"},
+        }]))
+        log.info("[DeathLink] Mort envoyée au multiworld.")
 
     # ── Item injection ────────────────────────────────────────────────────────
 
