@@ -66,8 +66,10 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 | Urbosa's Fury | `IsGet_Obj_HeroSoul_Gerudo` | `0x8E7188D0` |
 | Shrine counter | `DungeonClearCounter` | `0xE605CE62` |
 | Shrine clear | `Clear_DungeonNNN` | `crc32("Clear_DungeonNNN")` |
+| Current HP (DeathLink) | `CurrentHart` | `0xBE9BC993` |
 
 ## Critical Rules
+- **DeathLink = pur-Python (PAS de codecave** — le hook natif bute sur le mur du recompilateur Cemu). Détection : flag GameData `CurrentHart` (HP courant en quarts de cœur) qui suit la vie en temps réel et tombe à 0 à la mort (toutes causes) → `poll_player_death()` sur la transition >0→0. Kill : écrire `0.0` dans le **HP MAX** (float `+0x64`) du singleton **PlayerInfo**, localisé par son vtable `0x101E486C` (posé par l'init `0x02D495D8`). Le flag `CurrentHart` n'est qu'un miroir → l'écrire ne tue PAS. Tout est dans `BotWClient/memory_injector.py`.
 - **Runes are STARTING ITEMS** — never in pool. Needed to clear plateau shrines (which ARE checks).
 - **Oman Au = Dungeon038** (not 001). Internal numbering ≠ play order.
 - **Shrine detection flag = `Clear_DungeonNNN`** (not `Location_MainField_*`).
@@ -81,9 +83,12 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 - **Baseline checks**: au 1er poll le provider snapshot les checks déjà vrais (ap_baseline.json dans le queue_dir) → jamais ré-émis. Effacée par reset_ap_state. Évite de re-balancer toute la progression/intro à la connexion.
 
 ## AP Protocol
-Client sends: `Connect`, `LocationChecks`, `StatusUpdate`
-Server sends: `Connected`, `ReceivedItems`, `PrintJSON`
+Client sends: `Connect`, `ConnectUpdate` (tags), `LocationChecks`, `StatusUpdate`, `Bounce` (DeathLink)
+Server sends: `Connected`, `ReceivedItems`, `PrintJSON`, `Bounced` (DeathLink relay)
 All messages: JSON arrays `[{"cmd": "...", ...}]`
+- **DeathLink** : on ENVOIE `cmd:"Bounce"` mais le serveur rediffuse en `cmd:"Bounced"` — le
+  handler de réception DOIT écouter `"Bounced"` (piège classique). Tag `DeathLink` requis pour
+  recevoir (ajouté via ConnectUpdate). End-to-end validé (2 slots) le 2026-06-28.
 
 ## TODO (from docs/status.md)
 - TODO-7: Fill `region` field in data/locations.json for full region graph

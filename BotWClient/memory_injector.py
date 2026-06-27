@@ -179,7 +179,8 @@ class CemuMemoryBridge:
         self._gd_base:  Optional[int]   = None  # adresse host du début du buffer
         self._rupees_addr: Optional[int] = None  # adresse live du compteur de rubis
         self._inv_base:    Optional[int] = None  # adresse live du tableau PouchItem
-        self._dl_cave:     Optional[int] = None  # adresse du codecave DeathLink (False = absent)
+        self._playerinfo:  Optional[int] = None  # singleton PlayerInfo (host), via vtable
+        self._prev_hp:     Optional[int] = None  # dernier HP courant lu (détection de mort)
         # Cache local des templates PouchItem (par type) — survit aux sessions et permet
         # la création live même quand l'inventaire courant n'a aucun item du même type.
         self._template_store = template_store or (
@@ -239,21 +240,34 @@ class CemuMemoryBridge:
                                       data, len(data), ctypes.byref(n))
         return bool(ok) and n.value == len(data)
 
-    # ── DeathLink codecave (native patch) ──────────────────────────────────────
-    # Contrat avec le patch natif (graphic pack), insensible à la relocation car
-    # le codecave est à une adresse RPX fixe :
-    #   magic "BOTWPELAGODLINK\0" | +16 died(u32) | +20 kill(u32)
-    #   - died : le patch met 1 à la mort de Link ; le client lit -> envoie -> remet 0.
-    #   - kill : le client met 1 pour demander la mort ; le patch applique létal -> remet 0.
-    _DL_MAGIC = b"BOTWPELAGODLINK\x00"
+    # ── DeathLink (pur-Python) ──────────────────────────────────────────────────
+    # Aucun codecave (le hook natif bute sur le mur du recompilateur Cemu).
+    # DETECTION : le HP courant (en quarts de coeur) est le flag GameData
+    #   "CurrentHart" (typo officielle BotW) qui suit la vie EN TEMPS REEL et tombe
+    #   a 0 a la mort (toutes causes : degats, chute, vide...). Lu par recherche
+    #   binaire dans gd_base -> adresse stable entre sessions, comme les autres flags.
+    # KILL : on ecrit 0.0 dans le HP MAX du singleton PlayerInfo (float a +0x64,
+    #   localise par son vtable 0x101E486C, pose par l'init @ 0x02D495D8). Mettre le
+    #   max a 0 force la vie a 0 -> Link meurt (prouve en jeu). Le flag GameData HP
+    #   n'est qu'un miroir : l'ecrire ne tuerait pas (le jeu lit l'acteur, pas gd).
+    _HP_FLAG      = "CurrentHart"    # flag GameData "HP courant" (quarts de coeur)
+    _HP_FLAG_ID   = zlib.crc32(_HP_FLAG.encode("ascii")) & 0xFFFFFFFF   # 0xBE9BC993
+    _PI_VTABLE    = 0x101E486C       # *(PlayerInfo+0x10)
+    _PI_MAXHP_OFF = 0x64             # HP MAX (float) dans PlayerInfo ; 0 => mort
 
-    def _find_deathlink_cave(self) -> Optional[int]:
-        """Localise (une fois, en cache) le codecave DeathLink. None si le patch est absent."""
-        if self._dl_cave is not None:
-            return self._dl_cave or None
+    def _pi_maxhp(self, pi: int) -> Optional[float]:
+        r = self._read(pi + self._PI_MAXHP_OFF, 4)
+        return struct.unpack(">f", r)[0] if r else None
+
+    def _find_playerinfo(self) -> Optional[int]:
+        """Localise le singleton PlayerInfo via son vtable. Cache + revalide."""
+        if self._playerinfo is not None:
+            if self._pi_maxhp(self._playerinfo) is not None:
+                return self._playerinfo
+            self._playerinfo = None          # cache invalide (jeu ferme/recharge) -> re-scan
         if not self.is_attached:
-            return None                      # retentera une fois attaché
-        self._dl_cave = False                # défaut : absent (pas de re-scan chaque tick)
+            return None
+        sig = struct.pack(">I", self._PI_VTABLE)
         CH = 16 * 1024 * 1024
         for base, size in self._iter_regions():
             addr, end = base, base + size
@@ -261,30 +275,46 @@ class CemuMemoryBridge:
                 n = min(CH, end - addr)
                 chunk = self._read(addr, n)
                 if chunk:
-                    i = chunk.find(self._DL_MAGIC)
-                    if i >= 0:
-                        self._dl_cave = addr + i
-                        return self._dl_cave
-                addr += max(n - len(self._DL_MAGIC), 1)
+                    i = chunk.find(sig)
+                    while i >= 0:
+                        cand = (addr + i) - 0x10           # vtable est a PlayerInfo+0x10
+                        hp = self._pi_maxhp(cand)
+                        if hp is not None and 0.0 <= hp <= 2000.0:
+                            self._playerinfo = cand
+                            return cand
+                        i = chunk.find(sig, i + 1)
+                addr += max(n - 4, 1)
         return None
 
+    def read_hp(self) -> Optional[int]:
+        """HP courant (quarts de coeur) via le flag GameData. None si indisponible."""
+        if not self.is_attached:
+            return None
+        off = self._find_flag_offset(self._HP_FLAG_ID)
+        if off is None:
+            return None
+        raw = self._read(self._gd_base + off + 4, 4)
+        return struct.unpack(">i", raw)[0] if raw else None
+
     def poll_player_death(self) -> bool:
-        """True (une seule fois) quand le patch natif a signalé la mort de Link."""
-        cave = self._find_deathlink_cave()
-        if not cave:
+        """True une seule fois quand Link meurt (HP passe de >0 a <=0)."""
+        hp = self.read_hp()
+        if hp is None:
             return False
-        r = self._read(cave + 16, 4)
-        if r and struct.unpack(">I", r)[0]:
-            self._write(cave + 16, struct.pack(">I", 0))   # consomme l'événement
-            return True
-        return False
+        prev, self._prev_hp = self._prev_hp, hp
+        # n'arme qu'apres avoir vu un HP>0 ; la mort = transition >0 -> <=0
+        # (evite le faux positif au chargement ou le HP vaut 0 puis remonte).
+        return prev is not None and prev > 0 and hp <= 0
 
     def kill_player(self) -> bool:
-        """Demande au patch natif d'appliquer des dégâts létaux. False si patch absent."""
-        cave = self._find_deathlink_cave()
-        if not cave:
+        """Ecrit 0 dans le HP MAX du PlayerInfo -> tue Link. False si introuvable."""
+        pi = self._find_playerinfo()
+        if pi is None:
             return False
-        return self._write(cave + 20, struct.pack(">I", 1))
+        ok = self._write(pi + self._PI_MAXHP_OFF, struct.pack(">f", 0.0))
+        if ok:
+            self._prev_hp = 0               # evite de renvoyer notre propre mort
+        return ok
 
     # ── Memory region scan ────────────────────────────────────────────────────
 
