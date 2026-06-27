@@ -2,13 +2,20 @@
 The Legend of Zelda: Breath of the Wild — Archipelago World
 BotW 1.5.0 Wii U / Cemu.
 
-Locations : 646 — 120 shrines + 15 towers + 4 Divine Beasts + 318 lieux
-            + 175 quêtes + 14 souvenirs (towers optional)
-Items     : Paraglider + Master Sword + 4 Champions (progression) + Spirit Orbs + filler
+Locations : 205 shrine chests (186 base + 19 DLC, DLC optional). Shrine
+            completion is NOT a check — only the chests inside shrines are.
+Items     : Paraglider + Master Sword + 4 Champions + armour gates (progression)
+            + Spirit Orbs + filler
 Goal      : Defeat Calamity Ganon (Master Sword + 4 Champions + N shrines cleared)
+
+Generation also emits a {settings, placements} config (generate_output) consumed
+by the standalone BotW Randomizer (BOTW_AP_CONFIG) to place a green-rupee
+placeholder in every AP shrine chest; the client swaps it for the real AP item.
 """
 from __future__ import annotations
 
+import json
+import os
 from typing import Any
 
 from BaseClasses import ItemClassification, Tutorial
@@ -16,12 +23,38 @@ from BaseClasses import ItemClassification, Tutorial
 from worlds.AutoWorld import WebWorld, World
 
 from .items import BotWItem, filler_item_names, item_name_to_id, item_table
-from .locations import BotWLocation, location_name_to_id
+from .locations import BotWLocation, location_name_to_id, location_table
 from .options import BotWOptions
 from .regions import create_regions
 from .rules import set_rules
 
 GAME_NAME = "The Legend of Zelda: Breath of the Wild"
+
+# Actor placed by the rando in every AP shrine chest (basic green rupee — the
+# in-game placeholder; the client detects the chest open and grants the real item).
+PLACEHOLDER_ACTOR = "PutRupee"
+
+# AP option attribute → rando "randomize<Category>Checkbox" settings key.
+RANDO_TOGGLE_MAP = {
+    "randomize_animals":      "randomizeAnimalsCheckbox",
+    "randomize_armor":        "randomizeArmorCheckbox",
+    "randomize_armor_shops":  "randomizeArmorShopsCheckbox",
+    "randomize_arrows":       "randomizeArrowsCheckbox",
+    "randomize_bows":         "randomizeBowsCheckbox",
+    "randomize_enemies":      "randomizeEnemiesCheckbox",
+    "randomize_fishes":       "randomizeFishesCheckbox",
+    "randomize_fruits":       "randomizeFruitsCheckbox",
+    "randomize_insects":      "randomizeInsectsCheckbox",
+    "randomize_long_swords":  "randomizeLongSwordsCheckbox",
+    "randomize_mushrooms":    "randomizeMushroomsCheckbox",
+    "randomize_ores":         "randomizeOresCheckbox",
+    "randomize_plants":       "randomizePlantsCheckbox",
+    "randomize_rupees":       "randomizeRupeesCheckbox",
+    "randomize_shields":      "randomizeShieldsCheckbox",
+    "randomize_spears":       "randomizeSpearsCheckbox",
+    "randomize_swords":       "randomizeSwordsCheckbox",
+    "randomize_sub_bosses":   "randomizeSubBossesCheckbox",
+}
 
 # Runes are starting items (precollected) — never placed in the pool.
 STARTING_RUNE_NAMES = [
@@ -137,16 +170,52 @@ class BotWWorld(World):
             BotWItem("Defeat Calamity Ganon", ItemClassification.progression, None, self.player)
         )
 
+    # ── Active locations helper ───────────────────────────────────────────────
+
+    def _active_chests(self) -> list:
+        """Shrine-chest locations active for this slot (respecting the DLC toggle)."""
+        include_dlc = bool(self.options.include_dlc_shrines)
+        return [d for d in location_table.values() if include_dlc or not d.dlc]
+
     # ── Slot data (sent to client at connect) ─────────────────────────────────
 
     def fill_slot_data(self) -> dict[str, Any]:
         """
         Sent to the BotW client via AP Connected message.
-        The client uses this to know which flags to poll and which gates to enforce.
+        The client uses this to know which chests to poll and which gates to enforce.
         """
         return {
-            "required_shrine_count":         self.options.required_shrine_count.value,
-            "randomize_champion_abilities":  bool(self.options.randomize_champion_abilities),
-            "randomize_master_sword":        bool(self.options.randomize_master_sword),
-            "include_towers":                bool(self.options.include_towers),
+            "required_shrine_count":        self.options.required_shrine_count.value,
+            "randomize_champion_abilities": bool(self.options.randomize_champion_abilities),
+            "randomize_master_sword":       bool(self.options.randomize_master_sword),
+            "include_dlc_shrines":          bool(self.options.include_dlc_shrines),
+            # crc32(chest flag) → AP location id. Client polls gamedata for the flag
+            # (CDungeon_TBox_Dungeon_<Material>_<HashId>); when set → LocationChecks.
+            "shrine_chest_checks": {str(d.flag_hash): d.code for d in self._active_chests()},
         }
+
+    # ── Rando config (consumed by the standalone BotW Randomizer) ──────────────
+
+    def generate_output(self, output_directory: str) -> None:
+        """
+        Write the {settings, placements} JSON the recompiled BotW Randomizer reads
+        via BOTW_AP_CONFIG: `settings` = the overworld category toggles, `placements`
+        = {hashId: green-rupee} so every AP shrine chest gets a placeholder.
+        """
+        settings = {
+            rando_key: bool(getattr(self.options, attr))
+            for attr, rando_key in RANDO_TOGGLE_MAP.items()
+        }
+        placements = {str(d.hash_id): PLACEHOLDER_ACTOR for d in self._active_chests()}
+        config = {
+            "_comment": "Generated by BotW Archipelago — feed to the rando via BOTW_AP_CONFIG.",
+            "seed":        self.multiworld.seed_name,
+            "player":      self.player,
+            "slot":        self.multiworld.get_player_name(self.player),
+            "settings":    settings,
+            "placements":  placements,
+        }
+        raw = f"BotW_AP_config_P{self.player}_{self.multiworld.get_player_name(self.player)}.json"
+        fname = "".join(c if c.isalnum() or c in "._-" else "_" for c in raw)
+        with open(os.path.join(output_directory, fname), "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)

@@ -29,7 +29,9 @@ SAFE_WRITE_IDLE_SECONDS = 5   # 5s idle = title screen (was 35s)
 # ── Load canonical data ───────────────────────────────────────────────────────
 
 def _load_locations() -> list[dict]:
-    with open(_DATA_DIR / "locations.json", encoding="utf-8") as fh:
+    # AP locations = shrine chests (each detected via its CDungeon_TBox flag).
+    # Shrine completions / towers / etc. are no longer AP checks.
+    with open(_DATA_DIR / "shrine_chests.json", encoding="utf-8") as fh:
         return json.load(fh)
 
 def _load_gate_items() -> dict:
@@ -515,10 +517,10 @@ class DeferredSaveInjector(ItemInjector):
         self._received.add(ap_item_id)
 
     @property
-    def can_inject_now(self) -> bool:
-        # Memory bridge attached = injection always possible (no reload needed)
-        if self._bridge and self._bridge.is_attached:
-            return True
+    def _save_is_idle(self) -> bool:
+        """True si la save n'a pas bougé depuis SAFE_WRITE_IDLE_SECONDS (≈ menu titre BotW).
+        Indépendant du bridge — sert à savoir quand on peut écrire le DISQUE sans risque
+        d'être écrasé par une auto-save du jeu."""
         p = self._resolve()
         if p is None:
             return False
@@ -530,6 +532,13 @@ class DeferredSaveInjector(ItemInjector):
             self._last_mtime = mtime
             self._last_change_time = time.monotonic()
         return (time.monotonic() - self._last_change_time) >= SAFE_WRITE_IDLE_SECONDS
+
+    @property
+    def can_inject_now(self) -> bool:
+        # Memory bridge attached = injection always possible (no reload needed)
+        if self._bridge and self._bridge.is_attached:
+            return True
+        return self._save_is_idle
 
     def flush(self) -> list[InjectionSpec]:
         """
@@ -589,10 +598,10 @@ class DeferredSaveInjector(ItemInjector):
         Otherwise: write to save file (requires game reload).
         """
         if self._bridge and self._bridge.is_attached:
-            return self._apply_actions_memory(spec)
+            return self._apply_actions_memory(spec, p)
         return self._apply_actions_savefile(p, spec)
 
-    def _apply_actions_memory(self, spec: InjectionSpec) -> bool:
+    def _apply_actions_memory(self, spec: InjectionSpec, p: Optional[Path] = None) -> bool:
         """Inject directly into Cemu's live memory — items appear immediately in-game."""
         all_ok = True
         for action in spec.actions:
@@ -613,22 +622,22 @@ class DeferredSaveInjector(ItemInjector):
                     all_ok = False
 
             elif isinstance(action, InjectionSpec.AddPouchItem):
-                ok = False
+                # BotW a 2 inventaires : le RECORD PorchItem (gd_base, sauvegardé/rechargé)
+                # et le RUNTIME (affiché, non sérialisé). On écrit les DEUX :
+                #  (a) record gd_base -> persistance (compte/icône corrects, un seul stack,
+                #      zéro fantôme — c'est la voie officielle du jeu).
+                persisted = self._bridge.add_porch_item(action.item_name, action.amount)
+                #  (b) runtime live -> affichage instantané SI l'item est déjà en poche.
+                #      (Pas de live_create_item ici : un nœud runtime créé = fantôme non
+                #      persistant. Les NOUVEAUX types s'affichent au rechargement.)
+                shown_live = False
                 if self._bridge.has_live_inventory:
-                    # 1) item déjà présent → on incrémente la quantité (instantané)
-                    new_val = self._bridge.live_add_item_qty(action.item_name, action.amount)
-                    ok = new_val is not None
-                    # 2) sinon, création d'un nouvel item live (insertion dans la liste)
-                    if not ok:
-                        info = pouch_item_info(action.item_name)
-                        if info:
-                            ok = self._bridge.live_create_item(
-                                action.item_name, info["type"], info.get("sub"), action.amount)
-                # 3) dernier recours : save-file (nécessite reload)
-                if not ok:
-                    ok = self._bridge.add_porch_item(action.item_name, action.amount)
-                if ok:
-                    log.info("  [Mem] %s  +%d %s", spec.ap_item_name, action.amount, action.item_name)
+                    shown_live = self._bridge.live_add_item_qty(
+                        action.item_name, action.amount) is not None
+                if persisted:
+                    how = "live + sauvé" if shown_live else "sauvé (visible au rechargement)"
+                    log.info("  [Mem] %s  +%d %s (%s)",
+                             spec.ap_item_name, action.amount, action.item_name, how)
                 else:
                     all_ok = False
 

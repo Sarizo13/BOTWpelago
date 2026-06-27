@@ -27,8 +27,15 @@ class Config:
     user_slot: str = ""                     # sous-slot Cemu a surveiller (ex: 80000002), optionnel
     save_path: str = ""                     # chemin direct vers game_data.sav, optionnel
 
+    # Construction du graphic pack (étape 2-3 : config AP -> rando -> pack)
+    ap_config_path: str = ""                # BotW_AP_config_*.json reçu de la génération
+    game_base_path: str = ""                # .../Base Games/.../content
+    game_update_path: str = ""              # .../Update (v208)/.../content
+    game_dlc_path: str = ""                 # .../DLC/.../content
+    rando_exe_path: str = ""                # override de l'exe rando (auto-localisé si vide)
+
     # Divers
-    graphic_packs_folder: str = ""          # dossier Cemu/graphicPacks (pour install future du pack)
+    graphic_packs_folder: str = ""          # dossier Cemu/graphicPacks (sortie du pack)
     auto_connect: bool = False              # se connecter au lancement
     overlay_enabled: bool = True            # toast "objet reçu" par-dessus le jeu
 

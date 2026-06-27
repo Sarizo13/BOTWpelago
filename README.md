@@ -1,98 +1,94 @@
-# BotW Archipelago
+# BotW Archipelago — BOTWpelago
 
 Archipelago multiworld randomizer support for **The Legend of Zelda: Breath of the Wild**
 (Wii U / Cemu, game version **1.5.0**).
 
-Two halves: a Python `.apworld` (server-side logic) and a Python client that reads Cemu's
-`game_data.sav` (and, when available, Cemu's live memory) to detect checks and inject
-received items.
+Checks are the **chests inside Shrines**. Each AP shrine chest is filled with a green-rupee
+placeholder by a modified BotW Randomizer graphic pack; the client detects the chest being
+opened and delivers the real Archipelago item.
 
-## Repository layout
+## How it works (player flow)
 
 ```
-worlds/botw/     # .apworld — AP server-side logic (items, locations, rules, regions)
-BotWClient/      # AP client — save parsing, WebSocket to AP server, Cemu memory injection
-botwpelago/      # Tkinter GUI that wraps BotWClient (python -m botwpelago)
-data/            # Generated JSON data (locations, items, flag maps…)
-tools/           # Build pipeline + reverse-engineering scripts
-docs/            # Status brief, memory map, setup guide
+Each player writes a YAML  ─►  one host generates the seed (Archipelago + the botw .apworld)
+                                          │  produces one BotW_AP_config_*.json per BotW slot
+                                          ▼
+BOTWpelago (the player app)  ─►  reads the config  ─►  drives the embedded BotW Randomizer
+   to build a Cemu graphic pack (green rupee in every AP shrine chest)  ─►  installs it in Cemu
+                                          ▼
+   the player plays ; the client polls the chest-open flags and injects received AP items
 ```
 
-## Components
+- The **`.apworld`** (host side) places the multiworld items across the shrine-chest locations
+  and emits `{settings, placements}` — the config the BotW Randomizer consumes.
+- **BOTWpelago** (player side) = a Tkinter GUI + the AP client + an embedded copy of the
+  randomizer. It builds the pack from the config, then runs the client during play.
+- A shrine chest opening sets the gamedata flag `CDungeon_TBox_Dungeon_<Material>_<HashId>`;
+  the client polls it (`flag_id = crc32(flag_name)`) and sends `LocationChecks(ap_id)`.
+- Received items are injected live into Cemu's memory (rupees / pouch items) or via save
+  flags (Paraglider, Champions, Master Sword) at the title screen.
 
-| Component | Role |
-|-----------|------|
-| `worlds/botw/` | AP World: item pool, 646 locations, access rules, region graph |
-| `BotWClient/BotWClient.py` | AP client: WebSocket protocol, check polling, item injection |
-| `BotWClient/save_parser.py` | Parser for `game_data.sav` (custom big-endian binary — **not** BYML) |
-| `BotWClient/memory_injector.py` | Optional live Cemu memory bridge (rupees + PouchItem injection) |
-| `botwpelago/` | GUI launcher + desktop "item received" overlay |
+## Locations — 205 shrine chests
 
-## How it works
+| Set | Count | Detection flag |
+|-----|-------|----------------|
+| Base shrine chests | 186 | `CDungeon_TBox_Dungeon_{Stone\|Wood\|Iron}_<HashId>` |
+| DLC shrine chests | 19 (optional toggle) | same |
 
-1. The **AP server** generates a multiworld seed using the `botw` world.
-2. The player launches BotW on Cemu, then the client (`python -m botwpelago`, or the CLI
-   `python -m BotWClient.BotWClient`).
-3. The client reads `game_data.sav` and polls completion flags (`Clear_DungeonNNN`,
-   `MapTower_NN`, `Clear_Remains*`, plus place / quest / memory flags).
-4. On a flag flipping `0 → 1`, the client sends `LocationChecks(ap_id)` to the server.
-5. Received items are injected: flag items (Paraglider, Champions, Master Sword…) by
-   setting their save flag while idle at the title screen; inventory items and rupees live
-   via the memory bridge when it is attached to Cemu.
+Shrine *completion* is **not** a check — the player still explores and solves shrines freely
+(and shrine clears feed the goal counter).
 
-Progression gating uses **flag retention**: `ap_progression` flags are forced to `0` until
-AP delivers the matching item (e.g. no Paraglider ⇒ stuck on the Great Plateau).
+## Items & plateau
 
-## Locations (646 checks)
-
-| Category | Count | Flag pattern |
-|----------|-------|--------------|
-| Shrines | 120 | `Clear_DungeonNNN` |
-| Sheikah Towers | 15 (optional toggle) | `MapTower_NN` |
-| Divine Beasts | 4 | `Clear_Remains{Wind\|Fire\|Water\|Electric}` |
-| Places discovered | 318 | `Location_*` |
-| Quests & side challenges | 175 | `*_Finish` |
-| Memories / photos | 14 | `IsGet_MemoryPhoto_*` |
-
-## Key items
-
-- **Paraglider** (`IsGet_PlayerStole2`) — required to leave the Great Plateau.
-- **Runes** (Magnesis, Stasis, Cryonis, Remote Bomb, Camera) — **starting items**, never in
-  the pool (needed to clear the Plateau shrines, which are themselves checks).
-- **Champion Abilities** — Revali's Gale, Daruk's Protection, Mipha's Grace, Urbosa's Fury.
-- **Master Sword** (`Get_MasterSword_Finish`).
-- **Spirit Orbs** + ingredient/filler items.
+- **Paraglider** (`IsGet_PlayerStole2`) — an AP item; required to leave the Great Plateau.
+- **Runes** (Magnesis, Stasis, Cryonis, Remote Bomb, Camera) — granted by the pack at game
+  start (the modified Great-Plateau intro), so the Plateau shrine chests are reachable.
+- **Champion Abilities**, **Master Sword** — AP items (each toggleable in the YAML).
+- **Spirit Orbs** + ingredient/filler fill the remaining chests.
+- The pack handles the plateau: skips the intro, gives the runes, validates the Plateau tower,
+  and (in AP mode) does **not** pre-clear shrines nor hide the paraglider locally.
 
 ## Goal
 
 Defeat Calamity Ganon: the Master Sword + the 4 Champion Abilities (when randomized) and
 `DungeonClearCounter >= Required Shrine Count` (an apworld option, evaluated client-side).
 
-## Setup
+## Repository layout
 
-See [docs/setup.md](docs/setup.md). Current state, proofs and design notes live in
-[docs/status.md](docs/status.md) (the authoritative handoff brief).
+```
+worlds/botw/        # .apworld — items, shrine-chest locations, rules, regions, config emitter
+BotWClient/         # AP client — save parsing, WebSocket, Cemu live-memory injection
+botwpelago/         # player app: Tkinter GUI + pack_builder (config → embedded rando → pack)
+data/               # generated JSON data (shrine_chests, gate_items, flag maps…)
+tools/              # build pipeline (build_apworld, build_locations…) + RE helpers; archive/ = old
+docs/               # status brief, memory map, setup guide
+tests/              # data-integrity + save-parser tests
+```
+
+The modified **BotW Randomizer** (GPL v3, by MelonSpeedruns) is built separately and bundled
+into BOTWpelago at packaging time; it is not committed here.
+
+## Save format
+
+`game_data.sav` is a custom big-endian binary (**not** BYML): a 12-byte header + a sorted flat
+array of `(u32 flag_id, u32 value)` pairs, where `flag_id = crc32(flag_name) & 0xFFFFFFFF`.
 
 ## Dependencies
 
-Runtime client:
-
 ```
-pip install websockets
+pip install websockets          # runtime client
+pip install oead                # data/extraction tools only (reads game packs, never the .sav)
 ```
 
-(`ctypes`, `tkinter`, `asyncio`, `zlib` are part of the standard library.)
-
-The data/extraction scripts in `tools/` additionally use `oead` — **only** for reading game
-packs, never on `game_data.sav`.
+`ctypes`, `tkinter`, `asyncio`, `zlib` are standard library.
 
 | Software | Version |
 |----------|---------|
 | BotW (Wii U) | **1.5.0** (all regions) |
-| Cemu | any version for the save-file path; live-memory path validated on 1.18.1 / v208 |
+| Cemu | any version for the save path; live-memory path validated on 1.18.1 / v208 |
 
 ## References
 
 - [ArchipelagoMW](https://github.com/ArchipelagoMW/Archipelago) — AP framework
-- [MelonSpeedruns/BotwRandomizer](https://github.com/MelonSpeedruns/BotwRandomizer) — existing BotW randomizer
+- [MelonSpeedruns/BotwRandomizer](https://github.com/MelonSpeedruns/BotwRandomizer) — base randomizer (GPL v3)
 - [Cemu](https://cemu.info) — Wii U emulator
