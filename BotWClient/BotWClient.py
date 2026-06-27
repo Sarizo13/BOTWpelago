@@ -55,6 +55,11 @@ _CHECK_REASON: dict[str, str] = {
 GAME_NAME  = "The Legend of Zelda: Breath of the Wild"
 AP_VERSION = {"major": 0, "minor": 5, "build": 0, "class": "Version"}
 
+# Le rando place un placeholder « PutRupee » (rubis vert = 1) dans chaque coffre AP.
+# Le coffre n'est qu'un marqueur (l'item réel vient d'AP) -> on retire cette valeur du
+# portefeuille à chaque check de coffre détecté. Cf. PLACEHOLDER_ACTOR (worlds/botw).
+PLACEHOLDER_RUPEE_VALUE = 1
+
 BOTW_TITLE_IDS = ["101c9400", "101c9500", "101c9300"]  # USA / EUR / JPN
 
 # Path up to the user-slot directory (one level above the numbered sub-saves).
@@ -303,9 +308,12 @@ class BotWClient:
                    and (not self.slot_locations or ap_id in self.slot_locations)]
             if new:
                 self.checked.update(new)
+                chest_count = 0
                 for ap_id in new:
                     loc = get_location_info(ap_id)
                     if loc:
+                        if loc.get("category") == "shrine_chest":
+                            chest_count += 1
                         reason = _CHECK_REASON.get(loc["category"], "check")
                         rando_note = ""
                         if self.rando and loc.get("category") == "shrine":
@@ -322,6 +330,13 @@ class BotWClient:
                         )
                     else:
                         log.info("[CHECK] ap_id=%d", ap_id)
+                # Annule la valeur des placeholders rubis des coffres AP ouverts.
+                if chest_count:
+                    bridge = self.injector._bridge
+                    if bridge and bridge.is_attached and bridge.has_live_inventory:
+                        total = bridge.live_add_rupees(-chest_count * PLACEHOLDER_RUPEE_VALUE)
+                        log.info("[Coffre AP] %d rubis-placeholder retiré(s)  (portefeuille: %s)",
+                                 chest_count * PLACEHOLDER_RUPEE_VALUE, total)
                 await ws.send(_pkt([{"cmd": "LocationChecks", "locations": new}]))
 
             required = self.slot_data.get("required_shrine_count", 20)
