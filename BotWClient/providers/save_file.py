@@ -118,6 +118,20 @@ _GATE_HASH_TO_NAME: dict[int, str] = {
     if item["role"] == "ap_progression"
 }
 
+# Companion state forced once a progression item is received — what a LEGITIMATE
+# acquisition would set, which a bare flag-set skips. Found by save-diff (pure rando
+# vs AP). Keyed by ap_item_id.
+#   flags : extra gamedata flags to force ON in the latest save (rotation-safe).
+#   pouch : key/pouch items to add if absent (the actually-usable object).
+# Paraglider: IsPlayed_Demo033_1 = Great Plateau "leave" state (else dying outside
+# re-traps you); PlayerStole2 = the usable paraglider key item.
+_COMPANION_FLAGS: dict[int, list[str]] = {
+    6_080_000: ["IsPlayed_Demo033_1"],   # Paraglider
+}
+_COMPANION_POUCH: dict[int, list[str]] = {
+    6_080_000: ["PlayerStole2"],          # Paraglider key item
+}
+
 # Goal
 _GOAL = _GATE_ITEMS["goal"]
 _GOAL_FLAG_IDS = [crc32_id(f) for f in _GOAL["require_flags"]]
@@ -177,6 +191,14 @@ def _read_porch_name(data: bytes, first_porch: int, slot: int) -> str:
         off = 12 + (first_porch + slot * _PORCH_NAME_ENTRIES + i) * 8 + 4
         raw += data[off:off+4]
     return raw.split(b'\x00')[0].decode("ascii", errors="replace")
+
+
+def _pouch_has_item(data: bytes, name: str) -> bool:
+    """True if `name` already occupies a PouchItem slot in the save."""
+    fp = _find_first_run(data, _PORCH_ITEM_ID)
+    if fp < 0:
+        return False
+    return any(_read_porch_name(data, fp, s) == name for s in range(_PORCH_SLOTS))
 
 
 def _add_porch_item_to_save(path: Path, item_name: str, amount: int) -> bool:
@@ -722,6 +744,21 @@ class DeferredSaveInjector(ItemInjector):
                             log.info("[Rando] %s trouvé en jeu (%s) — gate AP actif, attente livraison",
                                      name, loc)
                     n += 1
+        # Compagnons : posés une fois l'item reçu (état qu'une acquisition légitime aurait
+        # posé). Forcés dans le slot le plus récent (rotation-safe).
+        for ap_id, fnames in _COMPANION_FLAGS.items():
+            if ap_id in self._received:
+                for fname in fnames:
+                    fh = crc32_id(fname)
+                    if not save.get_bool(fh) and _write_flag_to_save(p, fh, 1):
+                        log.debug("Companion flag: %s = 1 (via %d reçu)", fname, ap_id)
+                        n += 1
+        for ap_id, items in _COMPANION_POUCH.items():
+            if ap_id in self._received:
+                for iname in items:
+                    if not _pouch_has_item(p.read_bytes(), iname) and _add_porch_item_to_save(p, iname, 1):
+                        log.info("[OK] Objet clé ajouté : %s (recharge la save)", iname)
+                        n += 1
         # Gate immédiat en mémoire : force 0 live pour les non-reçus (effet instantané in-game).
         if self._bridge and self._bridge.is_attached:
             for fhash, ap_id in _GATE_HASH_TO_AP_ID.items():
