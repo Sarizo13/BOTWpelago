@@ -1,0 +1,6 @@
+[Definition]
+titleIds = 00050000101C9300,00050000101C9400,00050000101C9500
+name = BOTWpelago DeathLink
+path = "The Legend of Zelda: Breath of the Wild/Mods/BOTWpelago DeathLink"
+description = DeathLink hook for BOTWpelago (Archipelago). Detects Link's death and lets the client kill Link on a received death. Codecave on the per-frame GX2 swap; reads the player life object via the global at 0x10463F38.
+version = 7

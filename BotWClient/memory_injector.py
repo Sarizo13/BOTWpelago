@@ -246,6 +246,10 @@ class CemuMemoryBridge:
     #   - died : le patch met 1 à la mort de Link ; le client lit -> envoie -> remet 0.
     #   - kill : le client met 1 pour demander la mort ; le patch applique létal -> remet 0.
     _DL_MAGIC = b"BOTWPELAGODLINK\x00"
+    # Le magic apparaît AUSSI dans la table interne de patch de Cemu (métadonnées) ;
+    # le VRAI codecave est celui qui contient le code du hook juste après les vars.
+    # Signature = le prologue du hook (stwu r1,-0x20 = 0x9421FFE0) dans les ~0x40 octets.
+    _DL_CODE = b"\x94\x21\xff\xe0"
 
     def _find_deathlink_cave(self) -> Optional[int]:
         """Localise (une fois, en cache) le codecave DeathLink. None si le patch est absent."""
@@ -262,10 +266,12 @@ class CemuMemoryBridge:
                 chunk = self._read(addr, n)
                 if chunk:
                     i = chunk.find(self._DL_MAGIC)
-                    if i >= 0:
-                        self._dl_cave = addr + i
-                        return self._dl_cave
-                addr += max(n - len(self._DL_MAGIC), 1)
+                    while i >= 0:
+                        if self._DL_CODE in chunk[i:i + 0x40]:   # vrai codecave (pas la table)
+                            self._dl_cave = addr + i
+                            return self._dl_cave
+                        i = chunk.find(self._DL_MAGIC, i + 1)
+                addr += max(n - 0x40, 1)
         return None
 
     def poll_player_death(self) -> bool:
