@@ -189,6 +189,7 @@ class BotWWorld(World):
         """
         return {
             "game_mode":                    self.options.game_mode.current_key,
+            "death_link":                   bool(self.options.death_link),
             "required_shrine_count":        self.options.required_shrine_count.value,
             "randomize_champion_abilities": bool(self.options.randomize_champion_abilities),
             "randomize_master_sword":       bool(self.options.randomize_master_sword),

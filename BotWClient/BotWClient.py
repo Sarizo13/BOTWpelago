@@ -26,6 +26,7 @@ import json
 import logging
 import os
 import sys
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Set
@@ -35,7 +36,7 @@ import websockets
 from BotWClient.providers.base import GameStateProvider
 from BotWClient.providers.save_file import (
     SaveFileProvider, DeferredSaveInjector,
-    ap_state_report, get_location_info, _current_save_in_slot,
+    ap_state_report, get_location_info, _current_save_in_slot, reset_ap_state,
 )
 from BotWClient.item_map import get_spec
 from BotWClient.rando_reader import RandoReader, find_spoiler_log
@@ -55,12 +56,12 @@ GAME_NAME  = "The Legend of Zelda: Breath of the Wild"
 AP_VERSION = {"major": 0, "minor": 5, "build": 0, "class": "Version"}
 
 BOTW_TITLE_IDS = ["101c9400", "101c9500", "101c9300"]  # USA / EUR / JPN
-CEMU_SLOT_IDS  = [f"8000000{i}" for i in range(1, 7)]
 
 # Path up to the user-slot directory (one level above the numbered sub-saves).
 # Structure: {cemu_root}/mlc01/usr/save/00050000/{tid}/user/{slot}/{sub}/game_data.sav
 # where {sub} is a digit folder (0, 1, 2, …).
 _SLOT_SUBPATH = "mlc01/usr/save/00050000/{tid}/user/{slot}"
+_USER_SUBPATH = "mlc01/usr/save/00050000/{tid}/user"
 
 POLL_INTERVAL   = 2.0   # seconds
 INJECT_INTERVAL = 5.0   # seconds
@@ -119,7 +120,6 @@ def find_save_file(
                 When given, only that slot is scanned — ignoring other saves.
                 When omitted, all slots are scanned and the most recent is used.
     """
-    slots_to_scan = [cemu_slot] if cemu_slot else CEMU_SLOT_IDS
     candidates: list[Path] = []
     for root in _search_roots(cemu_hint):
         bases = [root]
@@ -129,8 +129,17 @@ def find_save_file(
             pass
         for base in bases:
             for tid in BOTW_TITLE_IDS:
-                for slot in slots_to_scan:
-                    slot_dir = base / _SLOT_SUBPATH.format(tid=tid, slot=slot)
+                user_dir = base / _USER_SUBPATH.format(tid=tid)
+                if not user_dir.is_dir():
+                    continue
+                # cemu_slot demandé → ce profil seul ; sinon TOUS les profils découverts
+                # dynamiquement (ne pas coder en dur 80000001..06 — rate 80000010, etc.).
+                try:
+                    slot_dirs = ([user_dir / cemu_slot] if cemu_slot
+                                 else [d for d in user_dir.iterdir() if d.is_dir()])
+                except PermissionError:
+                    continue
+                for slot_dir in slot_dirs:
                     if not slot_dir.exists():
                         continue
                     try:
@@ -186,6 +195,8 @@ class BotWClient:
     checked:     Set[int]   = field(default_factory=set)
     slot_locations: Set[int] = field(default_factory=set)  # all location ids in this slot
     item_index:  int        = 0   # next expected item index from server
+    death_link:  bool       = False
+    _ignore_death_until: float = 0.0   # ignore self-death right after a received DeathLink
 
     async def run(self) -> None:
         log.info("Connecting to %s as '%s' …", self.server_url, self.slot)
@@ -228,11 +239,17 @@ class BotWClient:
             for item in msg.get("items", []):
                 self.injector.mark_received(item["item"])
             log.info(
-                "Connected. Shrine target: %d  Champions: %s  Sword: %s",
+                "Connected. Mode: %s  Shrine target: %d  Champions: %s  Sword: %s",
+                self.slot_data.get("game_mode", "?"),
                 self.slot_data.get("required_shrine_count", "?"),
                 self.slot_data.get("randomize_champion_abilities", "?"),
                 self.slot_data.get("randomize_master_sword", "?"),
             )
+            # DeathLink : on (dés)active le tag selon le slot_data.
+            self.death_link = bool(self.slot_data.get("death_link", False))
+            if self.death_link:
+                await ws.send(_pkt([{"cmd": "ConnectUpdate", "tags": ["BotW", "DeathLink"]}]))
+                log.info("DeathLink ACTIF.")
             if self.rando and self.rando.is_loaded:
                 for line in self.rando.summary().splitlines():
                     log.info("[Rando] %s", line)
@@ -255,6 +272,16 @@ class BotWClient:
                 log.info("[Item] %s%s",
                          spec.ap_item_name,
                          f"  — {spec.display_note}" if spec.display_note else "")
+
+        elif cmd == "Bounce":
+            # DeathLink : un autre joueur est mort → on tue Link (sauf si c'est nous).
+            if self.death_link and "DeathLink" in msg.get("tags", []):
+                data = msg.get("data", {})
+                if data.get("source") != self.slot:
+                    cause = data.get("cause") or f"{data.get('source','?')} est mort"
+                    log.info("[DeathLink] %s — Link meurt.", cause)
+                    self._ignore_death_until = time.monotonic() + 8.0
+                    self._kill_player()
 
         elif cmd == "PrintJSON":
             log.info("[AP] %s", "".join(p.get("text", "") for p in msg.get("data", [])))
@@ -302,6 +329,31 @@ class BotWClient:
                 await ws.send(_pkt([{"cmd": "StatusUpdate", "status": 30}]))
                 log.info("Goal complete! StatusUpdate(30) sent.")
 
+            # DeathLink — détecte notre mort et la diffuse (sauf si on vient d'être tué
+            # par un DeathLink reçu, pour ne pas la renvoyer en boucle).
+            if self.death_link:
+                bridge = self.injector._bridge
+                if bridge and bridge.is_attached and bridge.poll_player_death():
+                    if time.monotonic() >= self._ignore_death_until:
+                        await self._send_death(ws)
+
+    # ── DeathLink helpers ───────────────────────────────────────────────────────
+
+    def _kill_player(self) -> None:
+        bridge = self.injector._bridge
+        if bridge and bridge.is_attached and bridge.kill_player():
+            return
+        log.warning("[DeathLink] Impossible de tuer Link (Cemu non attaché ou patch natif absent).")
+
+    async def _send_death(self, ws) -> None:
+        await ws.send(_pkt([{
+            "cmd":  "Bounce",
+            "tags": ["DeathLink"],
+            "data": {"time": time.time(), "source": self.slot,
+                     "cause": f"{self.slot} (BotW) est tombé au combat"},
+        }]))
+        log.info("[DeathLink] Mort envoyée au multiworld.")
+
     # ── Item injection ────────────────────────────────────────────────────────
 
     async def _inject_loop(self) -> None:
@@ -326,6 +378,9 @@ def _parser() -> argparse.ArgumentParser:
                    help="Cemu user-slot to monitor exclusively, e.g. 80000002. "
                         "Use this when you have multiple saves and only one is for AP.")
     p.add_argument("--save",      default=None, help="Direct path to game_data.sav (overrides --slot)")
+    p.add_argument("--reset",     action="store_true",
+                   help="Réinitialise l'état AP (file d'attente + items reçus) avant de "
+                        "connecter — tous les items seront re-livrés à la reconnexion.")
     p.add_argument("--rando-log", default=None, metavar="PATH",
                    help="Path to the Melonspeedruns randomizer spoiler-log.txt. "
                         "Auto-detected from the Cemu graphicPacks folder if omitted.")
@@ -492,6 +547,10 @@ def main() -> None:
     if not args.name:
         print("ERROR: --name <slot> is required.")
         sys.exit(1)
+
+    if args.reset:
+        n = reset_ap_state(resolve_provider_root(args.cemu, args.slot, args.save))
+        log.info("[Reset] État AP effacé (%d fichier(s)). Tous les items seront re-livrés.", n)
 
     client, _ = build_client(
         connect=args.connect, name=args.name, password=args.password,

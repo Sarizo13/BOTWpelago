@@ -10,7 +10,7 @@ Two families:
 """
 from dataclasses import dataclass
 
-from Options import Choice, DefaultOnToggle, PerGameCommonOptions, Range, Toggle
+from Options import Choice, DeathLink, DefaultOnToggle, PerGameCommonOptions, Range, Toggle
 
 
 # ── AP logic options ────────────────────────────────────────────────────────
@@ -146,6 +146,7 @@ class RandomizeFishes(Toggle):
 @dataclass
 class BotWOptions(PerGameCommonOptions):
     game_mode: GameMode
+    death_link: DeathLink
     include_dlc_shrines: IncludeDLCShrines
     required_shrine_count: RequiredShrineCount
     randomize_champion_abilities: RandomizeChampionAbilities

@@ -179,6 +179,7 @@ class CemuMemoryBridge:
         self._gd_base:  Optional[int]   = None  # adresse host du début du buffer
         self._rupees_addr: Optional[int] = None  # adresse live du compteur de rubis
         self._inv_base:    Optional[int] = None  # adresse live du tableau PouchItem
+        self._dl_cave:     Optional[int] = None  # adresse du codecave DeathLink (False = absent)
         # Cache local des templates PouchItem (par type) — survit aux sessions et permet
         # la création live même quand l'inventaire courant n'a aucun item du même type.
         self._template_store = template_store or (
@@ -237,6 +238,53 @@ class CemuMemoryBridge:
         ok = _k32.WriteProcessMemory(self._handle, ctypes.c_void_p(addr),
                                       data, len(data), ctypes.byref(n))
         return bool(ok) and n.value == len(data)
+
+    # ── DeathLink codecave (native patch) ──────────────────────────────────────
+    # Contrat avec le patch natif (graphic pack), insensible à la relocation car
+    # le codecave est à une adresse RPX fixe :
+    #   magic "BOTWPELAGODLINK\0" | +16 died(u32) | +20 kill(u32)
+    #   - died : le patch met 1 à la mort de Link ; le client lit -> envoie -> remet 0.
+    #   - kill : le client met 1 pour demander la mort ; le patch applique létal -> remet 0.
+    _DL_MAGIC = b"BOTWPELAGODLINK\x00"
+
+    def _find_deathlink_cave(self) -> Optional[int]:
+        """Localise (une fois, en cache) le codecave DeathLink. None si le patch est absent."""
+        if self._dl_cave is not None:
+            return self._dl_cave or None
+        if not self.is_attached:
+            return None                      # retentera une fois attaché
+        self._dl_cave = False                # défaut : absent (pas de re-scan chaque tick)
+        CH = 16 * 1024 * 1024
+        for base, size in self._iter_regions():
+            addr, end = base, base + size
+            while addr < end:
+                n = min(CH, end - addr)
+                chunk = self._read(addr, n)
+                if chunk:
+                    i = chunk.find(self._DL_MAGIC)
+                    if i >= 0:
+                        self._dl_cave = addr + i
+                        return self._dl_cave
+                addr += max(n - len(self._DL_MAGIC), 1)
+        return None
+
+    def poll_player_death(self) -> bool:
+        """True (une seule fois) quand le patch natif a signalé la mort de Link."""
+        cave = self._find_deathlink_cave()
+        if not cave:
+            return False
+        r = self._read(cave + 16, 4)
+        if r and struct.unpack(">I", r)[0]:
+            self._write(cave + 16, struct.pack(">I", 0))   # consomme l'événement
+            return True
+        return False
+
+    def kill_player(self) -> bool:
+        """Demande au patch natif d'appliquer des dégâts létaux. False si patch absent."""
+        cave = self._find_deathlink_cave()
+        if not cave:
+            return False
+        return self._write(cave + 20, struct.pack(">I", 1))
 
     # ── Memory region scan ────────────────────────────────────────────────────
 
