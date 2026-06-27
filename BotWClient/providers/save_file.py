@@ -118,6 +118,20 @@ _GATE_HASH_TO_NAME: dict[int, str] = {
     if item["role"] == "ap_progression"
 }
 
+# Companion state forced once a progression item is received — what a LEGITIMATE
+# acquisition would set, which a bare flag-set skips. Found by save-diff (pure rando
+# vs AP). Keyed by ap_item_id.
+#   flags : extra gamedata flags to force ON in the latest save (rotation-safe).
+#   pouch : key/pouch items to add if absent (the actually-usable object).
+# Paraglider: IsPlayed_Demo033_1 = Great Plateau "leave" state (else dying outside
+# re-traps you); PlayerStole2 = the usable paraglider key item.
+_COMPANION_FLAGS: dict[int, list[str]] = {
+    6_080_000: ["IsPlayed_Demo033_1"],   # Paraglider
+}
+_COMPANION_POUCH: dict[int, list[str]] = {
+    6_080_000: ["PlayerStole2"],          # Paraglider key item
+}
+
 # Goal
 _GOAL = _GATE_ITEMS["goal"]
 _GOAL_FLAG_IDS = [crc32_id(f) for f in _GOAL["require_flags"]]
@@ -177,6 +191,14 @@ def _read_porch_name(data: bytes, first_porch: int, slot: int) -> str:
         off = 12 + (first_porch + slot * _PORCH_NAME_ENTRIES + i) * 8 + 4
         raw += data[off:off+4]
     return raw.split(b'\x00')[0].decode("ascii", errors="replace")
+
+
+def _pouch_has_item(data: bytes, name: str) -> bool:
+    """True if `name` already occupies a PouchItem slot in the save."""
+    fp = _find_first_run(data, _PORCH_ITEM_ID)
+    if fp < 0:
+        return False
+    return any(_read_porch_name(data, fp, s) == name for s in range(_PORCH_SLOTS))
 
 
 def _add_porch_item_to_save(path: Path, item_name: str, amount: int) -> bool:
@@ -543,23 +565,29 @@ class DeferredSaveInjector(ItemInjector):
 
     @property
     def can_inject_now(self) -> bool:
-        # Delivery writes the save FILE, so it is only safe when the save is idle
-        # (title screen) — otherwise the game's auto-save clobbers it.
-        return self._save_is_idle
+        # Live injection (bridge) works any time; the save-file fallback (no Cemu) needs idle.
+        return (self._bridge is not None and self._bridge.is_attached) or self._save_is_idle
 
     def flush(self) -> list[InjectionSpec]:
         """
-        Deliver queued items (one consistent path: write the save FILE while idle)
-        AND enforce flag retention. Live memory delivery is NOT used: it is lost when
-        the player returns to the title without an auto-save, and can't be reconciled
-        with the save-file write without double-counting.
+        Every poll: reconcile gate flags (delivery force-on + retention) AND deliver
+        pending items.
+          - pouch/rupee/counter → LIVE memory (rides the game's auto-save, so it survives
+            BotW's save-slot rotation); save file as a fallback when Cemu isn't attached.
+          - flags (paraglider, abilities…) → delivered by _enforce_retention, which forces
+            them into the LATEST save every poll (rotation-safe) → applied on reload.
         """
         self._enforce_retention()
         injected = self._inject_pending()
         if injected:
-            names = ", ".join(s.ap_item_name for s in injected)
-            log.info("[ACTION] %d item(s) écrits dans la save : %s — RECHARGE la save pour les appliquer.",
-                     len(injected), names)
+            is_flag = lambda s: any(isinstance(a, InjectionSpec.SetFlag) for a in s.actions)
+            live  = [s.ap_item_name for s in injected if not is_flag(s)]
+            flags = [s.ap_item_name for s in injected if is_flag(s)]
+            if live:
+                log.info("[OK] Reçu(s) : %s", ", ".join(live))
+            if flags:
+                log.info("[ACTION] Reçu(s) (flag) : %s — RECHARGE la save pour les appliquer.",
+                         ", ".join(flags))
         return injected
 
     def _inject_pending(self) -> list[InjectionSpec]:
@@ -568,25 +596,34 @@ class DeferredSaveInjector(ItemInjector):
         p = self._resolve()
         if p is None:
             return []
-        # All items persist only when written to the IDLE save file (title screen).
-        if not self._save_is_idle:
-            log.info("[Pending] %d item(s) en attente — passe au MENU TITRE de BotW "
-                     "puis recharge la save pour les recevoir.", len(self._queue))
-            return []
         from BotWClient.item_map import get_spec as _get_spec
+        live_bridge = self._bridge is not None and self._bridge.is_attached
         injected:  list[InjectionSpec] = []
         remaining: list[dict]          = []
+        deferred = 0
         for entry in self._queue:
             spec = _get_spec(entry["ap_item_id"])
             if not spec.actions:
-                log.warning("No injection actions for %s — skipped", spec.ap_item_name)
+                continue   # logical item — nothing to inject
+            # Gate flags are delivered by _enforce_retention (forced into the latest save
+            # every poll — rotation-safe, applied on reload). Just dequeue here.
+            if any(isinstance(a, InjectionSpec.SetFlag) for a in spec.actions):
+                injected.append(spec)
                 continue
-            if self._apply_actions_savefile(p, spec):
+            # Pouch / rupee / counter → LIVE (rides the auto-save). No Cemu → save file when idle.
+            if live_bridge:
+                ok = self._apply_actions_memory(spec, p)
+            elif self._save_is_idle:
+                ok = self._apply_actions_savefile(p, spec)
+            else:
+                remaining.append(entry); deferred += 1
+                continue
+            if ok:
                 injected.append(spec)
             else:
                 remaining.append(entry)
-        if injected:
-            log.info("Injection de %d item(s) dans la save…", len(injected))
+        if deferred:
+            log.info("[Pending] %d item(s) en attente — lance Cemu/BotW (admin) ou passe au menu titre.", deferred)
         self._queue = remaining
         self._persist_queue()
         return injected
@@ -678,9 +715,13 @@ class DeferredSaveInjector(ItemInjector):
 
     def _enforce_retention(self) -> int:
         """
-        For each ap_progression gate flag currently set to 1 in the save:
-        if the corresponding item has NOT been received via AP, force it back to 0.
-        Returns number of flags cleared.
+        Every poll, reconcile each ap_progression GATE flag in the LATEST save:
+          - item RECEIVED     → force the flag to 1 (DELIVERY: survives BotW's save-slot
+                                rotation since we always write the freshest save; bool
+                                flags are cached at load, so it takes effect on reload).
+          - item NOT received → force the flag to 0 (GATE: prevents the vanilla mechanic
+                                from handing it over before AP does).
+        Returns the number of flags written.
         """
         p = self._resolve()
         if p is None:
@@ -689,33 +730,43 @@ class DeferredSaveInjector(ItemInjector):
             save = parse(p.read_bytes())
         except Exception:
             return 0
-        cleared = 0
+        n = 0
         for fhash, ap_id in _GATE_HASH_TO_AP_ID.items():
-            if save.get_bool(fhash) and ap_id not in self._received:
-                ok = _write_flag_to_save(p, fhash, 0)
-                if ok:
-                    item_name = _GATE_HASH_TO_NAME.get(fhash, f"0x{fhash:08X}")
-                    rando_loc = self._rando.location_of(item_name) if self._rando else None
-                    if rando_loc:
-                        log.info(
-                            "[Rando] %s trouve en jeu (%s) — gate AP actif, attente livraison",
-                            item_name, rando_loc,
-                        )
+            want = ap_id in self._received
+            if save.get_bool(fhash) != want:
+                if _write_flag_to_save(p, fhash, 1 if want else 0):
+                    name = _GATE_HASH_TO_NAME.get(fhash, f"0x{fhash:08X}")
+                    if want:
+                        log.debug("Livraison flag: %s = 1 (reçu) — recharge pour appliquer", name)
                     else:
-                        log.debug("Retention: cleared 0x%08X (%s not received)", fhash, item_name)
-                    cleared += 1
-        # Also enforce retention in Cemu memory (immediate effect in-game)
+                        loc = self._rando.location_of(name) if self._rando else None
+                        if loc:
+                            log.info("[Rando] %s trouvé en jeu (%s) — gate AP actif, attente livraison",
+                                     name, loc)
+                    n += 1
+        # Compagnons : posés une fois l'item reçu (état qu'une acquisition légitime aurait
+        # posé). Forcés dans le slot le plus récent (rotation-safe).
+        for ap_id, fnames in _COMPANION_FLAGS.items():
+            if ap_id in self._received:
+                for fname in fnames:
+                    fh = crc32_id(fname)
+                    if not save.get_bool(fh) and _write_flag_to_save(p, fh, 1):
+                        log.debug("Companion flag: %s = 1 (via %d reçu)", fname, ap_id)
+                        n += 1
+        for ap_id, items in _COMPANION_POUCH.items():
+            if ap_id in self._received:
+                for iname in items:
+                    if not _pouch_has_item(p.read_bytes(), iname) and _add_porch_item_to_save(p, iname, 1):
+                        log.info("[OK] Objet clé ajouté : %s (recharge la save)", iname)
+                        n += 1
+        # Gate immédiat en mémoire : force 0 live pour les non-reçus (effet instantané in-game).
         if self._bridge and self._bridge.is_attached:
             for fhash, ap_id in _GATE_HASH_TO_AP_ID.items():
                 if ap_id not in self._received:
-                    item_name = _GATE_HASH_TO_NAME.get(fhash, f"0x{fhash:08X}")
-                    flag_name = _GATE_BY_AP_ID.get(ap_id, {}).get("flag_name")
-                    if flag_name:
-                        val = self._bridge.read_flag(flag_name)
-                        if val:
-                            self._bridge.write_flag(flag_name, 0)
-                            log.debug("[Mem] Retention: %s = 0 (not received)", flag_name)
-        return cleared
+                    fn = _GATE_BY_AP_ID.get(ap_id, {}).get("flag_name")
+                    if fn and self._bridge.read_flag(fn):
+                        self._bridge.write_flag(fn, 0)
+        return n
 
     @property
     def pending_count(self) -> int:
