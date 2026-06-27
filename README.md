@@ -71,8 +71,10 @@ docs/               # status brief, memory map, setup guide
 tests/              # data-integrity + save-parser tests
 ```
 
-The modified **BotW Randomizer** (GPL v3, by MelonSpeedruns) is built separately and bundled
-into BOTWpelago at packaging time; it is not committed here.
+The modified **BotW Randomizer** (GPL v3, by MelonSpeedruns) lives in [rando/](rando/) — its
+source is included to satisfy GPL v3; BOTWpelago runs the built CLI as a separate process
+(aggregation, not linking). Its third-party dependency DLLs are not redistributed (see
+[rando/README.md](rando/README.md)).
 
 ## Save format
 

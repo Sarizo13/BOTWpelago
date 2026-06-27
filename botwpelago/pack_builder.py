@@ -45,10 +45,10 @@ def locate_rando_exe(override: str | None = None) -> Path:
             base / "rando" / "BotwRandoCLI.exe",
             Path(sys.executable).parent / "rando" / "BotwRandoCLI.exe",
         ]
-    # Arbre de dev
+    # Arbre de dev (source du rando GPL dans le repo)
     repo = Path(__file__).resolve().parents[1]
     candidates.append(
-        repo / "tmp" / "rando_lib_proj" / "bin" / "Release" / "net8.0-windows" / "BotwRandoCLI.exe"
+        repo / "rando" / "bin" / "Release" / "net8.0-windows" / "BotwRandoCLI.exe"
     )
     for c in candidates:
         if c.is_file():

@@ -53,6 +53,11 @@ botw_editor_with_extended_memory.exe
 *.exe
 *.dll
 
+# ── Rando GPL (on versionne le SOURCE rando/*.cs, pas le build ni les deps tierces) ──
+rando/bin/
+rando/obj/
+rando/libs/
+
 # ── Cemu / émulateur ──────────────────────────────────────────────────────────
 graphic_packs/
 mlc01/
