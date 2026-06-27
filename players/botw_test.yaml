@@ -1,19 +1,39 @@
 # BotW Archipelago — YAML de test
-# Placer ce fichier dans le dossier "players/" de l'installation Archipelago,
-# puis lancer : python Archipelago.py Generate --player_files_path players/
+# Génération : ArchipelagoGenerate.exe --player_files_path <dossier de ce fichier>
 
 name: BotWPlayer
 game: "The Legend of Zelda: Breath of the Wild"
 
 "The Legend of Zelda: Breath of the Wild":
-  # Nombre de sanctuaires requis pour valider le goal (0-120)
+  # Nombre de sanctuaires requis pour valider le goal (0-120), vérifié côté client
   required_shrine_count: 20
 
-  # Inclut les 15 tours comme checks supplémentaires
-  include_towers: true
+  # Inclut les 19 coffres des sanctuaires DLC comme checks (nécessite le DLC)
+  include_dlc_shrines: false
 
   # Place les capacités de Champions dans le pool AP multiworld
   randomize_champion_abilities: true
 
   # Place la Master Sword dans le pool AP multiworld
   randomize_master_sword: true
+
+  # ── Toggles passés au rando (shuffle des catégories overworld) ──
+  # Indépendants des checks AP (coffres de sanctuaire, toujours placés).
+  randomize_armor: false
+  randomize_armor_shops: false
+  randomize_swords: false
+  randomize_long_swords: false
+  randomize_spears: false
+  randomize_shields: false
+  randomize_bows: false
+  randomize_arrows: false
+  randomize_rupees: false
+  randomize_ores: false
+  randomize_enemies: false
+  randomize_sub_bosses: false
+  randomize_insects: false
+  randomize_plants: false
+  randomize_mushrooms: false
+  randomize_fruits: false
+  randomize_animals: false
+  randomize_fishes: false

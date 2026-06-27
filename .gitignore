@@ -47,6 +47,11 @@ config.xml
 BOTW Randomizer by Waikuteru*/
 Melonspeedrun rando/
 botw-rando-repo/
+botw_editor_with_extended_memory.exe
+
+# ── Exécutables (outils tiers + builds figés) ────────────────────────────────
+*.exe
+*.dll
 
 # ── Cemu / émulateur ──────────────────────────────────────────────────────────
 graphic_packs/

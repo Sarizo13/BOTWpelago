@@ -76,11 +76,49 @@ class ClientRunner:
         self._client = None
         self._bridge = None
         self._handler = _QueueHandler(self.log_queue)
+        self._pack_thread: Optional[threading.Thread] = None
 
     # ── etat ──────────────────────────────────────────────────────────────────
     @property
     def is_running(self) -> bool:
         return self._thread is not None and self._thread.is_alive()
+
+    @property
+    def is_building(self) -> bool:
+        return self._pack_thread is not None and self._pack_thread.is_alive()
+
+    # ── construction du graphic pack (etapes 2-3) ──────────────────────────────
+    def build_pack(self, cfg: Config) -> None:
+        """Construit le graphic pack en arriere-plan (config AP -> rando -> pack)."""
+        if self.is_building:
+            return
+        self._pack_thread = threading.Thread(
+            target=self._build_pack, args=(cfg,), daemon=True, name="BOTWpelagoPack")
+        self._pack_thread.start()
+
+    def _build_pack(self, cfg: Config) -> None:
+        from .pack_builder import build_pack, PackBuildError
+        try:
+            missing = [name for name, val in (
+                ("config AP", cfg.ap_config_path),
+                ("jeu de base", cfg.game_base_path),
+                ("mise à jour", cfg.game_update_path),
+                ("dossier graphicPacks Cemu", cfg.graphic_packs_folder),
+            ) if not val]
+            if missing:
+                self._log("⚠ Champs requis manquants : " + ", ".join(missing))
+                return
+            pack = build_pack(
+                cfg.ap_config_path, cfg.game_base_path, cfg.game_update_path,
+                cfg.game_dlc_path, cfg.graphic_packs_folder,
+                rando_exe=cfg.rando_exe_path or None, log=self._log,
+            )
+            self._log(f"[OK] Pack prêt : {pack}")
+            self._log("→ Active le pack dans Cemu (Options ▸ Graphic Packs), puis lance le jeu.")
+        except PackBuildError as exc:
+            self._log(f"⚠ Échec de la construction du pack : {exc}")
+        except Exception as exc:  # noqa: BLE001
+            self._log(f"⚠ Erreur inattendue : {exc}")
 
     @property
     def is_connected(self) -> bool:

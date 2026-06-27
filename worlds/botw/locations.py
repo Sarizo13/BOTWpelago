@@ -1,7 +1,13 @@
 """
 BotW Archipelago — location definitions.
-Source of truth: data/locations.json (646 entries: 120 shrines + 15 towers
-+ 4 beasts + 318 lieux + 175 quêtes + 14 souvenirs).
+
+Locations are SHRINE CHESTS (205: 186 base + 19 DLC). Shrine *completion* is no
+longer a check — the player still explores shrines freely, but only the chests
+inside them are randomized checks. Each chest is identified by its rando HashId
+(used both to drive item placement in the rando config and to detect the chest
+being opened, client-side).
+
+Source of truth: data/shrine_chests.json (region pre-baked by tools).
 """
 from __future__ import annotations
 
@@ -15,10 +21,14 @@ from BaseClasses import Location
 @dataclass
 class BotWLocationData:
     code: int
-    category: str      # "shrine" | "tower" | "beast"
-    flag_name: str
-    flag_hash: int     # pre-computed crc32 value
+    category: str       # "shrine_chest"
+    hash_id: int        # rando HashId — drives item placement in the rando config
+    flag_name: str      # CDungeon_TBox_Dungeon_<Material>_<HashId> — set when opened
+    flag_hash: int      # crc32(flag_name) — the value the client polls in gamedata
+    dungeon_id: int
     region: str
+    dlc: bool
+    vanilla: str        # original chest content actor (reference only)
 
 
 class BotWLocation(Location):
@@ -26,16 +36,20 @@ class BotWLocation(Location):
 
 
 def _load() -> dict[str, BotWLocationData]:
-    ref = _pkg.files(__package__).joinpath("data/locations.json")
+    ref = _pkg.files(__package__).joinpath("data/shrine_chests.json")
     raw: list[dict] = json.loads(ref.read_text(encoding="utf-8"))
     result: dict[str, BotWLocationData] = {}
     for entry in raw:
         result[entry["name"]] = BotWLocationData(
             code=entry["ap_id"],
             category=entry["category"],
+            hash_id=int(entry["hash_id"]),
             flag_name=entry["flag_name"],
             flag_hash=int(entry["flag_hash"], 16),
-            region=entry.get("region", ""),
+            dungeon_id=int(entry["dungeon_id"]),
+            region=entry.get("region", "Hyrule World"),
+            dlc=bool(entry.get("dlc", False)),
+            vanilla=entry.get("vanilla", ""),
         )
     return result
 
@@ -47,12 +61,17 @@ location_name_to_id: dict[str, int] = {
     name: data.code for name, data in location_table.items()
 }
 
-# Category sub-sets (used by rules and client)
-shrine_locations: list[str] = [n for n, d in location_table.items() if d.category == "shrine"]
-tower_locations:  list[str] = [n for n, d in location_table.items() if d.category == "tower"]
-beast_locations:  list[str] = [n for n, d in location_table.items() if d.category == "beast"]
+# Category sub-sets
+shrine_chest_locations: list[str] = [
+    n for n, d in location_table.items() if d.category == "shrine_chest"
+]
 
-# flag_hash → location name (for client-side poll)
-hash_to_location: dict[int, str] = {
+# crc32(flag_name) → location name (for client-side chest-open poll of gamedata)
+flag_hash_to_location: dict[int, str] = {
     data.flag_hash: name for name, data in location_table.items()
+}
+
+# rando HashId → location name (placement-side reference)
+hash_to_location: dict[int, str] = {
+    data.hash_id: name for name, data in location_table.items()
 }

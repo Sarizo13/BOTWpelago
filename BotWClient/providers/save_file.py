@@ -29,7 +29,9 @@ SAFE_WRITE_IDLE_SECONDS = 5   # 5s idle = title screen (was 35s)
 # ── Load canonical data ───────────────────────────────────────────────────────
 
 def _load_locations() -> list[dict]:
-    with open(_DATA_DIR / "locations.json", encoding="utf-8") as fh:
+    # AP locations = shrine chests (each detected via its CDungeon_TBox flag).
+    # Shrine completions / towers / etc. are no longer AP checks.
+    with open(_DATA_DIR / "shrine_chests.json", encoding="utf-8") as fh:
         return json.load(fh)
 
 def _load_gate_items() -> dict:

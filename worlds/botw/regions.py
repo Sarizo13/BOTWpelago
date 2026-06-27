@@ -10,7 +10,7 @@ Region hierarchy:
   Gerudo Town         — from Hyrule World + Vai Outfit
 
 Access rules are wired in rules.py.
-Location → region routing is driven by the "region" field in data/locations.json.
+Location → region routing is driven by the "region" field in data/shrine_chests.json.
 Anything with an empty or unrecognised region defaults to Hyrule World.
 """
 from __future__ import annotations
@@ -54,11 +54,11 @@ def create_regions(world: BotWWorld) -> dict[str, Region]:
         name: Region(name, player, mw) for name in _ALL_REGIONS
     }
 
-    include_towers = bool(world.options.include_towers)
+    include_dlc = bool(world.options.include_dlc_shrines)
 
-    # Assign each location to its region (driven by locations.json "region" field).
+    # Assign each shrine-chest location to its region (region pre-baked in data).
     for loc_name, loc_data in location_table.items():
-        if loc_data.category == "tower" and not include_towers:
+        if loc_data.dlc and not include_dlc:
             continue
         # Route to the correct region; unknown/empty → Hyrule World.
         r_name = loc_data.region if loc_data.region in _ALL_REGIONS else REGION_HYRULE_WORLD
