@@ -10,10 +10,25 @@ Two families:
 """
 from dataclasses import dataclass
 
-from Options import DefaultOnToggle, PerGameCommonOptions, Range, Toggle
+from Options import Choice, DefaultOnToggle, PerGameCommonOptions, Range, Toggle
 
 
 # ── AP logic options ────────────────────────────────────────────────────────
+
+class GameMode(Choice):
+    """
+    Which locations are active checks:
+      - all_shrines : shrine completions + Divine Beasts only.
+      - normal      : Sheikah Towers + shrine chests + memories + quests + places
+                      + Divine Beasts (NOT shrine completion).
+      - all         : every location (shrine completion + chests + towers + beasts
+                      + places + quests + memories).
+    """
+    display_name = "Game Mode"
+    option_all_shrines = 0
+    option_normal = 1
+    option_all = 2
+    default = 1
 
 class IncludeDLCShrines(Toggle):
     """
@@ -130,6 +145,7 @@ class RandomizeFishes(Toggle):
 
 @dataclass
 class BotWOptions(PerGameCommonOptions):
+    game_mode: GameMode
     include_dlc_shrines: IncludeDLCShrines
     required_shrine_count: RequiredShrineCount
     randomize_champion_abilities: RandomizeChampionAbilities

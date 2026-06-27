@@ -29,10 +29,18 @@ SAFE_WRITE_IDLE_SECONDS = 5   # 5s idle = title screen (was 35s)
 # ── Load canonical data ───────────────────────────────────────────────────────
 
 def _load_locations() -> list[dict]:
-    # AP locations = shrine chests (each detected via its CDungeon_TBox flag).
-    # Shrine completions / towers / etc. are no longer AP checks.
-    with open(_DATA_DIR / "shrine_chests.json", encoding="utf-8") as fh:
-        return json.load(fh)
+    # Union of every possible check: the full game catalogue (shrine completion,
+    # towers, beasts, places, quests, memories) + the shrine chests. The active
+    # subset depends on the seed's Game Mode — the client polls all known flags
+    # and only emits checks for location ids the server says belong to the slot.
+    out: list[dict] = []
+    for fname in ("locations.json", "shrine_chests.json"):
+        try:
+            with open(_DATA_DIR / fname, encoding="utf-8") as fh:
+                out += json.load(fh)
+        except FileNotFoundError:
+            pass
+    return out
 
 def _load_gate_items() -> dict:
     with open(_DATA_DIR / "gate_items.json", encoding="utf-8") as fh:
