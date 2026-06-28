@@ -1,0 +1,10 @@
+name: DLTestP2
+game: "The Legend of Zelda: Breath of the Wild"
+
+"The Legend of Zelda: Breath of the Wild":
+  game_mode: normal
+  death_link: true
+  required_shrine_count: 5
+  include_dlc_shrines: false
+  randomize_champion_abilities: false
+  randomize_master_sword: false

@@ -58,6 +58,10 @@ rando/bin/
 rando/obj/
 rando/libs/
 
+# ── Seeds AP générées (sorties de génération, pas versionnées) ──────────────────
+players/**/output/
+players/**/*.zip
+
 # ── Cemu / émulateur ──────────────────────────────────────────────────────────
 graphic_packs/
 mlc01/
