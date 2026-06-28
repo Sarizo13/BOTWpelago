@@ -25,12 +25,11 @@ _DATA_DIR = Path(__file__).parents[2] / "data"
 
 SAFE_WRITE_IDLE_SECONDS = 5   # 5s idle = title screen (was 35s)
 
-# Création d'un NOUVEAU nœud PouchItem en live (live_create_item) : affichage instantané OK,
-# MAIS tant que le compteur d'inventaire (mCount) + le pointeur de nœud libre ne sont pas
-# mis à jour, le jeu réutilise nos nœuds libres et CORROMPT la save en rafale. Désactivé
-# jusqu'au fix du compteur ; on ne fait que le qty-bump live (sûr). NE PAS remettre True
-# sans le mCount++.
-_LIVE_CREATE_ENABLED = False
+# Création d'un NOUVEAU nœud PouchItem en live (live_create_item). SÛR depuis le fix
+# mCount++ : à chaque création on incrémente le compteur sead::OffsetList (tête+0x08), donc
+# le jeu COMPTE le nœud -> il ne le réutilise plus (zéro corruption) et le sérialise au save
+# (instantané EN JEU + persistant, validé single + multi-items).
+_LIVE_CREATE_ENABLED = True
 
 
 # ── Load canonical data ───────────────────────────────────────────────────────

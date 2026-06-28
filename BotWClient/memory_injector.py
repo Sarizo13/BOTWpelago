@@ -897,6 +897,38 @@ class CemuMemoryBridge:
         ok &= self._write(A_h + self._NODE_OFF_NEXT, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
         ok &= self._write(on_node_h + self._NODE_OFF_PREV, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
         if ok:
-            log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s",
-                     item_name, item_type, value, anchor["name"])
+            # mCount += 1 (sead::OffsetList, à tête+0x08) : le jeu COMPTE notre nœud -> il ne
+            # réutilise plus ce nœud libre (plus de corruption en rafale) et le sérialise au
+            # save (persistance fiable). Sentinelle = on suit la liste jusqu'à sortir du pool.
+            bumped = self._bump_pouch_count(nodes, base, F_g)
+            log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s%s",
+                     item_name, item_type, value, anchor["name"],
+                     "" if bumped else "  (!! mCount NON incrémenté)")
         return bool(ok)
+
+    def _bump_pouch_count(self, nodes: list, base: int, start_g: int) -> bool:
+        """Suit la liste primaire depuis start_g jusqu'à la sentinelle (tête) et fait
+        mCount += 1 (à tête+0x08). Garde-fou : n'écrit que si le compteur est plausible."""
+        node_bases = {n["host"] - base for n in nodes}
+        node_bases.add(start_g)
+        cur = start_g
+        for _ in range(2048):
+            r = self._read(cur + base + self._NODE_OFF_NEXT, 4)
+            if not r:
+                return False
+            nxt = struct.unpack(">I", r)[0]
+            nb = nxt - self._NODE_OFF_NEXT
+            if nb in node_bases:
+                cur = nb
+                continue
+            # nxt = adresse de la sentinelle (tête) ; mCount à tête+0x08
+            head_h = nxt + base
+            cnt_r = self._read(head_h + 0x08, 4)
+            if not cnt_r:
+                return False
+            cnt = struct.unpack(">i", cnt_r)[0]
+            if not (0 <= cnt < 2000):
+                log.warning("[Mem] (live) mCount=%d implausible — non incrémenté", cnt)
+                return False
+            return self._write(head_h + 0x08, struct.pack(">i", cnt + 1))
+        return False
