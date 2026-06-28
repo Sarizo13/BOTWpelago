@@ -584,8 +584,7 @@ class DeferredSaveInjector(ItemInjector):
             items = [s.ap_item_name for s in injected if not is_flag(s)]
             flags = [s.ap_item_name for s in injected if is_flag(s)]
             if items:
-                log.info("[OK] Écrits dans la save : %s — RECHARGE pour les recevoir.",
-                         ", ".join(items))
+                log.info("[OK] Reçu(s) : %s", ", ".join(items))
             if flags:
                 log.info("[ACTION] Flags écrits : %s — RECHARGE la save pour les appliquer.",
                          ", ".join(flags))
@@ -610,31 +609,32 @@ class DeferredSaveInjector(ItemInjector):
             if any(isinstance(a, InjectionSpec.SetFlag) for a in spec.actions):
                 injected.append(spec)
                 continue
-            # Pouch / counter / rupee items: ONLY the save FILE survives a reload. Live
-            # gd_base writes get re-synced/rotated away by the game — proven in-game: even
-            # "live + sauvé" orbs vanish after reload. So write to the LATEST save (rotation-
-            # safe, like _enforce_retention) but ONLY when idle (title screen — nothing
-            # clobbers it); defer while the player is in-game.
-            if self._save_is_idle:
-                ok = self._apply_actions_savefile(p, spec)
-            else:
-                remaining.append(entry); deferred += 1
-                continue
-            if ok:
+            # Livraison LIVE (instantanée + persistante) : live_create_item crée un VRAI
+            # nœud PouchItem runtime que le jeu sérialise au save -> survit au reload (validé
+            # en jeu). On l'utilise dès que Cemu est attaché avec l'inventaire localisé ;
+            # sinon (pas de Cemu) on écrit le FICHIER-save quand il est idle (menu titre).
+            delivered = False
+            if self._bridge is not None and self._bridge.has_live_inventory:
+                delivered = self._apply_actions_memory(spec, p)
+            if not delivered and self._save_is_idle:
+                delivered = self._apply_actions_savefile(p, spec)
+            if delivered:
                 injected.append(spec)
             else:
                 remaining.append(entry)
+                if not (self._bridge is not None and self._bridge.has_live_inventory) \
+                        and not self._save_is_idle:
+                    deferred += 1
         if deferred:
-            log.info("[Pending] %d objet(s) en attente — va au MENU TITRE puis recharge la save pour les recevoir.", deferred)
+            log.info("[Pending] %d objet(s) en attente — lance Cemu/BotW (admin) ou passe au menu titre.", deferred)
         self._queue = remaining
         self._persist_queue()
         return injected
 
-    # NOTE: _apply_actions_memory (live injection) is retained as a capability but is
-    # NOT used for delivery — see flush(): all items are written to the idle save file
-    # for a single, consistent, loss-free path. Kept for a possible future live-preview.
     def _apply_actions_memory(self, spec: InjectionSpec, p: Optional[Path] = None) -> bool:
-        """Inject directly into Cemu's live memory — items appear immediately in-game."""
+        """Injection LIVE dans la mémoire de Cemu : objets instantanés EN JEU + persistants
+        au reload (live_create_item = vrai nœud PouchItem sérialisé). Voie de livraison
+        PRINCIPALE quand Cemu est attaché (cf. _inject_pending) ; fallback = fichier-save."""
         all_ok = True
         for action in spec.actions:
             if isinstance(action, InjectionSpec.SetFlag):
@@ -654,22 +654,19 @@ class DeferredSaveInjector(ItemInjector):
                     all_ok = False
 
             elif isinstance(action, InjectionSpec.AddPouchItem):
-                # BotW a 2 inventaires : le RECORD PorchItem (gd_base, sauvegardé/rechargé)
-                # et le RUNTIME (affiché, non sérialisé). On écrit les DEUX :
-                #  (a) record gd_base -> persistance (compte/icône corrects, un seul stack,
-                #      zéro fantôme — c'est la voie officielle du jeu).
-                persisted = self._bridge.add_porch_item(action.item_name, action.amount)
-                #  (b) runtime live -> affichage instantané SI l'item est déjà en poche.
-                #      (Pas de live_create_item ici : un nœud runtime créé = fantôme non
-                #      persistant. Les NOUVEAUX types s'affichent au rechargement.)
-                shown_live = False
-                if self._bridge.has_live_inventory:
-                    shown_live = self._bridge.live_add_item_qty(
-                        action.item_name, action.amount) is not None
-                if persisted:
-                    how = "live + sauvé" if shown_live else "sauvé (visible au rechargement)"
-                    log.info("  [Mem] %s  +%d %s (%s)",
-                             spec.ap_item_name, action.amount, action.item_name, how)
+                # Injection LIVE : live_create_item crée un VRAI nœud PouchItem runtime que
+                # le jeu sérialise au save -> instantané EN JEU + persistant après reload
+                # (validé). Bumpe la quantité si l'item est déjà en poche (défensif interne).
+                info = pouch_item_info(action.item_name)   # {type, sub} ou None
+                if info is not None:
+                    ok = self._bridge.live_create_item(
+                        action.item_name, info["type"], info.get("sub"), action.amount)
+                else:
+                    # type/sub inconnu (flèches, etc.) : bumpe seulement si déjà présent
+                    ok = self._bridge.live_add_item_qty(action.item_name, action.amount) is not None
+                if ok:
+                    log.info("  [Live] %s  +%d %s (instantané)",
+                             spec.ap_item_name, action.amount, action.item_name)
                 else:
                     all_ok = False
 
