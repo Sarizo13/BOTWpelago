@@ -134,8 +134,16 @@ _GATE_HASH_TO_NAME: dict[int, str] = {
 _COMPANION_FLAGS: dict[int, list[str]] = {
     6_080_000: ["IsPlayed_Demo033_1"],   # Paraglider
 }
+# Capacités de Champion : comme le paravoile, le flag IsGet_ SEUL ne rend pas la capacité
+# utilisable — il faut aussi l'OBJET-CLÉ en poche (Obj_HeroSoul_<Race>, type 9). Le rando de
+# base place justement cet acteur dans le coffre (BotwRandoTable.cs). On l'ajoute via la save
+# (appliqué au rechargement, en même temps que le flag).
 _COMPANION_POUCH: dict[int, list[str]] = {
     6_080_000: ["PlayerStole2"],          # Paraglider key item
+    6_080_010: ["Obj_HeroSoul_Rito"],     # Revali's Gale
+    6_080_011: ["Obj_HeroSoul_Zora"],     # Mipha's Grace
+    6_080_012: ["Obj_HeroSoul_Goron"],    # Daruk's Protection
+    6_080_013: ["Obj_HeroSoul_Gerudo"],   # Urbosa's Fury
 }
 
 # Goal
