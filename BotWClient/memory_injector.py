@@ -879,23 +879,23 @@ class CemuMemoryBridge:
         if subtype is not None:
             struct.pack_into(">i", raw, self._NODE_OFF_SUB, subtype)
 
-        # ── 4) Splice F juste après l'ancre A, dans LES DEUX listes ──
-        # Relire les liens frais de A (le snapshot peut être légèrement périmé).
-        a_links = self._read(A_h + self._NODE_OFF_NEXT, 4)            # A.next  (-> &next.0x204)
-        a_sec   = self._read(A_h + self._NODE_OFF_SEC, 4)             # A.sec   (-> &next2.0x08)
-        if not a_links or not a_sec:
+        # ── 4) Splice F juste après l'ancre A, dans la SEULE liste (OffsetList primaire) ──
+        # IMPORTANT : il n'y a PAS de "liste secondaire". Le dump du nœud (544o) montre que
+        # 0x1C est le POINTEUR DE BUFFER de la FixedSafeString du nom (-> 0x28), et 0x28 le
+        # buffer du nom — PAS des liens de liste. L'ancien code splicait une fausse liste
+        # secondaire à 0x1C/0x28 et CORROMPAIT le nom (=> "No Image" + inventaire cassé).
+        # Le re-basing (étape 3) a déjà fixé F.0x1C -> F+0x28, on n'y touche plus.
+        a_links = self._read(A_h + self._NODE_OFF_NEXT, 4)
+        if not a_links:
             return False
         A_next = struct.unpack(">I", a_links)[0]
-        A_sec  = struct.unpack(">I", a_sec)[0]
         on_node_h = g2h(A_next - self._NODE_OFF_NEXT)                 # nœud suivant (liste primaire)
         struct.pack_into(">I", raw, self._NODE_OFF_NEXT, A_next)              # F.next = A.next
         struct.pack_into(">I", raw, self._NODE_OFF_PREV, A_g + self._NODE_OFF_NEXT)  # F.prev = &A.next
-        struct.pack_into(">I", raw, self._NODE_OFF_SEC,  A_sec)              # F.sec  = A.sec
 
         ok = self._write(F_h, bytes(raw))
         ok &= self._write(A_h + self._NODE_OFF_NEXT, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
         ok &= self._write(on_node_h + self._NODE_OFF_PREV, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
-        ok &= self._write(A_h + self._NODE_OFF_SEC, struct.pack(">I", F_g + self._NODE_OFF_SECHOOK))
         if ok:
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s",
                      item_name, item_type, value, anchor["name"])
