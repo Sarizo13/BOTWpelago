@@ -13,6 +13,8 @@
     "Item_FishGet_A":    {"type": 7, "label": "Achigan d'Hyrule"},
     "Item_Ore_C":        {"type": 7, "label": "Silex"},
     "Item_Ore_D":        {"type": 7, "label": "Ambre"},
-    "Item_Enemy_01":     {"type": 7, "label": "Gelee Chuchu"}
+    "Item_Enemy_01":     {"type": 7, "label": "Gelee Chuchu"},
+
+    "Obj_DungeonClearSeal": {"type": 9, "sub": 9, "label": "Orbe sacree (Spirit Orb)"}
   }
 }
