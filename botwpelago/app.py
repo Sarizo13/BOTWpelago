@@ -89,7 +89,7 @@ class App:
         ttk.Label(frm, text="Config AP reçu, chemins du jeu (Cemu unpacked), puis génère le pack.",
                   foreground="#888").grid(row=r, column=0, columnspan=3, sticky="w", padx=6, pady=(0, 6))
         r += 1
-        self._path_row(frm, r, "Config AP (AP_*_P*_*.apbotw)", "ap_config_path", e,
+        self._path_row(frm, r, "Config AP (optionnel — sinon repris de la connexion)", "ap_config_path", e,
                        self._browse_ap_config); r += 1
         self._path_row(frm, r, "Jeu de base (…/content)", "game_base_path", e,
                        lambda: self._browse_dir("game_base_path", "Jeu de base — dossier content")); r += 1

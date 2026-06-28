@@ -10,7 +10,7 @@ import queue
 import threading
 from typing import Optional
 
-from BotWClient.BotWClient import build_client, resolve_provider_root
+from BotWClient.BotWClient import build_client, resolve_provider_root, SLOT_CONFIG_PATH
 from BotWClient.providers.save_file import reset_ap_state
 from .config import Config
 
@@ -99,8 +99,14 @@ class ClientRunner:
     def _build_pack(self, cfg: Config) -> None:
         from .pack_builder import build_pack, PackBuildError
         try:
+            # Pas de fichier .apbotw fourni ? On retombe sur le config reçu via slot_data
+            # à la connexion (écrit par le client) → aucun fichier à télécharger.
+            config_path = cfg.ap_config_path
+            if not config_path and SLOT_CONFIG_PATH.is_file():
+                config_path = str(SLOT_CONFIG_PATH)
+                self._log(f"Config AP repris du slot_data reçu : {config_path}")
             missing = [name for name, val in (
-                ("config AP", cfg.ap_config_path),
+                ("config AP (fichier .apbotw ou connexion préalable)", config_path),
                 ("jeu de base", cfg.game_base_path),
                 ("mise à jour", cfg.game_update_path),
                 ("dossier graphicPacks Cemu", cfg.graphic_packs_folder),
@@ -109,7 +115,7 @@ class ClientRunner:
                 self._log("⚠ Champs requis manquants : " + ", ".join(missing))
                 return
             pack = build_pack(
-                cfg.ap_config_path, cfg.game_base_path, cfg.game_update_path,
+                config_path, cfg.game_base_path, cfg.game_update_path,
                 cfg.game_dlc_path, cfg.graphic_packs_folder,
                 rando_exe=cfg.rando_exe_path or None, log=self._log,
             )

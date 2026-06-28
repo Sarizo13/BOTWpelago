@@ -60,6 +60,10 @@ AP_VERSION = {"major": 0, "minor": 5, "build": 0, "class": "Version"}
 # portefeuille à chaque check de coffre détecté. Cf. PLACEHOLDER_ACTOR (worlds/botw).
 PLACEHOLDER_RUPEE_VALUE = 1
 
+# BOTWpelago y écrit le config rando reçu via slot_data (source pour la construction
+# du pack quand l'utilisateur n'a pas fourni de fichier .apbotw).
+SLOT_CONFIG_PATH = Path.home() / ".botwpelago" / "ap_config.json"
+
 BOTW_TITLE_IDS = ["101c9400", "101c9500", "101c9300"]  # USA / EUR / JPN
 
 # Path up to the user-slot directory (one level above the numbered sub-saves).
@@ -255,6 +259,16 @@ class BotWClient:
             if self.death_link:
                 await ws.send(_pkt([{"cmd": "ConnectUpdate", "tags": ["BotW", "DeathLink"]}]))
                 log.info("DeathLink ACTIF.")
+            # Config rando reçu via slot_data → écrit localement pour que BOTWpelago
+            # construise le pack sans aucun fichier à télécharger (héberg. public OK).
+            rc = self.slot_data.get("rando_config")
+            if rc:
+                try:
+                    SLOT_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+                    SLOT_CONFIG_PATH.write_text(json.dumps(rc, indent=2), encoding="utf-8")
+                    log.info("[Config] config rando reçu via slot_data → %s", SLOT_CONFIG_PATH)
+                except OSError as e:
+                    log.warning("[Config] écriture du config rando échouée : %s", e)
             if self.rando and self.rando.is_loaded:
                 for line in self.rando.summary().splitlines():
                     log.info("[Rando] %s", line)
