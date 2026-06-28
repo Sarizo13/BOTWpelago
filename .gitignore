@@ -58,6 +58,9 @@ rando/bin/
 rando/obj/
 rando/libs/
 
+# ── Config MCP locale (contient la clé API Perplexity — ne JAMAIS committer) ────
+.mcp.json
+
 # ── Seeds AP générées (sorties de génération, pas versionnées) ──────────────────
 players/**/output/
 players/**/*.zip
