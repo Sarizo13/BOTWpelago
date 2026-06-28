@@ -13,14 +13,6 @@
     "Item_FishGet_A":    {"type": 7, "label": "Achigan d'Hyrule"},
     "Item_Ore_C":        {"type": 7, "label": "Silex"},
     "Item_Ore_D":        {"type": 7, "label": "Ambre"},
-    "Item_Enemy_01":     {"type": 7, "label": "Gelee Chuchu"},
-
-    "Obj_DungeonClearSeal": {"type": 9, "sub": 9, "label": "Orbe sacree (Spirit Orb)"},
-
-    "NormalArrow":   {"type": 2, "label": "Fleche"},
-    "FireArrow":     {"type": 2, "label": "Fleche de feu"},
-    "IceArrow":      {"type": 2, "label": "Fleche de glace"},
-    "ElectricArrow": {"type": 2, "label": "Fleche electrique"},
-    "BombArrow_A":   {"type": 2, "label": "Fleche-bombe"}
+    "Item_Enemy_01":     {"type": 7, "label": "Gelee Chuchu"}
   }
 }

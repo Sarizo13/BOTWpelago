@@ -825,35 +825,25 @@ class CemuMemoryBridge:
         def is_selfref(n):
             return self._node_is_selfref(n["raw"], h2g(n["host"]))
 
-        # ── 1) Source de CONTENU (clone) : nœud live du même type, sinon template caché ──
+        # ── 1) CONTENU (clone) + ANCRE : OBLIGATOIREMENT un nœud live du MÊME type ──
+        # SÛRETÉ : on n'insère QUE derrière un item du même type. Insérer après un type
+        # différent met le nœud dans la mauvaise catégorie/liste -> crash + corruption
+        # inter-catégories (constaté sur un objet-clé type 9 ancré derrière des matériaux).
+        # Sans ancre du même type, on échoue -> voie save-fichier (le 1er item d'un type
+        # arrive au rechargement, les suivants en live).
         same_type = [n for n in nodes if n["name"] and n["type"] == item_type and is_selfref(n)]
-        if same_type:
-            # éviter les plats cuisinés (sub=0xA) comme template (icône calculée depuis la recette)
-            content = (
-                (subtype is not None and next((n for n in same_type if n["sub"] == subtype), None))
-                or next((n for n in same_type if n["sub"] != 0xA), None)
-                or same_type[0]
-            )
-            content_raw, content_Tg = content["raw"], h2g(content["host"])
-            anchor = content                          # splice après ce même nœud (comportement éprouvé)
-        else:
-            tpl = self._templates.get(str(item_type))
-            if tpl is None:
-                log.warning("[Mem] (live) aucun template type=%d (ni live ni cache) pour %s "
-                            "— fallback save-file", item_type, item_name)
-                return False
-            content_raw, content_Tg = bytes.fromhex(tpl["hex"]), int(tpl["base"])
-            # ancre = nœud live de type <= item_type le plus haut (garde la liste triée)
-            live_sr = [n for n in nodes
-                       if n["name"] and n["type"] != 0xFFFFFFFF and is_selfref(n)]
-            lower = [n for n in live_sr if n["type"] <= item_type]
-            if not lower:
-                log.warning("[Mem] (live) pas d'ancre de liste pour %s — fallback save-file",
-                            item_name)
-                return False
-            anchor = max(lower, key=lambda n: (n["type"], n["slot"]))
-            log.info("[Mem] (live) template caché type=%d utilisé pour %s (ancre: %s)",
-                     item_type, item_name, anchor["name"])
+        if not same_type:
+            log.info("[Mem] (live) pas d'item de type %d en poche pour ancrer %s "
+                     "— fallback save-file", item_type, item_name)
+            return False
+        # éviter les plats cuisinés (sub=0xA) comme template (icône calculée depuis la recette)
+        content = (
+            (subtype is not None and next((n for n in same_type if n["sub"] == subtype), None))
+            or next((n for n in same_type if n["sub"] != 0xA), None)
+            or same_type[0]
+        )
+        content_raw, content_Tg = content["raw"], h2g(content["host"])
+        anchor = content                              # splice après ce même nœud (même catégorie)
 
         # ── 2) Nœud libre cible ──
         free = next((n for n in nodes if n["type"] == 0xFFFFFFFF and not n["name"]), None)
