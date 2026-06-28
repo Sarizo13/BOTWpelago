@@ -571,22 +571,23 @@ class DeferredSaveInjector(ItemInjector):
     def flush(self) -> list[InjectionSpec]:
         """
         Every poll: reconcile gate flags (delivery force-on + retention) AND deliver
-        pending items.
-          - pouch/rupee/counter → LIVE memory (rides the game's auto-save, so it survives
-            BotW's save-slot rotation); save file as a fallback when Cemu isn't attached.
-          - flags (paraglider, abilities…) → delivered by _enforce_retention, which forces
-            them into the LATEST save every poll (rotation-safe) → applied on reload.
+        pending items. Tout passe par le FICHIER save (seule voie qui survit au reload) :
+          - flags (paraglider, abilities…) → _enforce_retention force la valeur dans la
+            LATEST save chaque poll (rotation-safe) → appliqué au rechargement.
+          - poche/compteur/rubis → _inject_pending écrit dans la LATEST save quand elle est
+            idle (menu titre) ; différé tant que le joueur est en jeu.
         """
         self._enforce_retention()
         injected = self._inject_pending()
         if injected:
             is_flag = lambda s: any(isinstance(a, InjectionSpec.SetFlag) for a in s.actions)
-            live  = [s.ap_item_name for s in injected if not is_flag(s)]
+            items = [s.ap_item_name for s in injected if not is_flag(s)]
             flags = [s.ap_item_name for s in injected if is_flag(s)]
-            if live:
-                log.info("[OK] Reçu(s) : %s", ", ".join(live))
+            if items:
+                log.info("[OK] Écrits dans la save : %s — RECHARGE pour les recevoir.",
+                         ", ".join(items))
             if flags:
-                log.info("[ACTION] Reçu(s) (flag) : %s — RECHARGE la save pour les appliquer.",
+                log.info("[ACTION] Flags écrits : %s — RECHARGE la save pour les appliquer.",
                          ", ".join(flags))
         return injected
 
@@ -597,7 +598,6 @@ class DeferredSaveInjector(ItemInjector):
         if p is None:
             return []
         from BotWClient.item_map import get_spec as _get_spec
-        live_bridge = self._bridge is not None and self._bridge.is_attached
         injected:  list[InjectionSpec] = []
         remaining: list[dict]          = []
         deferred = 0
@@ -610,10 +610,12 @@ class DeferredSaveInjector(ItemInjector):
             if any(isinstance(a, InjectionSpec.SetFlag) for a in spec.actions):
                 injected.append(spec)
                 continue
-            # Pouch / rupee / counter → LIVE (rides the auto-save). No Cemu → save file when idle.
-            if live_bridge:
-                ok = self._apply_actions_memory(spec, p)
-            elif self._save_is_idle:
+            # Pouch / counter / rupee items: ONLY the save FILE survives a reload. Live
+            # gd_base writes get re-synced/rotated away by the game — proven in-game: even
+            # "live + sauvé" orbs vanish after reload. So write to the LATEST save (rotation-
+            # safe, like _enforce_retention) but ONLY when idle (title screen — nothing
+            # clobbers it); defer while the player is in-game.
+            if self._save_is_idle:
                 ok = self._apply_actions_savefile(p, spec)
             else:
                 remaining.append(entry); deferred += 1
@@ -623,7 +625,7 @@ class DeferredSaveInjector(ItemInjector):
             else:
                 remaining.append(entry)
         if deferred:
-            log.info("[Pending] %d item(s) en attente — lance Cemu/BotW (admin) ou passe au menu titre.", deferred)
+            log.info("[Pending] %d objet(s) en attente — va au MENU TITRE puis recharge la save pour les recevoir.", deferred)
         self._queue = remaining
         self._persist_queue()
         return injected

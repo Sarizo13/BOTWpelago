@@ -477,7 +477,8 @@ def build_client(connect: str, name: str, password: str = "",
     # bridge mémoire (injection live si Cemu tourne)
     bridge = CemuMemoryBridge()
     if bridge.attach():
-        log.info("[Mem] Injection memoire active — items apparaissent instantanement")
+        log.info("[Mem] Cemu attache — DeathLink actif ; objets ecrits dans la save "
+                 "(menu titre) puis appliques au rechargement")
     else:
         log.info("[Mem] Cemu non detecte — injection via save file (reload requis)")
         bridge = None

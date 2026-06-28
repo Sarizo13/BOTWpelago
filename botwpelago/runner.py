@@ -164,7 +164,8 @@ class ClientRunner:
                 cemu=cfg.cemu_folder or None, slot=cfg.user_slot or None,
                 save=cfg.save_path or None,
             )
-            self._log(f"Injection live: {'ACTIVE' if self._bridge else 'save-file (reload requis)'}")
+            self._log("Cemu attaché : DeathLink actif — objets écrits dans la save (menu titre + recharge)"
+                      if self._bridge else "Cemu non détecté : objets via save-file (recharge requis)")
             self._task = loop.create_task(self._client.run())
             loop.run_until_complete(self._task)
         except asyncio.CancelledError:
