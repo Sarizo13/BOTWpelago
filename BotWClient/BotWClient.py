@@ -206,6 +206,11 @@ class BotWClient:
     item_index:  int        = 0   # next expected item index from server
     death_link:  bool       = False
     _ignore_death_until: float = 0.0   # ignore self-death right after a received DeathLink
+    # Résolution des noms dans les messages AP (DataPackage + infos joueurs)
+    _dp_item:   dict = field(default_factory=dict)   # game -> {item_id: name}
+    _dp_loc:    dict = field(default_factory=dict)   # game -> {location_id: name}
+    _slot_game: dict = field(default_factory=dict)   # slot -> game
+    _slot_name: dict = field(default_factory=dict)   # slot -> nom du joueur
 
     async def run(self) -> None:
         log.info("Connecting to %s as '%s' …", self.server_url, self.slot)
@@ -242,6 +247,11 @@ class BotWClient:
             # The slot's full location set (mode-aware) = checked ∪ missing. The client
             # polls every known flag but only emits checks that belong to this slot.
             self.slot_locations = self.checked | set(msg.get("missing_locations", []))
+            # Maps de résolution des noms (slot -> jeu / nom de joueur).
+            for sslot, info in msg.get("slot_info", {}).items():
+                self._slot_game[int(sslot)] = info.get("game", "")
+            for pl in msg.get("players", []):
+                self._slot_name[pl["slot"]] = pl.get("alias") or pl.get("name") or str(pl["slot"])
             # Restore item_index from disk so restarts don't re-queue old items.
             self.item_index = self.injector.load_item_index()
             # Restore previously received items into the injector's received set.
@@ -272,6 +282,20 @@ class BotWClient:
             if self.rando and self.rando.is_loaded:
                 for line in self.rando.summary().splitlines():
                     log.info("[Rando] %s", line)
+
+        elif cmd == "RoomInfo":
+            # Demande le DataPackage (id<->nom de tous les jeux) pour résoudre les noms
+            # d'items/locations dans les messages PrintJSON (sinon ce ne sont que des IDs).
+            games = msg.get("games", [])
+            if games:
+                await ws.send(_pkt([{"cmd": "GetDataPackage", "games": games}]))
+
+        elif cmd == "DataPackage":
+            games = msg.get("data", {}).get("games", {})
+            for game, gd in games.items():
+                self._dp_item[game] = {v: k for k, v in gd.get("item_name_to_id", {}).items()}
+                self._dp_loc[game]  = {v: k for k, v in gd.get("location_name_to_id", {}).items()}
+            log.debug("[DataPackage] %d jeu(x) résolu(s)", len(games))
 
         elif cmd == "ReceivedItems":
             # AP protocol: `index` is on the ReceivedItems packet (start of batch),
@@ -304,10 +328,34 @@ class BotWClient:
                     self._kill_player()
 
         elif cmd == "PrintJSON":
-            log.info("[AP] %s", "".join(p.get("text", "") for p in msg.get("data", [])))
+            log.info("[AP] %s", self._render_json(msg.get("data", [])))
 
         elif cmd in ("InvalidPacket", "ConnectionRefused"):
             log.error("AP refused connection: %s", msg)
+
+    def _render_json(self, parts: list) -> str:
+        """Rend un message PrintJSON en résolvant les IDs en noms : items/locations via le
+        DataPackage du jeu concerné, joueurs via slot_info. Fallback = l'ID si non résolu."""
+        out: list[str] = []
+        for p in parts:
+            t   = p.get("type", "text")
+            txt = p.get("text", "")
+            if t == "player_id":
+                try:
+                    out.append(self._slot_name.get(int(txt), f"Joueur {txt}"))
+                except (TypeError, ValueError):
+                    out.append(str(txt))
+            elif t in ("item_id", "location_id"):
+                table = self._dp_item if t == "item_id" else self._dp_loc
+                game  = self._slot_game.get(p.get("player"), "")
+                try:
+                    name = table.get(game, {}).get(int(txt))
+                except (TypeError, ValueError):
+                    name = None
+                out.append(name or f"{'Item' if t == 'item_id' else 'Lieu'}#{txt}")
+            else:
+                out.append(str(txt))
+        return "".join(out)
 
     # ── Game polling ──────────────────────────────────────────────────────────
 
