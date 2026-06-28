@@ -25,6 +25,13 @@ _DATA_DIR = Path(__file__).parents[2] / "data"
 
 SAFE_WRITE_IDLE_SECONDS = 5   # 5s idle = title screen (was 35s)
 
+# Création d'un NOUVEAU nœud PouchItem en live (live_create_item) : affichage instantané OK,
+# MAIS tant que le compteur d'inventaire (mCount) + le pointeur de nœud libre ne sont pas
+# mis à jour, le jeu réutilise nos nœuds libres et CORROMPT la save en rafale. Désactivé
+# jusqu'au fix du compteur ; on ne fait que le qty-bump live (sûr). NE PAS remettre True
+# sans le mCount++.
+_LIVE_CREATE_ENABLED = False
+
 
 # ── Load canonical data ───────────────────────────────────────────────────────
 
@@ -654,15 +661,15 @@ class DeferredSaveInjector(ItemInjector):
                     all_ok = False
 
             elif isinstance(action, InjectionSpec.AddPouchItem):
-                # Injection LIVE : live_create_item crée un VRAI nœud PouchItem runtime que
-                # le jeu sérialise au save -> instantané EN JEU + persistant après reload
-                # (validé). Bumpe la quantité si l'item est déjà en poche (défensif interne).
-                info = pouch_item_info(action.item_name)   # {type, sub} ou None
-                if info is not None:
+                # qty-bump live = SÛR + persiste (item déjà compté par le jeu). La CRÉATION
+                # d'un nouveau nœud (live_create_item) est gardée derrière _LIVE_CREATE_ENABLED
+                # car sans mCount++ elle corrompt la save. Si désactivé / item absent, échec ->
+                # _inject_pending bascule sur la voie save-fichier (sûre, au menu titre).
+                info = pouch_item_info(action.item_name)
+                if _LIVE_CREATE_ENABLED and info is not None:
                     ok = self._bridge.live_create_item(
                         action.item_name, info["type"], info.get("sub"), action.amount)
                 else:
-                    # type/sub inconnu (flèches, etc.) : bumpe seulement si déjà présent
                     ok = self._bridge.live_add_item_qty(action.item_name, action.amount) is not None
                 if ok:
                     log.info("  [Live] %s  +%d %s (instantané)",
