@@ -19,12 +19,12 @@ log = logging.getLogger("BotWClient.Rando")
 
 _CHEST_MAP_PATH = Path(__file__).parent.parent / "data" / "rando_chest_map.json"
 
-# Relative path inside a Cemu root
-_SPOILER_RELATIVE = "graphicPacks/BotW Randomizer/spoiler-log.txt"
+# Relative path inside a Cemu root (must match the pack folder produced by the rando)
+_SPOILER_RELATIVE = "graphicPacks/BOTWpelago/spoiler-log.txt"
 
 
 def find_spoiler_log(cemu_root: Optional[Path]) -> Optional[Path]:
-    """Return the spoiler-log.txt path if the BotW Randomizer pack is installed."""
+    """Return the spoiler-log.txt path if the BOTWpelago pack is installed."""
     if cemu_root is None:
         return None
     p = cemu_root / _SPOILER_RELATIVE

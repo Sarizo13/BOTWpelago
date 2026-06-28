@@ -515,7 +515,7 @@ def main() -> None:
         if rando and rando.is_loaded:
             print(rando.summary())
         else:
-            print("No spoiler log found. Use --rando-log <path> or ensure the BotW Randomizer "
+            print("No spoiler log found. Use --rando-log <path> or ensure the BOTWpelago "
                   "graphic pack is installed in your Cemu graphicPacks folder.")
         return
 

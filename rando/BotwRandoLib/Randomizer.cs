@@ -85,7 +85,7 @@ public class Randomizer
 			{
 				throw new ArgumentException("One of the supplied Paths was not valid or doesn't exist!");
 			}
-			string text = Path.Combine(gfxPackPath, "BotW Randomizer");
+			string text = Path.Combine(gfxPackPath, "BOTWpelago");
 			try
 			{
 				if (Directory.Exists(text))
@@ -254,9 +254,9 @@ public class Randomizer
 		{
 			"[Definition]",
 			"titleIds = 00050000101C9300,00050000101C9400,00050000101C9500",
-			"name = BotW Randomizer",
-			"path = \"The Legend of Zelda: Breath of the Wild/BotW Randomizer\"",
-			"description = Randomizer Version " + version + "|You need to enable this to play the Randomizer!",
+			"name = BOTWpelago",
+			"path = \"The Legend of Zelda: Breath of the Wild/BOTWpelago\"",
+			"description = BOTWpelago (Archipelago multiworld) — base rando " + version + "|Active ce pack pour jouer au multiworld !",
 			"version = 4"
 		}.ToArray();
 	}

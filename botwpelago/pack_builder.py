@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 from typing import Callable, Optional
 
-PACK_DIR_NAME = "BotW Randomizer"   # nom de sortie du rando (rules.txt interne)
+PACK_DIR_NAME = "BOTWpelago"        # nom de sortie du rando (doit matcher Randomizer.cs)
 
 
 class PackBuildError(RuntimeError):
