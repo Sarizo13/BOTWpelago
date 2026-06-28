@@ -89,7 +89,7 @@ class App:
         ttk.Label(frm, text="Config AP reçu, chemins du jeu (Cemu unpacked), puis génère le pack.",
                   foreground="#888").grid(row=r, column=0, columnspan=3, sticky="w", padx=6, pady=(0, 6))
         r += 1
-        self._path_row(frm, r, "Config AP (BotW_AP_config_*.json)", "ap_config_path", e,
+        self._path_row(frm, r, "Config AP (AP_*_P*_*.apbotw)", "ap_config_path", e,
                        self._browse_ap_config); r += 1
         self._path_row(frm, r, "Jeu de base (…/content)", "game_base_path", e,
                        lambda: self._browse_dir("game_base_path", "Jeu de base — dossier content")); r += 1
@@ -150,8 +150,9 @@ class App:
             self.vars["save_path"].set(d)
 
     def _browse_ap_config(self) -> None:
-        f = filedialog.askopenfilename(title="Config AP (BotW_AP_config_*.json)",
-                                       filetypes=[("Config AP", "*.json"), ("Tous", "*.*")])
+        f = filedialog.askopenfilename(title="Config AP (AP_*_P*_*.apbotw)",
+                                       filetypes=[("Config AP BotW", "*.apbotw"),
+                                                  ("JSON", "*.json"), ("Tous", "*.*")])
         if f:
             self.vars["ap_config_path"].set(f)
 

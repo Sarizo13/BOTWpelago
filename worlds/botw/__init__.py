@@ -224,7 +224,10 @@ class BotWWorld(World):
             "settings":    settings,
             "placements":  placements,
         }
-        raw = f"BotW_AP_config_P{self.player}_{self.multiworld.get_player_name(self.player)}.json"
-        fname = "".join(c if c.isalnum() or c in "._-" else "_" for c in raw)
+        # MUST follow the AP per-player naming `AP_{seed}_P{player}_{name}.{ext}` —
+        # the host parses the slot via int(filename.split("_")[2][1:]), so split[2]
+        # has to be "P{player}". A custom prefix (e.g. "BotW_AP_config_...") makes the
+        # host choke ("invalid literal for int(): 'onfig'") when loading the seed.
+        fname = self.multiworld.get_out_file_name_base(self.player) + ".apbotw"
         with open(os.path.join(output_directory, fname), "w", encoding="utf-8") as f:
             json.dump(config, f, indent=2, ensure_ascii=False)
