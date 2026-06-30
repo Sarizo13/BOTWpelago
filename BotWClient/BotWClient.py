@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import concurrent.futures
 import json
 import logging
 import os
@@ -214,22 +215,32 @@ class BotWClient:
 
     async def run(self) -> None:
         log.info("Connecting to %s as '%s' …", self.server_url, self.slot)
-        async with websockets.connect(self.server_url) as ws:
-            await ws.send(_pkt([{
-                "cmd":           "Connect",
-                "game":          GAME_NAME,
-                "name":          self.slot,
-                "password":      self.password,
-                "version":       AP_VERSION,
-                "items_handling":0b111,
-                "tags":          ["BotW"],
-                "uuid":          "botw-client-0001",
-            }]))
-            await asyncio.gather(
-                self._recv_loop(ws),
-                self._poll_loop(ws),
-                self._inject_loop(),
-            )
+        # Le travail mémoire lourd (flush/poll : scans + re-localisations) est déporté sur un
+        # thread dédié MONO-worker (sérialisé → pas de course sur le bridge) pour ne JAMAIS
+        # bloquer la boucle réseau : sinon, pendant une grosse rafale d'items, la boucle gèle
+        # plusieurs secondes et le ping keepalive AP expire → déconnexion (1011).
+        self._exec = concurrent.futures.ThreadPoolExecutor(
+            max_workers=1, thread_name_prefix="botw-mem")
+        try:
+            async with websockets.connect(
+                    self.server_url, ping_timeout=60, max_size=None) as ws:
+                await ws.send(_pkt([{
+                    "cmd":           "Connect",
+                    "game":          GAME_NAME,
+                    "name":          self.slot,
+                    "password":      self.password,
+                    "version":       AP_VERSION,
+                    "items_handling":0b111,
+                    "tags":          ["BotW"],
+                    "uuid":          "botw-client-0001",
+                }]))
+                await asyncio.gather(
+                    self._recv_loop(ws),
+                    self._poll_loop(ws),
+                    self._inject_loop(),
+                )
+        finally:
+            self._exec.shutdown(wait=False)
 
     # ── Server messages ───────────────────────────────────────────────────────
 
@@ -360,12 +371,16 @@ class BotWClient:
     # ── Game polling ──────────────────────────────────────────────────────────
 
     async def _poll_loop(self, ws) -> None:
+        loop = asyncio.get_event_loop()
         while True:
             await asyncio.sleep(POLL_INTERVAL)
             if not self.connected or not self.provider.is_available:
                 continue
 
-            new = [ap_id for ap_id in self.provider.poll()
+            # poll() lit/parse la save → déporté sur le thread dédié (sérialisé avec flush)
+            # pour ne pas bloquer le réseau.
+            polled = await loop.run_in_executor(self._exec, self.provider.poll)
+            new = [ap_id for ap_id in polled
                    if ap_id not in self.checked
                    and (not self.slot_locations or ap_id in self.slot_locations)]
             if new:
@@ -435,9 +450,12 @@ class BotWClient:
     # ── Item injection ────────────────────────────────────────────────────────
 
     async def _inject_loop(self) -> None:
+        loop = asyncio.get_event_loop()
         while True:
             await asyncio.sleep(INJECT_INTERVAL)
-            self.injector.flush()
+            # flush() = travail mémoire potentiellement long (créations live, re-localisations)
+            # → exécuté sur le thread dédié pour ne pas bloquer le réseau.
+            await loop.run_in_executor(self._exec, self.injector.flush)
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
