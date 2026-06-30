@@ -224,13 +224,19 @@ def _pouch_has_item(data: bytes, name: str) -> bool:
     return any(_read_porch_name(data, fp, s) == name for s in range(_PORCH_SLOTS))
 
 
-def _add_porch_item_to_save(path: Path, item_name: str, amount: int) -> bool:
+def _add_porch_item_to_save(path: Path, item_name: str, amount: int,
+                            allow_create: bool = True) -> bool:
     """
     Add `amount` to a stackable item in the PouchItem inventory.
 
     If the item already has a slot → increment its PorchItem_Value1.
-    If not found → find the first empty slot and write the name + count.
-    Returns True on success.
+    If not found AND allow_create → find the first empty slot and write the name + count.
+    If not found AND NOT allow_create → return False (caller defers).
+
+    `allow_create=False` est utilisé pour le FILLER : créer en masse des slots PouchItem
+    neufs dans la save (rafale "release all") corrompt la reconstruction de la poche au
+    reload → crash. Le filler neuf passe donc UNIQUEMENT en live (live_create_item, géré
+    par le jeu) ; seuls les objets-clés essentiels (champions, ≤4) créent un slot save-file.
     """
     try:
         data = bytearray(path.read_bytes())
@@ -253,6 +259,10 @@ def _add_porch_item_to_save(path: Path, item_name: str, amount: int) -> bool:
             if slot_name == "" and empty_slot < 0:
                 empty_slot = slot
 
+        if target_slot < 0 and not allow_create:
+            # Filler neuf : pas de création de slot save-file (anti-corruption). Reporté →
+            # sera livré en live après un reload (le pool de nœuds libres se régénère).
+            return False
         if target_slot < 0 and empty_slot < 0:
             log.warning("PorchItem: no slot for %s and inventory full", item_name)
             return False
@@ -694,7 +704,12 @@ class DeferredSaveInjector(ItemInjector):
                 # car sans mCount++ elle corrompt la save. Si désactivé / item absent, échec ->
                 # _inject_pending bascule sur la voie save-fichier (sûre, au menu titre).
                 info = pouch_item_info(action.item_name)
-                if _LIVE_CREATE_ENABLED and info is not None:
+                if self._bridge.pool_exhausted:
+                    # Pool de nœuds libres épuisé : création impossible. On ne tente qu'un bump
+                    # d'item déjà présent ; absent -> échec silencieux -> save-file (bump-only)
+                    # ou report en file (livré en live après un reload, qui régénère le pool).
+                    ok = self._bridge.live_add_item_qty(action.item_name, action.amount) is not None
+                elif _LIVE_CREATE_ENABLED and info is not None:
                     ok = self._bridge.live_create_item(
                         action.item_name, info["type"], info.get("sub"), action.amount)
                 else:
@@ -738,7 +753,10 @@ class DeferredSaveInjector(ItemInjector):
                     all_ok = False
 
             elif isinstance(action, InjectionSpec.AddPouchItem):
-                ok = _add_porch_item_to_save(p, action.item_name, action.amount)
+                # Filler : JAMAIS de création de slot save-file (anti-crash). Bump si l'item
+                # existe déjà dans la save ; sinon report → livraison live après reload.
+                ok = _add_porch_item_to_save(p, action.item_name, action.amount,
+                                             allow_create=False)
                 if not ok:
                     all_ok = False
 

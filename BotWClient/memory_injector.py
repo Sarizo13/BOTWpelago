@@ -184,6 +184,8 @@ class CemuMemoryBridge:
         self._prev_hp:     Optional[int] = None  # dernier HP courant lu (détection de mort)
         self._last_inv_relocate: float = 0.0     # cooldown re-localisation inventaire
         self._last_base_warn:    float = 0.0     # rate-limit du warning "base douteuse"
+        self._pool_exhausted:    bool  = False   # plus de nœud libre → créations impossibles
+        self._last_freenode_warn: float = 0.0    # rate-limit du warning "aucun nœud libre"
         # Cache local des templates PouchItem (par type) — survit aux sessions et permet
         # la création live même quand l'inventaire courant n'a aucun item du même type.
         self._template_store = template_store or (
@@ -223,6 +225,12 @@ class CemuMemoryBridge:
     @property
     def has_live_inventory(self) -> bool:
         return self._inv_base is not None
+
+    @property
+    def pool_exhausted(self) -> bool:
+        """True quand le pool de nœuds PouchItem libres est épuisé (aucune création live
+        possible jusqu'au prochain reload, qui régénère le pool). Remis à zéro chaque cycle."""
+        return self._pool_exhausted
 
     @property
     def is_attached(self) -> bool:
@@ -494,6 +502,7 @@ class CemuMemoryBridge:
     def refresh_inventory_if_stale(self) -> None:
         """Si le scan ne trouve plus de nœud cohérent (0 self-ref = base périmée), re-localise.
         À appeler une fois par cycle de livraison (pas par item)."""
+        self._pool_exhausted = False     # ré-évalué chaque cycle (un reload régénère le pool)
         if self._inv_base is None:
             return
         nodes = self._scan_pouch_nodes()
@@ -533,7 +542,9 @@ class CemuMemoryBridge:
         """Ajoute `amount` a la quantite/durabilite live d'un item deja en inventaire."""
         item_addr = self.live_find_item(item_id)
         if item_addr is None:
-            log.warning("[Mem] (live) Item %s introuvable en inventaire", item_id)
+            # Cas attendu quand le pool est épuisé (création impossible) : on défère
+            # silencieusement vers la file/le save-file plutôt que de spammer.
+            log.debug("[Mem] (live) Item %s introuvable en inventaire", item_id)
             return None
         addr = item_addr - 19
         raw = self._read(addr, 4)
@@ -880,7 +891,14 @@ class CemuMemoryBridge:
         # ── 2) Nœud libre cible ──
         free = next((n for n in nodes if n["type"] == 0xFFFFFFFF and not n["name"]), None)
         if free is None:
-            log.warning("[Mem] (live) aucun nœud libre pour %s — fallback save-file", item_name)
+            # Pool de nœuds libres épuisé : on le mémorise pour que l'appelant arrête de
+            # tenter des créations ce cycle (le pool ne se régénère qu'au prochain reload).
+            self._pool_exhausted = True
+            now = time.monotonic()
+            if now - self._last_freenode_warn > 5.0:
+                self._last_freenode_warn = now
+                log.warning("[Mem] (live) pool de nœuds libres épuisé — créations en attente "
+                            "(repartiront après un reload)")
             return False
 
         F_h = free["host"]
