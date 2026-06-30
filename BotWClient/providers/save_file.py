@@ -611,6 +611,10 @@ class DeferredSaveInjector(ItemInjector):
         if p is None:
             return []
         from BotWClient.item_map import get_spec as _get_spec
+        # L'inventaire a pu être réalloué/déplacé (grosse rafale d'items reçus) → re-localiser
+        # une fois avant de livrer en live, sinon on écrirait dans un buffer périmé.
+        if self._bridge is not None and self._bridge.has_live_inventory:
+            self._bridge.refresh_inventory_if_stale()
         injected:  list[InjectionSpec] = []
         remaining: list[dict]          = []
         deferred = 0

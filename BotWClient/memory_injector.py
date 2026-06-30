@@ -19,6 +19,7 @@ import ctypes
 import json
 import logging
 import struct
+import time
 import zlib
 from ctypes import wintypes
 from pathlib import Path
@@ -181,6 +182,8 @@ class CemuMemoryBridge:
         self._inv_base:    Optional[int] = None  # adresse live du tableau PouchItem
         self._playerinfo:  Optional[int] = None  # singleton PlayerInfo (host), via vtable
         self._prev_hp:     Optional[int] = None  # dernier HP courant lu (détection de mort)
+        self._last_inv_relocate: float = 0.0     # cooldown re-localisation inventaire
+        self._last_base_warn:    float = 0.0     # rate-limit du warning "base douteuse"
         # Cache local des templates PouchItem (par type) — survit aux sessions et permet
         # la création live même quand l'inventaire courant n'a aucun item du même type.
         self._template_store = template_store or (
@@ -476,6 +479,28 @@ class CemuMemoryBridge:
                 return
         log.info("[Mem] Inventaire live introuvable — injection PorchItem (save-file) uniquement")
 
+    def _relocate_inventory(self) -> bool:
+        """L'inventaire a pu être réalloué/déplacé (grosse rafale d'items) → _inv_base périmé.
+        On re-localise (cooldown pour ne pas re-scanner en boucle). True si re-trouvé."""
+        now = time.monotonic()
+        if now - self._last_inv_relocate < 3.0:
+            return False
+        self._last_inv_relocate = now
+        self._inv_base = None
+        self._rupees_addr = None
+        self._locate_live_inventory()
+        return self._inv_base is not None
+
+    def refresh_inventory_if_stale(self) -> None:
+        """Si le scan ne trouve plus de nœud cohérent (0 self-ref = base périmée), re-localise.
+        À appeler une fois par cycle de livraison (pas par item)."""
+        if self._inv_base is None:
+            return
+        nodes = self._scan_pouch_nodes()
+        if nodes and self._derive_heap_base(nodes) is not None:
+            return                                   # inventaire frais
+        self._relocate_inventory()
+
     def _iter_inventory_slots(self, max_slots: int = 420):
         """Itere (slot, item_addr, item_id) sur le tableau PouchItem live."""
         if self._inv_base is None:
@@ -737,7 +762,11 @@ class CemuMemoryBridge:
         best = max(cands, key=lambda b: (self._count_selfref(nodes, b), cands[b]))
         n_sr = self._count_selfref(nodes, best)
         if n_sr == 0:
-            log.warning("[Mem] base du tas douteuse (0 nœud self-ref sur %d)", len(nodes))
+            now = time.monotonic()
+            if now - self._last_base_warn > 5.0:
+                self._last_base_warn = now
+                log.warning("[Mem] inventaire déplacé/réalloué (0 nœud self-ref sur %d) "
+                            "— re-localisation", len(nodes))
             return None
         log.debug("[Mem] base tas 0x%X (%d/%d nœuds self-ref)", best, n_sr, len(nodes))
         return best
@@ -813,11 +842,14 @@ class CemuMemoryBridge:
             log.info("[Mem] (live) %s déjà présent — incrément quantité (+%d)", item_name, value)
             return self.live_add_item_qty(item_name, value) is not None
         nodes = self._scan_pouch_nodes()
-        if not nodes:
-            return False
-        base = self._derive_heap_base(nodes)
+        base = self._derive_heap_base(nodes) if nodes else None
         if base is None:
-            return False
+            # base périmée (inventaire déplacé/réalloué) → re-localise + réessaie une fois
+            if self._relocate_inventory():
+                nodes = self._scan_pouch_nodes()
+                base = self._derive_heap_base(nodes) if nodes else None
+            if base is None:
+                return False
 
         def g2h(g): return g + base
         def h2g(h): return h - base
