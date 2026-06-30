@@ -674,6 +674,15 @@ class DeferredSaveInjector(ItemInjector):
             log.info("[Pending] %d objet(s) en attente — lance Cemu/BotW (admin) ou passe au menu titre.", deferred)
         self._queue = remaining
         self._persist_queue()
+        # Une grosse rafale a pu faire réallouer l'inventaire en cours de route → BotW reset les
+        # nœuds PRÉEXISTANTS à leur qty d'origine (les bumps live sont perdus, ex: l'orbe revient
+        # à 22). On ré-assert les qty cibles ; quand la file est vidée, dernier passage puis on
+        # oublie les cibles (le joueur peut alors dépenser ses orbes/objets librement).
+        if self._bridge is not None and self._bridge.has_live_inventory:
+            self._bridge.refresh_inventory_if_stale()
+            self._bridge.reassert_qty_targets()
+            if not self._queue:
+                self._bridge.clear_qty_targets()
         return injected
 
     def _apply_actions_memory(self, spec: InjectionSpec, p: Optional[Path] = None) -> bool:

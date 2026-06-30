@@ -186,6 +186,10 @@ class CemuMemoryBridge:
         self._last_base_warn:    float = 0.0     # rate-limit du warning "base douteuse"
         self._pool_exhausted:    bool  = False   # plus de nœud libre → créations impossibles
         self._last_freenode_warn: float = 0.0    # rate-limit du warning "aucun nœud libre"
+        # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
+        # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
+        # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
+        self._qty_targets: dict[str, int] = {}
         # Cache local des templates PouchItem (par type) — survit aux sessions et permet
         # la création live même quand l'inventaire courant n'a aucun item du même type.
         self._template_store = template_store or (
@@ -510,6 +514,32 @@ class CemuMemoryBridge:
             return                                   # inventaire frais
         self._relocate_inventory()
 
+    def reassert_qty_targets(self) -> int:
+        """Ré-applique les qty cibles des items livrés cette rafale. BotW restaure les nœuds
+        PRÉEXISTANTS à leur qty d'origine quand l'inventaire réalloue (les bumps live sont
+        perdus) → sans ça, l'orbe/les stacks reviennent à leur valeur d'avant-rafale. Un seul
+        passage sur l'inventaire. Ne fait QUE remonter (cur < cible) pour ne pas écraser une
+        dépense légitime du joueur. Retourne le nombre de nœuds corrigés."""
+        if not self._qty_targets or self._inv_base is None:
+            return 0
+        fixed = 0
+        for _, item_addr, iid in self._iter_inventory_slots():
+            target = self._qty_targets.get(iid)
+            if target is None:
+                continue
+            raw = self._read(item_addr - 19, 4)
+            cur = struct.unpack(">i", raw)[0] if raw else 0
+            if cur < target:
+                self._write(item_addr - 19, struct.pack(">i", target & 0xFFFFFFFF))
+                fixed += 1
+        if fixed:
+            log.info("[Mem] (live) %d qty ré-assertée(s) après réallocation", fixed)
+        return fixed
+
+    def clear_qty_targets(self) -> None:
+        """Oublie les qty cibles (rafale terminée) : on laisse le joueur dépenser librement."""
+        self._qty_targets.clear()
+
     def _iter_inventory_slots(self, max_slots: int = 420):
         """Itere (slot, item_addr, item_id) sur le tableau PouchItem live."""
         if self._inv_base is None:
@@ -551,6 +581,7 @@ class CemuMemoryBridge:
         current = struct.unpack(">i", raw)[0] if raw else 0
         new_val = max(0, current + amount)
         self._write(addr, struct.pack(">i", new_val & 0xFFFFFFFF))
+        self._qty_targets[item_id] = new_val      # à ré-asserter si une réallocation reset le nœud
         log.info("[Mem] (live) %s: %d -> %d", item_id, current, new_val)
         return new_val
 
@@ -941,6 +972,7 @@ class CemuMemoryBridge:
             # réutilise plus ce nœud libre (plus de corruption en rafale) et le sérialise au
             # save (persistance fiable). Sentinelle = on suit la liste jusqu'à sortir du pool.
             bumped = self._bump_pouch_count(nodes, base, F_g)
+            self._qty_targets[item_name] = value      # cible à ré-asserter après réallocation
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s%s",
                      item_name, item_type, value, anchor["name"],
                      "" if bumped else "  (!! mCount NON incrémenté)")
