@@ -31,6 +31,15 @@ SAFE_WRITE_IDLE_SECONDS = 5   # 5s idle = title screen (was 35s)
 # (instantané EN JEU + persistant, validé single + multi-items).
 _LIVE_CREATE_ENABLED = True
 
+# Throttle de livraison : un joueur qui "release" tout son monde envoie ~130 items D'UN COUP.
+# Tout livrer dans un seul cycle (1) épuise le pool de nœuds libres pré-alloués de BotW (les
+# créations live retombent en save-file) et (2) écrit des dizaines de slots PouchItem neufs
+# dans la save en une fois -> la reconstruction de la poche au reload PLANTE. On limite donc
+# les livraisons "lourdes" (pouch/rupees) par cycle ; le surplus reste en file (persistée) et
+# part aux cycles suivants -> le pool a le temps de se régénérer (reload) et la save n'est
+# jamais saturée. Les flags (paravoile, champions…) ne comptent pas dans la limite.
+MAX_DELIVER_PER_FLUSH = 6
+
 
 # ── Load canonical data ───────────────────────────────────────────────────────
 
@@ -618,6 +627,7 @@ class DeferredSaveInjector(ItemInjector):
         injected:  list[InjectionSpec] = []
         remaining: list[dict]          = []
         deferred = 0
+        heavy = 0          # livraisons "lourdes" (pouch/rupees) déjà faites ce cycle
         for entry in self._queue:
             spec = _get_spec(entry["ap_item_id"])
             if not spec.actions:
@@ -626,6 +636,12 @@ class DeferredSaveInjector(ItemInjector):
             # every poll — rotation-safe, applied on reload). Just dequeue here.
             if any(isinstance(a, InjectionSpec.SetFlag) for a in spec.actions):
                 injected.append(spec)
+                continue
+            # Throttle anti-rafale : au-delà de MAX_DELIVER_PER_FLUSH livraisons lourdes ce
+            # cycle, on reporte le reste (évite d'épuiser le pool de nœuds libres et de saturer
+            # la save en un coup -> crash au reload). La file est persistée, ça repart après.
+            if heavy >= MAX_DELIVER_PER_FLUSH:
+                remaining.append(entry)
                 continue
             # Livraison LIVE (instantanée + persistante) : live_create_item crée un VRAI
             # nœud PouchItem runtime que le jeu sérialise au save -> survit au reload (validé
@@ -638,6 +654,7 @@ class DeferredSaveInjector(ItemInjector):
                 delivered = self._apply_actions_savefile(p, spec)
             if delivered:
                 injected.append(spec)
+                heavy += 1
             else:
                 remaining.append(entry)
                 if not (self._bridge is not None and self._bridge.has_live_inventory) \
