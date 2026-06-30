@@ -49,6 +49,12 @@ Melonspeedrun rando/
 botw-rando-repo/
 botw_editor_with_extended_memory.exe
 
+# ── Mods tiers (Relics of the Past, etc.) + archives — copyright auteurs, NE JAMAIS committer ──
+*.7z
+*.rar
+/relics_version_*/
+relics*/
+
 # ── Exécutables (outils tiers + builds figés) ────────────────────────────────
 *.exe
 *.dll
