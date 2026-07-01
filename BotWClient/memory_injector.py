@@ -506,13 +506,17 @@ class CemuMemoryBridge:
     def refresh_inventory_if_stale(self) -> None:
         """Si le scan ne trouve plus de nœud cohérent (0 self-ref = base périmée), re-localise.
         À appeler une fois par cycle de livraison (pas par item)."""
-        self._pool_exhausted = False     # ré-évalué chaque cycle (un reload régénère le pool)
         if self._inv_base is None:
             return
         nodes = self._scan_pouch_nodes()
         if nodes and self._derive_heap_base(nodes) is not None:
-            return                                   # inventaire frais
-        self._relocate_inventory()
+            return                                   # inventaire frais → on GARDE _pool_exhausted
+        # Périmé (réallocation / reload) → re-localise. SEULEMENT ici on réarme les créations :
+        # le pool de nœuds libres ne se régénère qu'à ce moment. Sinon on NE martèle PAS
+        # live_create_item cycle après cycle sur un inventaire plein (scans pendant que le jeu
+        # réalloue = risque de crash), la porte utilise le bump/save-file jusqu'au prochain reload.
+        if self._relocate_inventory():
+            self._pool_exhausted = False
 
     def reassert_qty_targets(self) -> int:
         """Ré-applique les qty cibles des items livrés cette rafale. BotW restaure les nœuds
@@ -595,9 +599,11 @@ class CemuMemoryBridge:
         if self._rupees_addr is None:
             return None
         current = self.live_get_rupees()
-        if current is None:
+        # Garde-fou : le max de rubis en jeu est 999999. Une valeur hors bornes = adresse rubis
+        # PÉRIMÉE (inventaire en cours de réallocation) → on n'écrit PAS (sinon corruption, ex: -298).
+        if current is None or not (0 <= current <= 999999):
             return None
-        new_val = max(0, current + amount)
+        new_val = max(0, min(999999, current + amount))
         self._write(self._rupees_addr, struct.pack(">i", new_val))
         log.info("[Mem] (live) Rupees: %d -> %d", current, new_val)
         return new_val
