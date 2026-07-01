@@ -167,7 +167,7 @@ def build() -> None:
     (OUT / "maps").mkdir(exist_ok=True)
     (OUT / "maps" / "maps.json").write_text(json.dumps([{
         "name": "hyrule", "img": "maps/hyrule.png",
-        "location_size": 10, "location_border_thickness": 2,
+        "location_size": 20, "location_border_thickness": 3,
     }], indent=1), encoding="utf-8")
     src_map = ROOT / "poptracker" / "hyrule.png"
     if src_map.exists():
@@ -321,9 +321,6 @@ function onClear(slot_data)
         local sr = Tracker:FindObjectForCode("shrines_required")
         if sr then sr.AcquiredCount = tonumber(slot_data["required_shrine_count"]) or 0 end
     end
-    print("[BotW] onClear required="..tostring(slot_data and slot_data["required_shrine_count"])
-          .." slot="..tostring(slot).." team="..tostring(team)
-          .." item_ok="..tostring(Tracker:FindObjectForCode("shrines_required") ~= nil))
 end
 
 function onItem(index, item_id, item_name, player_number)
@@ -356,7 +353,6 @@ end
 -- Compteurs jeu (DataStorage poussé par le client BotW) : shrines cleared/required + orbes réels
 function onGSGet(key, value)
     local code = GS_KEYS and GS_KEYS[key]
-    print("[BotW] GSGet key="..tostring(key).." value="..tostring(value).." code="..tostring(code))
     if code and value ~= nil then
         local o = Tracker:FindObjectForCode(code)
         if o then o.AcquiredCount = tonumber(value) or 0 end
