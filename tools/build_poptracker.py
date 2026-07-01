@@ -187,6 +187,8 @@ def build() -> None:
         entry = {"name": it["disp"], "type": typ, "img": img, "codes": code}
         if typ == "consumable":
             entry["max_quantity"] = it.get("max", 200)
+            entry["min_quantity"] = 0
+            entry["initial_quantity"] = 0
             entry["increment"] = 1
         items_json.append(entry)
         if it["ap"] is not None:                       # None = manuel (Arc) / compteur goal
@@ -312,6 +314,14 @@ function onClear(slot_data)
         Archipelago:SetNotify(keys)
         Archipelago:Get(keys)
     end
+    -- "required" est STATIQUE (slot_data) → lu directement, indépendant du client BotW.
+    if slot_data and slot_data["required_shrine_count"] then
+        local sr = Tracker:FindObjectForCode("shrines_required")
+        if sr then sr.AcquiredCount = tonumber(slot_data["required_shrine_count"]) or 0 end
+    end
+    print("[BotW] onClear required="..tostring(slot_data and slot_data["required_shrine_count"])
+          .." slot="..tostring(slot).." team="..tostring(team)
+          .." item_ok="..tostring(Tracker:FindObjectForCode("shrines_required") ~= nil))
 end
 
 function onItem(index, item_id, item_name, player_number)
@@ -344,6 +354,7 @@ end
 -- Compteurs jeu (DataStorage poussé par le client BotW) : shrines cleared/required + orbes réels
 function onGSGet(key, value)
     local code = GS_KEYS and GS_KEYS[key]
+    print("[BotW] GSGet key="..tostring(key).." value="..tostring(value).." code="..tostring(code))
     if code and value ~= nil then
         local o = Tracker:FindObjectForCode(code)
         if o then o.AcquiredCount = tonumber(value) or 0 end
