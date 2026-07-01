@@ -479,15 +479,19 @@ class BotWClient:
             "SpiritOrbs":      self.provider.get_spirit_orbs(),
             "ShrinesRequired": int(self.slot_data.get("required_shrine_count", 0)),
         }
+        pushed = {}
         for name, val in state.items():
             if self._pushed_state.get(name) == val:
                 continue
             self._pushed_state[name] = val
             key = f"BotW_{name}_{self._team}_{self._slot_num}"
+            pushed[key] = val
             await ws.send(_pkt([{
                 "cmd": "Set", "key": key, "default": 0, "want_reply": False,
                 "operations": [{"operation": "replace", "value": val}],
             }]))
+        if pushed:
+            log.info("[Tracker] état jeu → AP DataStorage : %s", pushed)
 
     # ── Item injection ────────────────────────────────────────────────────────
 
