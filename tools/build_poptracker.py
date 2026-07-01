@@ -79,7 +79,13 @@ def build() -> None:
 
     locs = _load("locations.json") + _load("shrine_chests.json")
 
-    # ── Arbre de lieux : région → catégorie → sections (un check = une section) ──
+    # ── Coords carte extraites du dump (tools/extract_map_coords.py) — LOCAL, optionnel ──
+    coords: dict[str, list] = {}
+    cfile = ROOT / "poptracker" / "map_coords.json"
+    if cfile.exists():
+        coords = json.loads(cfile.read_text(encoding="utf-8"))
+
+    # ── Arbre : région → catégorie → CHECK (location épinglée sur la carte) → 1 section ──
     tree: dict[str, dict[str, list]] = {}
     loc_mapping: dict[int, str] = {}
     seen_paths: set[str] = set()
@@ -93,8 +99,17 @@ def build() -> None:
             path = f"{path} ({loc['ap_id']})"
             name = f"{name} ({loc['ap_id']})"
         seen_paths.add(path)
-        tree.setdefault(region, {}).setdefault(label, []).append(name)
+        tree.setdefault(region, {}).setdefault(label, []).append((name, int(loc["ap_id"])))
         loc_mapping[int(loc["ap_id"])] = path
+
+    def _check_node(name: str, ap_id: int) -> dict:
+        # chaque check = une location (1 section) → référencée par son @path ; le pin carte
+        # (map_locations) se colore selon sa complétion. onLocation décrémente son ChestCount.
+        node = {"name": name, "sections": [{"name": ""}]}
+        xy = coords.get(str(ap_id))
+        if xy:
+            node["map_locations"] = [{"map": "hyrule", "x": xy[0], "y": xy[1]}]
+        return node
 
     locations_json = []
     for region in sorted(tree):
@@ -103,10 +118,25 @@ def build() -> None:
         for label in sorted(cats, key=lambda l: next(
                 (i for i, c in enumerate(CAT_ORDER) if CATEGORY_LABEL.get(c) == l), 99)):
             children.append({"name": label,
-                             "sections": [{"name": n} for n in cats[label]]})
+                             "children": [_check_node(n, i) for n, i in cats[label]]})
         locations_json.append({"name": region, "children": children})
     (OUT / "locations" / "locations.json").write_text(
         json.dumps(locations_json, indent=1, ensure_ascii=False), encoding="utf-8")
+    n_pins = sum(1 for i in loc_mapping if str(i) in coords)
+
+    # ── Carte (Phase 2) : maps.json + image hyrule.png ──
+    # L'image de carte (art du jeu) se place à poptracker/hyrule.png (SOURCE, hors pack, gitignored) ;
+    # on la copie dans le pack. La garder hors de OUT évite qu'un rmtree de régénération l'efface.
+    (OUT / "maps").mkdir(exist_ok=True)
+    (OUT / "maps" / "maps.json").write_text(json.dumps([{
+        "name": "hyrule", "img": "maps/hyrule.png",
+        "location_size": 10, "location_border_thickness": 2,
+    }], indent=1), encoding="utf-8")
+    src_map = ROOT / "poptracker" / "hyrule.png"
+    if src_map.exists():
+        shutil.copy(src_map, OUT / "maps" / "hyrule.png")
+    else:
+        print("  (place la carte à poptracker/hyrule.png -> elle sera copiée dans le pack)")
 
     # ── Items-clés + icônes placeholder ──
     items_json, item_mapping = [], {}
@@ -146,7 +176,7 @@ def build() -> None:
     (OUT / "scripts" / "autotracking" / "archipelago.lua").write_text(_ARCHIPELAGO_LUA, encoding="utf-8")
     (OUT / "scripts" / "init.lua").write_text(_INIT_LUA, encoding="utf-8")
 
-    # ── Layouts (grille d'items pour l'overlay de stream + fenêtre principale) ──
+    # ── Layouts : grille d'items (overlay stream) + carte de Hyrule ──
     grid = {
         "type": "array", "orientation": "vertical", "margin": "4,4", "content": [
             {"type": "itemgrid", "item_margin": "3,3", "item_size": "40,40",
@@ -158,8 +188,13 @@ def build() -> None:
              ]},
         ],
     }
+    map_view = {"type": "map", "maps": ["hyrule"]}
+    default = {"type": "array", "orientation": "horizontal", "margin": "0,0",
+               "content": [grid, map_view]}
     (OUT / "layouts" / "tracker.json").write_text(
-        json.dumps({"tracker_default": grid, "tracker_broadcast": grid}, indent=1), encoding="utf-8")
+        json.dumps({"tracker_default": default,
+                    "tracker_broadcast": grid,
+                    "tracker_maps": map_view}, indent=1), encoding="utf-8")
 
     # ── Manifest ──
     manifest = {
@@ -174,7 +209,10 @@ def build() -> None:
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=4), encoding="utf-8")
 
     print(f"[poptracker] pack généré -> {OUT}")
-    print(f"  lieux : {len(loc_mapping)}  |  items-clés : {len(item_mapping)}  |  régions : {len(tree)}")
+    print(f"  lieux : {len(loc_mapping)}  |  pins carte : {n_pins}  |  "
+          f"items-clés : {len(item_mapping)}  |  régions : {len(tree)}")
+    if not coords:
+        print("  (pas de map_coords.json — lance tools/extract_map_coords.py pour les pins carte)")
 
 
 _INIT_LUA = """\
@@ -182,6 +220,7 @@ _INIT_LUA = """\
 ENABLE_DEBUG_LOG = true
 Tracker:AddItems("items/items.json")
 Tracker:AddLocations("locations/locations.json")
+Tracker:AddMaps("maps/maps.json")
 Tracker:AddLayouts("layouts/tracker.json")
 ScriptHost:LoadScript("scripts/autotracking/archipelago.lua")
 """
