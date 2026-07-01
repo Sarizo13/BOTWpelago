@@ -135,7 +135,9 @@ def build() -> None:
             name = f"{name} ({loc['ap_id']})"
         seen_paths.add(path)
         tree.setdefault(region, {}).setdefault(label, []).append((name, int(loc["ap_id"])))
-        loc_mapping[int(loc["ap_id"])] = path
+        # @path vers la SECTION (…/name/name) : AvailableChestCount est une propriété de Section,
+        # PAS de Location — pointer la Location fait planter onClear/onLocation.
+        loc_mapping[int(loc["ap_id"])] = f"{path}/{name}"
 
     def _check_node(name: str, ap_id: int) -> dict:
         # chaque check = une location (1 section) → référencée par son @path ; le pin carte
