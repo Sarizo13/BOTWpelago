@@ -55,6 +55,9 @@ botw_editor_with_extended_memory.exe
 /relics_version_*/
 relics*/
 
+# ── Pack PopTracker GÉNÉRÉ (regénérable via tools/build_poptracker.py) + art de carte (Phase 2) ──
+poptracker/
+
 # ── Exécutables (outils tiers + builds figés) ────────────────────────────────
 *.exe
 *.dll
