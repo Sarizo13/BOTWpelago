@@ -471,8 +471,27 @@ class CemuMemoryBridge:
                 score += 1
         return score
 
-    def _find_inventory_start(self, rupees_addr: int) -> Optional[int]:
-        """Scanne la region contenant rupees_addr pour le tableau PouchItem (stride 544)."""
+    def _addr_has_free_node(self, addr: int, max_slots: int = 200) -> bool:
+        """True si le tableau PouchItem à `addr` contient un nœud LIBRE (type 0xFFFFFFFF, sans nom)
+        → un buffer VIVANT avec de la marge, pas un ancien buffer exactement dimensionné (freed)."""
+        for slot in range(max_slots):
+            a = addr + slot * _ITEM_STRIDE
+            head = self._read(a, 8)
+            if not self._matches_item_pattern(head):
+                return False
+            raw = self._read(a - self._NODE_HEADER_OFF, _ITEM_STRIDE)
+            if not raw:
+                return False
+            typ = struct.unpack_from(">I", raw, self._NODE_OFF_TYPE)[0]
+            name = raw[self._NODE_OFF_NAME:self._NODE_OFF_NAME + 40].split(b"\x00")[0]
+            if typ == 0xFFFFFFFF and not name:
+                return True
+        return False
+
+    def _find_inventory_start(self, rupees_addr: int, prefer_free: bool = False) -> Optional[int]:
+        """Scanne la region contenant rupees_addr pour le tableau PouchItem (stride 544).
+        prefer_free=True : préfère un buffer qui possède un nœud LIBRE (le jeu réalloue la poche
+        → l'ancien buffer paraît encore valide mais n'a PLUS de nœud libre ; on veut le VIVANT)."""
         region_base, region_size = None, None
         for base, size in self._iter_regions():
             if base <= rupees_addr < base + size:
@@ -483,6 +502,7 @@ class CemuMemoryBridge:
 
         off = 0
         best, best_score = None, -1
+        best_free, best_free_score = None, -1
         while off < region_size:
             n = min(_INV_SCAN_CHUNK, region_size - off)
             read_n = min(n + _ITEM_STRIDE + 8, region_size - off)
@@ -503,15 +523,21 @@ class CemuMemoryBridge:
                     s = self._score_inventory_candidate(addr)
                     if s > best_score:
                         best, best_score = addr, s
-                        if s >= _EARLY_EXIT_SCORE:
+                        if s >= _EARLY_EXIT_SCORE and not prefer_free:
                             return best
+                    if prefer_free and s > 0 and s > best_free_score and self._addr_has_free_node(addr):
+                        best_free, best_free_score = addr, s
+                        if s >= _EARLY_EXIT_SCORE:
+                            return best_free
             off += n
+        if prefer_free and best_free is not None:
+            return best_free
         return best if best_score > 0 else None
 
-    def _locate_live_inventory(self) -> None:
+    def _locate_live_inventory(self, prefer_free: bool = False) -> None:
         """Trouve rupeesAddress + inventoryStartAddress live. Echec silencieux (fallback save-file)."""
         for rupees_addr in self._find_rupees_addresses():
-            inv_base = self._find_inventory_start(rupees_addr)
+            inv_base = self._find_inventory_start(rupees_addr, prefer_free=prefer_free)
             if inv_base is not None:
                 self._rupees_addr = rupees_addr
                 self._inv_base = inv_base
@@ -520,31 +546,42 @@ class CemuMemoryBridge:
                 return
         log.info("[Mem] Inventaire live introuvable — injection PorchItem (save-file) uniquement")
 
-    def _relocate_inventory(self) -> bool:
+    def _relocate_inventory(self, prefer_free: bool = False) -> bool:
         """L'inventaire a pu être réalloué/déplacé (grosse rafale d'items) → _inv_base périmé.
-        On re-localise (cooldown pour ne pas re-scanner en boucle). True si re-trouvé."""
+        On re-localise (cooldown pour ne pas re-scanner en boucle). True si re-trouvé.
+        prefer_free=True : cible un buffer AVEC nœuds libres (cas réallocation → ancien buffer sans
+        marge, ce que ferait un reconnect client, mais sans reconnect)."""
         now = time.monotonic()
         if now - self._last_inv_relocate < 3.0:
             return False
         self._last_inv_relocate = now
+        prev = self._inv_base
         self._inv_base = None
         self._rupees_addr = None
-        self._locate_live_inventory()
+        self._locate_live_inventory(prefer_free=prefer_free)
+        if self._inv_base is not None and self._inv_base != prev:
+            log.info("[Mem] Inventaire re-localisé (réallocation détectée) → 0x%012X", self._inv_base)
         return self._inv_base is not None
 
     def refresh_inventory_if_stale(self) -> None:
-        """Si le scan ne trouve plus de nœud cohérent (0 self-ref = base périmée), re-localise.
+        """Re-localise l'inventaire quand il est périmé. Deux signaux :
+          1. base périmée « dure » : plus aucun nœud cohérent (0 self-ref) ;
+          2. réallocation « douce » : le pool paraît épuisé (aucun nœud LIBRE dans le buffer
+             courant) alors que le jeu a réalloué la poche ailleurs → on est collé sur l'ANCIEN
+             buffer (il paraît encore valide, d'où non-détection par le seul test self-ref). Sans
+             ça, les créations ne repartaient qu'après une déco/reco client. On re-localise en
+             PRÉFÉRANT un buffer avec nœuds libres.
         À appeler une fois par cycle de livraison (pas par item)."""
         if self._inv_base is None:
             return
         nodes = self._scan_pouch_nodes()
-        if nodes and self._derive_heap_base(nodes) is not None:
+        hard_stale = not (nodes and self._derive_heap_base(nodes) is not None)
+        has_free = any(n["type"] == 0xFFFFFFFF and not n["name"] for n in nodes)
+        need_free = self._pool_exhausted and not has_free
+        if not hard_stale and not need_free:
             return                                   # inventaire frais → on GARDE _pool_exhausted
-        # Périmé (réallocation / reload) → re-localise. SEULEMENT ici on réarme les créations :
-        # le pool de nœuds libres ne se régénère qu'à ce moment. Sinon on NE martèle PAS
-        # live_create_item cycle après cycle sur un inventaire plein (scans pendant que le jeu
-        # réalloue = risque de crash), la porte utilise le bump/save-file jusqu'au prochain reload.
-        if self._relocate_inventory():
+        # Re-localise (réarme les créations si un buffer avec nœuds libres est trouvé).
+        if self._relocate_inventory(prefer_free=need_free):
             self._pool_exhausted = False
 
     def reassert_qty_targets(self) -> int:
