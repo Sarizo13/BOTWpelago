@@ -141,7 +141,13 @@ _GATE_HASH_TO_NAME: dict[int, str] = {
 # Paraglider: IsPlayed_Demo033_1 = Great Plateau "leave" state (else dying outside
 # re-traps you); PlayerStole2 = the usable paraglider key item.
 _COMPANION_FLAGS: dict[int, list[str]] = {
-    6_080_000: ["IsPlayed_Demo033_1"],   # Paraglider
+    # Paravoile : livrée hors-séquence par AP (on saute la cutscene du Roi) → on reproduit
+    # l'état que l'event aurait posé pour ne PAS softlocker la chaîne de quêtes principale :
+    #   IsPlayed_Demo033_1  = cutscene du Roi (don de la paravoile) jouée
+    #   Find_Impa_Activated = démarre la quête "En quête d'Impa" dans le journal ; la quête
+    #                         "Le plateau Isolé" s'archive alors (pas de _Finish discret).
+    # (Find_Impa_Ready est déjà posé par le jeu ; Find_Impa_Finish est un CHECK → jamais écrit.)
+    6_080_000: ["IsPlayed_Demo033_1", "Find_Impa_Activated"],
 }
 # Capacités de Champion : comme le paravoile, le flag IsGet_ SEUL ne rend pas la capacité
 # utilisable — il faut aussi l'OBJET-CLÉ en poche (Obj_HeroSoul_<Race>, type 9). Le rando de
