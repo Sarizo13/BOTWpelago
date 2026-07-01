@@ -198,6 +198,7 @@ _PORCH_ITEM_ID      = crc32_id("PorchItem")        # 0x5F283289 — item name sl
 _PORCH_VALUE1_ID    = crc32_id("PorchItem_Value1")  # 0x6A09FC59 — quantity slots
 _PORCH_SLOTS        = 420   # total inventory slots
 _PORCH_NAME_ENTRIES = 16    # 16 × 4 bytes = 64-byte item name per slot
+_DUNGEON_SEAL_ID    = crc32_id("DungeonClearSealNum")   # compteur gamedata d'orbes
 
 
 def _find_first_run(data: bytes, flag_id: int) -> int:
@@ -234,6 +235,18 @@ def _pouch_has_item(data: bytes, name: str) -> bool:
     if fp < 0:
         return False
     return any(_read_porch_name(data, fp, s) == name for s in range(_PORCH_SLOTS))
+
+
+def _read_porch_value(data: bytes, item_name: str) -> Optional[int]:
+    """Valeur (PorchItem_Value1) du slot pouch nommé `item_name` dans la save, ou None si absent."""
+    fp = _find_first_run(data, _PORCH_ITEM_ID)
+    fv = _find_first_run(data, _PORCH_VALUE1_ID)
+    if fp < 0 or fv < 0:
+        return None
+    for slot in range(_PORCH_SLOTS):
+        if _read_porch_name(data, fp, slot) == item_name:
+            return struct.unpack_from(">I", data, 12 + (fv + slot) * 8 + 4)[0]
+    return None
 
 
 def _add_porch_item_to_save(path: Path, item_name: str, amount: int,
@@ -499,16 +512,9 @@ class SaveFileProvider(GameStateProvider):
         if not data:
             return 0
         try:
-            fp = _find_first_run(data, _PORCH_ITEM_ID)
-            fv = _find_first_run(data, _PORCH_VALUE1_ID)
-            if fp < 0 or fv < 0:
-                return 0
-            for slot in range(_PORCH_SLOTS):
-                if _read_porch_name(data, fp, slot) == "Obj_DungeonClearSeal":
-                    return struct.unpack_from(">I", data, 12 + (fv + slot) * 8 + 4)[0]
+            return _read_porch_value(data, "Obj_DungeonClearSeal") or 0
         except Exception:
-            pass
-        return 0
+            return 0
 
     def verify_flag_names(self, sample_names: list[str]) -> dict[str, bool]:
         self._reload()
@@ -608,6 +614,8 @@ class DeferredSaveInjector(ItemInjector):
         self._received:     set[int]   = set()
         self._last_mtime    = 0.0
         self._last_change_time = time.monotonic()
+        self._last_banked_orb  = 0     # dernière valeur d'orbe (pouch) bankée dans la save
+        self._last_banked_seal = 0     # dernière valeur DungeonClearSealNum bankée dans la save
 
     def _resolve(self) -> Optional[Path]:
         """Return the current game_data.sav (slot-dir aware)."""
@@ -695,6 +703,11 @@ class DeferredSaveInjector(ItemInjector):
             idle (menu titre) ; différé tant que le joueur est en jeu.
         """
         self._enforce_retention()
+        # Orbes : le jeu reverte le compteur → (1) on le maintient EN LIVE chaque poll, (2) on le
+        # BANQUE dans la save pour qu'il survive au reload (le live seul ne persiste pas).
+        if self._bridge is not None and self._bridge.has_live_inventory:
+            self._bridge.maintain_persistent()
+        self._bank_spirit_orbs()
         injected = self._inject_pending()
         if injected:
             is_flag = lambda s: any(isinstance(a, InjectionSpec.SetFlag) for a in s.actions)
@@ -706,6 +719,37 @@ class DeferredSaveInjector(ItemInjector):
                 log.info("[ACTION] Flags écrits : %s — RECHARGE la save pour les appliquer.",
                          ", ".join(flags))
         return injected
+
+    def _bank_spirit_orbs(self) -> None:
+        """Écrit les orbes reçus d'AP DANS LA SAVE (pouch Obj_DungeonClearSeal + gamedata
+        DungeonClearSealNum) pour qu'ils survivent au rechargement — le maintien live seul ne
+        persiste pas (le jeu restaure le nœud à sa valeur sérialisée). Écrit UNIQUEMENT quand la
+        cible augmente (pas à chaque poll) et seulement vers le HAUT (n'écrase pas les orbes
+        naturels ni une dépense au sanctuaire de la déesse au-dessus de la cible AP)."""
+        if self._bridge is None:
+            return
+        orb_target  = getattr(self._bridge, "orb_pouch_target", None) or 0
+        seal_target = getattr(self._bridge, "seal_target", None) or 0
+        if orb_target <= self._last_banked_orb and seal_target <= self._last_banked_seal:
+            return
+        p = self._resolve()
+        if p is None:
+            return
+        try:
+            if orb_target > self._last_banked_orb:
+                cur = _read_porch_value(_read_shared(p), "Obj_DungeonClearSeal")
+                if cur is not None:
+                    if cur < orb_target and _add_porch_item_to_save(
+                            p, "Obj_DungeonClearSeal", orb_target - cur, allow_create=False):
+                        log.info("[Orbe] banké dans la save : %d orbes (survit au reload)", orb_target)
+                    self._last_banked_orb = orb_target
+            if seal_target > self._last_banked_seal:
+                cur_seal = parse(_read_shared(p)).get_s32(_DUNGEON_SEAL_ID)
+                if cur_seal < seal_target:
+                    _write_flag_to_save(p, _DUNGEON_SEAL_ID, seal_target)
+                self._last_banked_seal = seal_target
+        except Exception as exc:
+            log.debug("[Orbe] banking save échoué : %s", exc)
 
     def _inject_pending(self) -> list[InjectionSpec]:
         if not self._queue:

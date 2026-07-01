@@ -6,7 +6,7 @@ Coche au fur et à mesure. ⚠️ = point incertain / à mesurer. Statut au 2026
 ## A. Livraison d'items (instantané EN JEU + persistant après reload) — ✅ VALIDÉ
 - [ ] 🔧 **Save FRAÎCHE (Plateau) : les items s'ajoutent** — bug corrigé : un épuisement transitoire du pool de nœuds libres bloquait DÉFINITIVEMENT toutes les créations (`_pool_exhausted` collant) → « je ne reçois pas les items ». Fix : le flag **expire après un cooldown** (retry périodique), les nœuds libres qui apparaissent (ramassage / poche agrandie) sont réutilisés → **à re-tester sur save neuve**
 - [x] Ingrédients / matériaux reçus → apparaissent instantanément + **persistent après reload**
-- [x] Orbes (Spirit Orb) → le compteur d'orbes monte et **persiste** (ré-assertion post-réallocation)
+- [ ] 🔧 **Orbes (Spirit Orb) : le compteur monte ET tient** — bug : l'orbe reçu d'AP retombait à une valeur d'avant (le jeu restaure le nœud pouch à sa valeur sérialisée + la cible qty était oubliée dès la file vide). Fix : cible PERSISTANTE (jamais oubliée) re-assertée **chaque poll** (`maintain_persistent` : pouch `Obj_DungeonClearSeal` + gamedata `DungeonClearSealNum`, bump-up only) **+ banking dans la save** (survit au reload, comme un flag de gate). ⚠️ dépenser des orbes à une statue de la déesse peut être temporairement contré (limite connue). → **à re-tester** (compter précisément : orbes AP + orbes naturels des coffres)
 - [x] Flèches (Arrows/Fire/Ice/Shock/Bomb) → apparaissent même **sans arc** + persistent
 - [x] Rubis (Rupees x100) → portefeuille monte
 - [x] Bump d'un stack déjà présent (ex: viande) → la quantité monte et **tient** après reload

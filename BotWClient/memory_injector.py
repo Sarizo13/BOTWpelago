@@ -201,6 +201,12 @@ class CemuMemoryBridge:
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
         # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
         self._qty_targets: dict[str, int] = {}
+        # Cibles PERSISTANTES (jamais oubliées) : compteurs que le jeu reverte en continu — les
+        # Spirit Orbs (pouch Obj_DungeonClearSeal + gamedata DungeonClearSealNum). Contrairement à
+        # un stack de nourriture (consommable → on oublie la cible), un orbe reçu d'AP doit tenir.
+        # Cumulatif (max) : chaque orbe = +1 par-dessus la valeur déjà maintenue.
+        self._persistent_qty: dict[str, int] = {}   # item_id pouch -> qty mini à maintenir
+        self._seal_target: Optional[int] = None      # DungeonClearSealNum (gamedata) mini à maintenir
         # Cache local des templates PouchItem (par type) — survit aux sessions et permet
         # la création live même quand l'inventaire courant n'a aucun item du même type.
         self._template_store = template_store or (
@@ -237,6 +243,9 @@ class CemuMemoryBridge:
         self._rupees_addr = None
         self._inv_base = None
         self._rupee_shadow = None
+        # NB: _persistent_qty / _seal_target ne sont PAS effacés (valeurs, pas adresses) : sur un
+        # ré-attach le compteur d'orbes en jeu est inchangé et les orbes ne sont pas re-livrés →
+        # les oublier stopperait la maintenance et l'orbe reverterait.
 
     @property
     def has_live_inventory(self) -> bool:
@@ -561,8 +570,46 @@ class CemuMemoryBridge:
         return fixed
 
     def clear_qty_targets(self) -> None:
-        """Oublie les qty cibles (rafale terminée) : on laisse le joueur dépenser librement."""
+        """Oublie les qty cibles TRANSITOIRES (rafale terminée) : le joueur peut dépenser ces
+        stacks. Les cibles PERSISTANTES (orbes) ne sont PAS effacées (voir maintain_persistent)."""
         self._qty_targets.clear()
+
+    @property
+    def seal_target(self) -> Optional[int]:
+        """Cible DungeonClearSealNum (orbes reçus d'AP) à banker dans la save. None si aucun orbe."""
+        return self._seal_target
+
+    @property
+    def orb_pouch_target(self) -> Optional[int]:
+        """Cible pouch Obj_DungeonClearSeal (orbes) à banker dans la save. None si aucun orbe."""
+        return self._persistent_qty.get("Obj_DungeonClearSeal")
+
+    def maintain_persistent(self) -> int:
+        """Ré-assert EN CONTINU (chaque poll) les compteurs d'orbes que le jeu reverte :
+        - pouch Obj_DungeonClearSeal (restauré à sa valeur sérialisée à chaque réallocation),
+        - gamedata DungeonClearSealNum.
+        Ne remonte QUE vers le haut (bump-up) → n'écrase pas les orbes NATURELS (clear de
+        sanctuaire) au-dessus de la cible. Retourne le nombre de corrections. Sans ça, un orbe
+        reçu d'AP « retombe à un nombre d'avant » (bug constaté)."""
+        if not self.has_live_inventory:
+            return 0
+        fixed = 0
+        if self._persistent_qty:
+            for slot, item_addr, iid in self._iter_inventory_slots():
+                target = self._persistent_qty.get(iid)
+                if target is None:
+                    continue
+                raw = self._read(item_addr - 19, 4)
+                cur = struct.unpack(">i", raw)[0] if raw else 0
+                if cur < target:
+                    self._write(item_addr - 19, struct.pack(">i", target & 0xFFFFFFFF))
+                    fixed += 1
+        if self._seal_target is not None:
+            cur = self.read_flag("DungeonClearSealNum")
+            if cur is not None and cur < self._seal_target:
+                self.write_flag("DungeonClearSealNum", self._seal_target)
+                fixed += 1
+        return fixed
 
     def _iter_inventory_slots(self, max_slots: int = 420):
         """Itere (slot, item_addr, item_id) sur le tableau PouchItem live."""
@@ -606,6 +653,10 @@ class CemuMemoryBridge:
         new_val = max(0, current + amount)
         self._write(addr, struct.pack(">i", new_val & 0xFFFFFFFF))
         self._qty_targets[item_id] = new_val      # à ré-asserter si une réallocation reset le nœud
+        if item_id == "Obj_DungeonClearSeal":
+            # Orbe : le jeu restaure ce nœud à sa valeur sérialisée → cible PERSISTANTE (cumulatif)
+            # maintenue chaque poll, sinon l'orbe reçu retombe.
+            self._persistent_qty[item_id] = max(self._persistent_qty.get(item_id, 0), new_val)
         log.info("[Mem] (live) %s: %d -> %d", item_id, current, new_val)
         return new_val
 
@@ -697,7 +748,12 @@ class CemuMemoryBridge:
             return False
         signed = struct.unpack(">i", struct.pack(">I", current))[0]
         new_val = max(0, signed + amount)
-        return self.write_flag(flag_name, new_val)
+        ok = self.write_flag(flag_name, new_val)
+        if ok and flag_name == "DungeonClearSealNum":
+            # Orbe : le jeu reverte ce compteur → on mémorise la cible (cumulatif) pour la
+            # re-asserter chaque poll (maintain_persistent) et la banker dans la save.
+            self._seal_target = max(self._seal_target or 0, new_val)
+        return ok
 
     # ── PouchItem injection ───────────────────────────────────────────────────
 
