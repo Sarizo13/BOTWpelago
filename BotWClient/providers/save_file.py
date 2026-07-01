@@ -442,6 +442,21 @@ class SaveFileProvider(GameStateProvider):
             return False
         return self._save.get_s32(_DUNGEON_COUNTER_ID) >= required_shrine_count
 
+    def get_dungeon_counter(self) -> int:
+        """Nombre de sanctuaires réellement terminés (DungeonClearCounter) dans la save."""
+        return self._save.get_s32(_DUNGEON_COUNTER_ID) if self._save else 0
+
+    def get_spirit_orbs(self) -> int:
+        """Vraie valeur d'orbes (Obj_DungeonClearSeal) : mémoire live si Cemu attaché, sinon 0.
+        Sert à pousser l'état réel du jeu vers AP (le tracker ne peut pas compter les orbes
+        gagnés en jeu, seulement ceux reçus d'AP)."""
+        b = self._bridge
+        if b and b.is_attached and b.has_live_inventory:
+            v = b.live_get_item_qty("Obj_DungeonClearSeal")
+            if v is not None:
+                return int(v)
+        return 0
+
     def verify_flag_names(self, sample_names: list[str]) -> dict[str, bool]:
         self._reload()
         if self._save is None:

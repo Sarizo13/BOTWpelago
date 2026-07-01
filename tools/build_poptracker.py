@@ -53,7 +53,7 @@ KEY_ITEMS = [
     {"ap": 6_080_015, "disp": "Snowquill (casque)",    "code": "snowquill",    "type": "toggle", "rgb": (0xBE, 0xD8, 0xE8)},
     {"ap": 6_080_016, "disp": "Vai (casque)",          "code": "vai",          "type": "toggle", "rgb": (0xC8, 0x7A, 0xC8)},
     {"ap": 6_080_017, "disp": "Zora (casque)",         "code": "zora",         "type": "toggle", "rgb": (0x3A, 0x9A, 0xD6)},
-    {"ap": 6_080_100, "disp": "Spirit Orbs",       "code": "spirit_orbs",  "type": "consumable", "rgb": (0xE8, 0xC8, 0x50), "max": 200},
+    {"ap": None, "disp": "Spirit Orbs", "code": "spirit_orbs", "type": "consumable", "rgb": (0xE8, 0xC8, 0x50), "max": 200, "special": "datastorage"},
     {"ap": None, "disp": "Shrines Cleared",  "code": "shrines_cleared",  "type": "consumable", "rgb": (0x7A, 0xC8, 0xE8), "max": 120, "special": "shrine_counter", "icon_src": "shrine"},
     {"ap": None, "disp": "Shrines Required", "code": "shrines_required", "type": "consumable", "rgb": (0xF0, 0xC0, 0x40), "max": 120, "special": "shrine_goal", "icon_src": "shrine"},
 ]
@@ -98,6 +98,22 @@ def build() -> None:
 
     locs = _load("locations.json") + _load("shrine_chests.json")
 
+    # Nom lisible des sanctuaires (suffixe DungeonNNN → nom) : les marqueurs de lieu
+    # Location_DungeonNNN et les coffres DLC s'appellent "DungeonNNN" dans les données brutes.
+    import re
+    shrine_name = {loc["flag_name"].replace("Clear_Dungeon", ""): loc["name"]
+                   for loc in locs if loc["category"] == "shrine"
+                   and loc.get("flag_name", "").startswith("Clear_Dungeon")}
+
+    def _pretty(name: str) -> str:
+        m = re.match(r"Dungeon0*(\d+)", str(name))
+        if m:
+            sn = shrine_name.get(m.group(0).replace("Dungeon", "")) \
+                 or shrine_name.get(f"{int(m.group(1)):03d}")
+            if sn:
+                return str(name).replace(m.group(0), sn, 1)
+        return name
+
     # ── Coords carte extraites du dump (tools/extract_map_coords.py) — LOCAL, optionnel ──
     coords: dict[str, list] = {}
     cfile = ROOT / "poptracker" / "map_coords.json"
@@ -112,7 +128,7 @@ def build() -> None:
         region = loc.get("region") or "Hyrule World"
         cat = loc["category"]
         label = CATEGORY_LABEL.get(cat, cat.title())
-        name = loc["name"]
+        name = _pretty(loc["name"])
         path = f"@{region}/{label}/{name}"
         if path in seen_paths:                      # collision de nom → suffixe l'ap_id
             path = f"{path} ({loc['ap_id']})"
@@ -277,12 +293,25 @@ function onClear(slot_data)
             elseif v[1][2] == "consumable" then obj.AcquiredCount = 0 end
         end
     end
-    -- Goal : compteur de sanctuaires (X cochés / N requis via slot_data)
-    local sc = Tracker:FindObjectForCode("shrines_cleared")
-    if sc then sc.AcquiredCount = 0 end
-    local req = slot_data and slot_data["required_shrine_count"]
-    local sr = Tracker:FindObjectForCode("shrines_required")
-    if sr and req then sr.AcquiredCount = tonumber(req) end
+    -- Compteurs sourcés du JEU (le client BotW les pousse dans le DataStorage AP : le tracker
+    -- ne peut pas compter les sanctuaires clears / orbes gagnés EN JEU, seulement reçus d'AP).
+    for _, code in ipairs({"shrines_cleared", "shrines_required", "spirit_orbs"}) do
+        local o = Tracker:FindObjectForCode(code)
+        if o then o.AcquiredCount = 0 end
+    end
+    local team = Archipelago.TeamNumber or 0
+    local slot = Archipelago.PlayerNumber or -1
+    if slot > -1 then
+        GS_KEYS = {
+            ["BotW_ShrinesCleared_"..team.."_"..slot]  = "shrines_cleared",
+            ["BotW_ShrinesRequired_"..team.."_"..slot] = "shrines_required",
+            ["BotW_SpiritOrbs_"..team.."_"..slot]      = "spirit_orbs",
+        }
+        local keys = {}
+        for k in pairs(GS_KEYS) do keys[#keys + 1] = k end
+        Archipelago:SetNotify(keys)
+        Archipelago:Get(keys)
+    end
 end
 
 function onItem(index, item_id, item_name, player_number)
@@ -310,16 +339,25 @@ function onLocation(location_id, location_name)
             obj.Active = true
         end
     end
-    -- Goal : +1 au compteur quand un sanctuaire est coché (ids 6081000-6081119)
-    if location_id >= 6081000 and location_id <= 6081119 then
-        local s = Tracker:FindObjectForCode("shrines_cleared")
-        if s then s.AcquiredCount = s.AcquiredCount + 1 end
+end
+
+-- Compteurs jeu (DataStorage poussé par le client BotW) : shrines cleared/required + orbes réels
+function onGSGet(key, value)
+    local code = GS_KEYS and GS_KEYS[key]
+    if code and value ~= nil then
+        local o = Tracker:FindObjectForCode(code)
+        if o then o.AcquiredCount = tonumber(value) or 0 end
     end
+end
+function onGSNotify(key, value, old_value)
+    onGSGet(key, value)
 end
 
 Archipelago:AddClearHandler("clear", onClear)
 Archipelago:AddItemHandler("item", onItem)
 Archipelago:AddLocationHandler("location", onLocation)
+Archipelago:AddRetrievedHandler("botw_gs_get", onGSGet)
+Archipelago:AddSetReplyHandler("botw_gs_notify", onGSNotify)
 """
 
 

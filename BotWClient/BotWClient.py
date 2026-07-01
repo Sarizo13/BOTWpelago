@@ -208,6 +208,9 @@ class BotWClient:
     death_link:  bool       = False
     _ignore_death_until: float = 0.0   # ignore self-death right after a received DeathLink
     _pending_rupee_strip: int = 0      # dette de rubis-placeholder à retirer (rejouée jusqu'à succès)
+    _slot_num: int = None              # notre slot AP (pour les clés DataStorage)
+    _team: int = 0
+    _pushed_state: dict = field(default_factory=dict)  # dernier état jeu poussé (anti-spam)
     # Résolution des noms dans les messages AP (DataPackage + infos joueurs)
     _dp_item:   dict = field(default_factory=dict)   # game -> {item_id: name}
     _dp_loc:    dict = field(default_factory=dict)   # game -> {location_id: name}
@@ -256,6 +259,9 @@ class BotWClient:
             self.connected = True
             self.slot_data = msg.get("slot_data", {})
             self.checked   = set(msg.get("checked_locations", []))
+            self._slot_num = msg.get("slot")            # notre numéro de slot (pour DataStorage)
+            self._team     = msg.get("team", 0)
+            self._pushed_state = {}                     # force un re-push de l'état jeu→AP
             # The slot's full location set (mode-aware) = checked ∪ missing. The client
             # polls every known flag but only emits checks that belong to this slot.
             self.slot_locations = self.checked | set(msg.get("missing_locations", []))
@@ -433,6 +439,10 @@ class BotWClient:
                 await ws.send(_pkt([{"cmd": "StatusUpdate", "status": 30}]))
                 log.info("Goal complete! StatusUpdate(30) sent.")
 
+            # Pousse l'état RÉEL du jeu vers AP (DataStorage) pour le tracker PopTracker :
+            # sanctuaires réellement terminés, vraies orbes, et le nombre requis.
+            await self._push_game_state(ws)
+
             # DeathLink — détecte notre mort et la diffuse (sauf si on vient d'être tué
             # par un DeathLink reçu, pour ne pas la renvoyer en boucle).
             if self.death_link:
@@ -457,6 +467,27 @@ class BotWClient:
                      "cause": f"{self.slot} (BotW) est tombé au combat"},
         }]))
         log.info("[DeathLink] Mort envoyée au multiworld.")
+
+    async def _push_game_state(self, ws) -> None:
+        """Publie l'état RÉEL du jeu dans le DataStorage AP, sous des clés que le pack PopTracker
+        lit (Get + SetNotify) → compteurs exacts sourcés du jeu, pas des items reçus. On n'envoie
+        un Set QUE si la valeur a changé (anti-spam)."""
+        if self._slot_num is None or not isinstance(self.provider, SaveFileProvider):
+            return
+        state = {
+            "ShrinesCleared":  self.provider.get_dungeon_counter(),
+            "SpiritOrbs":      self.provider.get_spirit_orbs(),
+            "ShrinesRequired": int(self.slot_data.get("required_shrine_count", 0)),
+        }
+        for name, val in state.items():
+            if self._pushed_state.get(name) == val:
+                continue
+            self._pushed_state[name] = val
+            key = f"BotW_{name}_{self._team}_{self._slot_num}"
+            await ws.send(_pkt([{
+                "cmd": "Set", "key": key, "default": 0, "want_reply": False,
+                "operations": [{"operation": "replace", "value": val}],
+            }]))
 
     # ── Item injection ────────────────────────────────────────────────────────
 
