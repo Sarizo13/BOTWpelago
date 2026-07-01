@@ -447,14 +447,22 @@ class SaveFileProvider(GameStateProvider):
         return self._save.get_s32(_DUNGEON_COUNTER_ID) if self._save else 0
 
     def get_spirit_orbs(self) -> int:
-        """Vraie valeur d'orbes (Obj_DungeonClearSeal) : mémoire live si Cemu attaché, sinon 0.
-        Sert à pousser l'état réel du jeu vers AP (le tracker ne peut pas compter les orbes
-        gagnés en jeu, seulement ceux reçus d'AP)."""
-        b = self._bridge
-        if b and b.is_attached and b.has_live_inventory:
-            v = b.live_get_item_qty("Obj_DungeonClearSeal")
-            if v is not None:
-                return int(v)
+        """Vraie valeur d'orbes (Obj_DungeonClearSeal) lue dans le PorchItem de la save.
+        (Le tracker ne peut compter que les orbes REÇUS d'AP ; on pousse la vraie valeur jeu.)"""
+        p = self._resolve() if hasattr(self, "_resolve") else None
+        if p is None:
+            return 0
+        try:
+            data = p.read_bytes()
+            fp = _find_first_run(data, _PORCH_ITEM_ID)
+            fv = _find_first_run(data, _PORCH_VALUE1_ID)
+            if fp < 0 or fv < 0:
+                return 0
+            for slot in range(_PORCH_SLOTS):
+                if _read_porch_name(data, fp, slot) == "Obj_DungeonClearSeal":
+                    return struct.unpack_from(">I", data, 12 + (fv + slot) * 8 + 4)[0]
+        except Exception:
+            pass
         return 0
 
     def verify_flag_names(self, sample_names: list[str]) -> dict[str, bool]:
