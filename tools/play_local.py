@@ -2,21 +2,24 @@
 play_local — orchestre une session de test BOTWpelago 100 % LOCALE, de bout en bout.
 
 Pipeline :
-  1. reconstruit  botw.apworld  depuis  worlds/botw  ->  <AP>/custom_worlds/
-  2. génère une seed depuis  players/<yaml>  (défaut : Shorizo.yaml)  [ArchipelagoGenerate.exe]
-  3. extrait le config `.apbotw` de la seed  ->  ~/.botwpelago/ap_config.json
-  4. reconstruit le graphic pack Cemu depuis ce config (rubis-placeholder dans chaque coffre)
-  5. affiche QUOI LANCER (client) puis héberge le serveur AP (localhost:38281, bloquant)
+  1. SUPPRIME l'ancienne save Cemu (save_path de config.json) pour repartir neuf
+  2. reconstruit  botw.apworld  depuis  worlds/botw  ->  <AP>/custom_worlds/
+  3. génère une seed depuis  players/<yaml>  (défaut : Shorizo.yaml)  [ArchipelagoGenerate.exe]
+  4. extrait le config `.apbotw` de la seed  ->  ~/.botwpelago/ap_config.json
+  5. reconstruit le graphic pack Cemu depuis ce config (rubis-placeholder dans chaque coffre)
+  6. affiche QUOI LANCER (client) puis héberge le serveur AP (localhost:38281, bloquant)
 
-Le client se connecte à localhost:38281 par défaut :
-    python -m BotWClient.BotWClient --name Shorizo
+Le client se connecte à localhost:38281 par défaut. Save neuve = pense à réinitialiser
+l'état AP du client aussi :
+    python -m BotWClient.BotWClient --name Shorizo --reset
 
 Usage :
-    python tools/play_local.py                     # tout : génère + pack + héberge
+    python tools/play_local.py                     # tout : wipe save + génère + pack + héberge
     python tools/play_local.py --yaml players/Autre.yaml
     python tools/play_local.py --reuse-seed         # réutiliser la dernière seed (pas de régénération)
     python tools/play_local.py --no-pack            # sauter la reconstruction du pack
     python tools/play_local.py --no-host            # tout préparer sans héberger
+    python tools/play_local.py --keep-save          # NE PAS supprimer l'ancienne save
     python tools/play_local.py --ap-dir "D:\\autre\\Archipelago"
 """
 from __future__ import annotations
@@ -45,8 +48,40 @@ def log(msg: str = "") -> None:
     print(msg, flush=True)
 
 
+# ── 0) suppression de l'ancienne save (fresh start) ──────────────────────────────
+def wipe_save(save_path: str, *, do_it: bool) -> None:
+    """Vide le dossier de save Cemu pour repartir d'une partie neuve. GARDE-FOU : ne
+    supprime QUE dans un vrai dossier de save Cemu (…/usr/save/…) et jamais une racine."""
+    if not do_it:
+        log("  --keep-save : ancienne save conservée.")
+        return
+    if not save_path:
+        log("  ! save_path vide dans ~/.botwpelago/config.json — rien à supprimer.")
+        return
+    p = Path(save_path)
+    parts = [x.lower() for x in p.parts]
+    if not p.is_dir():
+        log(f"  ! dossier save introuvable : {p} — rien à supprimer.")
+        return
+    # Sécurité : le chemin DOIT ressembler à un save Cemu (contient usr + save, profond).
+    if "save" not in parts or "usr" not in parts or len(p.parts) < 5:
+        log(f"  ! chemin save douteux — suppression ANNULÉE par sécurité : {p}")
+        return
+    removed = 0
+    for child in p.iterdir():
+        try:
+            if child.is_dir():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
+            removed += 1
+        except Exception as exc:
+            log(f"  ! impossible de supprimer {child.name} : {exc}")
+    log(f"  Ancienne save supprimée : {removed} élément(s) dans {p}")
+
+
 def step(n: int, title: str) -> None:
-    log(f"\n[{n}/5] {title}")
+    log(f"\n[{n}/6] {title}")
     log("-" * 60)
 
 
@@ -156,8 +191,8 @@ def banner(seed: Path, slot: str, pack_dir: Path | None) -> None:
     log("  ÉTAPES :")
     log("   1. Cemu : Options > Graphic Packs > coche 'BOTWpelago'")
     log("   2. Lance BotW dans Cemu et charge ta save")
-    log("   3. Dans un AUTRE terminal, lance le client :")
-    log(f"        python -m BotWClient.BotWClient --name {slot}")
+    log("   3. Dans un AUTRE terminal, lance le client (save neuve → --reset) :")
+    log(f"        python -m BotWClient.BotWClient --name {slot} --reset")
     log("      (il se connecte à localhost:38281 par défaut)")
     log("")
     log("  Le serveur AP démarre ci-dessous. Ctrl+C pour l'arrêter.")
@@ -179,6 +214,7 @@ def main() -> None:
     ap.add_argument("--reuse-seed", action="store_true", help="Réutiliser la dernière seed (pas de régénération)")
     ap.add_argument("--no-pack", action="store_true", help="Sauter la reconstruction du pack graphique")
     ap.add_argument("--no-host", action="store_true", help="Tout préparer sans héberger le serveur")
+    ap.add_argument("--keep-save", action="store_true", help="NE PAS supprimer l'ancienne save Cemu")
     args = ap.parse_args()
 
     ap_dir = Path(args.ap_dir)
@@ -194,12 +230,16 @@ def main() -> None:
     log(f"Archipelago : {ap_dir}")
     log(f"Joueur      : {yaml_file}")
 
-    # 1) apworld
-    step(1, "Reconstruction de botw.apworld")
+    # 1) suppression de l'ancienne save
+    step(1, "Suppression de l'ancienne save Cemu")
+    wipe_save(app_cfg.save_path, do_it=not args.keep_save)
+
+    # 2) apworld
+    step(2, "Reconstruction de botw.apworld")
     build_apworld(ap_dir)
 
-    # 2) génération
-    step(2, "Génération de la seed")
+    # 3) génération
+    step(3, "Génération de la seed")
     if args.reuse_seed and newest_seed(ap_dir) is not None:
         log("  --reuse-seed : on garde la dernière seed.")
     else:
@@ -211,8 +251,8 @@ def main() -> None:
         sys.exit(1)
     log(f"  Seed : {seed.name}")
 
-    # 3) config
-    step(3, "Extraction du config AP (.apbotw)")
+    # 4) config
+    step(4, "Extraction du config AP (.apbotw)")
     slot = yaml_file.stem
     config_path = extract_config(seed, slot_hint=slot)
     # garde l'app cohérente (le GUI/le pack pointeront sur ce config)
@@ -222,9 +262,9 @@ def main() -> None:
     except Exception:
         pass
 
-    # 4) pack graphique
+    # 5) pack graphique
     pack_dir = None
-    step(4, "Reconstruction du graphic pack Cemu")
+    step(5, "Reconstruction du graphic pack Cemu")
     if args.no_pack:
         log("  --no-pack : étape sautée.")
     else:
@@ -234,8 +274,8 @@ def main() -> None:
             log(f"  ! Pack NON construit : {exc}")
             log("  (tu peux continuer sans, mais les coffres n'auront pas les placeholders.)")
 
-    # 5) hébergement
-    step(5, "Hébergement du serveur AP")
+    # 6) hébergement
+    step(6, "Hébergement du serveur AP")
     if args.no_host:
         log("  --no-host : pas d'hébergement. Pour héberger plus tard :")
         log(f'    "{ap_dir / "ArchipelagoServer.exe"}" "{seed}"')
