@@ -34,7 +34,9 @@ def _find_bootup(dump: Path) -> Path:
 
 
 def _to_px(x, z):
-    return [round((float(x) + OFF_X) * SCALE, 1), round((float(z) + OFF_Z) * SCALE, 1)]
+    # ENTIERS obligatoires : PopTracker ignore des coords float dans map_locations (les pins
+    # se retrouvent tous à 0,0 → un seul point visible en haut-à-gauche).
+    return [round((float(x) + OFF_X) * SCALE), round((float(z) + OFF_Z) * SCALE)]
 
 
 def build(dump_dir: str) -> None:

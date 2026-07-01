@@ -54,8 +54,8 @@ KEY_ITEMS = [
     {"ap": 6_080_016, "disp": "Vai (casque)",          "code": "vai",          "type": "toggle", "rgb": (0xC8, 0x7A, 0xC8)},
     {"ap": 6_080_017, "disp": "Zora (casque)",         "code": "zora",         "type": "toggle", "rgb": (0x3A, 0x9A, 0xD6)},
     {"ap": 6_080_100, "disp": "Spirit Orbs",       "code": "spirit_orbs",  "type": "consumable", "rgb": (0xE8, 0xC8, 0x50), "max": 200},
-    {"ap": None, "disp": "Shrines Cleared",  "code": "shrines_cleared",  "type": "consumable", "rgb": (0x7A, 0xC8, 0xE8), "max": 120, "special": "shrine_counter"},
-    {"ap": None, "disp": "Shrines Required", "code": "shrines_required", "type": "consumable", "rgb": (0xF0, 0xC0, 0x40), "max": 120, "special": "shrine_goal"},
+    {"ap": None, "disp": "Shrines Cleared",  "code": "shrines_cleared",  "type": "consumable", "rgb": (0x7A, 0xC8, 0xE8), "max": 120, "special": "shrine_counter", "icon_src": "shrine"},
+    {"ap": None, "disp": "Shrines Required", "code": "shrines_required", "type": "consumable", "rgb": (0xF0, 0xC0, 0x40), "max": 120, "special": "shrine_goal", "icon_src": "shrine"},
 ]
 
 
@@ -124,10 +124,10 @@ def build() -> None:
     def _check_node(name: str, ap_id: int) -> dict:
         # chaque check = une location (1 section) → référencée par son @path ; le pin carte
         # (map_locations) se colore selon sa complétion. onLocation décrémente son ChestCount.
-        node = {"name": name, "sections": [{"name": ""}]}
+        node = {"name": name, "sections": [{"name": name}]}   # section NOMMÉE → pin rendu
         xy = coords.get(str(ap_id))
         if xy:
-            node["map_locations"] = [{"map": "hyrule", "x": xy[0], "y": xy[1]}]
+            node["map_locations"] = [{"map": "hyrule", "x": int(xy[0]), "y": int(xy[1])}]
         return node
 
     locations_json = []
@@ -163,7 +163,7 @@ def build() -> None:
     for it in KEY_ITEMS:
         code, typ = it["code"], it["type"]
         img = f"images/items/{code}.png"
-        src = src_icons / f"{code}.png"
+        src = src_icons / f"{it.get('icon_src', code)}.png"   # icon_src : réutilise une autre icône (ex: shrine)
         if src.exists():
             _copy_as_png(src, OUT / img)      # ré-encode (WebP/JPEG renommé .png → vrai PNG)
         else:
