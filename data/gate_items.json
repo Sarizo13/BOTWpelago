@@ -1513,6 +1513,17 @@
       "flag_name": "DungeonClearCounter",
       "flag_hash": "0xE605CE62"
     },
-    "note": "Le client n'envoie StatusUpdate(goal) que si TOUS les require_flags sont a 1 ET DungeonClearCounter >= require_shrine_count. require_shrine_count est une option .apworld. Le Bouclier Hylia (PouchItem, pas un flag) sera ajoute en v2."
+    "modes": {
+      "shrines": [],
+      "full": [
+        "Clear_RemainsWind",
+        "Clear_RemainsFire",
+        "Clear_RemainsWater",
+        "Clear_RemainsElectric",
+        "Get_MasterSword_Finish",
+        "IsGet_Weapon_Bow_071"
+      ]
+    },
+    "note": "goal_mode (option .apworld) selectionne le set de flags 'modes' a exiger EN PLUS de DungeonClearCounter >= require_shrine_count. 'shrines' = aucun flag (sanctuaires seuls). 'full' = 4 Creatures Divines (Clear_Remains*) + Master Sword + Arc de Lumiere. ATTENTION: IsGet_Weapon_Bow_071 (Arc de Lumiere) N'EST PAS CONFIRME en jeu -> a verifier via un diff de save avant de se fier au mode 'full'. require_flags (legacy: Master Sword + 4 champions) reste pour compat mais n'est plus utilise par is_goal_complete."
   }
 }

@@ -157,8 +157,14 @@ _COMPANION_POUCH: dict[int, list[str]] = {
 
 # Goal
 _GOAL = _GATE_ITEMS["goal"]
-_GOAL_FLAG_IDS = [crc32_id(f) for f in _GOAL["require_flags"]]
+_GOAL_FLAG_IDS = [crc32_id(f) for f in _GOAL["require_flags"]]   # legacy (compat)
 _DUNGEON_COUNTER_ID = int(_GOAL["shrine_counter"]["flag_hash"], 16)
+# Flags requis EN PLUS du compteur de sanctuaires, par mode de goal (option goal_mode) :
+#   "shrines" = [] (sanctuaires seuls) ; "full" = 4 Créatures + Master Sword + Arc de Lumière.
+_GOAL_MODE_FLAG_IDS = {
+    mode: [crc32_id(f) for f in flags]
+    for mode, flags in _GOAL.get("modes", {}).items()
+}
 
 
 # ── Slot directory scanner ────────────────────────────────────────────────────
@@ -419,10 +425,14 @@ class SaveFileProvider(GameStateProvider):
                 self._reported.add(ap_id)
         return new
 
-    def is_goal_complete(self, required_shrine_count: int) -> bool:
+    def is_goal_complete(self, required_shrine_count: int, goal_mode: str = "shrines") -> bool:
         if self._save is None:
             return False
-        if not all(self._save.get_bool(fid) for fid in _GOAL_FLAG_IDS):
+        # Flags exigés selon le mode ("shrines" = aucun ; "full" = créatures+sword+arc).
+        flag_ids = _GOAL_MODE_FLAG_IDS.get(goal_mode)
+        if flag_ids is None:                                   # mode inconnu → repli sûr
+            flag_ids = _GOAL_MODE_FLAG_IDS.get("shrines", [])
+        if not all(self._save.get_bool(fid) for fid in flag_ids):
             return False
         return self._save.get_s32(_DUNGEON_COUNTER_ID) >= required_shrine_count
 

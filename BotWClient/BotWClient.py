@@ -427,8 +427,9 @@ class BotWClient:
                                  n * PLACEHOLDER_RUPEE_VALUE, total)
 
             required = self.slot_data.get("required_shrine_count", 20)
+            goal_mode = self.slot_data.get("goal_mode", "shrines")
             if isinstance(self.provider, SaveFileProvider) and \
-               self.provider.is_goal_complete(required):
+               self.provider.is_goal_complete(required, goal_mode):
                 await ws.send(_pkt([{"cmd": "StatusUpdate", "status": 30}]))
                 log.info("Goal complete! StatusUpdate(30) sent.")
 

@@ -40,14 +40,27 @@ class IncludeDLCShrines(Toggle):
 
 class RequiredShrineCount(Range):
     """
-    Number of shrines that must be completed (DungeonClearCounter) alongside
-    the 4 Champion Abilities and Master Sword before Calamity Ganon's arena opens.
-    Checked client-side.
+    Number of shrines that must be completed (DungeonClearCounter) for the goal.
+    With Goal Mode = full, this is required ON TOP of the Divine Beasts + Bow of
+    Light + Master Sword. Checked client-side.
     """
     display_name = "Required Shrine Count"
     range_start = 0
     range_end = 120
     default = 20
+
+
+class GoalMode(Choice):
+    """
+    Victory condition (checked client-side by the BotW client):
+      - shrines : complete the Required Shrine Count. That's all.
+      - full    : Required Shrine Count + the 4 Divine Beasts + the Bow of Light
+                  + the Master Sword.
+    """
+    display_name = "Goal / Victory Condition"
+    option_shrines = 0
+    option_full = 1
+    default = 0
 
 
 class RandomizeChampionAbilities(DefaultOnToggle):
@@ -149,6 +162,7 @@ class BotWOptions(PerGameCommonOptions):
     death_link: DeathLink
     include_dlc_shrines: IncludeDLCShrines
     required_shrine_count: RequiredShrineCount
+    goal_mode: GoalMode
     randomize_champion_abilities: RandomizeChampionAbilities
     randomize_master_sword: RandomizeMasterSword
     # Rando passthrough toggles
