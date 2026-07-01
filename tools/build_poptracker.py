@@ -36,18 +36,26 @@ CATEGORY_LABEL = {
 # Ordre d'affichage des catégories dans chaque région
 CAT_ORDER = ["shrine", "beast", "tower", "memory", "quest", "location", "shrine_chest"]
 
-# Items-clés suivis (ap_item_id, nom affiché, code tracker, type, couleur icône RGB)
+# Items-clés du tracker.
+#   ap      = id AP (None = pas un item AP → pas d'ITEM_MAPPING ; toggle manuel / compteur goal)
+#   type    = toggle | consumable   ; rgb = couleur du placeholder si pas d'icône fournie
+#   special = "shrine_counter" (+1 sur chaque check sanctuaire) | "shrine_goal" (= slot_data)
+#   Les tenues utilisent l'icône du CASQUE (le rando garde la tenue complète pour le gate).
 KEY_ITEMS = [
-    (6_080_000, "Paraglider",         "paraglider",   "toggle",     (0xF2, 0xC0, 0x4C)),
-    (6_080_006, "Master Sword",       "master_sword", "toggle",     (0x5C, 0x8A, 0xF0)),
-    (6_080_010, "Revali's Gale",      "revali",       "toggle",     (0x2E, 0xC4, 0x66)),
-    (6_080_011, "Mipha's Grace",      "mipha",        "toggle",     (0x3A, 0xB6, 0xD6)),
-    (6_080_012, "Daruk's Protection", "daruk",        "toggle",     (0xD6, 0x5A, 0x3A)),
-    (6_080_013, "Urbosa's Fury",      "urbosa",       "toggle",     (0xE0, 0xC8, 0x3A)),
-    (6_080_014, "Flamebreaker Armor", "flamebreaker", "toggle",     (0xC4, 0x45, 0x2E)),
-    (6_080_015, "Snowquill Set",      "snowquill",    "toggle",     (0xBE, 0xD8, 0xE8)),
-    (6_080_016, "Vai Outfit",         "vai",          "toggle",     (0xC8, 0x7A, 0xC8)),
-    (6_080_100, "Spirit Orbs",        "spirit_orbs",  "consumable", (0xE8, 0xC8, 0x50)),
+    {"ap": 6_080_000, "disp": "Paraglider",        "code": "paraglider",   "type": "toggle",     "rgb": (0xF2, 0xC0, 0x4C)},
+    {"ap": 6_080_006, "disp": "Master Sword",      "code": "master_sword", "type": "toggle",     "rgb": (0x5C, 0x8A, 0xF0)},
+    {"ap": None,      "disp": "Bow of Light",      "code": "bow_of_light", "type": "toggle",     "rgb": (0xBF, 0xE8, 0xFF)},
+    {"ap": 6_080_010, "disp": "Revali's Gale",     "code": "revali",       "type": "toggle",     "rgb": (0x2E, 0xC4, 0x66)},
+    {"ap": 6_080_011, "disp": "Mipha's Grace",     "code": "mipha",        "type": "toggle",     "rgb": (0x3A, 0xB6, 0xD6)},
+    {"ap": 6_080_012, "disp": "Daruk's Protection","code": "daruk",        "type": "toggle",     "rgb": (0xD6, 0x5A, 0x3A)},
+    {"ap": 6_080_013, "disp": "Urbosa's Fury",     "code": "urbosa",       "type": "toggle",     "rgb": (0xE0, 0xC8, 0x3A)},
+    {"ap": 6_080_014, "disp": "Flamebreaker (casque)", "code": "flamebreaker", "type": "toggle", "rgb": (0xC4, 0x45, 0x2E)},
+    {"ap": 6_080_015, "disp": "Snowquill (casque)",    "code": "snowquill",    "type": "toggle", "rgb": (0xBE, 0xD8, 0xE8)},
+    {"ap": 6_080_016, "disp": "Vai (casque)",          "code": "vai",          "type": "toggle", "rgb": (0xC8, 0x7A, 0xC8)},
+    {"ap": 6_080_017, "disp": "Zora (casque)",         "code": "zora",         "type": "toggle", "rgb": (0x3A, 0x9A, 0xD6)},
+    {"ap": 6_080_100, "disp": "Spirit Orbs",       "code": "spirit_orbs",  "type": "consumable", "rgb": (0xE8, 0xC8, 0x50), "max": 200},
+    {"ap": None, "disp": "Shrines Cleared",  "code": "shrines_cleared",  "type": "consumable", "rgb": (0x7A, 0xC8, 0xE8), "max": 120, "special": "shrine_counter"},
+    {"ap": None, "disp": "Shrines Required", "code": "shrines_required", "type": "consumable", "rgb": (0xF0, 0xC0, 0x40), "max": 120, "special": "shrine_goal"},
 ]
 
 
@@ -138,17 +146,24 @@ def build() -> None:
     else:
         print("  (place la carte à poptracker/hyrule.png -> elle sera copiée dans le pack)")
 
-    # ── Items-clés + icônes placeholder ──
+    # ── Items-clés : icône depuis poptracker/icons/<code>.png (SOURCE, hors pack) sinon placeholder ──
+    src_icons = ROOT / "poptracker" / "icons"
     items_json, item_mapping = [], {}
-    for ap_id, disp, code, typ, rgb in KEY_ITEMS:
+    for it in KEY_ITEMS:
+        code, typ = it["code"], it["type"]
         img = f"images/items/{code}.png"
-        _png_square(OUT / img, rgb)
-        entry = {"name": disp, "type": typ, "img": img, "codes": code}
+        src = src_icons / f"{code}.png"
+        if src.exists():
+            shutil.copy(src, OUT / img)
+        else:
+            _png_square(OUT / img, it["rgb"])
+        entry = {"name": it["disp"], "type": typ, "img": img, "codes": code}
         if typ == "consumable":
-            entry["max_quantity"] = 900
+            entry["max_quantity"] = it.get("max", 200)
             entry["increment"] = 1
         items_json.append(entry)
-        item_mapping[ap_id] = [[code, typ]]
+        if it["ap"] is not None:                       # None = manuel (Arc) / compteur goal
+            item_mapping[it["ap"]] = [[code, typ]]
     (OUT / "items" / "items.json").write_text(
         json.dumps(items_json, indent=1, ensure_ascii=False), encoding="utf-8")
 
@@ -181,10 +196,10 @@ def build() -> None:
         "type": "array", "orientation": "vertical", "margin": "4,4", "content": [
             {"type": "itemgrid", "item_margin": "3,3", "item_size": "40,40",
              "rows": [
-                 ["paraglider", "master_sword"],
+                 ["paraglider", "master_sword", "bow_of_light"],
                  ["revali", "mipha", "daruk", "urbosa"],
-                 ["flamebreaker", "snowquill", "vai"],
-                 ["spirit_orbs"],
+                 ["flamebreaker", "snowquill", "vai", "zora"],
+                 ["spirit_orbs", "shrines_cleared", "shrines_required"],
              ]},
         ],
     }
@@ -251,6 +266,12 @@ function onClear(slot_data)
             elseif v[1][2] == "consumable" then obj.AcquiredCount = 0 end
         end
     end
+    -- Goal : compteur de sanctuaires (X cochés / N requis via slot_data)
+    local sc = Tracker:FindObjectForCode("shrines_cleared")
+    if sc then sc.AcquiredCount = 0 end
+    local req = slot_data and slot_data["required_shrine_count"]
+    local sr = Tracker:FindObjectForCode("shrines_required")
+    if sr and req then sr.AcquiredCount = tonumber(req) end
 end
 
 function onItem(index, item_id, item_name, player_number)
@@ -277,6 +298,11 @@ function onLocation(location_id, location_name)
         else
             obj.Active = true
         end
+    end
+    -- Goal : +1 au compteur quand un sanctuaire est coché (ids 6081000-6081119)
+    if location_id >= 6081000 and location_id <= 6081119 then
+        local s = Tracker:FindObjectForCode("shrines_cleared")
+        if s then s.AcquiredCount = s.AcquiredCount + 1 end
     end
 end
 

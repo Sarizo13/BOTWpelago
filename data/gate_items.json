@@ -118,6 +118,15 @@
       "role": "ap_progression_logical",
       "gates": "gerudo_town",
       "note": "Gate logique pour Gerudo Town (2 sanctuaires à l'intérieur). TODO-5."
+    },
+    {
+      "name": "Zora Armor",
+      "ap_item_id": 6080017,
+      "flag_name": null,
+      "flag_hash": null,
+      "role": "ap_progression_logical",
+      "gates": "zora",
+      "note": "Tenue Zora (nage en cascade / Créature Divine Vah Ruta). Gate logique. On garde la tenue COMPLÈTE comme item AP (l'icône tracker n'est que le casque). TODO-5 / V1.2 armor gate."
     }
   ],
   "filler_items": [
