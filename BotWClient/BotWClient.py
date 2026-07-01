@@ -207,6 +207,7 @@ class BotWClient:
     item_index:  int        = 0   # next expected item index from server
     death_link:  bool       = False
     _ignore_death_until: float = 0.0   # ignore self-death right after a received DeathLink
+    _pending_rupee_strip: int = 0      # dette de rubis-placeholder à retirer (rejouée jusqu'à succès)
     # Résolution des noms dans les messages AP (DataPackage + infos joueurs)
     _dp_item:   dict = field(default_factory=dict)   # game -> {item_id: name}
     _dp_loc:    dict = field(default_factory=dict)   # game -> {location_id: name}
@@ -407,14 +408,23 @@ class BotWClient:
                         )
                     else:
                         log.info("[CHECK] ap_id=%d", ap_id)
-                # Annule la valeur des placeholders rubis des coffres AP ouverts.
-                if chest_count:
-                    bridge = self.injector._bridge
-                    if bridge and bridge.is_attached and bridge.has_live_inventory:
-                        total = bridge.live_add_rupees(-chest_count * PLACEHOLDER_RUPEE_VALUE)
-                        log.info("[Coffre AP] %d rubis-placeholder retiré(s)  (portefeuille: %s)",
-                                 chest_count * PLACEHOLDER_RUPEE_VALUE, total)
+                self._pending_rupee_strip += chest_count
                 await ws.send(_pkt([{"cmd": "LocationChecks", "locations": new}]))
+
+            # Annule la valeur des placeholders rubis des coffres AP ouverts. On accumule une
+            # DETTE (rejouée à chaque poll) : si l'inventaire live n'est pas dispo au moment où le
+            # coffre est détecté (fenêtre après attach / mid-réallocation, adresse rubis pas encore
+            # localisée), le strip était perdu et le +1 restait → "certains rubis pas retirés".
+            # On ne solde la dette QUE si live_add_rupees réussit vraiment (retour non-None).
+            if self._pending_rupee_strip:
+                bridge = self.injector._bridge
+                if bridge and bridge.is_attached and bridge.has_live_inventory:
+                    n = self._pending_rupee_strip
+                    total = bridge.live_add_rupees(-n * PLACEHOLDER_RUPEE_VALUE)
+                    if total is not None:
+                        self._pending_rupee_strip = 0
+                        log.info("[Coffre AP] %d rubis-placeholder retiré(s)  (portefeuille: %s)",
+                                 n * PLACEHOLDER_RUPEE_VALUE, total)
 
             required = self.slot_data.get("required_shrine_count", 20)
             if isinstance(self.provider, SaveFileProvider) and \
