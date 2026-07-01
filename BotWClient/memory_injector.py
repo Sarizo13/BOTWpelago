@@ -911,19 +911,37 @@ class CemuMemoryBridge:
         # inter-catégories (constaté sur un objet-clé type 9 ancré derrière des matériaux).
         # Sans ancre du même type, on échoue -> voie save-fichier (le 1er item d'un type
         # arrive au rechargement, les suivants en live).
-        same_type = [n for n in nodes if n["name"] and n["type"] == item_type and is_selfref(n)]
-        if not same_type:
-            log.info("[Mem] (live) pas d'item de type %d en poche pour ancrer %s "
-                     "— fallback save-file", item_type, item_name)
+        selfref = [n for n in nodes if n["name"] and is_selfref(n)]
+        # Flèches (type 2) : la catégorie arc/flèche est VERROUILLÉE quand elle est vide → insérer
+        # une flèche sans arc(1) ni flèche(2) présent CORROMPT l'inventaire. On reporte (save-file
+        # /file) jusqu'à ce qu'un arc existe.
+        if item_type == 2 and not any(n["type"] in (1, 2) for n in selfref):
+            log.debug("[Mem] (live) catégorie arc/flèche vide — %s reporté", item_name)
             return False
-        # éviter les plats cuisinés (sub=0xA) comme template (icône calculée depuis la recette)
+        # ANCRE : nœud self-ref du plus haut type ≤ item_type (la liste est triée par type). On
+        # splice APRÈS un item de type ≤ (PAS forcément le même type) → le 1er item d'un type peut
+        # se créer même sur une save quasi vide (l'épée/bouclier de départ servent d'ancre).
+        cands = [n for n in selfref if n["type"] <= item_type]
+        if not cands:
+            log.debug("[Mem] (live) pas d'ancre (type ≤ %d) pour %s — reporté", item_type, item_name)
+            return False
+        anchor = max(cands, key=lambda n: n["type"])
+        # CONTENU (clone) : un nœud live du MÊME type si présent (bon icône/structure ; on évite
+        # les plats cuisinés sub=0xA), sinon le TEMPLATE caché du type (~/.botwpelago).
+        same_type = [n for n in selfref if n["type"] == item_type]
         content = (
             (subtype is not None and next((n for n in same_type if n["sub"] == subtype), None))
             or next((n for n in same_type if n["sub"] != 0xA), None)
-            or same_type[0]
+            or (same_type[0] if same_type else None)
         )
-        content_raw, content_Tg = content["raw"], h2g(content["host"])
-        anchor = content                              # splice après ce même nœud (même catégorie)
+        if content is not None:
+            content_raw, content_Tg = content["raw"], h2g(content["host"])
+        else:
+            tpl = self._templates.get(str(item_type))
+            if not tpl:
+                log.debug("[Mem] (live) pas de template type %d pour %s — reporté", item_type, item_name)
+                return False
+            content_raw, content_Tg = bytes.fromhex(tpl["hex"]), int(tpl["base"])
 
         # ── 2) Nœud libre cible ──
         free = next((n for n in nodes if n["type"] == 0xFFFFFFFF and not n["name"]), None)
