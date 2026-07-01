@@ -64,6 +64,17 @@ def _load(name: str):
     return list(d.values()) if isinstance(d, dict) else d
 
 
+def _copy_as_png(src: Path, dest: Path) -> None:
+    """Copie une icône en la RÉ-ENCODANT en vrai PNG. Les sites d'icônes servent souvent du
+    WebP (ou JPEG) renommé .png, que le loader de PopTracker ne sait PAS afficher → on convertit.
+    Fallback : copie brute si Pillow est absent."""
+    try:
+        from PIL import Image
+        Image.open(src).convert("RGBA").save(dest, "PNG")
+    except Exception:
+        shutil.copy(src, dest)
+
+
 def _png_square(path: Path, rgb, size: int = 40) -> None:
     """Écrit un PNG carré uni (icône placeholder) — sans dépendance externe."""
     def chunk(typ: bytes, data: bytes) -> bytes:
@@ -154,7 +165,7 @@ def build() -> None:
         img = f"images/items/{code}.png"
         src = src_icons / f"{code}.png"
         if src.exists():
-            shutil.copy(src, OUT / img)
+            _copy_as_png(src, OUT / img)      # ré-encode (WebP/JPEG renommé .png → vrai PNG)
         else:
             _png_square(OUT / img, it["rgb"])
         entry = {"name": it["disp"], "type": typ, "img": img, "codes": code}
