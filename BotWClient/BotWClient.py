@@ -474,9 +474,18 @@ class BotWClient:
         un Set QUE si la valeur a changé (anti-spam)."""
         if self._slot_num is None or not isinstance(self.provider, SaveFileProvider):
             return
+        # Orbes : quand Cemu est attaché on lit la MÉMOIRE LIVE (valeur exacte et stable). La save
+        # "tourne" entre auto-saves (rotation de slots) → une lecture fichier oscille (2↔3) et donne
+        # l'impression que l'item n'est pas reçu. Le live reflète l'inventaire réel immédiatement.
+        orbs = self.provider.get_spirit_orbs()
+        bridge = getattr(self.injector, "_bridge", None)
+        if bridge is not None and getattr(bridge, "has_live_inventory", False):
+            live_orbs = bridge.live_get_item_qty("Obj_DungeonClearSeal")
+            if live_orbs is not None and 0 <= live_orbs <= 900:
+                orbs = live_orbs
         state = {
             "ShrinesCleared":  self.provider.get_dungeon_counter(),
-            "SpiritOrbs":      self.provider.get_spirit_orbs(),
+            "SpiritOrbs":      orbs,
             "ShrinesRequired": int(self.slot_data.get("required_shrine_count", 0)),
         }
         pushed = {}

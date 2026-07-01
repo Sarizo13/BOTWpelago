@@ -4,6 +4,7 @@ Ce qui ne peut se valider qu'avec Cemu lancé, le client connecté à AP, et une
 Coche au fur et à mesure. ⚠️ = point incertain / à mesurer. Statut au 2026-07-01.
 
 ## A. Livraison d'items (instantané EN JEU + persistant après reload) — ✅ VALIDÉ
+- [ ] 🔧 **Save FRAÎCHE (Plateau) : les items s'ajoutent** — bug corrigé : un épuisement transitoire du pool de nœuds libres bloquait DÉFINITIVEMENT toutes les créations (`_pool_exhausted` collant) → « je ne reçois pas les items ». Fix : le flag **expire après un cooldown** (retry périodique), les nœuds libres qui apparaissent (ramassage / poche agrandie) sont réutilisés → **à re-tester sur save neuve**
 - [x] Ingrédients / matériaux reçus → apparaissent instantanément + **persistent après reload**
 - [x] Orbes (Spirit Orb) → le compteur d'orbes monte et **persiste** (ré-assertion post-réallocation)
 - [x] Flèches (Arrows/Fire/Ice/Shock/Bomb) → apparaissent même **sans arc** + persistent
@@ -33,7 +34,7 @@ Coche au fur et à mesure. ⚠️ = point incertain / à mesurer. Statut au 2026
 - [x] Ouvrir un **coffre de sanctuaire** → check AP envoyé **ET** rubis-placeholder (+1 vert) retiré
 - [ ] Certains coffres ouverts pendant un moment « inventaire pas dispo » → le rubis est **quand même** retiré (dette rejouée)
 - [ ] Clear sanctuaire / tour / créature / souvenir / lieu / quête → check envoyé selon le mode
-- [ ] 🔧 **Rubis -298 « pour rien »** (adresse rubis périmée pendant une réallocation) → **fix appliqué** (garde-fou live_add_rupees + bornes 0..999999) → **à re-tester**
+- [ ] 🔧 **Rubis -298 « pour rien »** : vraie cause = après un `+300`, le strip d'un coffre relisait le portefeuille sur une **adresse périmée** (lecture `2` au lieu de `300`) et écrivait `current-1` → **SET** le portefeuille à 1 au lieu de retirer 1 (perte de ~298). Fix : `live_add_rupees` mémorise la dernière valeur écrite (`_rupee_shadow`) ; si un strip lit une valeur qui a **chuté anormalement** (≥50) vs shadow → re-localise puis **REPORTE** le strip (dette rejouée) au lieu de corrompre → **à re-tester**
 
 ## F. Robustesse / à surveiller
 - [ ] 🔧 **Crash « sans raison » (même sans entrer dans un sanctuaire)** : VRAIE cause trouvée dans le log Cemu → `FSC: File create failed for .../game_data.sav`. Le client tenait `game_data.sav` (lecture/écriture) pile quand Cemu faisait une **autosave** → save Cemu ratée → état incohérent → crash. **Fix appliqué** : (1) toutes les **lectures** de `game_data.sav` en **partage total Windows** (`FILE_SHARE_READ|WRITE|DELETE`, `_read_shared`) → ne bloquent plus jamais Cemu ; (2) `get_spirit_orbs` lit le **cache** (`self._raw`) au lieu de relire le fichier à chaque poll ; (3) toutes les **écritures** de save rendues **atomiques** (`_write_atomic` : temp + rename) pour minimiser le verrou. → **à re-tester**. Côté Cemu : activer **AsyncCompile** (Options → Graphics) pour réduire les freezes de compilation shaders.
@@ -42,6 +43,7 @@ Coche au fur et à mesure. ⚠️ = point incertain / à mesurer. Statut au 2026
 
 ## G. PopTracker (overlay, en live) — ✅ VALIDÉ
 - [x] Compteurs live : **Shrines Cleared** + **Orbes** montent en jouant (poussés par le client)
+- [ ] 🔧 **Orbes stables** : le compteur d'orbes est maintenant lu en **mémoire live** (pas dans la save) quand Cemu est attaché → plus d'oscillation (2↔3) due à la rotation des auto-saves → **à re-vérifier**
 - [x] **Required** = la valeur du YAML (ex: 5)
 - [x] Marqueurs carte se **colorent** quand les checks arrivent
 - [x] Items-clés s'**allument** à la réception (paravoile, champions, épée…)

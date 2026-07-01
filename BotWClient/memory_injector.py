@@ -70,6 +70,15 @@ _ITEM_STRIDE     = 544
 _ITEM_PREFIXES   = ("Item_", "Weapon_", "Armor_", "Animal_", "Obj_", "Material_")
 _EARLY_EXIT_SCORE = 5
 _INV_SCAN_CHUNK   = 16 * 1024 * 1024
+# Pool de nœuds PouchItem libres épuisé → on ne re-tente une création qu'après ce délai (au lieu
+# de marteler chaque poll, ou de bloquer DÉFINITIVEMENT jusqu'à un reload). Laisse les nouveaux
+# nœuds libres (apparus quand le joueur ramasse/le jeu agrandit la poche) être utilisés.
+_POOL_RETRY_COOLDOWN = 6.0
+# Rubis : si le compteur lu chute de +de ça depuis notre dernière écriture, l'adresse est
+# probablement PÉRIMÉE (réallocation) → on ne strip PAS (sinon on "set" une valeur minuscule sur
+# un portefeuille réel plus gros = corruption, ex: 300 -> 2). Sur le Plateau il n'y a pas de
+# boutique, donc aucune dépense légitime aussi brutale.
+_RUPEE_STALE_DROP  = 50
 
 # ── ctypes bindings ───────────────────────────────────────────────────────────
 
@@ -185,7 +194,9 @@ class CemuMemoryBridge:
         self._last_inv_relocate: float = 0.0     # cooldown re-localisation inventaire
         self._last_base_warn:    float = 0.0     # rate-limit du warning "base douteuse"
         self._pool_exhausted:    bool  = False   # plus de nœud libre → créations impossibles
+        self._pool_exhausted_at: float = 0.0     # instant du dernier épuisement (retry après cooldown)
         self._last_freenode_warn: float = 0.0    # rate-limit du warning "aucun nœud libre"
+        self._rupee_shadow: Optional[int] = None # dernière valeur de rubis qu'on a ÉCRITE (anti-strip périmé)
         # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
         # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
@@ -225,6 +236,7 @@ class CemuMemoryBridge:
         self._gd_base = None
         self._rupees_addr = None
         self._inv_base = None
+        self._rupee_shadow = None
 
     @property
     def has_live_inventory(self) -> bool:
@@ -232,9 +244,17 @@ class CemuMemoryBridge:
 
     @property
     def pool_exhausted(self) -> bool:
-        """True quand le pool de nœuds PouchItem libres est épuisé (aucune création live
-        possible jusqu'au prochain reload, qui régénère le pool). Remis à zéro chaque cycle."""
-        return self._pool_exhausted
+        """True quand le pool de nœuds PouchItem libres est épuisé → aucune création live possible.
+        EXPIRE après un cooldown : on re-tente périodiquement une création (des nœuds libres
+        apparaissent quand le joueur ramasse des objets / le jeu agrandit la poche). Sans ça, un
+        seul épuisement transitoire bloquerait DÉFINITIVEMENT toutes les livraisons (bug constaté :
+        save fraîche → 'je ne reçois pas les items')."""
+        if not self._pool_exhausted:
+            return False
+        if time.monotonic() - self._pool_exhausted_at >= _POOL_RETRY_COOLDOWN:
+            self._pool_exhausted = False          # cooldown écoulé → on autorise une nouvelle tentative
+            return False
+        return True
 
     @property
     def is_attached(self) -> bool:
@@ -603,8 +623,22 @@ class CemuMemoryBridge:
         # PÉRIMÉE (inventaire en cours de réallocation) → on n'écrit PAS (sinon corruption, ex: -298).
         if current is None or not (0 <= current <= 999999):
             return None
+        # Garde anti-adresse-périmée pour les STRIPS (amount < 0) : si le compteur lu a CHUTÉ
+        # d'un coup depuis notre dernière écriture (ex: on a mis 300, on relit 2), l'adresse a
+        # bougé → écrire current+amount SET une valeur minuscule sur le vrai portefeuille = le -298.
+        # On re-localise une fois ; si toujours incohérent, on NE strip PAS (dette rejouée plus tard).
+        if amount < 0 and self._rupee_shadow is not None and current <= self._rupee_shadow - _RUPEE_STALE_DROP:
+            self._relocate_inventory()
+            current = self.live_get_rupees()
+            if current is None or not (0 <= current <= 999999):
+                return None
+            if current <= self._rupee_shadow - _RUPEE_STALE_DROP:
+                log.info("[Mem] (live) strip rubis reporté : lecture %d << shadow %d (adresse périmée)",
+                         current, self._rupee_shadow)
+                return None
         new_val = max(0, min(999999, current + amount))
         self._write(self._rupees_addr, struct.pack(">i", new_val))
+        self._rupee_shadow = new_val          # notre valeur autoritaire (indépendante de l'adresse)
         log.info("[Mem] (live) Rupees: %d -> %d", current, new_val)
         return new_val
 
@@ -946,10 +980,12 @@ class CemuMemoryBridge:
         # ── 2) Nœud libre cible ──
         free = next((n for n in nodes if n["type"] == 0xFFFFFFFF and not n["name"]), None)
         if free is None:
-            # Pool de nœuds libres épuisé : on le mémorise pour que l'appelant arrête de
-            # tenter des créations ce cycle (le pool ne se régénère qu'au prochain reload).
+            # Pool de nœuds libres épuisé : on le mémorise pour que l'appelant arrête de tenter
+            # des créations pendant un cooldown (évite de marteler le scan), PAS définitivement —
+            # la property pool_exhausted ré-autorise une tentative après _POOL_RETRY_COOLDOWN.
             self._pool_exhausted = True
             now = time.monotonic()
+            self._pool_exhausted_at = now
             if now - self._last_freenode_warn > 5.0:
                 self._last_freenode_warn = now
                 log.warning("[Mem] (live) pool de nœuds libres épuisé — créations en attente "
