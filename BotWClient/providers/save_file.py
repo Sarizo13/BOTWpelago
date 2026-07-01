@@ -251,7 +251,7 @@ def _add_porch_item_to_save(path: Path, item_name: str, amount: int,
     par le jeu) ; seuls les objets-clés essentiels (champions, ≤4) créent un slot save-file.
     """
     try:
-        data = bytearray(path.read_bytes())
+        data = bytearray(_read_shared(path))
         fp = _find_first_run(bytes(data), _PORCH_ITEM_ID)
         fv = _find_first_run(bytes(data), _PORCH_VALUE1_ID)
         if fp < 0 or fv < 0:
@@ -296,7 +296,7 @@ def _add_porch_item_to_save(path: Path, item_name: str, amount: int,
         new_val = max(0, current + amount)
         val_off = 12 + (fv + target_slot) * 8 + 4
         struct.pack_into(">I", data, val_off, new_val & 0xFFFFFFFF)
-        path.write_bytes(bytes(data))
+        _write_atomic(path, bytes(data))
         log.info("  [OK] PouchItem %s: %d -> %d", item_name, current, new_val)
         return True
 
@@ -307,6 +307,51 @@ def _add_porch_item_to_save(path: Path, item_name: str, amount: int,
 
 # ── Binary save writer ────────────────────────────────────────────────────────
 
+def _read_shared(path: Path) -> bytes:
+    """Lit un fichier en autorisant TOUT partage Windows (READ | WRITE | DELETE) : Cemu DOIT
+    pouvoir créer/écrire game_data.sav PENDANT que le client le lit. Une lecture classique
+    (read_bytes) verrouille le fichier → Cemu échoue à sauvegarder ('FSC: File create failed')
+    → le jeu ne sauvegarde plus → état/inventaire incohérent → CRASH. Repli sur read_bytes()
+    hors Windows ou en cas d'échec."""
+    try:
+        import ctypes
+        from ctypes import wintypes
+        k32 = ctypes.windll.kernel32
+        k32.CreateFileW.restype = wintypes.HANDLE
+        k32.CreateFileW.argtypes = [wintypes.LPCWSTR, wintypes.DWORD, wintypes.DWORD,
+                                    wintypes.LPVOID, wintypes.DWORD, wintypes.DWORD, wintypes.HANDLE]
+        h = k32.CreateFileW(str(path), 0x80000000, 0x1 | 0x2 | 0x4, None, 3, 0, None)  # GENERIC_READ, SHARE_ALL, OPEN_EXISTING
+        if not h or h == ctypes.c_void_p(-1).value:
+            return path.read_bytes()
+        try:
+            size = path.stat().st_size
+            buf = ctypes.create_string_buffer(size)
+            nread = wintypes.DWORD(0)
+            if not k32.ReadFile(h, buf, size, ctypes.byref(nread), None):
+                return path.read_bytes()
+            return buf.raw[:nread.value]
+        finally:
+            k32.CloseHandle(h)
+    except Exception:
+        return path.read_bytes()
+
+
+def _write_atomic(path: Path, data: bytes) -> None:
+    """Écrit la save de façon atomique (fichier temp + rename) pour minimiser la fenêtre de verrou
+    exclusif. Une écriture directe (write_bytes) tronque puis tient le fichier ouvert le temps de tout
+    réécrire → si Cemu sauvegarde pile à ce moment : 'FSC: File create failed' → save Cemu ratée →
+    CRASH. Le rename est quasi-instantané et remplace la cible d'un coup ; on réessaie si Cemu la tient."""
+    tmp = path.with_name(path.name + ".botwtmp")
+    tmp.write_bytes(data)
+    for _ in range(6):
+        try:
+            tmp.replace(path)            # rename atomique (MoveFileEx REPLACE_EXISTING) sur Windows
+            return
+        except OSError:
+            time.sleep(0.05)
+    tmp.replace(path)                    # dernier essai — laisse remonter si ça échoue vraiment
+
+
 def _write_flag_to_save(path: Path, flag_id_int: int, value: int) -> bool:
     """
     Find a flag entry (u32 flag_id, u32 value) in the save by binary search
@@ -315,7 +360,7 @@ def _write_flag_to_save(path: Path, flag_id_int: int, value: int) -> bool:
     The save is a sorted flat array starting at offset 12. Binary search is O(log n).
     """
     try:
-        data = bytearray(path.read_bytes())
+        data = bytearray(_read_shared(path))
         n = (len(data) - 12) // 8
         lo, hi = 0, n - 1
         needle = struct.pack(">I", flag_id_int)
@@ -325,7 +370,7 @@ def _write_flag_to_save(path: Path, flag_id_int: int, value: int) -> bool:
             mid_id = data[off: off + 4]
             if mid_id == needle:
                 struct.pack_into(">I", data, off + 4, value & 0xFFFFFFFF)
-                path.write_bytes(bytes(data))
+                _write_atomic(path, bytes(data))
                 return True
             elif mid_id < needle:
                 lo = mid + 1
@@ -383,7 +428,8 @@ class SaveFileProvider(GameStateProvider):
         if p == self._active and mtime <= self._mtime:
             return False
         try:
-            self._save = parse(p.read_bytes())
+            self._raw = _read_shared(p)          # partage complet → ne bloque pas les saves Cemu
+            self._save = parse(self._raw)
             self._mtime = mtime
             if p != self._active:
                 log.info("Save rotated → %s", p.name)
@@ -447,13 +493,12 @@ class SaveFileProvider(GameStateProvider):
         return self._save.get_s32(_DUNGEON_COUNTER_ID) if self._save else 0
 
     def get_spirit_orbs(self) -> int:
-        """Vraie valeur d'orbes (Obj_DungeonClearSeal) lue dans le PorchItem de la save.
-        (Le tracker ne peut compter que les orbes REÇUS d'AP ; on pousse la vraie valeur jeu.)"""
-        p = self._resolve() if hasattr(self, "_resolve") else None
-        if p is None:
+        """Vraie valeur d'orbes (Obj_DungeonClearSeal) dans le PorchItem de la save. Utilise les
+        octets DÉJÀ chargés par _reload (self._raw) → PAS de relecture fichier par poll (contention)."""
+        data = getattr(self, "_raw", None)
+        if not data:
             return 0
         try:
-            data = p.read_bytes()
             fp = _find_first_run(data, _PORCH_ITEM_ID)
             fv = _find_first_run(data, _PORCH_VALUE1_ID)
             if fp < 0 or fv < 0:
@@ -787,7 +832,7 @@ class DeferredSaveInjector(ItemInjector):
             elif isinstance(action, InjectionSpec.AddS32):
                 fhash = crc32_id(action.flag_name)
                 try:
-                    current_save = parse(p.read_bytes())
+                    current_save = parse(_read_shared(p))
                     current = current_save.get_s32(fhash)
                     new_val = max(0, current + action.amount)
                     ok = _write_flag_to_save(p, fhash, new_val)
@@ -827,7 +872,7 @@ class DeferredSaveInjector(ItemInjector):
         if p is None:
             return 0
         try:
-            save = parse(p.read_bytes())
+            save = parse(_read_shared(p))
         except Exception:
             return 0
         n = 0
@@ -856,7 +901,7 @@ class DeferredSaveInjector(ItemInjector):
         for ap_id, items in _COMPANION_POUCH.items():
             if ap_id in self._received:
                 for iname in items:
-                    if not _pouch_has_item(p.read_bytes(), iname) and _add_porch_item_to_save(p, iname, 1):
+                    if not _pouch_has_item(_read_shared(p), iname) and _add_porch_item_to_save(p, iname, 1):
                         log.info("[OK] Objet clé ajouté : %s (recharge la save)", iname)
                         n += 1
         # Gate immédiat en mémoire : force 0 live pour les non-reçus (effet instantané in-game).
