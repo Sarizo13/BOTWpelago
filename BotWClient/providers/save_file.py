@@ -956,14 +956,10 @@ class DeferredSaveInjector(ItemInjector):
                         if not self._bridge.read_flag(fname):
                             self._bridge.write_flag(fname, 1)
                             n += 1
-            if self._bridge.has_live_inventory:
-                for ap_id, items in _COMPANION_POUCH.items():
-                    if ap_id in self._received:
-                        for iname in items:
-                            if self._bridge.live_find_item(iname) is None:
-                                info = pouch_item_info(iname)
-                                self._bridge.live_create_item(
-                                    iname, info["type"] if info else 9, info.get("sub") if info else None, 1)
+            # NB: _COMPANION_POUCH (objets-clés PlayerStole2 / Obj_HeroSoul_*) NON créés en live
+            # quand attaché : un create juste avant une réallocation se perd puis se re-crée =
+            # DOUBLON / corruption (constaté). Le paravoile marche via son flag. Livrer l'objet-clé
+            # des Champions reste un TODO (probablement inutile si le flag suffit ; à tester).
             return n
         # ── Cemu NON attaché : voie FICHIER (au menu titre → Cemu ne tourne pas, pas de contention) ──
         try:
