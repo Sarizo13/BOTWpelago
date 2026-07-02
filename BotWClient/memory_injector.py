@@ -1088,7 +1088,11 @@ class CemuMemoryBridge:
         if not cands:
             log.debug("[Mem] (live) pas d'ancre triée pour %s (sortKey=%s) — reporté", item_name, new_sk)
             return False
-        anchor = cands[-1]
+        # PRÉDÉCESSEUR LOGIQUE = le candidat de (type, sortKey) MAXIMAL (l'ordre d'affichage/liste
+        # chaînée est trié par (type, sortKey), PAS l'ordre physique des slots). Prendre le dernier
+        # en ordre de scan physique mettait un matériau juste après une arme (nouvelle page avant
+        # les armes tant qu'on ne recharge pas). max() donne le vrai voisin trié.
+        anchor = max(cands, key=_spos)
         # CONTENU (clone) : nœud live du MÊME type, le plus PROCHE en sortKey (icône/structure/clé de
         # tri cohérentes ; on évite les plats cuisinés sub=0xA), sinon le TEMPLATE caché du type.
         same_type = [n for n in selfref if n["type"] == item_type and n["sub"] != 0xA] \
