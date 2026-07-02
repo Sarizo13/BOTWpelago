@@ -147,7 +147,10 @@ _COMPANION_FLAGS: dict[int, list[str]] = {
     #   Find_Impa_Activated = démarre la quête "En quête d'Impa" dans le journal ; la quête
     #                         "Le plateau Isolé" s'archive alors (pas de _Finish discret).
     # (Find_Impa_Ready est déjà posé par le jeu ; Find_Impa_Finish est un CHECK → jamais écrit.)
-    6_080_000: ["IsPlayed_Demo033_1", "Find_Impa_Activated"],
+    6_080_000: ["IsPlayed_Demo033_1", "Find_Impa_Activated", "FindDungeon_Finish"],
+    #                                                          ^ archive "Le plateau isolé"
+    # (FindDungeon). RETIRÉ des checks AP (build_locations QUEST_EXCLUDE) → sûr à écrire ici : le
+    # Roi ne déclenche pas la complétion hors-séquence, donc on la pose à la livraison du paravoile.
 }
 # Capacités de Champion : comme le paravoile, le flag IsGet_ SEUL ne rend pas la capacité
 # utilisable — il faut aussi l'OBJET-CLÉ en poche (Obj_HeroSoul_<Race>, type 9). Le rando de

@@ -26,7 +26,10 @@ MEMORY_BASE_ID   = 6_082_500   # plage dédiée aux "souvenirs"
 # flags de quête à EXCLURE (dev, goal, sous-étapes, doublons bêtes, ÉVÉNEMENTS INTERNES de l'intro)
 QUEST_EXCLUDE = re.compile(
     r"TestQuest|^Test|GanonQuest|_Relic_|_Intro_|_Playing_|_Ready_|Demo_Finish|^OPDemo|_Step"
-    r"|ChoiceExclude|_Choice|FirstTower|^Npc_King_|Tutorial|_Attention", re.I)
+    r"|ChoiceExclude|_Choice|FirstTower|^Npc_King_|Tutorial|_Attention"
+    # FindDungeon_Finish = complétion de "Le plateau isolé" : PLUS un check → on la termine via la
+    # livraison du paravoile (_COMPANION_FLAGS), car le Roi ne se déclenche pas hors-séquence.
+    r"|^FindDungeon_Finish$", re.I)
 
 # flags "lieu" à EXCLURE : internes / découverts d'office au démarrage forcé (pas de vrais checks)
 LOC_EXCLUDE = re.compile(r"^StartPoint$|^HopesPlateau$|Test|Demo|Dummy", re.I)

@@ -3913,17 +3913,9 @@
  },
  {
   "category": "quest",
-  "flag_name": "FindDungeon_Finish",
-  "flag_hash": "0x6535E51C",
-  "ap_id": 6082017,
-  "name": "Find Dungeon",
-  "region": "Hyrule World"
- },
- {
-  "category": "quest",
   "flag_name": "Find_4Relic_Finish",
   "flag_hash": "0x71E12F66",
-  "ap_id": 6082018,
+  "ap_id": 6082017,
   "name": "Find 4 Relic",
   "region": "Hyrule World"
  },
@@ -3931,7 +3923,7 @@
   "category": "quest",
   "flag_name": "Find_Impa_Finish",
   "flag_hash": "0x443F3452",
-  "ap_id": 6082019,
+  "ap_id": 6082018,
   "name": "Find Impa",
   "region": "Hyrule World"
  },
@@ -3939,7 +3931,7 @@
   "category": "quest",
   "flag_name": "FironeMini_GiantHorse_Finish",
   "flag_hash": "0x2BA5DAB0",
-  "ap_id": 6082020,
+  "ap_id": 6082019,
   "name": "Firone Mini Giant Horse",
   "region": "Hyrule World"
  },
@@ -3947,7 +3939,7 @@
   "category": "quest",
   "flag_name": "FironeMini_HeartPond_Finish",
   "flag_hash": "0x1A7C2343",
-  "ap_id": 6082021,
+  "ap_id": 6082020,
   "name": "Firone Mini Heart Pond",
   "region": "Hyrule World"
  },
@@ -3955,7 +3947,7 @@
   "category": "quest",
   "flag_name": "FironeMini_HorseEnemy_Finish",
   "flag_hash": "0x8635BFE7",
-  "ap_id": 6082022,
+  "ap_id": 6082021,
   "name": "Firone Mini Horse Enemy",
   "region": "Hyrule World"
  },
@@ -3963,7 +3955,7 @@
   "category": "quest",
   "flag_name": "FironeMini_TerribleThunder_Finish",
   "flag_hash": "0x1738FF80",
-  "ap_id": 6082023,
+  "ap_id": 6082022,
   "name": "Firone Mini Terrible Thunder",
   "region": "Hyrule World"
  },
@@ -3971,7 +3963,7 @@
   "category": "quest",
   "flag_name": "FirstOhenro_Finish",
   "flag_hash": "0xB33715CC",
-  "ap_id": 6082024,
+  "ap_id": 6082023,
   "name": "First Ohenro",
   "region": "Hyrule World"
  },
@@ -3979,7 +3971,7 @@
   "category": "quest",
   "flag_name": "FourJewel_Finish",
   "flag_hash": "0x0E4E1A14",
-  "ap_id": 6082025,
+  "ap_id": 6082024,
   "name": "Four Jewel",
   "region": "Hyrule World"
  },
@@ -3987,7 +3979,7 @@
   "category": "quest",
   "flag_name": "Gaman_Finish",
   "flag_hash": "0x472EAF95",
-  "ap_id": 6082026,
+  "ap_id": 6082025,
   "name": "Gaman",
   "region": "Hyrule World"
  },
@@ -3995,7 +3987,7 @@
   "category": "quest",
   "flag_name": "GerudoMiniJewel_Finished",
   "flag_hash": "0xDAB5AE1A",
-  "ap_id": 6082027,
+  "ap_id": 6082026,
   "name": "Gerudo Mini Jewel",
   "region": "Hyrule World"
  },
@@ -4003,7 +3995,7 @@
   "category": "quest",
   "flag_name": "Gerudo_CarryIce_Finished",
   "flag_hash": "0xA6BB6B99",
-  "ap_id": 6082028,
+  "ap_id": 6082027,
   "name": "Gerudo Carry Ice",
   "region": "Hyrule World"
  },
@@ -4011,7 +4003,7 @@
   "category": "quest",
   "flag_name": "Gerudo_CarryIce_mini_Finish",
   "flag_hash": "0xED0F830B",
-  "ap_id": 6082029,
+  "ap_id": 6082028,
   "name": "Gerudo Carry Ice mini",
   "region": "Hyrule World"
  },
@@ -4019,7 +4011,7 @@
   "category": "quest",
   "flag_name": "Gerudo_Ch_FindingValetta_Finish",
   "flag_hash": "0xBA7703ED",
-  "ap_id": 6082030,
+  "ap_id": 6082029,
   "name": "Gerudo Ch Finding Valetta",
   "region": "Hyrule World"
  },
@@ -4027,7 +4019,7 @@
   "category": "quest",
   "flag_name": "Gerudo_Ch_Helmet_Finish",
   "flag_hash": "0x90EDCC8F",
-  "ap_id": 6082031,
+  "ap_id": 6082030,
   "name": "Gerudo Ch Helmet",
   "region": "Hyrule World"
  },
@@ -4035,7 +4027,7 @@
   "category": "quest",
   "flag_name": "Gerudo_Ch_Poison_Finish",
   "flag_hash": "0xA4BBEB3D",
-  "ap_id": 6082032,
+  "ap_id": 6082031,
   "name": "Gerudo Ch Poison",
   "region": "Hyrule World"
  },
@@ -4043,7 +4035,7 @@
   "category": "quest",
   "flag_name": "Gerudo_Ch_SandWarm_Finish",
   "flag_hash": "0xB37A23E1",
-  "ap_id": 6082033,
+  "ap_id": 6082032,
   "name": "Gerudo Ch Sand Warm",
   "region": "Hyrule World"
  },
@@ -4051,7 +4043,7 @@
   "category": "quest",
   "flag_name": "Gerudo_Ch_SecretClub_Finish",
   "flag_hash": "0x494933E9",
-  "ap_id": 6082034,
+  "ap_id": 6082033,
   "name": "Gerudo Ch Secret Club",
   "region": "Hyrule World"
  },
@@ -4059,7 +4051,7 @@
   "category": "quest",
   "flag_name": "Gerudo_Ch_SnowBoots_Finish",
   "flag_hash": "0xAF74193F",
-  "ap_id": 6082035,
+  "ap_id": 6082034,
   "name": "Gerudo Ch Snow Boots",
   "region": "Hyrule World"
  },
@@ -4067,7 +4059,7 @@
   "category": "quest",
   "flag_name": "Gerudo_Ch_SnowMT_Finish",
   "flag_hash": "0xDB804435",
-  "ap_id": 6082036,
+  "ap_id": 6082035,
   "name": "Gerudo Ch Snow MT",
   "region": "Hyrule World"
  },
@@ -4075,7 +4067,7 @@
   "category": "quest",
   "flag_name": "Gerudo_HorseBuyer_Finish",
   "flag_hash": "0xA609A0EE",
-  "ap_id": 6082037,
+  "ap_id": 6082036,
   "name": "Gerudo Horse Buyer",
   "region": "Hyrule World"
  },
@@ -4083,7 +4075,7 @@
   "category": "quest",
   "flag_name": "Gerudo_tsukamidake_Finish",
   "flag_hash": "0x22A3436F",
-  "ap_id": 6082038,
+  "ap_id": 6082037,
   "name": "Gerudo tsukamidake",
   "region": "Hyrule World"
  },
@@ -4091,7 +4083,7 @@
   "category": "quest",
   "flag_name": "Get_MasterSword_Finish",
   "flag_hash": "0x15AD023F",
-  "ap_id": 6082039,
+  "ap_id": 6082038,
   "name": "Get Master Sword",
   "region": "Hyrule World"
  },
@@ -4099,7 +4091,7 @@
   "category": "quest",
   "flag_name": "Giant_ZoraMini_Finish",
   "flag_hash": "0x6AAC92E0",
-  "ap_id": 6082040,
+  "ap_id": 6082039,
   "name": "Giant Zora Mini",
   "region": "Hyrule World"
  },
@@ -4107,7 +4099,7 @@
   "category": "quest",
   "flag_name": "GodTree_Finish",
   "flag_hash": "0x00063B0E",
-  "ap_id": 6082041,
+  "ap_id": 6082040,
   "name": "God Tree",
   "region": "Hyrule World"
  },
@@ -4115,7 +4107,7 @@
   "category": "quest",
   "flag_name": "GoronCamp_Finish",
   "flag_hash": "0xF9A23521",
-  "ap_id": 6082042,
+  "ap_id": 6082041,
   "name": "Goron Camp",
   "region": "Hyrule World"
  },
@@ -4123,7 +4115,7 @@
   "category": "quest",
   "flag_name": "GoronCamp_mini_Finish",
   "flag_hash": "0x3D54B301",
-  "ap_id": 6082043,
+  "ap_id": 6082042,
   "name": "Goron Camp mini",
   "region": "Hyrule World"
  },
@@ -4131,7 +4123,7 @@
   "category": "quest",
   "flag_name": "GoronCityMini_BeatGolem_Finish",
   "flag_hash": "0x7D4393FE",
-  "ap_id": 6082044,
+  "ap_id": 6082043,
   "name": "Goron City Mini Beat Golem",
   "region": "Hyrule World"
  },
@@ -4139,7 +4131,7 @@
   "category": "quest",
   "flag_name": "GoronMini_ImportGem_Finish",
   "flag_hash": "0x518A1720",
-  "ap_id": 6082045,
+  "ap_id": 6082044,
   "name": "Goron Mini Import Gem",
   "region": "Hyrule World"
  },
@@ -4147,7 +4139,7 @@
   "category": "quest",
   "flag_name": "GoronMini_WallCrackTBox_Finish",
   "flag_hash": "0xA038E90A",
-  "ap_id": 6082046,
+  "ap_id": 6082045,
   "name": "Goron Mini Wall Crack TBox",
   "region": "Hyrule World"
  },
@@ -4155,7 +4147,7 @@
   "category": "quest",
   "flag_name": "Goron_Steakrock_Finish",
   "flag_hash": "0xB573F5F3",
-  "ap_id": 6082047,
+  "ap_id": 6082046,
   "name": "Goron Steakrock",
   "region": "Hyrule World"
  },
@@ -4163,7 +4155,7 @@
   "category": "quest",
   "flag_name": "GoronsRock_Finish",
   "flag_hash": "0x7BA93BF0",
-  "ap_id": 6082048,
+  "ap_id": 6082047,
   "name": "Gorons Rock",
   "region": "Hyrule World"
  },
@@ -4171,7 +4163,7 @@
   "category": "quest",
   "flag_name": "GotoZoraVillage_Finish",
   "flag_hash": "0xED5EFC6A",
-  "ap_id": 6082049,
+  "ap_id": 6082048,
   "name": "Goto Zora Village",
   "region": "Hyrule World"
  },
@@ -4179,7 +4171,7 @@
   "category": "quest",
   "flag_name": "HateeluMini_Treasure_Finish",
   "flag_hash": "0x917FEFC9",
-  "ap_id": 6082050,
+  "ap_id": 6082049,
   "name": "Hateelu Mini Treasure",
   "region": "Hyrule World"
  },
@@ -4187,7 +4179,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_BlueFire_Finish",
   "flag_hash": "0x3DDB4867",
-  "ap_id": 6082051,
+  "ap_id": 6082050,
   "name": "Hateno Mini Blue Fire",
   "region": "Hyrule World"
  },
@@ -4195,7 +4187,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_CameraBoy_Finish",
   "flag_hash": "0xB9E900B1",
-  "ap_id": 6082052,
+  "ap_id": 6082051,
   "name": "Hateno Mini Camera Boy",
   "region": "Hyrule World"
  },
@@ -4203,7 +4195,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_DeathDevil_Finish",
   "flag_hash": "0x29C70529",
-  "ap_id": 6082053,
+  "ap_id": 6082052,
   "name": "Hateno Mini Death Devil",
   "region": "Hyrule World"
  },
@@ -4211,7 +4203,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_DevilSeal_Finish",
   "flag_hash": "0xB96B1396",
-  "ap_id": 6082054,
+  "ap_id": 6082053,
   "name": "Hateno Mini Devil Seal",
   "region": "Hyrule World"
  },
@@ -4219,7 +4211,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_GoatThief_Finished",
   "flag_hash": "0x11FF7222",
-  "ap_id": 6082055,
+  "ap_id": 6082054,
   "name": "Hateno Mini Goat Thief",
   "region": "Hyrule World"
  },
@@ -4227,7 +4219,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_LoveInsects_Finish",
   "flag_hash": "0x209E94EE",
-  "ap_id": 6082056,
+  "ap_id": 6082055,
   "name": "Hateno Mini Love Insects",
   "region": "Hyrule World"
  },
@@ -4235,7 +4227,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_MyHome_Finish",
   "flag_hash": "0xF2730A1D",
-  "ap_id": 6082057,
+  "ap_id": 6082056,
   "name": "Hateno Mini My Home",
   "region": "Hyrule World"
  },
@@ -4243,7 +4235,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_Net_Finished",
   "flag_hash": "0x6AA87CAE",
-  "ap_id": 6082058,
+  "ap_id": 6082057,
   "name": "Hateno Mini Net",
   "region": "Hyrule World"
  },
@@ -4251,7 +4243,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_ThreeTree_Finished",
   "flag_hash": "0xFA99423F",
-  "ap_id": 6082059,
+  "ap_id": 6082058,
   "name": "Hateno Mini Three Tree",
   "region": "Hyrule World"
  },
@@ -4259,7 +4251,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_WeaponMania_Finish",
   "flag_hash": "0x43753ED8",
-  "ap_id": 6082060,
+  "ap_id": 6082059,
   "name": "Hateno Mini Weapon Mania",
   "region": "Hyrule World"
  },
@@ -4267,7 +4259,7 @@
   "category": "quest",
   "flag_name": "HatenoMini_WhiteDragon_Finish",
   "flag_hash": "0xC3207937",
-  "ap_id": 6082061,
+  "ap_id": 6082060,
   "name": "Hateno Mini White Dragon",
   "region": "Hyrule World"
  },
@@ -4275,7 +4267,7 @@
   "category": "quest",
   "flag_name": "Hateno_SheikPad_PowerUp_Finish",
   "flag_hash": "0xBAE8665C",
-  "ap_id": 6082062,
+  "ap_id": 6082061,
   "name": "Hateno Sheik Pad Power Up",
   "region": "Hyrule World"
  },
@@ -4283,7 +4275,7 @@
   "category": "quest",
   "flag_name": "HigakkareMini_RedDragon_Finish",
   "flag_hash": "0x79AE5A49",
-  "ap_id": 6082063,
+  "ap_id": 6082062,
   "name": "Higakkare Mini Red Dragon",
   "region": "Hyrule World"
  },
@@ -4291,7 +4283,7 @@
   "category": "quest",
   "flag_name": "HigakkareMini_StrangeMan_Finish",
   "flag_hash": "0xA9F24379",
-  "ap_id": 6082064,
+  "ap_id": 6082063,
   "name": "Higakkare Mini Strange Man",
   "region": "Hyrule World"
  },
@@ -4299,7 +4291,7 @@
   "category": "quest",
   "flag_name": "HutagoHatago_Ch_001_Finish",
   "flag_hash": "0x61AD980E",
-  "ap_id": 6082065,
+  "ap_id": 6082064,
   "name": "Hutago Hatago Ch 001",
   "region": "Hyrule World"
  },
@@ -4307,7 +4299,7 @@
   "category": "quest",
   "flag_name": "HyruleDepthMini_WhiteHorse_Finish",
   "flag_hash": "0x0367EB1D",
-  "ap_id": 6082066,
+  "ap_id": 6082065,
   "name": "Hyrule Depth Mini White Horse",
   "region": "Hyrule World"
  },
@@ -4315,7 +4307,7 @@
   "category": "quest",
   "flag_name": "HyrulePlainMini_Balloon_Finish",
   "flag_hash": "0x0A40D62B",
-  "ap_id": 6082067,
+  "ap_id": 6082066,
   "name": "Hyrule Plain Mini Balloon",
   "region": "Hyrule World"
  },
@@ -4323,7 +4315,7 @@
   "category": "quest",
   "flag_name": "Imagawa_test05_Finish",
   "flag_hash": "0x826D4D31",
-  "ap_id": 6082068,
+  "ap_id": 6082067,
   "name": "Imagawa test05",
   "region": "Hyrule World"
  },
@@ -4331,7 +4323,7 @@
   "category": "quest",
   "flag_name": "Imagawa_test6_Finish",
   "flag_hash": "0x46E26CB9",
-  "ap_id": 6082069,
+  "ap_id": 6082068,
   "name": "Imagawa test6",
   "region": "Hyrule World"
  },
@@ -4339,7 +4331,7 @@
   "category": "quest",
   "flag_name": "Imagawa_tunobue_Finish",
   "flag_hash": "0x8FE21F7B",
-  "ap_id": 6082070,
+  "ap_id": 6082069,
   "name": "Imagawa tunobue",
   "region": "Hyrule World"
  },
@@ -4347,7 +4339,7 @@
   "category": "quest",
   "flag_name": "IslandMini_Battle_Finished",
   "flag_hash": "0xF02BB22D",
-  "ap_id": 6082071,
+  "ap_id": 6082070,
   "name": "Island Mini Battle",
   "region": "Hyrule World"
  },
@@ -4355,7 +4347,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Ch_004_Finish",
   "flag_hash": "0xA4CBF729",
-  "ap_id": 6082072,
+  "ap_id": 6082071,
   "name": "Kakariko Ch 004",
   "region": "Hyrule World"
  },
@@ -4363,7 +4355,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Ch_005_Finish",
   "flag_hash": "0x6861F7B7",
-  "ap_id": 6082073,
+  "ap_id": 6082072,
   "name": "Kakariko Ch 005",
   "region": "Hyrule World"
  },
@@ -4371,7 +4363,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Ch_006_Finish",
   "flag_hash": "0xE6EEF054",
-  "ap_id": 6082074,
+  "ap_id": 6082073,
   "name": "Kakariko Ch 006",
   "region": "Hyrule World"
  },
@@ -4379,7 +4371,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Ch_Cooking2_Finish",
   "flag_hash": "0xF04B76DC",
-  "ap_id": 6082075,
+  "ap_id": 6082074,
   "name": "Kakariko Ch Cooking2",
   "region": "Hyrule World"
  },
@@ -4387,7 +4379,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Ch_Cooking3_Finish",
   "flag_hash": "0x3CE17642",
-  "ap_id": 6082076,
+  "ap_id": 6082075,
   "name": "Kakariko Ch Cooking3",
   "region": "Hyrule World"
  },
@@ -4395,7 +4387,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Ch_Cooking4_Finish",
   "flag_hash": "0x36247F5B",
-  "ap_id": 6082077,
+  "ap_id": 6082076,
   "name": "Kakariko Ch Cooking4",
   "region": "Hyrule World"
  },
@@ -4403,7 +4395,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Cha_001_Finish",
   "flag_hash": "0xE6085676",
-  "ap_id": 6082078,
+  "ap_id": 6082077,
   "name": "Kakariko Cha 001",
   "region": "Hyrule World"
  },
@@ -4411,7 +4403,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Cha_002_Finish",
   "flag_hash": "0x68875195",
-  "ap_id": 6082079,
+  "ap_id": 6082078,
   "name": "Kakariko Cha 002",
   "region": "Hyrule World"
  },
@@ -4419,7 +4411,7 @@
   "category": "quest",
   "flag_name": "Kakariko_Cha_003_Finish",
   "flag_hash": "0xA42D510B",
-  "ap_id": 6082080,
+  "ap_id": 6082079,
   "name": "Kakariko Cha 003",
   "region": "Hyrule World"
  },
@@ -4427,7 +4419,7 @@
   "category": "quest",
   "flag_name": "KnightDoll_Finish",
   "flag_hash": "0xAE541BA5",
-  "ap_id": 6082081,
+  "ap_id": 6082080,
   "name": "Knight Doll",
   "region": "Hyrule World"
  },
@@ -4435,7 +4427,7 @@
   "category": "quest",
   "flag_name": "KorokMini_KorokShiren_Finish",
   "flag_hash": "0x07645BCF",
-  "ap_id": 6082082,
+  "ap_id": 6082081,
   "name": "Korok Mini Korok Shiren",
   "region": "Hyrule World"
  },
@@ -4443,7 +4435,7 @@
   "category": "quest",
   "flag_name": "KorokMini_RiddleShiren_Finish",
   "flag_hash": "0x102FCFB7",
-  "ap_id": 6082083,
+  "ap_id": 6082082,
   "name": "Korok Mini Riddle Shiren",
   "region": "Hyrule World"
  },
@@ -4451,7 +4443,7 @@
   "category": "quest",
   "flag_name": "KorokMini_RodShiren_Finish",
   "flag_hash": "0x1001DA5D",
-  "ap_id": 6082084,
+  "ap_id": 6082083,
   "name": "Korok Mini Rod Shiren",
   "region": "Hyrule World"
  },
@@ -4459,7 +4451,7 @@
   "category": "quest",
   "flag_name": "KorokMini_UMAShiren_Finish",
   "flag_hash": "0x847CBB92",
-  "ap_id": 6082085,
+  "ap_id": 6082084,
   "name": "Korok Mini UMAShiren",
   "region": "Hyrule World"
  },
@@ -4467,7 +4459,7 @@
   "category": "quest",
   "flag_name": "LanayruMini_ZoraRelief_Finish",
   "flag_hash": "0xB6333D05",
-  "ap_id": 6082086,
+  "ap_id": 6082085,
   "name": "Lanayru Mini Zora Relief",
   "region": "Hyrule World"
  },
@@ -4475,7 +4467,7 @@
   "category": "quest",
   "flag_name": "LetterErrand_Finished",
   "flag_hash": "0xDCF7BDF1",
-  "ap_id": 6082087,
+  "ap_id": 6082086,
   "name": "Letter Errand",
   "region": "Hyrule World"
  },
@@ -4483,7 +4475,7 @@
   "category": "quest",
   "flag_name": "MacuseIseki_Finish",
   "flag_hash": "0xD5924A97",
-  "ap_id": 6082088,
+  "ap_id": 6082087,
   "name": "Macuse Iseki",
   "region": "Hyrule World"
  },
@@ -4491,7 +4483,7 @@
   "category": "quest",
   "flag_name": "MagneticFld_Finish",
   "flag_hash": "0x811DE8DC",
-  "ap_id": 6082089,
+  "ap_id": 6082088,
   "name": "Magnetic Fld",
   "region": "Hyrule World"
  },
@@ -4499,7 +4491,7 @@
   "category": "quest",
   "flag_name": "MamonoShop_BigEnemy_Giant_Finish",
   "flag_hash": "0x2EF3B099",
-  "ap_id": 6082090,
+  "ap_id": 6082089,
   "name": "Mamono Shop Big Enemy Giant",
   "region": "Hyrule World"
  },
@@ -4507,7 +4499,7 @@
   "category": "quest",
   "flag_name": "MamonoShop_BigEnemy_Golem_Finish",
   "flag_hash": "0xD21945B7",
-  "ap_id": 6082091,
+  "ap_id": 6082090,
   "name": "Mamono Shop Big Enemy Golem",
   "region": "Hyrule World"
  },
@@ -4515,7 +4507,7 @@
   "category": "quest",
   "flag_name": "MamonoShop_BigEnemy_Sandworm_Finish",
   "flag_hash": "0x0CDC0F04",
-  "ap_id": 6082092,
+  "ap_id": 6082091,
   "name": "Mamono Shop Big Enemy Sandworm",
   "region": "Hyrule World"
  },
@@ -4523,7 +4515,7 @@
   "category": "quest",
   "flag_name": "MarittaMini_BigWhales_Finish",
   "flag_hash": "0x989ECFBF",
-  "ap_id": 6082093,
+  "ap_id": 6082092,
   "name": "Maritta Mini Big Whales",
   "region": "Hyrule World"
  },
@@ -4531,7 +4523,7 @@
   "category": "quest",
   "flag_name": "MessageGame_Finish",
   "flag_hash": "0x2D11A8E6",
-  "ap_id": 6082094,
+  "ap_id": 6082093,
   "name": "Message Game",
   "region": "Hyrule World"
  },
@@ -4539,7 +4531,7 @@
   "category": "quest",
   "flag_name": "MinakkareMini_Dragonfly_Finish",
   "flag_hash": "0xF9EBD9F0",
-  "ap_id": 6082095,
+  "ap_id": 6082094,
   "name": "Minakkare Mini Dragonfly",
   "region": "Hyrule World"
  },
@@ -4547,7 +4539,7 @@
   "category": "quest",
   "flag_name": "MinamihateeluMini_touzoku_Finish",
   "flag_hash": "0x07DB9677",
-  "ap_id": 6082096,
+  "ap_id": 6082095,
   "name": "Minamihateelu Mini touzoku",
   "region": "Hyrule World"
  },
@@ -4555,7 +4547,7 @@
   "category": "quest",
   "flag_name": "MiniGame_Bowling_Finish",
   "flag_hash": "0x33EA7F1F",
-  "ap_id": 6082097,
+  "ap_id": 6082096,
   "name": "Mini Game Bowling",
   "region": "Hyrule World"
  },
@@ -4563,7 +4555,7 @@
   "category": "quest",
   "flag_name": "MiniGame_Crosscountry_Finish",
   "flag_hash": "0x4A79EC0E",
-  "ap_id": 6082098,
+  "ap_id": 6082097,
   "name": "Mini Game Crosscountry",
   "region": "Hyrule World"
  },
@@ -4571,7 +4563,7 @@
   "category": "quest",
   "flag_name": "MiniGame_GambleTreasureBox_Finish",
   "flag_hash": "0x26762CDD",
-  "ap_id": 6082099,
+  "ap_id": 6082098,
   "name": "Mini Game Gamble Treasure Box",
   "region": "Hyrule World"
  },
@@ -4579,7 +4571,7 @@
   "category": "quest",
   "flag_name": "MiniGame_HillTower_BirdMan_Finish",
   "flag_hash": "0xFB371811",
-  "ap_id": 6082100,
+  "ap_id": 6082099,
   "name": "Mini Game Hill Tower Bird Man",
   "region": "Hyrule World"
  },
@@ -4587,7 +4579,7 @@
   "category": "quest",
   "flag_name": "MiniGame_HorseRace_Finish",
   "flag_hash": "0xFE4067FF",
-  "ap_id": 6082101,
+  "ap_id": 6082100,
   "name": "Mini Game Horse Race",
   "region": "Hyrule World"
  },
@@ -4595,7 +4587,7 @@
   "category": "quest",
   "flag_name": "MiniGame_HorsebackArchery_Finish",
   "flag_hash": "0x2C70B0F0",
-  "ap_id": 6082102,
+  "ap_id": 6082101,
   "name": "Mini Game Horseback Archery",
   "region": "Hyrule World"
  },
@@ -4603,7 +4595,7 @@
   "category": "quest",
   "flag_name": "MiniGame_KitakkareBF_Finish",
   "flag_hash": "0x4EEAF515",
-  "ap_id": 6082103,
+  "ap_id": 6082102,
   "name": "Mini Game Kitakkare BF",
   "region": "Hyrule World"
  },
@@ -4611,7 +4603,7 @@
   "category": "quest",
   "flag_name": "MiniGame_ParasailArchery_Finish",
   "flag_hash": "0x4EABF631",
-  "ap_id": 6082104,
+  "ap_id": 6082103,
   "name": "Mini Game Parasail Archery",
   "region": "Hyrule World"
  },
@@ -4619,7 +4611,7 @@
   "category": "quest",
   "flag_name": "MiniGame_ParasailRide_Finish",
   "flag_hash": "0x8EF4F144",
-  "ap_id": 6082105,
+  "ap_id": 6082104,
   "name": "Mini Game Parasail Ride",
   "region": "Hyrule World"
  },
@@ -4627,7 +4619,7 @@
   "category": "quest",
   "flag_name": "MiniGame_ShieldSurfing_Finish",
   "flag_hash": "0x197D6FF3",
-  "ap_id": 6082106,
+  "ap_id": 6082105,
   "name": "Mini Game Shield Surfing",
   "region": "Hyrule World"
  },
@@ -4635,7 +4627,7 @@
   "category": "quest",
   "flag_name": "MiniGame_SmashGolf_Finish",
   "flag_hash": "0xFE184B1C",
-  "ap_id": 6082107,
+  "ap_id": 6082106,
   "name": "Mini Game Smash Golf",
   "region": "Hyrule World"
  },
@@ -4643,7 +4635,7 @@
   "category": "quest",
   "flag_name": "MiniGame_TimeLimitHunting_Finish",
   "flag_hash": "0x98CCEFBB",
-  "ap_id": 6082108,
+  "ap_id": 6082107,
   "name": "Mini Game Time Limit Hunting",
   "region": "Hyrule World"
  },
@@ -4651,7 +4643,7 @@
   "category": "quest",
   "flag_name": "MlsYmaQueTest01_Finished",
   "flag_hash": "0xF68D77F7",
-  "ap_id": 6082109,
+  "ap_id": 6082108,
   "name": "Mls Yma Que Test01",
   "region": "Hyrule World"
  },
@@ -4659,7 +4651,7 @@
   "category": "quest",
   "flag_name": "MouthofDragon_Finish",
   "flag_hash": "0xA41FE576",
-  "ap_id": 6082110,
+  "ap_id": 6082109,
   "name": "Mouthof Dragon",
   "region": "Hyrule World"
  },
@@ -4667,7 +4659,7 @@
   "category": "quest",
   "flag_name": "MtMotelMini_Landscape_Finished",
   "flag_hash": "0x4BF21DAD",
-  "ap_id": 6082111,
+  "ap_id": 6082110,
   "name": "Mt Motel Mini Landscape",
   "region": "Hyrule World"
  },
@@ -4675,7 +4667,7 @@
   "category": "quest",
   "flag_name": "My_Hero_Finish",
   "flag_hash": "0x9B97F575",
-  "ap_id": 6082112,
+  "ap_id": 6082111,
   "name": "My Hero",
   "region": "Hyrule World"
  },
@@ -4683,7 +4675,7 @@
   "category": "quest",
   "flag_name": "NakedIsland_Finish",
   "flag_hash": "0x39B7EDDB",
-  "ap_id": 6082113,
+  "ap_id": 6082112,
   "name": "Naked Island",
   "region": "Hyrule World"
  },
@@ -4691,7 +4683,7 @@
   "category": "quest",
   "flag_name": "Npc_Brigade_001_Finish",
   "flag_hash": "0xE604CF19",
-  "ap_id": 6082114,
+  "ap_id": 6082113,
   "name": "Npc Brigade 001",
   "region": "Hyrule World"
  },
@@ -4699,7 +4691,7 @@
   "category": "quest",
   "flag_name": "Npc_Kokiri008_Finish",
   "flag_hash": "0x426B5FC8",
-  "ap_id": 6082115,
+  "ap_id": 6082114,
   "name": "Npc Kokiri008",
   "region": "Hyrule World"
  },
@@ -4707,7 +4699,7 @@
   "category": "quest",
   "flag_name": "Oasis_Ch_Drug_Finish",
   "flag_hash": "0x77143324",
-  "ap_id": 6082116,
+  "ap_id": 6082115,
   "name": "Oasis Ch Drug",
   "region": "Hyrule World"
  },
@@ -4715,7 +4707,7 @@
   "category": "quest",
   "flag_name": "Oasis_Drug_Challenge_Finish",
   "flag_hash": "0x26A0E223",
-  "ap_id": 6082117,
+  "ap_id": 6082116,
   "name": "Oasis Drug Challenge",
   "region": "Hyrule World"
  },
@@ -4723,7 +4715,7 @@
   "category": "quest",
   "flag_name": "OldKorok_Help_Finish",
   "flag_hash": "0xA3CDB7EB",
-  "ap_id": 6082118,
+  "ap_id": 6082117,
   "name": "Old Korok Help",
   "region": "Hyrule World"
  },
@@ -4731,7 +4723,7 @@
   "category": "quest",
   "flag_name": "OneHundred_Finish",
   "flag_hash": "0x3DD7B2F8",
-  "ap_id": 6082119,
+  "ap_id": 6082118,
   "name": "One Hundred",
   "region": "Hyrule World"
  },
@@ -4739,7 +4731,7 @@
   "category": "quest",
   "flag_name": "PictureMemory_Finish",
   "flag_hash": "0xA9C25693",
-  "ap_id": 6082120,
+  "ap_id": 6082119,
   "name": "Picture Memory",
   "region": "Hyrule World"
  },
@@ -4747,7 +4739,7 @@
   "category": "quest",
   "flag_name": "PrezentationOkamura_Finish",
   "flag_hash": "0xD2290BD6",
-  "ap_id": 6082121,
+  "ap_id": 6082120,
   "name": "Prezentation Okamura",
   "region": "Hyrule World"
  },
@@ -4755,7 +4747,7 @@
   "category": "quest",
   "flag_name": "QueenLetter_Finished",
   "flag_hash": "0xFACF8652",
-  "ap_id": 6082122,
+  "ap_id": 6082121,
   "name": "Queen Letter",
   "region": "Hyrule World"
  },
@@ -4763,7 +4755,7 @@
   "category": "quest",
   "flag_name": "Relief_Landing_Finish",
   "flag_hash": "0x044CAC17",
-  "ap_id": 6082123,
+  "ap_id": 6082122,
   "name": "Relief Landing",
   "region": "Hyrule World"
  },
@@ -4771,7 +4763,7 @@
   "category": "quest",
   "flag_name": "Remains_Fancier_Finish",
   "flag_hash": "0xDB451683",
-  "ap_id": 6082124,
+  "ap_id": 6082123,
   "name": "Remains Fancier",
   "region": "Hyrule World"
  },
@@ -4779,7 +4771,7 @@
   "category": "quest",
   "flag_name": "RinelSearch_Finish",
   "flag_hash": "0x686D4963",
-  "ap_id": 6082125,
+  "ap_id": 6082124,
   "name": "Rinel Search",
   "region": "Hyrule World"
  },
@@ -4787,7 +4779,7 @@
   "category": "quest",
   "flag_name": "RitoMini_Cook_Finish",
   "flag_hash": "0x63DDEB53",
-  "ap_id": 6082126,
+  "ap_id": 6082125,
   "name": "Rito Mini Cook",
   "region": "Hyrule World"
  },
@@ -4795,7 +4787,7 @@
   "category": "quest",
   "flag_name": "RitoMini_Flint_Finish",
   "flag_hash": "0x1272E630",
-  "ap_id": 6082127,
+  "ap_id": 6082126,
   "name": "Rito Mini Flint",
   "region": "Hyrule World"
  },
@@ -4803,7 +4795,7 @@
   "category": "quest",
   "flag_name": "RitoMini_IceGolem_Finish",
   "flag_hash": "0xB6B66731",
-  "ap_id": 6082128,
+  "ap_id": 6082127,
   "name": "Rito Mini Ice Golem",
   "region": "Hyrule World"
  },
@@ -4811,7 +4803,7 @@
   "category": "quest",
   "flag_name": "RitoRabitMountain_Finish",
   "flag_hash": "0xF3D7074F",
-  "ap_id": 6082129,
+  "ap_id": 6082128,
   "name": "Rito Rabit Mountain",
   "region": "Hyrule World"
  },
@@ -4819,7 +4811,7 @@
   "category": "quest",
   "flag_name": "RitoSongMystery_Finished",
   "flag_hash": "0xE84C3418",
-  "ap_id": 6082130,
+  "ap_id": 6082129,
   "name": "Rito Song Mystery",
   "region": "Hyrule World"
  },
@@ -4827,7 +4819,7 @@
   "category": "quest",
   "flag_name": "RitoUmayadoMini_HotRecipe_Finish",
   "flag_hash": "0xE1B98CA6",
-  "ap_id": 6082131,
+  "ap_id": 6082130,
   "name": "Rito Umayado Mini Hot Recipe",
   "region": "Hyrule World"
  },
@@ -4835,7 +4827,7 @@
   "category": "quest",
   "flag_name": "Rito_BrosRock_Finish",
   "flag_hash": "0x2CBE6434",
-  "ap_id": 6082132,
+  "ap_id": 6082131,
   "name": "Rito Bros Rock",
   "region": "Hyrule World"
  },
@@ -4843,7 +4835,7 @@
   "category": "quest",
   "flag_name": "Rito_KeelSearch_Finish",
   "flag_hash": "0xC9648FF1",
-  "ap_id": 6082133,
+  "ap_id": 6082132,
   "name": "Rito Keel Search",
   "region": "Hyrule World"
  },
@@ -4851,7 +4843,7 @@
   "category": "quest",
   "flag_name": "RiversideMini_CastleWeapon_Finish",
   "flag_hash": "0x98BD4C1F",
-  "ap_id": 6082134,
+  "ap_id": 6082133,
   "name": "Riverside Mini Castle Weapon",
   "region": "Hyrule World"
  },
@@ -4859,7 +4851,7 @@
   "category": "quest",
   "flag_name": "RiversideMini_RoyalRecipe_Finish",
   "flag_hash": "0x40B3D773",
-  "ap_id": 6082135,
+  "ap_id": 6082134,
   "name": "Riverside Mini Royal Recipe",
   "region": "Hyrule World"
  },
@@ -4867,7 +4859,7 @@
   "category": "quest",
   "flag_name": "SandStorm_Finish",
   "flag_hash": "0x8C90BD33",
-  "ap_id": 6082136,
+  "ap_id": 6082135,
   "name": "Sand Storm",
   "region": "Hyrule World"
  },
@@ -4875,7 +4867,7 @@
   "category": "quest",
   "flag_name": "SanrokuMini_Lizard_Finish",
   "flag_hash": "0x43DC61DE",
-  "ap_id": 6082137,
+  "ap_id": 6082136,
   "name": "Sanroku Mini Lizard",
   "region": "Hyrule World"
  },
@@ -4883,7 +4875,7 @@
   "category": "quest",
   "flag_name": "SearchStone_Finish",
   "flag_hash": "0x69258575",
-  "ap_id": 6082138,
+  "ap_id": 6082137,
   "name": "Search Stone",
   "region": "Hyrule World"
  },
@@ -4891,7 +4883,7 @@
   "category": "quest",
   "flag_name": "SecretofObject_Finish",
   "flag_hash": "0xBEAD9E8D",
-  "ap_id": 6082139,
+  "ap_id": 6082138,
   "name": "Secretof Object",
   "region": "Hyrule World"
  },
@@ -4899,7 +4891,7 @@
   "category": "quest",
   "flag_name": "SeekerEye_Finish",
   "flag_hash": "0x74CA795E",
-  "ap_id": 6082140,
+  "ap_id": 6082139,
   "name": "Seeker Eye",
   "region": "Hyrule World"
  },
@@ -4907,7 +4899,7 @@
   "category": "quest",
   "flag_name": "Sekimoto_Test01_Finish",
   "flag_hash": "0xBCEE8148",
-  "ap_id": 6082141,
+  "ap_id": 6082140,
   "name": "Sekimoto Test01",
   "region": "Hyrule World"
  },
@@ -4915,7 +4907,7 @@
   "category": "quest",
   "flag_name": "SetugenUmayadoMini_Umahonephoto_Finish",
   "flag_hash": "0xE6931D43",
-  "ap_id": 6082142,
+  "ap_id": 6082141,
   "name": "Setugen Umayado Mini Umahonephoto",
   "region": "Hyrule World"
  },
@@ -4923,7 +4915,7 @@
   "category": "quest",
   "flag_name": "Shadow_Sign_Finish",
   "flag_hash": "0xF2FB8287",
-  "ap_id": 6082143,
+  "ap_id": 6082142,
   "name": "Shadow Sign",
   "region": "Hyrule World"
  },
@@ -4931,7 +4923,7 @@
   "category": "quest",
   "flag_name": "ShieldofKolog_Finish",
   "flag_hash": "0xFE5AD59B",
-  "ap_id": 6082144,
+  "ap_id": 6082143,
   "name": "Shieldof Kolog",
   "region": "Hyrule World"
  },
@@ -4939,7 +4931,7 @@
   "category": "quest",
   "flag_name": "ShieldofKolog_mini_Finish",
   "flag_hash": "0x45CA5623",
-  "ap_id": 6082145,
+  "ap_id": 6082144,
   "name": "Shieldof Kolog mini",
   "region": "Hyrule World"
  },
@@ -4947,7 +4939,7 @@
   "category": "quest",
   "flag_name": "SnowMountainRescue_Finished",
   "flag_hash": "0x53929971",
-  "ap_id": 6082146,
+  "ap_id": 6082145,
   "name": "Snow Mountain Rescue",
   "region": "Hyrule World"
  },
@@ -4955,7 +4947,7 @@
   "category": "quest",
   "flag_name": "Solitary_Maze_Finish",
   "flag_hash": "0xA1681C82",
-  "ap_id": 6082147,
+  "ap_id": 6082146,
   "name": "Solitary Maze",
   "region": "Hyrule World"
  },
@@ -4963,7 +4955,7 @@
   "category": "quest",
   "flag_name": "StatueofZora_Finish",
   "flag_hash": "0xF25ABC61",
-  "ap_id": 6082148,
+  "ap_id": 6082147,
   "name": "Statueof Zora",
   "region": "Hyrule World"
  },
@@ -4971,7 +4963,7 @@
   "category": "quest",
   "flag_name": "StolenBook_Finish",
   "flag_hash": "0x5ABD3C97",
-  "ap_id": 6082149,
+  "ap_id": 6082148,
   "name": "Stolen Book",
   "region": "Hyrule World"
  },
@@ -4979,7 +4971,7 @@
   "category": "quest",
   "flag_name": "SunazarashiRace_Finish",
   "flag_hash": "0x8614EBD1",
-  "ap_id": 6082150,
+  "ap_id": 6082149,
   "name": "Sunazarashi Race",
   "region": "Hyrule World"
  },
@@ -4987,7 +4979,7 @@
   "category": "quest",
   "flag_name": "SunazarashiRace_mini_Finish",
   "flag_hash": "0xDA9FCA6D",
-  "ap_id": 6082151,
+  "ap_id": 6082150,
   "name": "Sunazarashi Race mini",
   "region": "Hyrule World"
  },
@@ -4995,7 +4987,7 @@
   "category": "quest",
   "flag_name": "TabantaBridgeMini_Sundial_Finish",
   "flag_hash": "0x5571F406",
-  "ap_id": 6082152,
+  "ap_id": 6082151,
   "name": "Tabanta Bridge Mini Sundial",
   "region": "Hyrule World"
  },
@@ -5003,7 +4995,7 @@
   "category": "quest",
   "flag_name": "Threebros_giant_Finish",
   "flag_hash": "0x657B4B50",
-  "ap_id": 6082153,
+  "ap_id": 6082152,
   "name": "Threebros giant",
   "region": "Hyrule World"
  },
@@ -5011,7 +5003,7 @@
   "category": "quest",
   "flag_name": "Throw_Out_Finish",
   "flag_hash": "0x5AD7ECC6",
-  "ap_id": 6082154,
+  "ap_id": 6082153,
   "name": "Throw Out",
   "region": "Hyrule World"
  },
@@ -5019,7 +5011,7 @@
   "category": "quest",
   "flag_name": "Thunder_Sword_Finish",
   "flag_hash": "0x25940A1D",
-  "ap_id": 6082155,
+  "ap_id": 6082154,
   "name": "Thunder Sword",
   "region": "Hyrule World"
  },
@@ -5027,7 +5019,7 @@
   "category": "quest",
   "flag_name": "Tincle7Quest_Finished",
   "flag_hash": "0x9903AC89",
-  "ap_id": 6082156,
+  "ap_id": 6082155,
   "name": "Tincle7 Quest",
   "region": "Hyrule World"
  },
@@ -5035,7 +5027,7 @@
   "category": "quest",
   "flag_name": "TominagaTest_Finished",
   "flag_hash": "0xE7599CCC",
-  "ap_id": 6082157,
+  "ap_id": 6082156,
   "name": "Tominaga Test",
   "region": "Hyrule World"
  },
@@ -5043,7 +5035,7 @@
   "category": "quest",
   "flag_name": "TwoWheels_Finish",
   "flag_hash": "0x209FCD5E",
-  "ap_id": 6082158,
+  "ap_id": 6082157,
   "name": "Two Wheels",
   "region": "Hyrule World"
  },
@@ -5051,7 +5043,7 @@
   "category": "quest",
   "flag_name": "UMiiMini_GiveCake_Finish",
   "flag_hash": "0x88CB7810",
-  "ap_id": 6082159,
+  "ap_id": 6082158,
   "name": "UMii Mini Give Cake",
   "region": "Hyrule World"
  },
@@ -5059,7 +5051,7 @@
   "category": "quest",
   "flag_name": "UMiiMini_MakeVillage_Finish",
   "flag_hash": "0xE7BFF9B2",
-  "ap_id": 6082160,
+  "ap_id": 6082159,
   "name": "UMii Mini Make Village",
   "region": "Hyrule World"
  },
@@ -5067,7 +5059,7 @@
   "category": "quest",
   "flag_name": "UMiiMini_RichmansHobby_Finish",
   "flag_hash": "0x4F9DE1DE",
-  "ap_id": 6082161,
+  "ap_id": 6082160,
   "name": "UMii Mini Richmans Hobby",
   "region": "Hyrule World"
  },
@@ -5075,7 +5067,7 @@
   "category": "quest",
   "flag_name": "UotoriMini_RecipeSea_Finish",
   "flag_hash": "0x0599B273",
-  "ap_id": 6082162,
+  "ap_id": 6082161,
   "name": "Uotori Mini Recipe Sea",
   "region": "Hyrule World"
  },
@@ -5083,7 +5075,7 @@
   "category": "quest",
   "flag_name": "UotoriMini_RecoverBay_Finish",
   "flag_hash": "0x46036FBC",
-  "ap_id": 6082163,
+  "ap_id": 6082162,
   "name": "Uotori Mini Recover Bay",
   "region": "Hyrule World"
  },
@@ -5091,7 +5083,7 @@
   "category": "quest",
   "flag_name": "UotoriMini_SinkTreasure_Finish",
   "flag_hash": "0x70B0C3B3",
-  "ap_id": 6082164,
+  "ap_id": 6082163,
   "name": "Uotori Mini Sink Treasure",
   "region": "Hyrule World"
  },
@@ -5099,7 +5091,7 @@
   "category": "quest",
   "flag_name": "YmdQueTest_Finished",
   "flag_hash": "0x6348E737",
-  "ap_id": 6082165,
+  "ap_id": 6082164,
   "name": "Ymd Que Test",
   "region": "Hyrule World"
  },
@@ -5107,7 +5099,7 @@
   "category": "quest",
   "flag_name": "Z_quest_test01_Finished",
   "flag_hash": "0xCC2BFEF7",
-  "ap_id": 6082166,
+  "ap_id": 6082165,
   "name": "Z quest test01",
   "region": "Hyrule World"
  },
@@ -5115,7 +5107,7 @@
   "category": "quest",
   "flag_name": "ZoraMini_DiveChallenge_Finish",
   "flag_hash": "0xE6B1C5E0",
-  "ap_id": 6082167,
+  "ap_id": 6082166,
   "name": "Zora Mini Dive Challenge",
   "region": "Hyrule World"
  },
@@ -5123,7 +5115,7 @@
   "category": "quest",
   "flag_name": "ZoraMini_FlowedWife_Finish",
   "flag_hash": "0xC70C7801",
-  "ap_id": 6082168,
+  "ap_id": 6082167,
   "name": "Zora Mini Flowed Wife",
   "region": "Hyrule World"
  },
@@ -5131,7 +5123,7 @@
   "category": "quest",
   "flag_name": "ZoraMini_HarvestingStone_Finish",
   "flag_hash": "0x35EFFBF2",
-  "ap_id": 6082169,
+  "ap_id": 6082168,
   "name": "Zora Mini Harvesting Stone",
   "region": "Hyrule World"
  },
@@ -5139,7 +5131,7 @@
   "category": "quest",
   "flag_name": "ZoraMini_ReliefSearch_Finish",
   "flag_hash": "0xB9E1BE1B",
-  "ap_id": 6082170,
+  "ap_id": 6082169,
   "name": "Zora Mini Relief Search",
   "region": "Hyrule World"
  },
@@ -5147,7 +5139,7 @@
   "category": "quest",
   "flag_name": "Zora_FlogMini_Finish",
   "flag_hash": "0xC8D087EA",
-  "ap_id": 6082171,
+  "ap_id": 6082170,
   "name": "Zora Flog Mini",
   "region": "Hyrule World"
  },
@@ -5155,7 +5147,7 @@
   "category": "quest",
   "flag_name": "isso_treasure_mini_Finish",
   "flag_hash": "0xC83D80DF",
-  "ap_id": 6082172,
+  "ap_id": 6082171,
   "name": "isso treasure mini",
   "region": "Hyrule World"
  },
@@ -5163,7 +5155,7 @@
   "category": "quest",
   "flag_name": "kawazoe_FujitaLearning001_Finish",
   "flag_hash": "0x5A6B0F22",
-  "ap_id": 6082173,
+  "ap_id": 6082172,
   "name": "kawazoe Fujita Learning001",
   "region": "Hyrule World"
  },
@@ -5171,7 +5163,7 @@
   "category": "quest",
   "flag_name": "yorozu_Finished",
   "flag_hash": "0x66C71342",
-  "ap_id": 6082174,
+  "ap_id": 6082173,
   "name": "yorozu",
   "region": "Hyrule World"
  },
