@@ -52,10 +52,8 @@ SPECIALS = [
      "inject": {"type": "add_porch", "item": "IceArrow", "amount": 5}},
     {"name": "Shock Arrows x5", "ap_item_id": 6080124, "count": 4,
      "inject": {"type": "add_porch", "item": "ElectricArrow", "amount": 5}},
-    {"name": "Rupees (100)", "ap_item_id": 6080130, "count": 8,
-     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 100}},
-    {"name": "Rupees (300)", "ap_item_id": 6080131, "count": 4,
-     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 300}},
+    # Rubis RETIRÉS du pool (V1) : l'adresse rubis trouvée est un MIROIR que le jeu réécrit → les
+    # rubis livrés disparaissent ("ajouté puis supprimé"). À restaurer en V1.1 (vrai portefeuille).
 ]
 
 

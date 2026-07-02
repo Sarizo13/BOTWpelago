@@ -189,26 +189,6 @@
       }
     },
     {
-      "name": "Rupees (100)",
-      "ap_item_id": 6080130,
-      "count": 8,
-      "inject": {
-        "type": "add_s32",
-        "flag": "CurrentRupee",
-        "amount": 100
-      }
-    },
-    {
-      "name": "Rupees (300)",
-      "ap_item_id": 6080131,
-      "count": 4,
-      "inject": {
-        "type": "add_s32",
-        "flag": "CurrentRupee",
-        "amount": 300
-      }
-    },
-    {
       "name": "Bokoblin Horn",
       "ap_item_id": 6080200,
       "count": 1,
