@@ -133,7 +133,7 @@
     {
       "name": "Spirit Orb",
       "ap_item_id": 6080100,
-      "count": 80,
+      "count": 25,
       "inject": [
         {
           "type": "add_porch",
@@ -1505,6 +1505,1846 @@
         "type": "add_porch",
         "item": "Item_PlantGet_Q",
         "amount": 3
+      }
+    },
+    {
+      "name": "Traveler's Bow",
+      "ap_item_id": 6080600,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_001",
+        "amount": 22
+      }
+    },
+    {
+      "name": "Soldier's Bow",
+      "ap_item_id": 6080601,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_002",
+        "amount": 36
+      }
+    },
+    {
+      "name": "Spiked Boko Bow",
+      "ap_item_id": 6080602,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_003",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Boko Bow",
+      "ap_item_id": 6080603,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_004",
+        "amount": 16
+      }
+    },
+    {
+      "name": "Lizal Bow",
+      "ap_item_id": 6080604,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_006",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Lynel Bow",
+      "ap_item_id": 6080605,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_009",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Strengthened Lizal Bow",
+      "ap_item_id": 6080606,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_011",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Forest Dweller's Bow",
+      "ap_item_id": 6080607,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_013",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Silver Bow",
+      "ap_item_id": 6080608,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_014",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Golden Bow",
+      "ap_item_id": 6080609,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_015",
+        "amount": 60
+      }
+    },
+    {
+      "name": "Swallow Bow",
+      "ap_item_id": 6080610,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_016",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Falcon Bow",
+      "ap_item_id": 6080611,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_017",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Ancient Bow",
+      "ap_item_id": 6080612,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_023",
+        "amount": 120
+      }
+    },
+    {
+      "name": "Mighty Lynel Bow",
+      "ap_item_id": 6080613,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_026",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Dragon Bone Boko Bow",
+      "ap_item_id": 6080614,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_027",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Great Eagle Bow",
+      "ap_item_id": 6080615,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_028",
+        "amount": 60
+      }
+    },
+    {
+      "name": "Phrenic Bow",
+      "ap_item_id": 6080616,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_029",
+        "amount": 45
+      }
+    },
+    {
+      "name": "Steel Lizal Bow",
+      "ap_item_id": 6080617,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_030",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Savage Lynel Bow",
+      "ap_item_id": 6080618,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_032",
+        "amount": 45
+      }
+    },
+    {
+      "name": "Royal Guard's Bow",
+      "ap_item_id": 6080619,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_033",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Knight's Bow",
+      "ap_item_id": 6080620,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_035",
+        "amount": 48
+      }
+    },
+    {
+      "name": "Royal Bow",
+      "ap_item_id": 6080621,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_036",
+        "amount": 60
+      }
+    },
+    {
+      "name": "Wooden Bow",
+      "ap_item_id": 6080622,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_038",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Duplex Bow",
+      "ap_item_id": 6080623,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_040",
+        "amount": 18
+      }
+    },
+    {
+      "name": "Bow of Light",
+      "ap_item_id": 6080624,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_071",
+        "amount": 100
+      }
+    },
+    {
+      "name": "Twilight Bow",
+      "ap_item_id": 6080625,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Bow_072",
+        "amount": 100
+      }
+    },
+    {
+      "name": "Traveler's Claymore",
+      "ap_item_id": 6080626,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_001",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Soldier's Claymore",
+      "ap_item_id": 6080627,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_002",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Knight's Claymore",
+      "ap_item_id": 6080628,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_003",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Boko Bat",
+      "ap_item_id": 6080629,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_004",
+        "amount": 8
+      }
+    },
+    {
+      "name": "Spiked Boko Bat",
+      "ap_item_id": 6080630,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_005",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Dragonbone Boko Bat",
+      "ap_item_id": 6080631,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_006",
+        "amount": 16
+      }
+    },
+    {
+      "name": "Moblin Club",
+      "ap_item_id": 6080632,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_010",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Spiked Moblin Club",
+      "ap_item_id": 6080633,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_011",
+        "amount": 18
+      }
+    },
+    {
+      "name": "Dragonbone Moblin Club",
+      "ap_item_id": 6080634,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_012",
+        "amount": 24
+      }
+    },
+    {
+      "name": "Ancient Battle Axe",
+      "ap_item_id": 6080635,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_013",
+        "amount": 15
+      }
+    },
+    {
+      "name": "Ancient Battle Axe+",
+      "ap_item_id": 6080636,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_014",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Ancient Battle Axe++",
+      "ap_item_id": 6080637,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_015",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Lynel Crusher",
+      "ap_item_id": 6080638,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_016",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Mighty Lynel Crusher",
+      "ap_item_id": 6080639,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_017",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Savage Lynel Crusher",
+      "ap_item_id": 6080640,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_018",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Moblin Arm",
+      "ap_item_id": 6080641,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_019",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Rusty Claymore",
+      "ap_item_id": 6080642,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_020",
+        "amount": 10
+      }
+    },
+    {
+      "name": "Ancient Bladesaw",
+      "ap_item_id": 6080643,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_023",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Royal Claymore",
+      "ap_item_id": 6080644,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_024",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Silver Longsword",
+      "ap_item_id": 6080645,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_027",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Golden Claymore",
+      "ap_item_id": 6080646,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_029",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Double Axe",
+      "ap_item_id": 6080647,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_030",
+        "amount": 52
+      }
+    },
+    {
+      "name": "Iron Sledgehammer",
+      "ap_item_id": 6080648,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_031",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Woodcutter's Axe",
+      "ap_item_id": 6080649,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_032",
+        "amount": 47
+      }
+    },
+    {
+      "name": "Great Flameblade",
+      "ap_item_id": 6080650,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_033",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Great Frostblade",
+      "ap_item_id": 6080651,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_034",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Great Thunderblade",
+      "ap_item_id": 6080652,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_035",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Cobble Crusher",
+      "ap_item_id": 6080653,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_036",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Stone Smasher",
+      "ap_item_id": 6080654,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_037",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Boat Oar",
+      "ap_item_id": 6080655,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_038",
+        "amount": 8
+      }
+    },
+    {
+      "name": "Eightfold Longblade",
+      "ap_item_id": 6080656,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_041",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Farming Hoe",
+      "ap_item_id": 6080657,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_045",
+        "amount": 6
+      }
+    },
+    {
+      "name": "Royal Guard's Claymore",
+      "ap_item_id": 6080658,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_047",
+        "amount": 15
+      }
+    },
+    {
+      "name": "Giant Boomerang",
+      "ap_item_id": 6080659,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_051",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Boulder Breaker",
+      "ap_item_id": 6080660,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_054",
+        "amount": 60
+      }
+    },
+    {
+      "name": "Edge of Duality",
+      "ap_item_id": 6080661,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_055",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Korok Leaf",
+      "ap_item_id": 6080662,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_056",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Sword of the Six Sages",
+      "ap_item_id": 6080663,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_057",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Biggoron's Sword",
+      "ap_item_id": 6080664,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_059",
+        "amount": 60
+      }
+    },
+    {
+      "name": "Fierce Deity Sword",
+      "ap_item_id": 6080665,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_060",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Windcleaver",
+      "ap_item_id": 6080666,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Lsword_074",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Wooden Shield",
+      "ap_item_id": 6080667,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_001",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Soldier's Shield",
+      "ap_item_id": 6080668,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_002",
+        "amount": 16
+      }
+    },
+    {
+      "name": "Knight's Shield",
+      "ap_item_id": 6080669,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_003",
+        "amount": 23
+      }
+    },
+    {
+      "name": "Boko Shield",
+      "ap_item_id": 6080670,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_004",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Spiked Boko Shield",
+      "ap_item_id": 6080671,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_005",
+        "amount": 7
+      }
+    },
+    {
+      "name": "Dragonbone Boko Shield",
+      "ap_item_id": 6080672,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_006",
+        "amount": 8
+      }
+    },
+    {
+      "name": "Lizal Shield",
+      "ap_item_id": 6080673,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_007",
+        "amount": 8
+      }
+    },
+    {
+      "name": "Reinforced Lizal Shield",
+      "ap_item_id": 6080674,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_008",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Steel Lizal Shield",
+      "ap_item_id": 6080675,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_009",
+        "amount": 15
+      }
+    },
+    {
+      "name": "Guardian Shield",
+      "ap_item_id": 6080676,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_013",
+        "amount": 10
+      }
+    },
+    {
+      "name": "Guardian Shield+",
+      "ap_item_id": 6080677,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_014",
+        "amount": 13
+      }
+    },
+    {
+      "name": "Guardian Shield++",
+      "ap_item_id": 6080678,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_015",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Lynel Shield",
+      "ap_item_id": 6080679,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_016",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Mighty Lynel Shield",
+      "ap_item_id": 6080680,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_017",
+        "amount": 15
+      }
+    },
+    {
+      "name": "Savage Lynel Shield",
+      "ap_item_id": 6080681,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_018",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Rusty Shield",
+      "ap_item_id": 6080682,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_021",
+        "amount": 16
+      }
+    },
+    {
+      "name": "Royal Shield",
+      "ap_item_id": 6080683,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_022",
+        "amount": 29
+      }
+    },
+    {
+      "name": "Forest Dweller's Shield",
+      "ap_item_id": 6080684,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_023",
+        "amount": 18
+      }
+    },
+    {
+      "name": "Silver Shield",
+      "ap_item_id": 6080685,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_025",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Gerudo Shield",
+      "ap_item_id": 6080686,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_026",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Hylian Shield",
+      "ap_item_id": 6080687,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_030",
+        "amount": 800
+      }
+    },
+    {
+      "name": "Hunter's Shield",
+      "ap_item_id": 6080688,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_031",
+        "amount": 10
+      }
+    },
+    {
+      "name": "Fisherman's Shield",
+      "ap_item_id": 6080689,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_032",
+        "amount": 10
+      }
+    },
+    {
+      "name": "Royal Guard's Shield",
+      "ap_item_id": 6080690,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_033",
+        "amount": 14
+      }
+    },
+    {
+      "name": "Emblazoned Shield",
+      "ap_item_id": 6080691,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_034",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Traveler's Shield",
+      "ap_item_id": 6080692,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_035",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Radiant Shield",
+      "ap_item_id": 6080693,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_036",
+        "amount": 26
+      }
+    },
+    {
+      "name": "Daybreaker",
+      "ap_item_id": 6080694,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_037",
+        "amount": 60
+      }
+    },
+    {
+      "name": "Ancient Shield",
+      "ap_item_id": 6080695,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_038",
+        "amount": 32
+      }
+    },
+    {
+      "name": "Pot Lid",
+      "ap_item_id": 6080696,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_040",
+        "amount": 10
+      }
+    },
+    {
+      "name": "Shield of the Mind's Eye",
+      "ap_item_id": 6080697,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_041",
+        "amount": 16
+      }
+    },
+    {
+      "name": "Kite Shield",
+      "ap_item_id": 6080698,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_042",
+        "amount": 16
+      }
+    },
+    {
+      "name": "Hero's Shield",
+      "ap_item_id": 6080699,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Shield_057",
+        "amount": 90
+      }
+    },
+    {
+      "name": "Traveler's Spear",
+      "ap_item_id": 6080700,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_001",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Soldier's Spear",
+      "ap_item_id": 6080701,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_002",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Knight's Halberd",
+      "ap_item_id": 6080702,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_003",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Boko Spear",
+      "ap_item_id": 6080703,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_004",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Spiked Boko Spear",
+      "ap_item_id": 6080704,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_005",
+        "amount": 15
+      }
+    },
+    {
+      "name": "Dragonbone Boko Spear",
+      "ap_item_id": 6080705,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_006",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Lizal Spear",
+      "ap_item_id": 6080706,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_007",
+        "amount": 18
+      }
+    },
+    {
+      "name": "Enhanced Lizal Spear",
+      "ap_item_id": 6080707,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_008",
+        "amount": 22
+      }
+    },
+    {
+      "name": "Forked Lizal Spear",
+      "ap_item_id": 6080708,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_009",
+        "amount": 28
+      }
+    },
+    {
+      "name": "Moblin Spear",
+      "ap_item_id": 6080709,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_010",
+        "amount": 15
+      }
+    },
+    {
+      "name": "Spiked Moblin Spear",
+      "ap_item_id": 6080710,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_011",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Dragonbone Moblin Spear",
+      "ap_item_id": 6080711,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_012",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Guardian Spear",
+      "ap_item_id": 6080712,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_013",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Guardian Spear+",
+      "ap_item_id": 6080713,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_014",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Guardian Spear++",
+      "ap_item_id": 6080714,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_015",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Lynel Spear",
+      "ap_item_id": 6080715,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_016",
+        "amount": 25
+      }
+    },
+    {
+      "name": "Mighty Lynel Spear",
+      "ap_item_id": 6080716,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_017",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Savage Lynel Spear",
+      "ap_item_id": 6080717,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_018",
+        "amount": 45
+      }
+    },
+    {
+      "name": "Rusty Halberd",
+      "ap_item_id": 6080718,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_021",
+        "amount": 15
+      }
+    },
+    {
+      "name": "Farmer's Pitchfork",
+      "ap_item_id": 6080719,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_022",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Ancient Spear",
+      "ap_item_id": 6080720,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_023",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Royal Halberd",
+      "ap_item_id": 6080721,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_024",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Forest Dweller's Spear",
+      "ap_item_id": 6080722,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_025",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Zora Spear",
+      "ap_item_id": 6080723,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_027",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Silverscale Spear",
+      "ap_item_id": 6080724,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_028",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Gerudo Spear",
+      "ap_item_id": 6080725,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_029",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Throwing Spear",
+      "ap_item_id": 6080726,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_030",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Drillshaft",
+      "ap_item_id": 6080727,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_031",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Feathered Spear",
+      "ap_item_id": 6080728,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_032",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Flamespear",
+      "ap_item_id": 6080729,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_033",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Frostspear",
+      "ap_item_id": 6080730,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_034",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Thunderspear",
+      "ap_item_id": 6080731,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_035",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Wooden Mop",
+      "ap_item_id": 6080732,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_036",
+        "amount": 8
+      }
+    },
+    {
+      "name": "Serpentine Spear",
+      "ap_item_id": 6080733,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_037",
+        "amount": 35
+      }
+    },
+    {
+      "name": "Fishing Harpoon",
+      "ap_item_id": 6080734,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_038",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Royal Guard's Spear",
+      "ap_item_id": 6080735,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_047",
+        "amount": 15
+      }
+    },
+    {
+      "name": "Ceremonial Trident",
+      "ap_item_id": 6080736,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_049",
+        "amount": 40
+      }
+    },
+    {
+      "name": "Lightscale Trident",
+      "ap_item_id": 6080737,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Spear_050",
+        "amount": 70
+      }
+    },
+    {
+      "name": "Traveler's Sword",
+      "ap_item_id": 6080738,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_001",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Soldier's Broadsword",
+      "ap_item_id": 6080739,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_002",
+        "amount": 23
+      }
+    },
+    {
+      "name": "Knight's Broadsword",
+      "ap_item_id": 6080740,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_003",
+        "amount": 27
+      }
+    },
+    {
+      "name": "Boko Club",
+      "ap_item_id": 6080741,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_004",
+        "amount": 12
+      }
+    },
+    {
+      "name": "Spiked Boko Club",
+      "ap_item_id": 6080742,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_005",
+        "amount": 14
+      }
+    },
+    {
+      "name": "Dragonbone Boko Club",
+      "ap_item_id": 6080743,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_006",
+        "amount": 18
+      }
+    },
+    {
+      "name": "Lizal Boomerang",
+      "ap_item_id": 6080744,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_007",
+        "amount": 17
+      }
+    },
+    {
+      "name": "Lizal Forked Boomerang",
+      "ap_item_id": 6080745,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_008",
+        "amount": 23
+      }
+    },
+    {
+      "name": "Lizal Tri-Boomerang",
+      "ap_item_id": 6080746,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_009",
+        "amount": 27
+      }
+    },
+    {
+      "name": "Guardian Sword",
+      "ap_item_id": 6080747,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_013",
+        "amount": 17
+      }
+    },
+    {
+      "name": "Guardian Sword+",
+      "ap_item_id": 6080748,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_014",
+        "amount": 26
+      }
+    },
+    {
+      "name": "Guardian Sword++",
+      "ap_item_id": 6080749,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_015",
+        "amount": 32
+      }
+    },
+    {
+      "name": "Lynel Sword",
+      "ap_item_id": 6080750,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_016",
+        "amount": 26
+      }
+    },
+    {
+      "name": "Mighty Lynel Sword",
+      "ap_item_id": 6080751,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_017",
+        "amount": 32
+      }
+    },
+    {
+      "name": "Savage Lynel Sword",
+      "ap_item_id": 6080752,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_018",
+        "amount": 41
+      }
+    },
+    {
+      "name": "Bokoblin Arm",
+      "ap_item_id": 6080753,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_019",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Lizalfos Arm",
+      "ap_item_id": 6080754,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_020",
+        "amount": 8
+      }
+    },
+    {
+      "name": "Rusty Broadsword",
+      "ap_item_id": 6080755,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_021",
+        "amount": 8
+      }
+    },
+    {
+      "name": "Soup Ladle",
+      "ap_item_id": 6080756,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_022",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Ancient Short Sword",
+      "ap_item_id": 6080757,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_023",
+        "amount": 54
+      }
+    },
+    {
+      "name": "Royal Broadsword",
+      "ap_item_id": 6080758,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_024",
+        "amount": 36
+      }
+    },
+    {
+      "name": "Forest Dweller's Sword",
+      "ap_item_id": 6080759,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_025",
+        "amount": 27
+      }
+    },
+    {
+      "name": "Zora Sword",
+      "ap_item_id": 6080760,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_027",
+        "amount": 27
+      }
+    },
+    {
+      "name": "Gerudo Scimitar",
+      "ap_item_id": 6080761,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_029",
+        "amount": 23
+      }
+    },
+    {
+      "name": "Moonlight Scimitar",
+      "ap_item_id": 6080762,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_030",
+        "amount": 32
+      }
+    },
+    {
+      "name": "Feathered Edge",
+      "ap_item_id": 6080763,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_031",
+        "amount": 27
+      }
+    },
+    {
+      "name": "Flameblade",
+      "ap_item_id": 6080764,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_033",
+        "amount": 36
+      }
+    },
+    {
+      "name": "Frostblade",
+      "ap_item_id": 6080765,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_034",
+        "amount": 30
+      }
+    },
+    {
+      "name": "Thunderblade",
+      "ap_item_id": 6080766,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_035",
+        "amount": 36
+      }
+    },
+    {
+      "name": "Spring-Loaded Hammer",
+      "ap_item_id": 6080767,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_040",
+        "amount": 80
+      }
+    },
+    {
+      "name": "Eightfold Blade",
+      "ap_item_id": 6080768,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_041",
+        "amount": 26
+      }
+    },
+    {
+      "name": "Torch",
+      "ap_item_id": 6080769,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_043",
+        "amount": 8
+      }
+    },
+    {
+      "name": "Tree Branch",
+      "ap_item_id": 6080770,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_044",
+        "amount": 4
+      }
+    },
+    {
+      "name": "Royal Guard's Sword",
+      "ap_item_id": 6080771,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_047",
+        "amount": 14
+      }
+    },
+    {
+      "name": "Meteor Rod",
+      "ap_item_id": 6080772,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_048",
+        "amount": 32
+      }
+    },
+    {
+      "name": "Blizzard Rod",
+      "ap_item_id": 6080773,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_049",
+        "amount": 32
+      }
+    },
+    {
+      "name": "Thunderstorm Rod",
+      "ap_item_id": 6080774,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_050",
+        "amount": 32
+      }
+    },
+    {
+      "name": "Boomerang",
+      "ap_item_id": 6080775,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_051",
+        "amount": 18
+      }
+    },
+    {
+      "name": "Scimitar of the Seven",
+      "ap_item_id": 6080776,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_052",
+        "amount": 60
+      }
+    },
+    {
+      "name": "Vicious Sickle",
+      "ap_item_id": 6080777,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_053",
+        "amount": 14
+      }
+    },
+    {
+      "name": "Goddess Sword",
+      "ap_item_id": 6080778,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_057",
+        "amount": 45
+      }
+    },
+    {
+      "name": "Sword",
+      "ap_item_id": 6080779,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_058",
+        "amount": 27
+      }
+    },
+    {
+      "name": "Sea-Breeze Boomerang",
+      "ap_item_id": 6080780,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_059",
+        "amount": 20
+      }
+    },
+    {
+      "name": "Fire Rod",
+      "ap_item_id": 6080781,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_060",
+        "amount": 14
+      }
+    },
+    {
+      "name": "Ice Rod",
+      "ap_item_id": 6080782,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_061",
+        "amount": 14
+      }
+    },
+    {
+      "name": "Lightning Rod",
+      "ap_item_id": 6080783,
+      "count": 1,
+      "inject": {
+        "type": "add_porch",
+        "item": "Weapon_Sword_062",
+        "amount": 14
       }
     }
   ],

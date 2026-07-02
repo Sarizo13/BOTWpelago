@@ -13,6 +13,7 @@ Usage : python tools/build_loot_table.py
 from __future__ import annotations
 
 import json
+import re
 import zlib
 from pathlib import Path
 
@@ -20,8 +21,15 @@ PROJECT = Path(__file__).resolve().parents[1]
 GATE_FILES = [PROJECT / "data" / "gate_items.json",
               PROJECT / "worlds" / "botw" / "data" / "gate_items.json"]
 ITEMS_DB = PROJECT / "data" / "botw_items.json"
+POUCH_DB = PROJECT / "data" / "pouch_db.json"          # types armes/armures (ActorInfo)
+NAMES    = PROJECT / "tmp" / "botw_names.json"          # noms anglais (build-time, non commité)
 
 INGREDIENT_BASE_ID = 6_080_200   # plage dédiée aux fillers ingrédients
+GEAR_BASE_ID       = 6_080_600   # plage dédiée aux armes/arcs/boucliers
+
+# armes/arcs/boucliers de BASE (numérotés 0xx) — exclut test (5xx)/amiibo/DLC. type poche 0/1/3.
+_GEAR_RE = re.compile(r"^Weapon_(Sword|Lsword|Spear|Bow|Shield)_0\d\d$")
+_GEAR_EXCLUDE = {"Weapon_Sword_070", "Weapon_Sword_071", "Weapon_Sword_072", "Weapon_Sword_073"}  # Master Sword & co (gate)
 
 # quantité de base par famille (amount = base + variation déterministe 0..2)
 FAMILY_AMOUNT = {
@@ -31,7 +39,7 @@ FAMILY_AMOUNT = {
 
 # specials curés (gardés/retravaillés) — count = poids dans le tirage pondéré du pool
 SPECIALS = [
-    {"name": "Spirit Orb", "ap_item_id": 6080100, "count": 80,
+    {"name": "Spirit Orb", "ap_item_id": 6080100, "count": 25,   # moins dominant (loot diversifié)
      "inject": [{"type": "add_porch", "item": "Obj_DungeonClearSeal", "amount": 1},
                 {"type": "add_s32", "flag": "DungeonClearSealNum", "amount": 1}]},
     {"name": "Arrows x10", "ap_item_id": 6080120, "count": 10,
@@ -79,11 +87,37 @@ def main() -> None:
         next_id += 1
         n_ing += 1
 
+    # ── armes / arcs / boucliers (base game) — amount = durabilité (value du nœud) ──
+    n_gear = 0
+    if POUCH_DB.is_file() and NAMES.is_file():
+        pouch = json.loads(POUCH_DB.read_text(encoding="utf-8"))
+        names = json.loads(NAMES.read_text(encoding="utf-8"))
+        gid = GEAR_BASE_ID
+        for actor in sorted(pouch):
+            if actor in _GEAR_EXCLUDE or not _GEAR_RE.match(actor):
+                continue
+            info = pouch[actor]
+            if info.get("type") not in (0, 1, 3):
+                continue
+            display = names.get(actor)
+            if not display or display in used_names:
+                continue
+            used_names.add(display)
+            filler.append({
+                "name": display,
+                "ap_item_id": gid,
+                "count": 1,
+                "inject": {"type": "add_porch", "item": actor, "amount": int(info.get("life", 20))},
+            })
+            gid += 1
+            n_gear += 1
+
     for gate_path in GATE_FILES:
         data = json.loads(gate_path.read_text(encoding="utf-8"))
         data["filler_items"] = filler
         gate_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-        print(f"  écrit {gate_path}  ({len(filler)} fillers : 8 specials + {n_ing} ingrédients)")
+        print(f"  écrit {gate_path}  ({len(filler)} fillers : {len(SPECIALS)} specials + "
+              f"{n_ing} ingrédients + {n_gear} armes/arcs/boucliers)")
 
     # aperçu quantités variées
     print("\nAperçu quantités:")
