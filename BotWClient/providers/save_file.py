@@ -715,6 +715,9 @@ class DeferredSaveInjector(ItemInjector):
             self._bridge.maintain_persistent()
         self._bank_spirit_orbs()
         injected = self._inject_pending()
+        # Objets-clés companion (paravoile / capacités) : ajoutés APRÈS _inject_pending (buffer
+        # relocalisé/stable → pas de doublon comme quand c'était fait avant la relocation).
+        self._deliver_companion_pouch()
         if injected:
             is_flag = lambda s: any(isinstance(a, InjectionSpec.SetFlag) for a in s.actions)
             items = [s.ap_item_name for s in injected if not is_flag(s)]
@@ -762,6 +765,21 @@ class DeferredSaveInjector(ItemInjector):
             self._last_banked_seal = target
         except Exception as exc:
             log.debug("[Orbe] banking save échoué : %s", exc)
+
+    def _deliver_companion_pouch(self) -> None:
+        """Ajoute en LIVE les objets-clés companion (paravoile PlayerStole2, capacités Obj_HeroSoul_*)
+        = type 9. Sans « écriture save quand attaché », c'est la SEULE voie ; sinon le paravoile
+        n'apparaît pas dans l'inventaire. Idempotent (create seulement si absent → pas de doublon).
+        Appelé APRÈS _inject_pending (buffer stable/relocalisé) pour éviter le doublon d'avant."""
+        b = self._bridge
+        if not (b and b.is_attached and b.has_live_inventory):
+            return
+        for ap_id, items in _COMPANION_POUCH.items():
+            if ap_id not in self._received:
+                continue
+            for iname in items:
+                if b.live_find_item(iname) is None:
+                    b.live_create_item(iname, 9, None, 1)   # objets-clés = type 9
 
     def _inject_pending(self) -> list[InjectionSpec]:
         if not self._queue:
