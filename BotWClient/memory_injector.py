@@ -717,17 +717,17 @@ class CemuMemoryBridge:
         # PÉRIMÉE (inventaire en cours de réallocation) → on n'écrit PAS (sinon corruption, ex: -298).
         if current is None or not (0 <= current <= 999999):
             return None
-        # Garde anti-adresse-périmée pour les STRIPS (amount < 0) : si le compteur lu a CHUTÉ
-        # d'un coup depuis notre dernière écriture (ex: on a mis 300, on relit 2), l'adresse a
-        # bougé → écrire current+amount SET une valeur minuscule sur le vrai portefeuille = le -298.
-        # On re-localise une fois ; si toujours incohérent, on NE strip PAS (dette rejouée plus tard).
-        if amount < 0 and self._rupee_shadow is not None and current <= self._rupee_shadow - _RUPEE_STALE_DROP:
+        # Garde anti-adresse-périmée pour les STRIPS (amount < 0) : si le compteur lu DIVERGE d'un
+        # coup de notre dernière écriture (chute OU bond, ex: on a mis 100, on relit 3 ou 9999),
+        # l'adresse a bougé/pointe sur du garbage → écrire corromprait. On re-localise une fois ;
+        # si toujours incohérent, on NE strip PAS (dette rejouée plus tard).
+        if amount < 0 and self._rupee_shadow is not None and abs(current - self._rupee_shadow) >= _RUPEE_STALE_DROP:
             self._relocate_inventory()
             current = self.live_get_rupees()
             if current is None or not (0 <= current <= 999999):
                 return None
-            if current <= self._rupee_shadow - _RUPEE_STALE_DROP:
-                log.info("[Mem] (live) strip rubis reporté : lecture %d << shadow %d (adresse périmée)",
+            if abs(current - self._rupee_shadow) >= _RUPEE_STALE_DROP:
+                log.info("[Mem] (live) strip rubis reporté : lecture %d vs shadow %d (adresse périmée)",
                          current, self._rupee_shadow)
                 return None
         new_val = max(0, min(999999, current + amount))
@@ -1115,11 +1115,24 @@ class CemuMemoryBridge:
         # buffer du nom — PAS des liens de liste. L'ancien code splicait une fausse liste
         # secondaire à 0x1C/0x28 et CORROMPAIT le nom (=> "No Image" + inventaire cassé).
         # Le re-basing (étape 3) a déjà fixé F.0x1C -> F+0x28, on n'y touche plus.
+        # RE-VALIDATION anti-crash : la liste `nodes` a été scannée au DÉBUT ; si le jeu a ALLOUÉ
+        # ce nœud libre (ou déplacé l'ancre) entre-temps, écrire dessus corrompt la liste chaînée
+        # du jeu → CRASH. Juste avant d'écrire, on revérifie que F est TOUJOURS libre (type 0xFFFF..)
+        # et que l'ancre pointe toujours vers un nœud connu. Sinon on reporte (livré au poll suivant).
+        f_now = self._read(F_h + self._NODE_OFF_TYPE, 4)
+        if not f_now or struct.unpack(">I", f_now)[0] != 0xFFFFFFFF:
+            log.debug("[Mem] (live) nœud libre alloué entre-temps — %s reporté", item_name)
+            return False
         a_links = self._read(A_h + self._NODE_OFF_NEXT, 4)
         if not a_links:
             return False
         A_next = struct.unpack(">I", a_links)[0]
         on_node_h = g2h(A_next - self._NODE_OFF_NEXT)                 # nœud suivant (liste primaire)
+        # L'ancre doit pointer vers un nœud PLAUSIBLE (dans la région inventaire) — sinon la liste a
+        # bougé sous nos pieds → ne pas splicer (éviterait un write sur un pointeur périmé).
+        if not (0 < A_next < 0x100000000) or self._read(on_node_h, 8) is None:
+            log.debug("[Mem] (live) ancre %s instable — %s reporté", anchor["name"], item_name)
+            return False
         struct.pack_into(">I", raw, self._NODE_OFF_NEXT, A_next)              # F.next = A.next
         struct.pack_into(">I", raw, self._NODE_OFF_PREV, A_g + self._NODE_OFF_NEXT)  # F.prev = &A.next
 
