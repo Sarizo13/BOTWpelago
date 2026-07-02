@@ -731,6 +731,10 @@ class DeferredSaveInjector(ItemInjector):
         naturels ni une dépense au sanctuaire de la déesse au-dessus de la cible AP)."""
         if self._bridge is None:
             return
+        # Cemu attaché : on n'écrit PAS le fichier (contention → Cemu ne peut plus sauver → crash).
+        # L'orbe est maintenu en mémoire (maintain_persistent) et l'autosave de Cemu le persiste.
+        if self._bridge.is_attached:
+            return
         # Cible unique = max(pouch orbe, compteur gamedata). Sur une save à 0 orbe, le nœud pouch
         # n'existe pas (orb_pouch_target=None) mais seal_target porte le compte des orbes AP.
         target = max(getattr(self._bridge, "orb_pouch_target", None) or 0,
@@ -793,7 +797,11 @@ class DeferredSaveInjector(ItemInjector):
             delivered = False
             if self._bridge is not None and self._bridge.has_live_inventory:
                 delivered = self._apply_actions_memory(spec, p)
-            if not delivered and self._save_is_idle:
+            # Voie FICHIER seulement si Cemu N'EST PAS attaché (sinon écrire game_data.sav bloque
+            # les autosaves de Cemu → save incohérente → crash). Attaché : on livre en live, ou on
+            # reporte (l'autosave de Cemu persiste ce qui est déjà en mémoire).
+            attached = self._bridge is not None and self._bridge.is_attached
+            if not delivered and self._save_is_idle and not attached:
                 delivered = self._apply_actions_savefile(p, spec)
             if delivered:
                 injected.append(spec)
@@ -928,11 +936,40 @@ class DeferredSaveInjector(ItemInjector):
         p = self._resolve()
         if p is None:
             return 0
+        n = 0
+        # ── Cemu ATTACHÉ : TOUT EN MÉMOIRE, zéro écriture de game_data.sav ─────────────────
+        # Écrire le fichier pendant que Cemu tourne l'empêche de sauvegarder ('FSC: File create
+        # failed') → la save disque devient la version du client, incohérente avec l'état mémoire
+        # de Cemu → CRASH au reload (mort). En mémoire, l'AUTOSAVE de Cemu (débloquée) persiste tout.
+        if self._bridge and self._bridge.is_attached:
+            for fhash, ap_id in _GATE_HASH_TO_AP_ID.items():
+                fn = _GATE_BY_AP_ID.get(ap_id, {}).get("flag_name")
+                if not fn:
+                    continue
+                want = ap_id in self._received
+                if bool(self._bridge.read_flag(fn)) != want:
+                    self._bridge.write_flag(fn, 1 if want else 0)   # livraison (=1) OU gate (=0)
+                    n += 1
+            for ap_id, fnames in _COMPANION_FLAGS.items():
+                if ap_id in self._received:
+                    for fname in fnames:
+                        if not self._bridge.read_flag(fname):
+                            self._bridge.write_flag(fname, 1)
+                            n += 1
+            if self._bridge.has_live_inventory:
+                for ap_id, items in _COMPANION_POUCH.items():
+                    if ap_id in self._received:
+                        for iname in items:
+                            if self._bridge.live_find_item(iname) is None:
+                                info = pouch_item_info(iname)
+                                self._bridge.live_create_item(
+                                    iname, info["type"] if info else 9, info.get("sub") if info else None, 1)
+            return n
+        # ── Cemu NON attaché : voie FICHIER (au menu titre → Cemu ne tourne pas, pas de contention) ──
         try:
             save = parse(_read_shared(p))
         except Exception:
             return 0
-        n = 0
         for fhash, ap_id in _GATE_HASH_TO_AP_ID.items():
             want = ap_id in self._received
             if save.get_bool(fhash) != want:
@@ -946,8 +983,6 @@ class DeferredSaveInjector(ItemInjector):
                             log.info("[Rando] %s trouvé en jeu (%s) — gate AP actif, attente livraison",
                                      name, loc)
                     n += 1
-        # Compagnons : posés une fois l'item reçu (état qu'une acquisition légitime aurait
-        # posé). Forcés dans le slot le plus récent (rotation-safe).
         for ap_id, fnames in _COMPANION_FLAGS.items():
             if ap_id in self._received:
                 for fname in fnames:
@@ -961,13 +996,6 @@ class DeferredSaveInjector(ItemInjector):
                     if not _pouch_has_item(_read_shared(p), iname) and _add_porch_item_to_save(p, iname, 1):
                         log.info("[OK] Objet clé ajouté : %s (recharge la save)", iname)
                         n += 1
-        # Gate immédiat en mémoire : force 0 live pour les non-reçus (effet instantané in-game).
-        if self._bridge and self._bridge.is_attached:
-            for fhash, ap_id in _GATE_HASH_TO_AP_ID.items():
-                if ap_id not in self._received:
-                    fn = _GATE_BY_AP_ID.get(ap_id, {}).get("flag_name")
-                    if fn and self._bridge.read_flag(fn):
-                        self._bridge.write_flag(fn, 0)
         return n
 
     @property
