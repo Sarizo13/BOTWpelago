@@ -226,6 +226,9 @@ _DUNGEON_SEAL_ID    = crc32_id("DungeonClearSealNum")   # compteur gamedata d'or
 # Items PouchItem GÉRÉS PAR LE JEU : ne JAMAIS créer un nœud live (le jeu réconcilie et crashe).
 # On bump seulement s'ils existent ; persistance via gamedata + save banking.
 _GAME_MANAGED_POUCH = {"Obj_DungeonClearSeal"}          # compteur d'orbes (Spirit Orbs)
+# Types de poche EMPILABLES (bump quantité). Les autres (armes 0/arcs 1/boucliers 3/armures 4-6)
+# sont UNIQUES → toujours un nouveau slot, jamais de bump de durabilité.
+_STACKABLE_TYPES = {2, 7, 8}
 
 
 def _find_first_run(data: bytes, flag_id: int) -> int:
@@ -915,6 +918,7 @@ class DeferredSaveInjector(ItemInjector):
                 # car sans mCount++ elle corrompt la save. Si désactivé / item absent, échec ->
                 # _inject_pending bascule sur la voie save-fichier (sûre, au menu titre).
                 info = pouch_item_info(action.item_name)
+                typ = info.get("type") if info else None
                 if action.item_name in _GAME_MANAGED_POUCH:
                     # Item géré par le JEU (compteur d'orbes Obj_DungeonClearSeal) : ne JAMAIS créer
                     # un faux nœud — le jeu le réconcilie à la sortie de sanctuaire et CRASH. On bump
@@ -923,6 +927,12 @@ class DeferredSaveInjector(ItemInjector):
                     # rejoue et re-incrémente le compteur en boucle (double comptage).
                     self._bridge.live_add_item_qty(action.item_name, action.amount)
                     ok = True
+                elif typ is not None and typ not in _STACKABLE_TYPES:
+                    # ÉQUIPEMENT UNIQUE (arme/arc/bouclier/armure) : JAMAIS de bump (ça monterait la
+                    # durabilité) → toujours créer un NOUVEAU slot. Si le pool est épuisé, le create
+                    # échoue proprement et l'item est reporté (livré après régénération du pool).
+                    ok = bool(_LIVE_CREATE_ENABLED and self._bridge.live_create_item(
+                        action.item_name, typ, info.get("sub"), action.amount))
                 elif self._bridge.pool_exhausted:
                     # Pool de nœuds libres épuisé : création impossible. On ne tente qu'un bump
                     # d'item déjà présent ; absent -> échec silencieux -> save-file (bump-only)

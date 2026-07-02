@@ -76,6 +76,9 @@ _FREE_NODE_CHECK_CAP = 8
 # Items PouchItem GÉRÉS PAR LE JEU : ne JAMAIS créer un nœud live (compteur d'orbes) — un faux
 # nœud fait crasher le jeu à la réconciliation d'inventaire (sortie de sanctuaire). Bump seulement.
 _NO_LIVE_CREATE = {"Obj_DungeonClearSeal"}
+# Types de poche EMPILABLES (on incrémente la quantité si déjà présent) : flèches, matériaux,
+# nourriture. Les autres (armes 0, arcs 1, boucliers 3, armures 4-6, objets-clés 9) sont UNIQUES.
+_STACKABLE_TYPES = {2, 7, 8}
 # Pool de nœuds PouchItem libres épuisé → on ne re-tente une création qu'après ce délai (au lieu
 # de marteler chaque poll, ou de bloquer DÉFINITIVEMENT jusqu'à un reload). Laisse les nouveaux
 # nœuds libres (apparus quand le joueur ramasse/le jeu agrandit la poche) être utilisés.
@@ -1043,11 +1046,17 @@ class CemuMemoryBridge:
         # GARDE DUR : items gérés par le jeu (orbes) — jamais de création live (crash). Bump si présent.
         if item_name in _NO_LIVE_CREATE:
             return self.live_add_item_qty(item_name, value) is not None
-        # DÉFENSIF : si l'item est déjà en poche, on incrémente sa quantité au lieu de créer
-        # un doublon (garantit "pas de double stack" même en appel direct).
+        # Item DÉJÀ en poche : selon le type —
+        #   EMPILABLE (flèches 2 / matériaux 7 / nourriture 8) → on incrémente la quantité ;
+        #   objet-clé (9) → idempotent (on ne duplique pas) ;
+        #   ÉQUIPEMENT UNIQUE (armes 0 / arcs 1 / boucliers 3 / armures 4-6) → on NE bump PAS
+        #   (ça monterait la durabilité) : on continue pour créer un NOUVEAU slot (2e exemplaire).
         if self.live_find_item(item_name) is not None:
-            log.info("[Mem] (live) %s déjà présent — incrément quantité (+%d)", item_name, value)
-            return self.live_add_item_qty(item_name, value) is not None
+            if item_type in _STACKABLE_TYPES:
+                log.info("[Mem] (live) %s déjà présent — incrément quantité (+%d)", item_name, value)
+                return self.live_add_item_qty(item_name, value) is not None
+            if item_type == 9:
+                return True                              # objet-clé déjà là → rien à faire
         nodes = self._scan_pouch_nodes()
         base = self._derive_heap_base(nodes) if nodes else None
         if base is None:
