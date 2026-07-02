@@ -1119,14 +1119,28 @@ class CemuMemoryBridge:
         pool = sub_match or same_type
         content = (min(pool, key=lambda n: abs(self._sort_keys.get(n["name"], _BIG) - new_sk))
                    if pool else None)
+        retype = False
         if content is not None:
             content_raw, content_Tg = content["raw"], h2g(content["host"])
         else:
             tpl = self._templates.get(str(item_type))
-            if not tpl:
+            if tpl:
+                content_raw, content_Tg = bytes.fromhex(tpl["hex"]), int(tpl["base"])
+            elif item_type <= 6:
+                # ÉQUIPEMENT sans exemplaire du type NI template (catégorie vide, ex: 1er bouclier
+                # alors que Link n'en a aucun) → on clone N'IMPORTE QUEL autre équipement (arme/arc/
+                # bouclier/armure : même classe PouchItem, même structure de nœud) et on le RE-TYPE.
+                # Casse le problème œuf-poule (pas de template tant que Link n'a jamais eu le type).
+                gear = [n for n in selfref if n["name"] and n["type"] <= 6 and n["sub"] != 0xA]
+                if not gear:
+                    log.debug("[Mem] (live) aucun équipement à cloner pour %s — reporté", item_name)
+                    return False
+                src = min(gear, key=lambda n: abs(self._sort_keys.get(n["name"], _BIG) - new_sk))
+                content_raw, content_Tg = src["raw"], h2g(src["host"])
+                retype = True                          # forcer le champ type au type cible
+            else:
                 log.debug("[Mem] (live) pas de template type %d pour %s — reporté", item_type, item_name)
                 return False
-            content_raw, content_Tg = bytes.fromhex(tpl["hex"]), int(tpl["base"])
 
         # ── 2) Nœud libre cible ──
         free = next((n for n in nodes if n["type"] == 0xFFFFFFFF and not n["name"]), None)
@@ -1165,6 +1179,8 @@ class CemuMemoryBridge:
             struct.pack_into(">i", raw, self._NODE_OFF_VAL, value)
         if subtype is not None:
             struct.pack_into(">i", raw, self._NODE_OFF_SUB, subtype)
+        if retype:                                     # clone d'un autre équipement → re-typer
+            struct.pack_into(">I", raw, self._NODE_OFF_TYPE, item_type)
         # Flag ÉQUIPÉ (mot à +0x18) : si on clone une arme/bouclier ÉQUIPÉ, le nouvel item hérite du
         # flag → toutes les armes/boucliers apparaissent équipés en même temps (bug). On le remet à 0
         # (état "non équipé", comme le template).
