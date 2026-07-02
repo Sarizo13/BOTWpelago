@@ -164,6 +164,15 @@ _COMPANION_POUCH: dict[int, list[str]] = {
     6_080_013: ["Obj_HeroSoul_Gerudo"],   # Urbosa's Fury
 }
 
+# Flags que le CLIENT ÉCRIT lui-même (livraison gate + companion) → à NE PAS détecter comme des
+# checks joueur : sinon on envoie un faux check. Critique en lecture mémoire (nos écritures sont
+# visibles au poll instantanément). Ex: Get_MasterSword_Finish = livraison Master Sword ET location
+# « Get Master Sword ». On les retire du poll de locations.
+_CLIENT_WRITTEN_FLAGS: set[int] = set(_GATE_HASH_TO_AP_ID.keys())
+for _fnames in _COMPANION_FLAGS.values():
+    _CLIENT_WRITTEN_FLAGS |= {crc32_id(f) for f in _fnames}
+_LOC_HASH_TO_AP_ID = {h: a for h, a in _LOC_HASH_TO_AP_ID.items() if h not in _CLIENT_WRITTEN_FLAGS}
+
 # Goal
 _GOAL = _GATE_ITEMS["goal"]
 _GOAL_FLAG_IDS = [crc32_id(f) for f in _GOAL["require_flags"]]   # legacy (compat)
@@ -415,8 +424,9 @@ class SaveFileProvider(GameStateProvider):
                                                        so Cemu's rotation is handled.
     """
 
-    def __init__(self, save_path: Path) -> None:
+    def __init__(self, save_path: Path, bridge=None) -> None:
         self._root      = save_path          # exact file OR slot dir
+        self._bridge    = bridge             # CemuMemoryBridge : lecture game_data EN MÉMOIRE
         self._active:   Optional[Path] = None  # currently tracked file
         self._mtime     = 0.0
         self._save:     Optional[ParsedSave] = None
@@ -436,6 +446,20 @@ class SaveFileProvider(GameStateProvider):
         return self._resolve() is not None
 
     def _reload(self) -> bool:
+        # Cemu ATTACHÉ : lire game_data EN MÉMOIRE (buffer à _gd_base, même format que le fichier).
+        # On n'ouvre PLUS game_data.sav → on ne bloque plus les autosaves de Cemu ('FSC: File create
+        # failed' → save disque incohérente → CRASH). La mémoire est vivante : on re-parse chaque poll.
+        b = self._bridge
+        if b is not None and b.is_attached:
+            raw = b.read_gamedata()
+            if raw:
+                try:
+                    self._save = parse(raw)
+                    self._raw = raw
+                    return True
+                except Exception as exc:
+                    log.warning("Mem game_data parse error: %s", exc)
+            # repli fichier si la lecture mémoire échoue
         p = self._resolve()
         if p is None:
             return False

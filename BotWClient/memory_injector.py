@@ -777,6 +777,14 @@ class CemuMemoryBridge:
                 hi = mid - 1
         return None
 
+    def read_gamedata(self) -> Optional[bytes]:
+        """Lit TOUT le buffer game_data EN MÉMOIRE (même format que le fichier save). Permet au
+        provider de détecter les checks SANS ouvrir game_data.sav → ne bloque plus les autosaves
+        de Cemu (cause du 'FSC: File create failed' → crash au reload)."""
+        if not self.is_attached:
+            return None
+        return self._read(self._gd_base, SAVE_SIZE)
+
     def read_flag(self, flag_name: str) -> Optional[int]:
         """Lit la valeur d'un flag par son nom."""
         fid = zlib.crc32(flag_name.encode("ascii")) & 0xFFFFFFFF

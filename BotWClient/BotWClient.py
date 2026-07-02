@@ -608,7 +608,7 @@ def build_client(connect: str, name: str, password: str = "",
         log.info("[Mem] Cemu non detecte — injection via save file (reload requis)")
         bridge = None
 
-    provider = SaveFileProvider(provider_root)
+    provider = SaveFileProvider(provider_root, bridge=bridge)
     injector = DeferredSaveInjector(provider_root, rando=rando, bridge=bridge)
     client   = BotWClient(
         server_url = _ws_url(connect),
