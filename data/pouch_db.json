@@ -1,0 +1,5744 @@
+{
+"Armor_001_Head": {
+"sortKey": 1221014,
+"sub": 0,
+"type": 4
+},
+"Armor_001_Head_B": {
+"sortKey": -1,
+"sub": 0,
+"type": 4
+},
+"Armor_001_Lower": {
+"sortKey": 1223014,
+"sub": 0,
+"type": 6
+},
+"Armor_001_Upper": {
+"sortKey": 1222014,
+"sub": 0,
+"type": 5
+},
+"Armor_002_Head": {
+"sortKey": 1221013,
+"sub": 0,
+"type": 4
+},
+"Armor_002_Head_B": {
+"sortKey": -1,
+"sub": 0,
+"type": 4
+},
+"Armor_002_Lower": {
+"sortKey": 1223013,
+"sub": 0,
+"type": 6
+},
+"Armor_002_Upper": {
+"sortKey": 1222013,
+"sub": 0,
+"type": 5
+},
+"Armor_003_Head": {
+"sortKey": 1221012,
+"sub": 0,
+"type": 4
+},
+"Armor_003_Head_B": {
+"sortKey": -1,
+"sub": 0,
+"type": 4
+},
+"Armor_003_Lower": {
+"sortKey": 1223012,
+"sub": 0,
+"type": 6
+},
+"Armor_003_Upper": {
+"sortKey": 1222012,
+"sub": 0,
+"type": 5
+},
+"Armor_004_Head": {
+"sortKey": 1221011,
+"sub": 0,
+"type": 4
+},
+"Armor_004_Head_B": {
+"sortKey": -1,
+"sub": 0,
+"type": 4
+},
+"Armor_004_Lower": {
+"sortKey": 1223011,
+"sub": 0,
+"type": 6
+},
+"Armor_004_Upper": {
+"sortKey": 1222011,
+"sub": 0,
+"type": 5
+},
+"Armor_005_Head": {
+"sortKey": 4721024,
+"sub": 0,
+"type": 4
+},
+"Armor_005_Lower": {
+"sortKey": 4723024,
+"sub": 0,
+"type": 6
+},
+"Armor_005_Upper": {
+"sortKey": 4722024,
+"sub": 0,
+"type": 5
+},
+"Armor_006_Head": {
+"sortKey": 2521034,
+"sub": 0,
+"type": 4
+},
+"Armor_006_Lower": {
+"sortKey": 2523034,
+"sub": 0,
+"type": 6
+},
+"Armor_006_Upper": {
+"sortKey": 2522034,
+"sub": 0,
+"type": 5
+},
+"Armor_007_Head": {
+"sortKey": 2521033,
+"sub": 0,
+"type": 4
+},
+"Armor_007_Lower": {
+"sortKey": 2523033,
+"sub": 0,
+"type": 6
+},
+"Armor_007_Upper": {
+"sortKey": 2522033,
+"sub": 0,
+"type": 5
+},
+"Armor_008_Head": {
+"sortKey": 1921044,
+"sub": 0,
+"type": 4
+},
+"Armor_008_Lower": {
+"sortKey": 1923044,
+"sub": 0,
+"type": 6
+},
+"Armor_008_Upper": {
+"sortKey": 1922044,
+"sub": 0,
+"type": 5
+},
+"Armor_009_Head": {
+"sortKey": 1721064,
+"sub": 0,
+"type": 4
+},
+"Armor_009_Lower": {
+"sortKey": 1723064,
+"sub": 0,
+"type": 6
+},
+"Armor_009_Upper": {
+"sortKey": 1722064,
+"sub": 0,
+"type": 5
+},
+"Armor_011_Head": {
+"sortKey": 2321074,
+"sub": 0,
+"type": 4
+},
+"Armor_011_Lower": {
+"sortKey": 2323074,
+"sub": 0,
+"type": 6
+},
+"Armor_011_Upper": {
+"sortKey": 2322074,
+"sub": 0,
+"type": 5
+},
+"Armor_012_Head": {
+"sortKey": 2621084,
+"sub": 0,
+"type": 4
+},
+"Armor_012_Head_B": {
+"sortKey": 0,
+"sub": 0,
+"type": 4
+},
+"Armor_012_Lower": {
+"sortKey": 2623084,
+"sub": 0,
+"type": 6
+},
+"Armor_012_Upper": {
+"sortKey": 2622084,
+"sub": 0,
+"type": 5
+},
+"Armor_014_Head": {
+"sortKey": 2921114,
+"sub": 0,
+"type": 4
+},
+"Armor_014_Lower": {
+"sortKey": 2923114,
+"sub": 0,
+"type": 6
+},
+"Armor_014_Upper": {
+"sortKey": 2922114,
+"sub": 0,
+"type": 5
+},
+"Armor_015_Head": {
+"sortKey": 1221010,
+"sub": 0,
+"type": 4
+},
+"Armor_015_Head_B": {
+"sortKey": -1,
+"sub": 0,
+"type": 4
+},
+"Armor_015_Lower": {
+"sortKey": 1223010,
+"sub": 0,
+"type": 6
+},
+"Armor_015_Upper": {
+"sortKey": 1222010,
+"sub": 0,
+"type": 5
+},
+"Armor_017_Head": {
+"sortKey": 3221134,
+"sub": 0,
+"type": 4
+},
+"Armor_017_Lower": {
+"sortKey": 3223134,
+"sub": 0,
+"type": 6
+},
+"Armor_017_Upper": {
+"sortKey": 3222134,
+"sub": 0,
+"type": 5
+},
+"Armor_020_Head": {
+"sortKey": 1321154,
+"sub": 0,
+"type": 4
+},
+"Armor_020_Lower": {
+"sortKey": 1323154,
+"sub": 0,
+"type": 6
+},
+"Armor_020_Upper": {
+"sortKey": 1322154,
+"sub": 0,
+"type": 5
+},
+"Armor_021_Head": {
+"sortKey": 3421164,
+"sub": 0,
+"type": 4
+},
+"Armor_021_Lower": {
+"sortKey": 3423164,
+"sub": 0,
+"type": 6
+},
+"Armor_021_Upper": {
+"sortKey": 3422164,
+"sub": 0,
+"type": 5
+},
+"Armor_022_Head": {
+"sortKey": 3721510,
+"sub": 0,
+"type": 4
+},
+"Armor_022_Head_B": {
+"sortKey": -1,
+"sub": 0,
+"type": 4
+},
+"Armor_024_Head": {
+"sortKey": 3321334,
+"sub": 0,
+"type": 4
+},
+"Armor_025_Head": {
+"sortKey": 1621344,
+"sub": 0,
+"type": 4
+},
+"Armor_026_Head": {
+"sortKey": 1821354,
+"sub": 0,
+"type": 4
+},
+"Armor_027_Head": {
+"sortKey": 2121364,
+"sub": 0,
+"type": 4
+},
+"Armor_028_Head": {
+"sortKey": 2421374,
+"sub": 0,
+"type": 4
+},
+"Armor_029_Head": {
+"sortKey": 1421384,
+"sub": 0,
+"type": 4
+},
+"Armor_035_Head": {
+"sortKey": 4721023,
+"sub": 0,
+"type": 4
+},
+"Armor_035_Lower": {
+"sortKey": 4723023,
+"sub": 0,
+"type": 6
+},
+"Armor_035_Upper": {
+"sortKey": 4722023,
+"sub": 0,
+"type": 5
+},
+"Armor_036_Head": {
+"sortKey": 1721063,
+"sub": 0,
+"type": 4
+},
+"Armor_036_Lower": {
+"sortKey": 1723063,
+"sub": 0,
+"type": 6
+},
+"Armor_036_Upper": {
+"sortKey": 1722063,
+"sub": 0,
+"type": 5
+},
+"Armor_037_Head": {
+"sortKey": 2321073,
+"sub": 0,
+"type": 4
+},
+"Armor_037_Lower": {
+"sortKey": 2323073,
+"sub": 0,
+"type": 6
+},
+"Armor_037_Upper": {
+"sortKey": 2322073,
+"sub": 0,
+"type": 5
+},
+"Armor_039_Head": {
+"sortKey": 4721022,
+"sub": 0,
+"type": 4
+},
+"Armor_039_Lower": {
+"sortKey": 4723022,
+"sub": 0,
+"type": 6
+},
+"Armor_039_Upper": {
+"sortKey": 4722022,
+"sub": 0,
+"type": 5
+},
+"Armor_040_Head": {
+"sortKey": 1921043,
+"sub": 0,
+"type": 4
+},
+"Armor_040_Lower": {
+"sortKey": 1923043,
+"sub": 0,
+"type": 6
+},
+"Armor_040_Upper": {
+"sortKey": 1922043,
+"sub": 0,
+"type": 5
+},
+"Armor_042_Head": {
+"sortKey": 2621083,
+"sub": 0,
+"type": 4
+},
+"Armor_042_Head_B": {
+"sortKey": 0,
+"sub": 0,
+"type": 4
+},
+"Armor_042_Lower": {
+"sortKey": 2623083,
+"sub": 0,
+"type": 6
+},
+"Armor_042_Upper": {
+"sortKey": 2622083,
+"sub": 0,
+"type": 5
+},
+"Armor_043_Lower": {
+"sortKey": 1023000,
+"sub": 0,
+"type": 6
+},
+"Armor_043_Upper": {
+"sortKey": 1022000,
+"sub": 0,
+"type": 5
+},
+"Armor_044_Upper": {
+"sortKey": 1522001,
+"sub": 0,
+"type": 5
+},
+"Armor_045_Head": {
+"sortKey": 3821520,
+"sub": 0,
+"type": 4
+},
+"Armor_046_Head": {
+"sortKey": 2221174,
+"sub": 0,
+"type": 4
+},
+"Armor_046_Lower": {
+"sortKey": 2223174,
+"sub": 0,
+"type": 6
+},
+"Armor_046_Upper": {
+"sortKey": 2222174,
+"sub": 0,
+"type": 5
+},
+"Armor_048_Head": {
+"sortKey": 3021194,
+"sub": 0,
+"type": 4
+},
+"Armor_048_Lower": {
+"sortKey": 3023194,
+"sub": 0,
+"type": 6
+},
+"Armor_048_Upper": {
+"sortKey": 3022194,
+"sub": 0,
+"type": 5
+},
+"Armor_049_Lower": {
+"sortKey": 3523414,
+"sub": 0,
+"type": 6
+},
+"Armor_053_Head": {
+"sortKey": 2021450,
+"sub": 0,
+"type": 4
+},
+"Armor_053_Lower": {
+"sortKey": 2023450,
+"sub": 0,
+"type": 6
+},
+"Armor_053_Upper": {
+"sortKey": 2022450,
+"sub": 0,
+"type": 5
+},
+"Armor_055_Head": {
+"sortKey": 3921530,
+"sub": 0,
+"type": 4
+},
+"Armor_056_Head": {
+"sortKey": 4021540,
+"sub": 0,
+"type": 4
+},
+"Armor_060_Head": {
+"sortKey": 4721021,
+"sub": 0,
+"type": 4
+},
+"Armor_060_Lower": {
+"sortKey": 4723021,
+"sub": 0,
+"type": 6
+},
+"Armor_060_Upper": {
+"sortKey": 4722021,
+"sub": 0,
+"type": 5
+},
+"Armor_061_Head": {
+"sortKey": 4721020,
+"sub": 0,
+"type": 4
+},
+"Armor_061_Lower": {
+"sortKey": 4723020,
+"sub": 0,
+"type": 6
+},
+"Armor_061_Upper": {
+"sortKey": 4722020,
+"sub": 0,
+"type": 5
+},
+"Armor_062_Head": {
+"sortKey": 2521032,
+"sub": 0,
+"type": 4
+},
+"Armor_062_Lower": {
+"sortKey": 2523032,
+"sub": 0,
+"type": 6
+},
+"Armor_062_Upper": {
+"sortKey": 2522032,
+"sub": 0,
+"type": 5
+},
+"Armor_063_Head": {
+"sortKey": 2521031,
+"sub": 0,
+"type": 4
+},
+"Armor_063_Lower": {
+"sortKey": 2523031,
+"sub": 0,
+"type": 6
+},
+"Armor_063_Upper": {
+"sortKey": 2522031,
+"sub": 0,
+"type": 5
+},
+"Armor_064_Head": {
+"sortKey": 2521030,
+"sub": 0,
+"type": 4
+},
+"Armor_064_Lower": {
+"sortKey": 2523030,
+"sub": 0,
+"type": 6
+},
+"Armor_064_Upper": {
+"sortKey": 2522030,
+"sub": 0,
+"type": 5
+},
+"Armor_065_Head": {
+"sortKey": 1921042,
+"sub": 0,
+"type": 4
+},
+"Armor_065_Lower": {
+"sortKey": 1923042,
+"sub": 0,
+"type": 6
+},
+"Armor_065_Upper": {
+"sortKey": 1922042,
+"sub": 0,
+"type": 5
+},
+"Armor_066_Head": {
+"sortKey": 1921041,
+"sub": 0,
+"type": 4
+},
+"Armor_066_Lower": {
+"sortKey": 1923041,
+"sub": 0,
+"type": 6
+},
+"Armor_066_Upper": {
+"sortKey": 1922041,
+"sub": 0,
+"type": 5
+},
+"Armor_067_Head": {
+"sortKey": 1921040,
+"sub": 0,
+"type": 4
+},
+"Armor_067_Lower": {
+"sortKey": 1923040,
+"sub": 0,
+"type": 6
+},
+"Armor_067_Upper": {
+"sortKey": 1922040,
+"sub": 0,
+"type": 5
+},
+"Armor_071_Head": {
+"sortKey": 1721062,
+"sub": 0,
+"type": 4
+},
+"Armor_071_Lower": {
+"sortKey": 1723062,
+"sub": 0,
+"type": 6
+},
+"Armor_071_Upper": {
+"sortKey": 1722062,
+"sub": 0,
+"type": 5
+},
+"Armor_072_Head": {
+"sortKey": 1721061,
+"sub": 0,
+"type": 4
+},
+"Armor_072_Lower": {
+"sortKey": 1723061,
+"sub": 0,
+"type": 6
+},
+"Armor_072_Upper": {
+"sortKey": 1722061,
+"sub": 0,
+"type": 5
+},
+"Armor_073_Head": {
+"sortKey": 1721060,
+"sub": 0,
+"type": 4
+},
+"Armor_073_Lower": {
+"sortKey": 1723060,
+"sub": 0,
+"type": 6
+},
+"Armor_073_Upper": {
+"sortKey": 1722060,
+"sub": 0,
+"type": 5
+},
+"Armor_074_Head": {
+"sortKey": 2321072,
+"sub": 0,
+"type": 4
+},
+"Armor_074_Lower": {
+"sortKey": 2323072,
+"sub": 0,
+"type": 6
+},
+"Armor_074_Upper": {
+"sortKey": 2322072,
+"sub": 0,
+"type": 5
+},
+"Armor_075_Head": {
+"sortKey": 2321071,
+"sub": 0,
+"type": 4
+},
+"Armor_075_Lower": {
+"sortKey": 2323071,
+"sub": 0,
+"type": 6
+},
+"Armor_075_Upper": {
+"sortKey": 2322071,
+"sub": 0,
+"type": 5
+},
+"Armor_076_Head": {
+"sortKey": 2321070,
+"sub": 0,
+"type": 4
+},
+"Armor_076_Lower": {
+"sortKey": 2323070,
+"sub": 0,
+"type": 6
+},
+"Armor_076_Upper": {
+"sortKey": 2322070,
+"sub": 0,
+"type": 5
+},
+"Armor_077_Head": {
+"sortKey": 2621082,
+"sub": 0,
+"type": 4
+},
+"Armor_077_Head_B": {
+"sortKey": 0,
+"sub": 0,
+"type": 4
+},
+"Armor_077_Lower": {
+"sortKey": 2623082,
+"sub": 0,
+"type": 6
+},
+"Armor_077_Upper": {
+"sortKey": 2622082,
+"sub": 0,
+"type": 5
+},
+"Armor_078_Head": {
+"sortKey": 2621081,
+"sub": 0,
+"type": 4
+},
+"Armor_078_Head_B": {
+"sortKey": 0,
+"sub": 0,
+"type": 4
+},
+"Armor_078_Lower": {
+"sortKey": 2623081,
+"sub": 0,
+"type": 6
+},
+"Armor_078_Upper": {
+"sortKey": 2622081,
+"sub": 0,
+"type": 5
+},
+"Armor_079_Head": {
+"sortKey": 2621080,
+"sub": 0,
+"type": 4
+},
+"Armor_079_Head_B": {
+"sortKey": 0,
+"sub": 0,
+"type": 4
+},
+"Armor_079_Lower": {
+"sortKey": 2623080,
+"sub": 0,
+"type": 6
+},
+"Armor_079_Upper": {
+"sortKey": 2622080,
+"sub": 0,
+"type": 5
+},
+"Armor_083_Head": {
+"sortKey": 2921113,
+"sub": 0,
+"type": 4
+},
+"Armor_083_Lower": {
+"sortKey": 2923113,
+"sub": 0,
+"type": 6
+},
+"Armor_083_Upper": {
+"sortKey": 2922113,
+"sub": 0,
+"type": 5
+},
+"Armor_084_Head": {
+"sortKey": 2921112,
+"sub": 0,
+"type": 4
+},
+"Armor_084_Lower": {
+"sortKey": 2923112,
+"sub": 0,
+"type": 6
+},
+"Armor_084_Upper": {
+"sortKey": 2922112,
+"sub": 0,
+"type": 5
+},
+"Armor_085_Head": {
+"sortKey": 2921111,
+"sub": 0,
+"type": 4
+},
+"Armor_085_Lower": {
+"sortKey": 2923111,
+"sub": 0,
+"type": 6
+},
+"Armor_085_Upper": {
+"sortKey": 2922111,
+"sub": 0,
+"type": 5
+},
+"Armor_086_Head": {
+"sortKey": 2921110,
+"sub": 0,
+"type": 4
+},
+"Armor_086_Lower": {
+"sortKey": 2923110,
+"sub": 0,
+"type": 6
+},
+"Armor_086_Upper": {
+"sortKey": 2922110,
+"sub": 0,
+"type": 5
+},
+"Armor_087_Head": {
+"sortKey": 3221133,
+"sub": 0,
+"type": 4
+},
+"Armor_087_Lower": {
+"sortKey": 3223133,
+"sub": 0,
+"type": 6
+},
+"Armor_087_Upper": {
+"sortKey": 3222133,
+"sub": 0,
+"type": 5
+},
+"Armor_088_Head": {
+"sortKey": 3221132,
+"sub": 0,
+"type": 4
+},
+"Armor_088_Lower": {
+"sortKey": 3223132,
+"sub": 0,
+"type": 6
+},
+"Armor_088_Upper": {
+"sortKey": 3222132,
+"sub": 0,
+"type": 5
+},
+"Armor_089_Head": {
+"sortKey": 3221131,
+"sub": 0,
+"type": 4
+},
+"Armor_089_Lower": {
+"sortKey": 3223131,
+"sub": 0,
+"type": 6
+},
+"Armor_089_Upper": {
+"sortKey": 3222131,
+"sub": 0,
+"type": 5
+},
+"Armor_090_Head": {
+"sortKey": 3221130,
+"sub": 0,
+"type": 4
+},
+"Armor_090_Lower": {
+"sortKey": 3223130,
+"sub": 0,
+"type": 6
+},
+"Armor_090_Upper": {
+"sortKey": 3222130,
+"sub": 0,
+"type": 5
+},
+"Armor_095_Head": {
+"sortKey": 1321153,
+"sub": 0,
+"type": 4
+},
+"Armor_095_Lower": {
+"sortKey": 1323153,
+"sub": 0,
+"type": 6
+},
+"Armor_095_Upper": {
+"sortKey": 1322153,
+"sub": 0,
+"type": 5
+},
+"Armor_096_Head": {
+"sortKey": 1321152,
+"sub": 0,
+"type": 4
+},
+"Armor_096_Lower": {
+"sortKey": 1323152,
+"sub": 0,
+"type": 6
+},
+"Armor_096_Upper": {
+"sortKey": 1322152,
+"sub": 0,
+"type": 5
+},
+"Armor_097_Head": {
+"sortKey": 1321151,
+"sub": 0,
+"type": 4
+},
+"Armor_097_Lower": {
+"sortKey": 1323151,
+"sub": 0,
+"type": 6
+},
+"Armor_097_Upper": {
+"sortKey": 1322151,
+"sub": 0,
+"type": 5
+},
+"Armor_098_Head": {
+"sortKey": 1321150,
+"sub": 0,
+"type": 4
+},
+"Armor_098_Lower": {
+"sortKey": 1323150,
+"sub": 0,
+"type": 6
+},
+"Armor_098_Upper": {
+"sortKey": 1322150,
+"sub": 0,
+"type": 5
+},
+"Armor_099_Head": {
+"sortKey": 3421163,
+"sub": 0,
+"type": 4
+},
+"Armor_099_Lower": {
+"sortKey": 3423163,
+"sub": 0,
+"type": 6
+},
+"Armor_099_Upper": {
+"sortKey": 3422163,
+"sub": 0,
+"type": 5
+},
+"Armor_100_Head": {
+"sortKey": 3421162,
+"sub": 0,
+"type": 4
+},
+"Armor_100_Lower": {
+"sortKey": 3423162,
+"sub": 0,
+"type": 6
+},
+"Armor_100_Upper": {
+"sortKey": 3422162,
+"sub": 0,
+"type": 5
+},
+"Armor_101_Head": {
+"sortKey": 3421161,
+"sub": 0,
+"type": 4
+},
+"Armor_101_Lower": {
+"sortKey": 3423161,
+"sub": 0,
+"type": 6
+},
+"Armor_101_Upper": {
+"sortKey": 3422161,
+"sub": 0,
+"type": 5
+},
+"Armor_102_Head": {
+"sortKey": 3421160,
+"sub": 0,
+"type": 4
+},
+"Armor_102_Lower": {
+"sortKey": 3423160,
+"sub": 0,
+"type": 6
+},
+"Armor_102_Upper": {
+"sortKey": 3422160,
+"sub": 0,
+"type": 5
+},
+"Armor_103_Head": {
+"sortKey": 2221173,
+"sub": 0,
+"type": 4
+},
+"Armor_103_Lower": {
+"sortKey": 2223173,
+"sub": 0,
+"type": 6
+},
+"Armor_103_Upper": {
+"sortKey": 2222173,
+"sub": 0,
+"type": 5
+},
+"Armor_104_Head": {
+"sortKey": 2221172,
+"sub": 0,
+"type": 4
+},
+"Armor_104_Lower": {
+"sortKey": 2223172,
+"sub": 0,
+"type": 6
+},
+"Armor_104_Upper": {
+"sortKey": 2222172,
+"sub": 0,
+"type": 5
+},
+"Armor_105_Head": {
+"sortKey": 2221171,
+"sub": 0,
+"type": 4
+},
+"Armor_105_Lower": {
+"sortKey": 2223171,
+"sub": 0,
+"type": 6
+},
+"Armor_105_Upper": {
+"sortKey": 2222171,
+"sub": 0,
+"type": 5
+},
+"Armor_106_Head": {
+"sortKey": 2221170,
+"sub": 0,
+"type": 4
+},
+"Armor_106_Lower": {
+"sortKey": 2223170,
+"sub": 0,
+"type": 6
+},
+"Armor_106_Upper": {
+"sortKey": 2222170,
+"sub": 0,
+"type": 5
+},
+"Armor_111_Head": {
+"sortKey": 3021193,
+"sub": 0,
+"type": 4
+},
+"Armor_111_Lower": {
+"sortKey": 3023193,
+"sub": 0,
+"type": 6
+},
+"Armor_111_Upper": {
+"sortKey": 3022193,
+"sub": 0,
+"type": 5
+},
+"Armor_112_Head": {
+"sortKey": 3021192,
+"sub": 0,
+"type": 4
+},
+"Armor_112_Lower": {
+"sortKey": 3023192,
+"sub": 0,
+"type": 6
+},
+"Armor_112_Upper": {
+"sortKey": 3022192,
+"sub": 0,
+"type": 5
+},
+"Armor_113_Head": {
+"sortKey": 3021191,
+"sub": 0,
+"type": 4
+},
+"Armor_113_Lower": {
+"sortKey": 3023191,
+"sub": 0,
+"type": 6
+},
+"Armor_113_Upper": {
+"sortKey": 3022191,
+"sub": 0,
+"type": 5
+},
+"Armor_114_Head": {
+"sortKey": 3021190,
+"sub": 0,
+"type": 4
+},
+"Armor_114_Lower": {
+"sortKey": 3023190,
+"sub": 0,
+"type": 6
+},
+"Armor_114_Upper": {
+"sortKey": 3022190,
+"sub": 0,
+"type": 5
+},
+"Armor_115_Head": {
+"sortKey": 2821630,
+"sub": 0,
+"type": 4
+},
+"Armor_116_Upper": {
+"sortKey": 1122005,
+"sub": 0,
+"type": 5
+},
+"Armor_117_Head": {
+"sortKey": 3321333,
+"sub": 0,
+"type": 4
+},
+"Armor_118_Head": {
+"sortKey": 3321332,
+"sub": 0,
+"type": 4
+},
+"Armor_119_Head": {
+"sortKey": 3321331,
+"sub": 0,
+"type": 4
+},
+"Armor_120_Head": {
+"sortKey": 3321330,
+"sub": 0,
+"type": 4
+},
+"Armor_121_Head": {
+"sortKey": 1621343,
+"sub": 0,
+"type": 4
+},
+"Armor_122_Head": {
+"sortKey": 1621342,
+"sub": 0,
+"type": 4
+},
+"Armor_123_Head": {
+"sortKey": 1621341,
+"sub": 0,
+"type": 4
+},
+"Armor_124_Head": {
+"sortKey": 1621340,
+"sub": 0,
+"type": 4
+},
+"Armor_125_Head": {
+"sortKey": 1821353,
+"sub": 0,
+"type": 4
+},
+"Armor_126_Head": {
+"sortKey": 1821352,
+"sub": 0,
+"type": 4
+},
+"Armor_127_Head": {
+"sortKey": 1821351,
+"sub": 0,
+"type": 4
+},
+"Armor_128_Head": {
+"sortKey": 1821350,
+"sub": 0,
+"type": 4
+},
+"Armor_129_Head": {
+"sortKey": 2121363,
+"sub": 0,
+"type": 4
+},
+"Armor_130_Head": {
+"sortKey": 2121362,
+"sub": 0,
+"type": 4
+},
+"Armor_131_Head": {
+"sortKey": 2121361,
+"sub": 0,
+"type": 4
+},
+"Armor_132_Head": {
+"sortKey": 2121360,
+"sub": 0,
+"type": 4
+},
+"Armor_133_Head": {
+"sortKey": 2421373,
+"sub": 0,
+"type": 4
+},
+"Armor_134_Head": {
+"sortKey": 2421372,
+"sub": 0,
+"type": 4
+},
+"Armor_135_Head": {
+"sortKey": 2421371,
+"sub": 0,
+"type": 4
+},
+"Armor_136_Head": {
+"sortKey": 2421370,
+"sub": 0,
+"type": 4
+},
+"Armor_137_Head": {
+"sortKey": 1421383,
+"sub": 0,
+"type": 4
+},
+"Armor_138_Head": {
+"sortKey": 1421382,
+"sub": 0,
+"type": 4
+},
+"Armor_139_Head": {
+"sortKey": 1421381,
+"sub": 0,
+"type": 4
+},
+"Armor_140_Head": {
+"sortKey": 1421380,
+"sub": 0,
+"type": 4
+},
+"Armor_140_Lower": {
+"sortKey": 3623515,
+"sub": 0,
+"type": 6
+},
+"Armor_141_Lower": {
+"sortKey": 3623514,
+"sub": 0,
+"type": 6
+},
+"Armor_148_Upper": {
+"sortKey": 1122004,
+"sub": 0,
+"type": 5
+},
+"Armor_149_Upper": {
+"sortKey": 1122003,
+"sub": 0,
+"type": 5
+},
+"Armor_150_Upper": {
+"sortKey": 1122002,
+"sub": 0,
+"type": 5
+},
+"Armor_151_Upper": {
+"sortKey": 1122001,
+"sub": 0,
+"type": 5
+},
+"Armor_152_Lower": {
+"sortKey": 3523413,
+"sub": 0,
+"type": 6
+},
+"Armor_153_Lower": {
+"sortKey": 3523412,
+"sub": 0,
+"type": 6
+},
+"Armor_154_Lower": {
+"sortKey": 3523411,
+"sub": 0,
+"type": 6
+},
+"Armor_155_Lower": {
+"sortKey": 3523410,
+"sub": 0,
+"type": 6
+},
+"Armor_156_Lower": {
+"sortKey": 3623513,
+"sub": 0,
+"type": 6
+},
+"Armor_157_Lower": {
+"sortKey": 3623512,
+"sub": 0,
+"type": 6
+},
+"Armor_158_Lower": {
+"sortKey": 3623511,
+"sub": 0,
+"type": 6
+},
+"Armor_159_Lower": {
+"sortKey": 3623510,
+"sub": 0,
+"type": 6
+},
+"Armor_160_Head": {
+"sortKey": 4121200,
+"sub": 0,
+"type": 4
+},
+"Armor_160_Lower": {
+"sortKey": 4123200,
+"sub": 0,
+"type": 6
+},
+"Armor_160_Upper": {
+"sortKey": 4122200,
+"sub": 0,
+"type": 5
+},
+"Armor_200_Head": {
+"sortKey": 4221705,
+"sub": 0,
+"type": 4
+},
+"Armor_200_Lower": {
+"sortKey": 4223705,
+"sub": 0,
+"type": 6
+},
+"Armor_200_Upper": {
+"sortKey": 4222705,
+"sub": 0,
+"type": 5
+},
+"Armor_201_Head": {
+"sortKey": 4221704,
+"sub": 0,
+"type": 4
+},
+"Armor_201_Lower": {
+"sortKey": 4223704,
+"sub": 0,
+"type": 6
+},
+"Armor_201_Upper": {
+"sortKey": 4222704,
+"sub": 0,
+"type": 5
+},
+"Armor_202_Head": {
+"sortKey": 4221703,
+"sub": 0,
+"type": 4
+},
+"Armor_202_Lower": {
+"sortKey": 4223703,
+"sub": 0,
+"type": 6
+},
+"Armor_202_Upper": {
+"sortKey": 4222703,
+"sub": 0,
+"type": 5
+},
+"Armor_203_Head": {
+"sortKey": 4221702,
+"sub": 0,
+"type": 4
+},
+"Armor_203_Lower": {
+"sortKey": 4223702,
+"sub": 0,
+"type": 6
+},
+"Armor_203_Upper": {
+"sortKey": 4222702,
+"sub": 0,
+"type": 5
+},
+"Armor_204_Head": {
+"sortKey": 4221701,
+"sub": 0,
+"type": 4
+},
+"Armor_204_Lower": {
+"sortKey": 4223701,
+"sub": 0,
+"type": 6
+},
+"Armor_204_Upper": {
+"sortKey": 4222701,
+"sub": 0,
+"type": 5
+},
+"Armor_205_Head": {
+"sortKey": 4321710,
+"sub": 0,
+"type": 4
+},
+"Armor_205_Lower": {
+"sortKey": 4323710,
+"sub": 0,
+"type": 6
+},
+"Armor_205_Upper": {
+"sortKey": 4322710,
+"sub": 0,
+"type": 5
+},
+"Armor_206_Head": {
+"sortKey": 4321709,
+"sub": 0,
+"type": 4
+},
+"Armor_206_Lower": {
+"sortKey": 4323709,
+"sub": 0,
+"type": 6
+},
+"Armor_206_Upper": {
+"sortKey": 4322709,
+"sub": 0,
+"type": 5
+},
+"Armor_207_Head": {
+"sortKey": 4321708,
+"sub": 0,
+"type": 4
+},
+"Armor_207_Lower": {
+"sortKey": 4323708,
+"sub": 0,
+"type": 6
+},
+"Armor_207_Upper": {
+"sortKey": 4322708,
+"sub": 0,
+"type": 5
+},
+"Armor_208_Head": {
+"sortKey": 4321707,
+"sub": 0,
+"type": 4
+},
+"Armor_208_Lower": {
+"sortKey": 4323707,
+"sub": 0,
+"type": 6
+},
+"Armor_208_Upper": {
+"sortKey": 4322707,
+"sub": 0,
+"type": 5
+},
+"Armor_209_Head": {
+"sortKey": 4321706,
+"sub": 0,
+"type": 4
+},
+"Armor_209_Lower": {
+"sortKey": 4323706,
+"sub": 0,
+"type": 6
+},
+"Armor_209_Upper": {
+"sortKey": 4322706,
+"sub": 0,
+"type": 5
+},
+"Armor_210_Head": {
+"sortKey": 4421715,
+"sub": 0,
+"type": 4
+},
+"Armor_210_Lower": {
+"sortKey": 4423716,
+"sub": 0,
+"type": 6
+},
+"Armor_210_Upper": {
+"sortKey": 4422715,
+"sub": 0,
+"type": 5
+},
+"Armor_211_Head": {
+"sortKey": 4421714,
+"sub": 0,
+"type": 4
+},
+"Armor_211_Lower": {
+"sortKey": 4423714,
+"sub": 0,
+"type": 6
+},
+"Armor_211_Upper": {
+"sortKey": 4422714,
+"sub": 0,
+"type": 5
+},
+"Armor_212_Head": {
+"sortKey": 4421713,
+"sub": 0,
+"type": 4
+},
+"Armor_212_Lower": {
+"sortKey": 4423713,
+"sub": 0,
+"type": 6
+},
+"Armor_212_Upper": {
+"sortKey": 4422713,
+"sub": 0,
+"type": 5
+},
+"Armor_213_Head": {
+"sortKey": 4421712,
+"sub": 0,
+"type": 4
+},
+"Armor_213_Lower": {
+"sortKey": 4423712,
+"sub": 0,
+"type": 6
+},
+"Armor_213_Upper": {
+"sortKey": 4422712,
+"sub": 0,
+"type": 5
+},
+"Armor_214_Head": {
+"sortKey": 4421711,
+"sub": 0,
+"type": 4
+},
+"Armor_214_Lower": {
+"sortKey": 4423711,
+"sub": 0,
+"type": 6
+},
+"Armor_214_Upper": {
+"sortKey": 4422711,
+"sub": 0,
+"type": 5
+},
+"Armor_215_Head": {
+"sortKey": 4521720,
+"sub": 0,
+"type": 4
+},
+"Armor_215_Lower": {
+"sortKey": 4523720,
+"sub": 0,
+"type": 6
+},
+"Armor_215_Upper": {
+"sortKey": 4522720,
+"sub": 0,
+"type": 5
+},
+"Armor_216_Head": {
+"sortKey": 4521719,
+"sub": 0,
+"type": 4
+},
+"Armor_216_Lower": {
+"sortKey": 4523719,
+"sub": 0,
+"type": 6
+},
+"Armor_216_Upper": {
+"sortKey": 4522719,
+"sub": 0,
+"type": 5
+},
+"Armor_217_Head": {
+"sortKey": 4521718,
+"sub": 0,
+"type": 4
+},
+"Armor_217_Lower": {
+"sortKey": 4523718,
+"sub": 0,
+"type": 6
+},
+"Armor_217_Upper": {
+"sortKey": 4522718,
+"sub": 0,
+"type": 5
+},
+"Armor_218_Head": {
+"sortKey": 4521717,
+"sub": 0,
+"type": 4
+},
+"Armor_218_Lower": {
+"sortKey": 4523717,
+"sub": 0,
+"type": 6
+},
+"Armor_218_Upper": {
+"sortKey": 4522717,
+"sub": 0,
+"type": 5
+},
+"Armor_219_Head": {
+"sortKey": 4521716,
+"sub": 0,
+"type": 4
+},
+"Armor_219_Lower": {
+"sortKey": 4523716,
+"sub": 0,
+"type": 6
+},
+"Armor_219_Upper": {
+"sortKey": 4522716,
+"sub": 0,
+"type": 5
+},
+"Armor_220_Head": {
+"sortKey": 2721725,
+"sub": 0,
+"type": 4
+},
+"Armor_220_Head_B": {
+"sortKey": 2721725,
+"sub": 0,
+"type": 4
+},
+"Armor_221_Head": {
+"sortKey": 2721724,
+"sub": 0,
+"type": 4
+},
+"Armor_221_Head_B": {
+"sortKey": 2721724,
+"sub": 0,
+"type": 4
+},
+"Armor_222_Head": {
+"sortKey": 2721723,
+"sub": 0,
+"type": 4
+},
+"Armor_222_Head_B": {
+"sortKey": 2721723,
+"sub": 0,
+"type": 4
+},
+"Armor_223_Head": {
+"sortKey": 2721722,
+"sub": 0,
+"type": 4
+},
+"Armor_223_Head_B": {
+"sortKey": 2721722,
+"sub": 0,
+"type": 4
+},
+"Armor_224_Head": {
+"sortKey": 2721721,
+"sub": 0,
+"type": 4
+},
+"Armor_224_Head_B": {
+"sortKey": 2721721,
+"sub": 0,
+"type": 4
+},
+"Armor_225_Head": {
+"sortKey": 3121730,
+"sub": 0,
+"type": 4
+},
+"Armor_225_Lower": {
+"sortKey": 3123730,
+"sub": 0,
+"type": 6
+},
+"Armor_225_Upper": {
+"sortKey": 3122730,
+"sub": 0,
+"type": 5
+},
+"Armor_226_Head": {
+"sortKey": 3121729,
+"sub": 0,
+"type": 4
+},
+"Armor_226_Lower": {
+"sortKey": 3123729,
+"sub": 0,
+"type": 6
+},
+"Armor_226_Upper": {
+"sortKey": 3122729,
+"sub": 0,
+"type": 5
+},
+"Armor_227_Head": {
+"sortKey": 3121728,
+"sub": 0,
+"type": 4
+},
+"Armor_227_Lower": {
+"sortKey": 3123728,
+"sub": 0,
+"type": 6
+},
+"Armor_227_Upper": {
+"sortKey": 3122728,
+"sub": 0,
+"type": 5
+},
+"Armor_228_Head": {
+"sortKey": 3121727,
+"sub": 0,
+"type": 4
+},
+"Armor_228_Lower": {
+"sortKey": 3123727,
+"sub": 0,
+"type": 6
+},
+"Armor_228_Upper": {
+"sortKey": 3122727,
+"sub": 0,
+"type": 5
+},
+"Armor_229_Head": {
+"sortKey": 3121726,
+"sub": 0,
+"type": 4
+},
+"Armor_229_Lower": {
+"sortKey": 3123726,
+"sub": 0,
+"type": 6
+},
+"Armor_229_Upper": {
+"sortKey": 3122726,
+"sub": 0,
+"type": 5
+},
+"Armor_230_Head": {
+"sortKey": 4621735,
+"sub": 0,
+"type": 4
+},
+"Armor_230_Lower": {
+"sortKey": 4623735,
+"sub": 0,
+"type": 6
+},
+"Armor_230_Upper": {
+"sortKey": 4622735,
+"sub": 0,
+"type": 5
+},
+"Armor_231_Head": {
+"sortKey": 4621734,
+"sub": 0,
+"type": 4
+},
+"Armor_231_Lower": {
+"sortKey": 4623734,
+"sub": 0,
+"type": 6
+},
+"Armor_231_Upper": {
+"sortKey": 4622734,
+"sub": 0,
+"type": 5
+},
+"Armor_232_Head": {
+"sortKey": 4621733,
+"sub": 0,
+"type": 4
+},
+"Armor_232_Lower": {
+"sortKey": 4623733,
+"sub": 0,
+"type": 6
+},
+"Armor_232_Upper": {
+"sortKey": 4622733,
+"sub": 0,
+"type": 5
+},
+"Armor_233_Head": {
+"sortKey": 4621732,
+"sub": 0,
+"type": 4
+},
+"Armor_233_Lower": {
+"sortKey": 4623732,
+"sub": 0,
+"type": 6
+},
+"Armor_233_Upper": {
+"sortKey": 4622732,
+"sub": 0,
+"type": 5
+},
+"Armor_234_Head": {
+"sortKey": 4621731,
+"sub": 0,
+"type": 4
+},
+"Armor_234_Lower": {
+"sortKey": 4623731,
+"sub": 0,
+"type": 6
+},
+"Armor_234_Upper": {
+"sortKey": 4622731,
+"sub": 0,
+"type": 5
+},
+"Armor_500_Head": {
+"sortKey": 9921002,
+"sub": 0,
+"type": 4
+},
+"Armor_500_Lower": {
+"sortKey": 9923002,
+"sub": 0,
+"type": 6
+},
+"Armor_500_Upper": {
+"sortKey": 9922002,
+"sub": 0,
+"type": 5
+},
+"Armor_501_Head": {
+"sortKey": 9921003,
+"sub": 0,
+"type": 4
+},
+"Armor_501_Lower": {
+"sortKey": 9923003,
+"sub": 0,
+"type": 6
+},
+"Armor_501_Upper": {
+"sortKey": 9922003,
+"sub": 0,
+"type": 5
+},
+"Armor_502_Upper": {
+"sortKey": 9922004,
+"sub": 0,
+"type": 5
+},
+"Armor_Default_Head": {
+"sortKey": 0,
+"sub": 0,
+"type": 4
+},
+"Armor_Default_Lower": {
+"sortKey": 0,
+"sub": 0,
+"type": 6
+},
+"Armor_Default_Upper": {
+"sortKey": 0,
+"sub": 0,
+"type": 5
+},
+"Enemy_Ganon_Lsword_Weapon": {
+"life": 35,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Enemy_Ganon_Sword_Weapon_FL": {
+"life": 35,
+"sortKey": -3,
+"sub": 0,
+"type": 0
+},
+"Enemy_Ganon_Sword_Weapon_FR": {
+"life": 35,
+"sortKey": -3,
+"sub": 0,
+"type": 0
+},
+"Enemy_Ganon_Sword_Weapon_MR": {
+"life": 35,
+"sortKey": -3,
+"sub": 0,
+"type": 0
+},
+"Enemy_SiteBoss_Lsword_Weapon": {
+"life": 35,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Enemy_SiteBoss_Spear_Weapon": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Enemy_SiteBoss_Sword_Weapon": {
+"life": 35,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Item_Amiibo": {
+"sortKey": 0,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_000": {
+"sortKey": -11,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_001": {
+"sortKey": -10,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_002": {
+"sortKey": 1,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_003": {
+"sortKey": 14,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_004": {
+"sortKey": 0,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_005": {
+"sortKey": 13,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_006": {
+"sortKey": 3,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_007": {
+"sortKey": 9,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_008": {
+"sortKey": 4,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_009": {
+"sortKey": 5,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_010": {
+"sortKey": 17,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_016": {
+"sortKey": -2,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_017": {
+"sortKey": 0,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_018": {
+"sortKey": 6,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_019": {
+"sortKey": 7,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_020": {
+"sortKey": 22,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_021": {
+"sortKey": 11,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_022": {
+"sortKey": 12,
+"sub": 8,
+"type": 7
+},
+"Item_Amiibo_DropTable_023": {
+"sortKey": 19,
+"sub": 8,
+"type": 7
+},
+"Item_Boiled_01": {
+"sortKey": 61820,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_01": {
+"sortKey": 65010,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_02": {
+"sortKey": 65030,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_03": {
+"sortKey": 65040,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_04": {
+"sortKey": 65050,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_05": {
+"sortKey": 65060,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_06": {
+"sortKey": 65020,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_07": {
+"sortKey": 65070,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_08": {
+"sortKey": 65080,
+"sub": 8,
+"type": 7
+},
+"Item_ChilledFish_09": {
+"sortKey": 65090,
+"sub": 8,
+"type": 7
+},
+"Item_Chilled_01": {
+"sortKey": 64010,
+"sub": 8,
+"type": 7
+},
+"Item_Chilled_02": {
+"sortKey": 64020,
+"sub": 8,
+"type": 7
+},
+"Item_Chilled_03": {
+"sortKey": 64030,
+"sub": 8,
+"type": 7
+},
+"Item_Chilled_04": {
+"sortKey": 64040,
+"sub": 8,
+"type": 7
+},
+"Item_Chilled_05": {
+"sortKey": 64050,
+"sub": 8,
+"type": 7
+},
+"Item_Chilled_06": {
+"sortKey": 64060,
+"sub": 8,
+"type": 7
+},
+"Item_Conductor": {
+"sortKey": 0,
+"sub": 8,
+"type": 7
+},
+"Item_CookSet": {
+"sortKey": 0,
+"sub": 8,
+"type": 7
+},
+"Item_CookSet_PanOnly": {
+"sortKey": 0,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_01": {
+"sortKey": 50020,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_02": {
+"sortKey": 50100,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_03": {
+"sortKey": 50090,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_04": {
+"sortKey": 50110,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_05": {
+"sortKey": 50120,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_07": {
+"sortKey": 50060,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_08": {
+"sortKey": 50070,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_09": {
+"sortKey": 50080,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_10": {
+"sortKey": 50240,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_11": {
+"sortKey": 50250,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_12": {
+"sortKey": 50280,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_13": {
+"sortKey": 50270,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_A_14": {
+"sortKey": 50260,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_01": {
+"sortKey": 50030,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_02": {
+"sortKey": 50010,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_03": {
+"sortKey": 59999,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_04": {
+"sortKey": 59999,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_05": {
+"sortKey": 50040,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_06": {
+"sortKey": 50050,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_11": {
+"sortKey": 50031,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_12": {
+"sortKey": 50011,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_13": {
+"sortKey": 50021,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_14": {
+"sortKey": 59999,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_15": {
+"sortKey": 50042,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_16": {
+"sortKey": 50051,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_17": {
+"sortKey": 50190,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_18": {
+"sortKey": 50191,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_19": {
+"sortKey": 50192,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_20": {
+"sortKey": 50220,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_21": {
+"sortKey": 50231,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_22": {
+"sortKey": 50230,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_B_23": {
+"sortKey": 50041,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_01": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_02": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_05": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_06": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_07": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_08": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_11": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_12": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_13": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_14": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_15": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_16": {
+"sortKey": 50571,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_17": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_C_17_00": {
+"sortKey": 50570,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_01": {
+"sortKey": 50130,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_02": {
+"sortKey": 50140,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_03": {
+"sortKey": 50150,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_04": {
+"sortKey": 50160,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_05": {
+"sortKey": 50161,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_06": {
+"sortKey": 50162,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_07": {
+"sortKey": 50180,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_08": {
+"sortKey": 50170,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_09": {
+"sortKey": 50151,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_D_10": {
+"sortKey": 50169,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_E_01": {
+"sortKey": 50310,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_E_02": {
+"sortKey": 50311,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_E_03": {
+"sortKey": 50312,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_E_04": {
+"sortKey": 50314,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_F_01": {
+"sortKey": 50380,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_F_02": {
+"sortKey": 50370,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_F_03": {
+"sortKey": 50362,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_F_04": {
+"sortKey": 50363,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_02": {
+"sortKey": 50470,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_03": {
+"sortKey": 50460,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_04": {
+"sortKey": 50459,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_05": {
+"sortKey": 50510,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_06": {
+"sortKey": 50511,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_07": {
+"sortKey": 59999,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_08": {
+"sortKey": 59999,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_09": {
+"sortKey": 50512,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_10": {
+"sortKey": 50300,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_11": {
+"sortKey": 50313,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_12": {
+"sortKey": 50320,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_13": {
+"sortKey": 50330,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_14": {
+"sortKey": 50340,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_15": {
+"sortKey": 50480,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_16": {
+"sortKey": 50301,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_G_17": {
+"sortKey": 50341,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_H_01": {
+"sortKey": 50290,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_H_02": {
+"sortKey": 50291,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_H_03": {
+"sortKey": 50292,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_01": {
+"sortKey": 50550,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_02": {
+"sortKey": 50551,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_03": {
+"sortKey": 50560,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_04": {
+"sortKey": 50553,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_05": {
+"sortKey": 50532,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_06": {
+"sortKey": 50533,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_07": {
+"sortKey": 50564,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_08": {
+"sortKey": 50563,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_09": {
+"sortKey": 50562,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_10": {
+"sortKey": 50540,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_11": {
+"sortKey": 50541,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_12": {
+"sortKey": 50530,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_13": {
+"sortKey": 50565,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_14": {
+"sortKey": 50566,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_15": {
+"sortKey": 50552,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_16": {
+"sortKey": 50561,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_I_17": {
+"sortKey": 50542,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_01": {
+"sortKey": 50430,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_02": {
+"sortKey": 50431,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_03": {
+"sortKey": 50440,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_04": {
+"sortKey": 50450,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_05": {
+"sortKey": 50451,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_06": {
+"sortKey": 50453,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_07": {
+"sortKey": 50454,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_08": {
+"sortKey": 50452,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_J_09": {
+"sortKey": 50455,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_01": {
+"sortKey": 50420,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_02": {
+"sortKey": 50421,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_03": {
+"sortKey": 50401,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_04": {
+"sortKey": 50410,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_05": {
+"sortKey": 50422,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_06": {
+"sortKey": 50361,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_07": {
+"sortKey": 50360,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_08": {
+"sortKey": 50400,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_K_09": {
+"sortKey": 50567,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_L_01": {
+"sortKey": 50423,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_L_02": {
+"sortKey": 50381,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_L_03": {
+"sortKey": 50534,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_L_04": {
+"sortKey": 50481,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_L_05": {
+"sortKey": 50456,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_M_01": {
+"sortKey": 50520,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_N_01": {
+"sortKey": 50302,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_N_02": {
+"sortKey": 50531,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_N_03": {
+"sortKey": 50458,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_N_04": {
+"sortKey": 50457,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_O_01": {
+"sortKey": 50580,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_O_02": {
+"sortKey": 50581,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_P_01": {
+"sortKey": 50210,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_P_02": {
+"sortKey": 50211,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_P_03": {
+"sortKey": 50200,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_P_04": {
+"sortKey": 50201,
+"sub": 8,
+"type": 7
+},
+"Item_Cook_P_05": {
+"sortKey": 50202,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_00": {
+"sortKey": 37010,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_01": {
+"sortKey": 37011,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_02": {
+"sortKey": 37012,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_03": {
+"sortKey": 37030,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_04": {
+"sortKey": 37031,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_05": {
+"sortKey": 37032,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_06": {
+"sortKey": 37020,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_07": {
+"sortKey": 37021,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_08": {
+"sortKey": 37022,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_12": {
+"sortKey": 37050,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_13": {
+"sortKey": 37051,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_14": {
+"sortKey": 37052,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_15": {
+"sortKey": 37062,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_16": {
+"sortKey": 37063,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_17": {
+"sortKey": 37061,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_18": {
+"sortKey": 37070,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_19": {
+"sortKey": 37074,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_20": {
+"sortKey": 37080,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_21": {
+"sortKey": 37081,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_24": {
+"sortKey": 37100,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_25": {
+"sortKey": 37101,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_26": {
+"sortKey": 37122,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_27": {
+"sortKey": 37120,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_28": {
+"sortKey": 37121,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_29": {
+"sortKey": 37123,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_30": {
+"sortKey": 37124,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_31": {
+"sortKey": 37125,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_32": {
+"sortKey": 37110,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_33": {
+"sortKey": 37111,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_34": {
+"sortKey": 37112,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_38": {
+"sortKey": 37130,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_39": {
+"sortKey": 37131,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_40": {
+"sortKey": 37060,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_41": {
+"sortKey": 37034,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_42": {
+"sortKey": 37033,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_43": {
+"sortKey": 37035,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_44": {
+"sortKey": 37072,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_45": {
+"sortKey": 37073,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_46": {
+"sortKey": 37071,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_47": {
+"sortKey": 37132,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_48": {
+"sortKey": 37133,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_49": {
+"sortKey": 37140,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_50": {
+"sortKey": 37141,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_51": {
+"sortKey": 37142,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_52": {
+"sortKey": 37143,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_53": {
+"sortKey": 37150,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_54": {
+"sortKey": 37151,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_55": {
+"sortKey": 37152,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_56": {
+"sortKey": 37153,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_57": {
+"sortKey": 37082,
+"sub": 8,
+"type": 7
+},
+"Item_Enemy_Put_57": {
+"sortKey": 0,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_A": {
+"sortKey": 34010,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_B": {
+"sortKey": 34020,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_C": {
+"sortKey": 34050,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_D": {
+"sortKey": 34070,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_E": {
+"sortKey": 34090,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_F": {
+"sortKey": 34120,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_G": {
+"sortKey": 34130,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_H": {
+"sortKey": 34100,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_I": {
+"sortKey": 34040,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_J": {
+"sortKey": 34060,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_K": {
+"sortKey": 34150,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_L": {
+"sortKey": 34030,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_L_00": {
+"sortKey": 34030,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_M": {
+"sortKey": 34140,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_X": {
+"sortKey": 34080,
+"sub": 8,
+"type": 7
+},
+"Item_FishGet_Z": {
+"sortKey": 34110,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_A": {
+"sortKey": 31010,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_B": {
+"sortKey": 31030,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_C": {
+"sortKey": 31080,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_D": {
+"sortKey": 31050,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_E": {
+"sortKey": 31090,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_E_00": {
+"sortKey": 31090,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_F": {
+"sortKey": 31060,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_G": {
+"sortKey": 31020,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_H": {
+"sortKey": 31100,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_I": {
+"sortKey": 31070,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_J": {
+"sortKey": 31495,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_K": {
+"sortKey": 31040,
+"sub": 8,
+"type": 7
+},
+"Item_Fruit_L": {
+"sortKey": 31041,
+"sub": 8,
+"type": 7
+},
+"Item_InsectGet_K": {
+"sortKey": 34160,
+"sub": 8,
+"type": 7
+},
+"Item_InsectGet_O": {
+"sortKey": 34170,
+"sub": 8,
+"type": 7
+},
+"Item_InsectGet_Z": {
+"sortKey": 34180,
+"sub": 8,
+"type": 7
+},
+"Item_Magnetglove": {
+"sortKey": 2,
+"sub": 8,
+"type": 7
+},
+"Item_Material_01": {
+"sortKey": 33050,
+"sub": 8,
+"type": 7
+},
+"Item_Material_02": {
+"sortKey": 33070,
+"sub": 8,
+"type": 7
+},
+"Item_Material_03": {
+"sortKey": 33010,
+"sub": 8,
+"type": 7
+},
+"Item_Material_04": {
+"sortKey": 33030,
+"sub": 8,
+"type": 7
+},
+"Item_Material_05": {
+"sortKey": 33020,
+"sub": 8,
+"type": 7
+},
+"Item_Material_05_00": {
+"sortKey": 33020,
+"sub": 8,
+"type": 7
+},
+"Item_Material_06": {
+"sortKey": 33060,
+"sub": 8,
+"type": 7
+},
+"Item_Material_07": {
+"sortKey": 33040,
+"sub": 8,
+"type": 7
+},
+"Item_Material_08": {
+"sortKey": 33110,
+"sub": 8,
+"type": 7
+},
+"Item_Meat_01": {
+"sortKey": 32010,
+"sub": 8,
+"type": 7
+},
+"Item_Meat_02": {
+"sortKey": 32020,
+"sub": 8,
+"type": 7
+},
+"Item_Meat_06": {
+"sortKey": 32060,
+"sub": 8,
+"type": 7
+},
+"Item_Meat_07": {
+"sortKey": 32070,
+"sub": 8,
+"type": 7
+},
+"Item_Meat_11": {
+"sortKey": 32030,
+"sub": 8,
+"type": 7
+},
+"Item_Meat_12": {
+"sortKey": 32080,
+"sub": 8,
+"type": 7
+},
+"Item_MushroomGet_D": {
+"sortKey": 31290,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_A": {
+"sortKey": 31230,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_B": {
+"sortKey": 31260,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_C": {
+"sortKey": 31270,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_D": {
+"sortKey": 31290,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_E": {
+"sortKey": 31210,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_F": {
+"sortKey": 31240,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_F_00": {
+"sortKey": 31240,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_H": {
+"sortKey": 31280,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_J": {
+"sortKey": 31320,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_L": {
+"sortKey": 31300,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_M": {
+"sortKey": 31310,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_N": {
+"sortKey": 31250,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_N_00": {
+"sortKey": 31250,
+"sub": 8,
+"type": 7
+},
+"Item_Mushroom_O": {
+"sortKey": 31220,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_A": {
+"sortKey": 36090,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_A_00": {
+"sortKey": 36090,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_B": {
+"sortKey": 36070,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_C": {
+"sortKey": 36080,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_D": {
+"sortKey": 36060,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_E": {
+"sortKey": 36040,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_F": {
+"sortKey": 36030,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_G": {
+"sortKey": 36050,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_H": {
+"sortKey": 33100,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_I": {
+"sortKey": 36020,
+"sub": 8,
+"type": 7
+},
+"Item_Ore_J": {
+"sortKey": 36100,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_A": {
+"sortKey": 31410,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_B": {
+"sortKey": 31420,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_C": {
+"sortKey": 31430,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_E": {
+"sortKey": 31450,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_F": {
+"sortKey": 31460,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_G": {
+"sortKey": 31510,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_H": {
+"sortKey": 31520,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_I": {
+"sortKey": 31530,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_J": {
+"sortKey": 31531,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_L": {
+"sortKey": 31470,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_M": {
+"sortKey": 31480,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_O": {
+"sortKey": 31500,
+"sub": 8,
+"type": 7
+},
+"Item_PlantGet_Q": {
+"sortKey": 31490,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_A": {
+"sortKey": 31410,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_B": {
+"sortKey": 31420,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_C": {
+"sortKey": 31430,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_E": {
+"sortKey": 31450,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_F": {
+"sortKey": 31460,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_G": {
+"sortKey": 31510,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_H": {
+"sortKey": 31520,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_I": {
+"sortKey": 31530,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_J": {
+"sortKey": 31531,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_L": {
+"sortKey": 31470,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_M": {
+"sortKey": 31480,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_O": {
+"sortKey": 31500,
+"sub": 8,
+"type": 7
+},
+"Item_Plant_Q": {
+"sortKey": 31490,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_01": {
+"sortKey": 63010,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_02": {
+"sortKey": 63020,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_03": {
+"sortKey": 63040,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_04": {
+"sortKey": 63030,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_07": {
+"sortKey": 63050,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_09": {
+"sortKey": 63060,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_11": {
+"sortKey": 63080,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_13": {
+"sortKey": 63070,
+"sub": 8,
+"type": 7
+},
+"Item_RoastFish_15": {
+"sortKey": 63090,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_01": {
+"sortKey": 62010,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_02": {
+"sortKey": 62060,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_03": {
+"sortKey": 61010,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_04": {
+"sortKey": 61220,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_05": {
+"sortKey": 61230,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_06": {
+"sortKey": 61210,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_07": {
+"sortKey": 61030,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_08": {
+"sortKey": 61080,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_09": {
+"sortKey": 61050,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_10": {
+"sortKey": 61020,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_11": {
+"sortKey": 61100,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_12": {
+"sortKey": 61060,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_13": {
+"sortKey": 61070,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_15": {
+"sortKey": 61491,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_16": {
+"sortKey": 61090,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_18": {
+"sortKey": 61420,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_19": {
+"sortKey": 61430,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_24": {
+"sortKey": 61480,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_27": {
+"sortKey": 61512,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_28": {
+"sortKey": 61522,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_31": {
+"sortKey": 61250,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_32": {
+"sortKey": 61260,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_33": {
+"sortKey": 61270,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_36": {
+"sortKey": 61280,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_37": {
+"sortKey": 61290,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_38": {
+"sortKey": 61300,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_39": {
+"sortKey": 61310,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_40": {
+"sortKey": 62020,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_41": {
+"sortKey": 62070,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_45": {
+"sortKey": 62030,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_46": {
+"sortKey": 62080,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_48": {
+"sortKey": 61040,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_49": {
+"sortKey": 61231,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_50": {
+"sortKey": 61490,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_51": {
+"sortKey": 61810,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_52": {
+"sortKey": 61041,
+"sub": 8,
+"type": 7
+},
+"Item_Roast_53": {
+"sortKey": 61220,
+"sub": 8,
+"type": 7
+},
+"NPC_Item_Plant_M": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Flower": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Gerudo_FruitMelon_A": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Gerudo_FruitMelon_A_Trash": {
+"life": 100,
+"sortKey": -4,
+"sub": 0,
+"type": 0
+},
+"Npc_Gerudo_LiquorBottle": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Gerudo_Promoter_Staff": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Goron_Chisel_000": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Goron_Hammer_C_000": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Npc_Goron_Pickaxe_C_000": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Npc_Goron_Pincers_C_000": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Broom": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Brush": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Dustcloth": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Laundry": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Memo": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Mug": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Mug_Sake_0": {
+"life": 100,
+"sortKey": 140,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Mug_Sake_1": {
+"life": 100,
+"sortKey": 140,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Pen": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Picturebook": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Picturebook_Brown": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Picturebook_Pink": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Picturebook_Yellow": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_TestTube_000": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_TestTube_001": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Hylia_Twig": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Npc_Korogu_Minister_Maracas": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Npc_Korogu_Minister_Maracas_Left": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Npc_Shiekah_Artist_Brush_000": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Shiekah_Artist_Brush_000_Color": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Npc_Shiekah_Artist_Brush_001": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_LavoBook_A_01": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeApple_A_L_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeApple_A_M_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeBanana_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeBroadleafDead_B_L_01_Trunk": {
+"life": 12,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeBroadleaf_A_L_Trunk": {
+"life": 12,
+"sortKey": -10,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeBroadleaf_BossArea_A_L_Trunk": {
+"life": 12,
+"sortKey": -9,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeBurned_A_01_Trunk": {
+"life": 12,
+"sortKey": -9,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeBurned_B_01_Trunk": {
+"life": 12,
+"sortKey": -3,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeBurned_B_02_Trunk": {
+"life": 12,
+"sortKey": 1,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferousDead_A_01_Trunk": {
+"life": 12,
+"sortKey": -8,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferousDead_A_02_Trunk": {
+"life": 12,
+"sortKey": -3,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferousDead_A_Snow_01_Trunk": {
+"life": 12,
+"sortKey": 5,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_A_01_Trunk": {
+"life": 12,
+"sortKey": -6,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_A_02_Trunk": {
+"life": 12,
+"sortKey": -4,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_A_03_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_A_04_Trunk": {
+"life": 12,
+"sortKey": 4,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_A_Snow_01_Trunk": {
+"life": 12,
+"sortKey": -13,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_A_Snow_02_Trunk": {
+"life": 12,
+"sortKey": -7,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_A_Snow_03_Trunk": {
+"life": 12,
+"sortKey": -3,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_C_01_Trunk": {
+"life": 12,
+"sortKey": 14,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_C_02_Trunk": {
+"life": 12,
+"sortKey": 17,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeConiferous_C_03_Trunk": {
+"life": 12,
+"sortKey": 20,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeDeadLeaf_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeDead_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeDead_A_Snow_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeDorian_A_01_Trunk": {
+"life": 12,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeDragonblood_A_03_Trunk": {
+"life": 12,
+"sortKey": -3,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeGhost_A_03_Trunk": {
+"life": 12,
+"sortKey": 1,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeLog_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeMaple_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeMaple_A_02_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeMaple_B_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeMaple_B_02_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeMaple_C_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeMaple_C_02_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreePalmBeach_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreePalmBeach_A_02_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreePalm_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreePalm_A_02_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreePine_A_01_Trunk": {
+"life": 12,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeWhiteBirch_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeWhiteBirch_A_02_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeWhiteBirch_A_03_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeWhiteBirch_A_04_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Obj_TreeWillow_A_01_Trunk": {
+"life": 12,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"UMii_Korogu_PlantL_C_002": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Weapon_Bow_001": {
+"life": 22,
+"sortKey": 14110,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_002": {
+"life": 36,
+"sortKey": 14111,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_003": {
+"life": 20,
+"sortKey": 14511,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_004": {
+"life": 16,
+"sortKey": 14510,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_006": {
+"life": 25,
+"sortKey": 14530,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_009": {
+"life": 30,
+"sortKey": 14550,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_011": {
+"life": 35,
+"sortKey": 14531,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_013": {
+"life": 35,
+"sortKey": 14120,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_014": {
+"life": 40,
+"sortKey": 14130,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_015": {
+"life": 60,
+"sortKey": 14160,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_016": {
+"life": 30,
+"sortKey": 14150,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_017": {
+"life": 50,
+"sortKey": 14151,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_023": {
+"life": 120,
+"sortKey": 14180,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_026": {
+"life": 35,
+"sortKey": 14551,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_027": {
+"life": 30,
+"sortKey": 14512,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_028": {
+"life": 60,
+"sortKey": 14152,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_029": {
+"life": 45,
+"sortKey": 14170,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_030": {
+"life": 50,
+"sortKey": 14532,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_032": {
+"life": 45,
+"sortKey": 14552,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_033": {
+"life": 20,
+"sortKey": 14200,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_035": {
+"life": 48,
+"sortKey": 14112,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_036": {
+"life": 60,
+"sortKey": 14113,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_038": {
+"life": 20,
+"sortKey": 14050,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_040": {
+"life": 18,
+"sortKey": 14590,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_071": {
+"life": 100,
+"sortKey": 14000,
+"sub": 0,
+"type": 1
+},
+"Weapon_Bow_072": {
+"life": 100,
+"sortKey": 14227,
+"sub": 0,
+"type": 1
+},
+"Weapon_Goron_Knuckle": {
+"life": 100,
+"sortKey": -2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_001": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_002": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_003": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_004": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_010": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_013": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_019": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_023": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_024": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_027": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_029": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_030": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_032": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_033": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_034": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_035": {
+"sortKey": -3,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_036": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_037": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_041": {
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_047": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_051": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_054": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_055": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_056": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_057": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_059": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_060": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsheath_074": {
+"sortKey": -1,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_001": {
+"life": 20,
+"sortKey": 12110,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_002": {
+"life": 25,
+"sortKey": 12111,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_003": {
+"life": 30,
+"sortKey": 12112,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_004": {
+"life": 8,
+"sortKey": 12510,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_005": {
+"life": 12,
+"sortKey": 12511,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_006": {
+"life": 16,
+"sortKey": 12512,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_010": {
+"life": 12,
+"sortKey": 12520,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_011": {
+"life": 18,
+"sortKey": 12521,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_012": {
+"life": 24,
+"sortKey": 12522,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_013": {
+"life": 15,
+"sortKey": 12540,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_014": {
+"life": 20,
+"sortKey": 12541,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_015": {
+"life": 25,
+"sortKey": 12542,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_016": {
+"life": 20,
+"sortKey": 12550,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_017": {
+"life": 25,
+"sortKey": 12551,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_018": {
+"life": 35,
+"sortKey": 12552,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_019": {
+"life": 5,
+"sortKey": 12601,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_020": {
+"life": 10,
+"sortKey": 12190,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_023": {
+"life": 50,
+"sortKey": 12180,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_024": {
+"life": 40,
+"sortKey": 12113,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_027": {
+"life": 30,
+"sortKey": 12130,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_029": {
+"life": 30,
+"sortKey": 12160,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_030": {
+"life": 52,
+"sortKey": 12041,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_031": {
+"life": 40,
+"sortKey": 12042,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_032": {
+"life": 47,
+"sortKey": 12040,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_033": {
+"life": 50,
+"sortKey": 12210,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_034": {
+"life": 40,
+"sortKey": 12211,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_035": {
+"life": 50,
+"sortKey": 12212,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_036": {
+"life": 30,
+"sortKey": 12140,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_037": {
+"life": 40,
+"sortKey": 12141,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_038": {
+"life": 8,
+"sortKey": 12031,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_041": {
+"life": 25,
+"sortKey": 12170,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_045": {
+"life": 6,
+"sortKey": 12030,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_047": {
+"life": 15,
+"sortKey": 12200,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_051": {
+"life": 40,
+"sortKey": 12051,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_054": {
+"life": 60,
+"sortKey": 12142,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_055": {
+"life": 35,
+"sortKey": 12171,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_056": {
+"life": 25,
+"sortKey": 12010,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_057": {
+"life": 50,
+"sortKey": 12223,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_059": {
+"life": 60,
+"sortKey": 12224,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_060": {
+"life": 35,
+"sortKey": 12225,
+"sub": 0,
+"type": 0
+},
+"Weapon_Lsword_074": {
+"life": 25,
+"sortKey": 12590,
+"sub": 0,
+"type": 0
+},
+"Weapon_Quiver_001": {
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_001": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_002": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_003": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_004": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_007": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_013": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_016": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_019": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_021": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_023": {
+"sortKey": -2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_024": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_025": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_027": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_029": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_030": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_031": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_033": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_034": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_035": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_041": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_042": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_047": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_050": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_051": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_052": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_053": {
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_057": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_058": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_059": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_060": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_070": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sheath_073": {
+"sortKey": 1,
+"sub": 0,
+"type": 0
+},
+"Weapon_Shield_001": {
+"life": 12,
+"sortKey": 15110,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_002": {
+"life": 16,
+"sortKey": 15115,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_003": {
+"life": 23,
+"sortKey": 15116,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_004": {
+"life": 5,
+"sortKey": 15510,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_005": {
+"life": 7,
+"sortKey": 15511,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_006": {
+"life": 8,
+"sortKey": 15512,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_007": {
+"life": 8,
+"sortKey": 15530,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_008": {
+"life": 12,
+"sortKey": 15531,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_009": {
+"life": 15,
+"sortKey": 15532,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_013": {
+"life": 10,
+"sortKey": 15540,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_014": {
+"life": 13,
+"sortKey": 15541,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_015": {
+"life": 20,
+"sortKey": 15542,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_016": {
+"life": 12,
+"sortKey": 15550,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_017": {
+"life": 15,
+"sortKey": 15551,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_018": {
+"life": 20,
+"sortKey": 15552,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_021": {
+"life": 16,
+"sortKey": 15190,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_022": {
+"life": 29,
+"sortKey": 15117,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_023": {
+"life": 18,
+"sortKey": 15120,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_025": {
+"life": 20,
+"sortKey": 15130,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_026": {
+"life": 20,
+"sortKey": 15160,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_030": {
+"life": 800,
+"sortKey": 15000,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_031": {
+"life": 10,
+"sortKey": 15112,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_032": {
+"life": 10,
+"sortKey": 15113,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_033": {
+"life": 14,
+"sortKey": 15200,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_034": {
+"life": 12,
+"sortKey": 15111,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_035": {
+"life": 12,
+"sortKey": 15114,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_036": {
+"life": 26,
+"sortKey": 15161,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_037": {
+"life": 60,
+"sortKey": 15162,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_038": {
+"life": 32,
+"sortKey": 15180,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_040": {
+"life": 10,
+"sortKey": 15030,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_041": {
+"life": 16,
+"sortKey": 15170,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_042": {
+"life": 16,
+"sortKey": 15150,
+"sub": 0,
+"type": 3
+},
+"Weapon_Shield_057": {
+"life": 90,
+"sortKey": 15226,
+"sub": 0,
+"type": 3
+},
+"Weapon_SpearSheath_001": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_SpearSheath_013": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_SpearSheath_023": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_SpearSheath_025": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_SpearSheath_028": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_SpearSheath_033": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_SpearSheath_034": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_SpearSheath_035": {
+"sortKey": 2,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_001": {
+"life": 30,
+"sortKey": 13110,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_002": {
+"life": 35,
+"sortKey": 13111,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_003": {
+"life": 40,
+"sortKey": 13112,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_004": {
+"life": 12,
+"sortKey": 13510,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_005": {
+"life": 15,
+"sortKey": 13511,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_006": {
+"life": 20,
+"sortKey": 13512,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_007": {
+"life": 18,
+"sortKey": 13530,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_008": {
+"life": 22,
+"sortKey": 13531,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_009": {
+"life": 28,
+"sortKey": 13532,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_010": {
+"life": 15,
+"sortKey": 13520,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_011": {
+"life": 20,
+"sortKey": 13521,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_012": {
+"life": 25,
+"sortKey": 13522,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_013": {
+"life": 20,
+"sortKey": 13540,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_014": {
+"life": 25,
+"sortKey": 13541,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_015": {
+"life": 35,
+"sortKey": 13542,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_016": {
+"life": 25,
+"sortKey": 13550,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_017": {
+"life": 35,
+"sortKey": 13551,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_018": {
+"life": 45,
+"sortKey": 13552,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_021": {
+"life": 15,
+"sortKey": 13190,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_022": {
+"life": 12,
+"sortKey": 13031,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_023": {
+"life": 50,
+"sortKey": 13180,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_024": {
+"life": 50,
+"sortKey": 13113,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_025": {
+"life": 35,
+"sortKey": 13120,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_027": {
+"life": 40,
+"sortKey": 13130,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_028": {
+"life": 40,
+"sortKey": 13131,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_029": {
+"life": 35,
+"sortKey": 13160,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_030": {
+"life": 20,
+"sortKey": 13052,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_031": {
+"life": 50,
+"sortKey": 13140,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_032": {
+"life": 35,
+"sortKey": 13150,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_033": {
+"life": 50,
+"sortKey": 13210,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_034": {
+"life": 40,
+"sortKey": 13211,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_035": {
+"life": 50,
+"sortKey": 13212,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_036": {
+"life": 8,
+"sortKey": 13030,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_037": {
+"life": 35,
+"sortKey": 13170,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_038": {
+"life": 12,
+"sortKey": 13032,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_047": {
+"life": 15,
+"sortKey": 13200,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_049": {
+"life": 40,
+"sortKey": 13132,
+"sub": 0,
+"type": 0
+},
+"Weapon_Spear_050": {
+"life": 70,
+"sortKey": 13133,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_001": {
+"life": 20,
+"sortKey": 11110,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_002": {
+"life": 23,
+"sortKey": 11111,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_003": {
+"life": 27,
+"sortKey": 11112,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_004": {
+"life": 12,
+"sortKey": 11510,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_005": {
+"life": 14,
+"sortKey": 11511,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_006": {
+"life": 18,
+"sortKey": 11512,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_007": {
+"life": 17,
+"sortKey": 11530,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_008": {
+"life": 23,
+"sortKey": 11531,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_009": {
+"life": 27,
+"sortKey": 11532,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_013": {
+"life": 17,
+"sortKey": 11540,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_014": {
+"life": 26,
+"sortKey": 11541,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_015": {
+"life": 32,
+"sortKey": 11542,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_016": {
+"life": 26,
+"sortKey": 11550,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_017": {
+"life": 32,
+"sortKey": 11551,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_018": {
+"life": 41,
+"sortKey": 11552,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_019": {
+"life": 5,
+"sortKey": 11600,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_020": {
+"life": 8,
+"sortKey": 11601,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_021": {
+"life": 8,
+"sortKey": 11190,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_022": {
+"life": 5,
+"sortKey": 11030,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_023": {
+"life": 54,
+"sortKey": 11180,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_024": {
+"life": 36,
+"sortKey": 11113,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_025": {
+"life": 27,
+"sortKey": 11120,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_027": {
+"life": 27,
+"sortKey": 11130,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_029": {
+"life": 23,
+"sortKey": 11160,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_030": {
+"life": 32,
+"sortKey": 11161,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_031": {
+"life": 27,
+"sortKey": 11150,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_033": {
+"life": 36,
+"sortKey": 11210,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_034": {
+"life": 30,
+"sortKey": 11211,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_035": {
+"life": 36,
+"sortKey": 11212,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_040": {
+"life": 80,
+"sortKey": 11053,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_041": {
+"life": 26,
+"sortKey": 11170,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_043": {
+"life": 8,
+"sortKey": 11020,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_044": {
+"life": 4,
+"sortKey": 11010,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_047": {
+"life": 14,
+"sortKey": 11200,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_048": {
+"life": 32,
+"sortKey": 11561,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_049": {
+"life": 32,
+"sortKey": 11571,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_050": {
+"life": 32,
+"sortKey": 11581,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_051": {
+"life": 18,
+"sortKey": 11050,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_052": {
+"life": 60,
+"sortKey": 11162,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_053": {
+"life": 14,
+"sortKey": 11590,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_056": {
+"life": 100,
+"sortKey": 99998,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_057": {
+"life": 45,
+"sortKey": 11220,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_058": {
+"life": 27,
+"sortKey": 11221,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_059": {
+"life": 20,
+"sortKey": 11222,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_060": {
+"life": 14,
+"sortKey": 11560,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_061": {
+"life": 14,
+"sortKey": 11570,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_062": {
+"life": 14,
+"sortKey": 11580,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_070": {
+"life": 40,
+"sortKey": 11000,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_071": {
+"life": 100,
+"sortKey": 11001,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_072": {
+"life": 100,
+"sortKey": 11002,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_073": {
+"life": 25,
+"sortKey": 11591,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_500": {
+"life": 100,
+"sortKey": 0,
+"sub": 0,
+"type": 0
+},
+"Weapon_Sword_501": {
+"life": 100,
+"sortKey": -1,
+"sub": 0,
+"type": 0
+}
+}

@@ -62,9 +62,15 @@ def _load_gate_items() -> dict:
         return json.load(fh)
 
 def _load_pouch_items() -> dict:
-    """Base d'items de poche livrables en live (type/sub par actor name).
-    botw_items.json (base complète, ~130 ingrédients) + pouch_items.json (overrides manuels)."""
+    """Base d'items de poche livrables en live (type/sub/sortKey par actor name).
+    pouch_db.json (base COMPLÈTE armes/armures/matériaux depuis ActorInfo, dict plat) +
+    botw_items.json / pouch_items.json (overrides curés, format {items:{…}})."""
     merged: dict = {}
+    try:
+        with open(_DATA_DIR / "pouch_db.json", encoding="utf-8") as fh:
+            merged.update(json.load(fh))          # dict plat {actor: {type,…}}
+    except FileNotFoundError:
+        pass
     for fname in ("botw_items.json", "pouch_items.json"):
         try:
             with open(_DATA_DIR / fname, encoding="utf-8") as fh:
@@ -158,10 +164,16 @@ _COMPANION_FLAGS: dict[int, list[str]] = {
 # (appliqué au rechargement, en même temps que le flag).
 _COMPANION_POUCH: dict[int, list[str]] = {
     6_080_000: ["PlayerStole2"],          # Paraglider key item
+    6_080_006: ["Weapon_Sword_070"],      # Master Sword (arme type 0)
     6_080_010: ["Obj_HeroSoul_Rito"],     # Revali's Gale
     6_080_011: ["Obj_HeroSoul_Zora"],     # Mipha's Grace
     6_080_012: ["Obj_HeroSoul_Goron"],    # Daruk's Protection
     6_080_013: ["Obj_HeroSoul_Gerudo"],   # Urbosa's Fury
+    # Tenues = objet AP → on donne la TENUE COMPLÈTE (casque type 4 + torse 5 + jambes 6).
+    6_080_014: ["Armor_011_Head", "Armor_011_Upper", "Armor_011_Lower"],  # Flamebreaker
+    6_080_015: ["Armor_009_Head", "Armor_009_Upper", "Armor_009_Lower"],  # Snowquill
+    6_080_016: ["Armor_053_Head", "Armor_053_Upper", "Armor_053_Lower"],  # Vai (Gerudo)
+    6_080_017: ["Armor_006_Head", "Armor_006_Upper", "Armor_006_Lower"],  # Zora
 }
 
 # Flags que le CLIENT ÉCRIT lui-même (livraison gate + companion) → à NE PAS détecter comme des
@@ -803,7 +815,11 @@ class DeferredSaveInjector(ItemInjector):
                 continue
             for iname in items:
                 if b.live_find_item(iname) is None:
-                    b.live_create_item(iname, 9, None, 1)   # objets-clés = type 9
+                    info = pouch_item_info(iname) or {}
+                    typ = info.get("type", 9)              # défaut objet-clé (type 9)
+                    # arme/arc/bouclier : value = durabilité ; armures/objets-clés : 1
+                    val = info.get("life", 1) if typ in (0, 1, 3) else 1
+                    b.live_create_item(iname, typ, info.get("sub"), val)
 
     def _inject_pending(self) -> list[InjectionSpec]:
         if not self._queue:
