@@ -73,6 +73,9 @@ _INV_SCAN_CHUNK   = 16 * 1024 * 1024
 # prefer_free : nb MAX de vérifications "ce buffer a-t-il un nœud libre ?" par scan. Chaque check
 # coûte des centaines de lectures mémoire → plafonné pour ne pas monopoliser le thread (keepalive AP).
 _FREE_NODE_CHECK_CAP = 8
+# Items PouchItem GÉRÉS PAR LE JEU : ne JAMAIS créer un nœud live (compteur d'orbes) — un faux
+# nœud fait crasher le jeu à la réconciliation d'inventaire (sortie de sanctuaire). Bump seulement.
+_NO_LIVE_CREATE = {"Obj_DungeonClearSeal"}
 # Pool de nœuds PouchItem libres épuisé → on ne re-tente une création qu'après ce délai (au lieu
 # de marteler chaque poll, ou de bloquer DÉFINITIVEMENT jusqu'à un reload). Laisse les nouveaux
 # nœuds libres (apparus quand le joueur ramasse/le jeu agrandit la poche) être utilisés.
@@ -1017,6 +1020,9 @@ class CemuMemoryBridge:
         """
         if not self.has_live_inventory:
             return False
+        # GARDE DUR : items gérés par le jeu (orbes) — jamais de création live (crash). Bump si présent.
+        if item_name in _NO_LIVE_CREATE:
+            return self.live_add_item_qty(item_name, value) is not None
         # DÉFENSIF : si l'item est déjà en poche, on incrémente sa quantité au lieu de créer
         # un doublon (garantit "pas de double stack" même en appel direct).
         if self.live_find_item(item_name) is not None:

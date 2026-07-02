@@ -199,6 +199,9 @@ _PORCH_VALUE1_ID    = crc32_id("PorchItem_Value1")  # 0x6A09FC59 — quantity sl
 _PORCH_SLOTS        = 420   # total inventory slots
 _PORCH_NAME_ENTRIES = 16    # 16 × 4 bytes = 64-byte item name per slot
 _DUNGEON_SEAL_ID    = crc32_id("DungeonClearSealNum")   # compteur gamedata d'orbes
+# Items PouchItem GÉRÉS PAR LE JEU : ne JAMAIS créer un nœud live (le jeu réconcilie et crashe).
+# On bump seulement s'ils existent ; persistance via gamedata + save banking.
+_GAME_MANAGED_POUCH = {"Obj_DungeonClearSeal"}          # compteur d'orbes (Spirit Orbs)
 
 
 def _find_first_run(data: bytes, flag_id: int) -> int:
@@ -728,26 +731,28 @@ class DeferredSaveInjector(ItemInjector):
         naturels ni une dépense au sanctuaire de la déesse au-dessus de la cible AP)."""
         if self._bridge is None:
             return
-        orb_target  = getattr(self._bridge, "orb_pouch_target", None) or 0
-        seal_target = getattr(self._bridge, "seal_target", None) or 0
-        if orb_target <= self._last_banked_orb and seal_target <= self._last_banked_seal:
+        # Cible unique = max(pouch orbe, compteur gamedata). Sur une save à 0 orbe, le nœud pouch
+        # n'existe pas (orb_pouch_target=None) mais seal_target porte le compte des orbes AP.
+        target = max(getattr(self._bridge, "orb_pouch_target", None) or 0,
+                     getattr(self._bridge, "seal_target", None) or 0)
+        if target <= self._last_banked_orb:
             return
         p = self._resolve()
         if p is None:
             return
         try:
-            if orb_target > self._last_banked_orb:
-                cur = _read_porch_value(_read_shared(p), "Obj_DungeonClearSeal")
-                if cur is not None:
-                    if cur < orb_target and _add_porch_item_to_save(
-                            p, "Obj_DungeonClearSeal", orb_target - cur, allow_create=False):
-                        log.info("[Orbe] banké dans la save : %d orbes (survit au reload)", orb_target)
-                    self._last_banked_orb = orb_target
-            if seal_target > self._last_banked_seal:
-                cur_seal = parse(_read_shared(p)).get_s32(_DUNGEON_SEAL_ID)
-                if cur_seal < seal_target:
-                    _write_flag_to_save(p, _DUNGEON_SEAL_ID, seal_target)
-                self._last_banked_seal = seal_target
+            data = _read_shared(p)
+            # Pouch : bump SEULEMENT si le slot existe (allow_create=False — créer un slot d'orbe
+            # dans la save est risqué à la reconstruction). Sinon DungeonClearSealNum porte le compte.
+            cur = _read_porch_value(data, "Obj_DungeonClearSeal")
+            if cur is not None and cur < target and _add_porch_item_to_save(
+                    p, "Obj_DungeonClearSeal", target - cur, allow_create=False):
+                log.info("[Orbe] banké dans la save : %d (survit au reload)", target)
+            # Compteur gamedata (survit au reload comme un flag).
+            if parse(data).get_s32(_DUNGEON_SEAL_ID) < target:
+                _write_flag_to_save(p, _DUNGEON_SEAL_ID, target)
+            self._last_banked_orb = target
+            self._last_banked_seal = target
         except Exception as exc:
             log.debug("[Orbe] banking save échoué : %s", exc)
 
@@ -841,7 +846,15 @@ class DeferredSaveInjector(ItemInjector):
                 # car sans mCount++ elle corrompt la save. Si désactivé / item absent, échec ->
                 # _inject_pending bascule sur la voie save-fichier (sûre, au menu titre).
                 info = pouch_item_info(action.item_name)
-                if self._bridge.pool_exhausted:
+                if action.item_name in _GAME_MANAGED_POUCH:
+                    # Item géré par le JEU (compteur d'orbes Obj_DungeonClearSeal) : ne JAMAIS créer
+                    # un faux nœud — le jeu le réconcilie à la sortie de sanctuaire et CRASH. On bump
+                    # seulement s'il existe déjà ; la persistance passe par DungeonClearSealNum
+                    # (add_s32) + le banking save. Compté LIVRÉ même si absent, sinon la spec se
+                    # rejoue et re-incrémente le compteur en boucle (double comptage).
+                    self._bridge.live_add_item_qty(action.item_name, action.amount)
+                    ok = True
+                elif self._bridge.pool_exhausted:
                     # Pool de nœuds libres épuisé : création impossible. On ne tente qu'un bump
                     # d'item déjà présent ; absent -> échec silencieux -> save-file (bump-only)
                     # ou report en file (livré en live après un reload, qui régénère le pool).
