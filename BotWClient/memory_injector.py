@@ -76,6 +76,11 @@ _FREE_NODE_CHECK_CAP = 8
 # Items PouchItem GÉRÉS PAR LE JEU : ne JAMAIS créer un nœud live (compteur d'orbes) — un faux
 # nœud fait crasher le jeu à la réconciliation d'inventaire (sortie de sanctuaire). Bump seulement.
 _NO_LIVE_CREATE = {"Obj_DungeonClearSeal"}
+# Après une RÉALLOCATION du buffer pouch (souvent pendant une transition/chargement — sortie de
+# sanctuaire), le jeu est peut-être encore en train de le reconstruire. On ne crée PAS d'item tant
+# que le buffer n'a pas prouvé sa stabilité (aucune re-localisation depuis ce délai) → sinon on
+# écrit dans un buffer transitoire = corruption = CRASH. > à l'intervalle de flush (5s).
+_INV_SETTLE_TIME = 4.0
 # Pool de nœuds PouchItem libres épuisé → on ne re-tente une création qu'après ce délai (au lieu
 # de marteler chaque poll, ou de bloquer DÉFINITIVEMENT jusqu'à un reload). Laisse les nouveaux
 # nœuds libres (apparus quand le joueur ramasse/le jeu agrandit la poche) être utilisés.
@@ -198,6 +203,7 @@ class CemuMemoryBridge:
         self._playerinfo:  Optional[int] = None  # singleton PlayerInfo (host), via vtable
         self._prev_hp:     Optional[int] = None  # dernier HP courant lu (détection de mort)
         self._last_inv_relocate: float = 0.0     # cooldown re-localisation inventaire
+        self._inv_changed_at:    float = 0.0     # instant du dernier CHANGEMENT de base pouch (settle)
         self._last_base_warn:    float = 0.0     # rate-limit du warning "base douteuse"
         self._pool_exhausted:    bool  = False   # plus de nœud libre → créations impossibles
         self._pool_exhausted_at: float = 0.0     # instant du dernier épuisement (retry après cooldown)
@@ -548,6 +554,8 @@ class CemuMemoryBridge:
         for rupees_addr in self._find_rupees_addresses():
             inv_base = self._find_inventory_start(rupees_addr, prefer_free=prefer_free)
             if inv_base is not None:
+                if inv_base != self._inv_base:
+                    self._inv_changed_at = time.monotonic()   # buffer déplacé → laisser stabiliser
                 self._rupees_addr = rupees_addr
                 self._inv_base = inv_base
                 log.info("[Mem] Inventaire live localise @ 0x%012X (rupees @ 0x%012X)",
@@ -1023,6 +1031,13 @@ class CemuMemoryBridge:
         # GARDE DUR : items gérés par le jeu (orbes) — jamais de création live (crash). Bump si présent.
         if item_name in _NO_LIVE_CREATE:
             return self.live_add_item_qty(item_name, value) is not None
+        # GARDE STABILITÉ : si le buffer pouch a été re-localisé récemment (le jeu réalloue,
+        # typiquement pendant une transition/chargement = sortie de sanctuaire), il n'est peut-être
+        # pas fini de reconstruire → écrire dedans corrompt la liste = CRASH. On reporte jusqu'à ce
+        # que le buffer soit resté stable un cycle de flush (le nœud sera créé au poll suivant).
+        if time.monotonic() - self._inv_changed_at < _INV_SETTLE_TIME:
+            log.debug("[Mem] (live) buffer ré-alloué récemment (pas stabilisé) — %s reporté", item_name)
+            return False
         # DÉFENSIF : si l'item est déjà en poche, on incrémente sa quantité au lieu de créer
         # un doublon (garantit "pas de double stack" même en appel direct).
         if self.live_find_item(item_name) is not None:
