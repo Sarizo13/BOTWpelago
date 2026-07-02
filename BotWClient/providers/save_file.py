@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
-from ..save_parser import parse, ParsedSave, flag_id as crc32_id
+from ..save_parser import parse, ParsedSave, LazyParsedSave, flag_id as crc32_id
 from .base import GameStateProvider, ItemInjector, InjectionSpec
 
 log = logging.getLogger("BotWClient.SaveFile")
@@ -464,9 +464,9 @@ class SaveFileProvider(GameStateProvider):
         b = self._bridge
         if b is not None and b.is_attached:
             raw = b.read_gamedata()
-            if raw:
+            if raw and len(raw) >= 12:
                 try:
-                    self._save = parse(raw)
+                    self._save = LazyParsedSave(raw)   # binary search, PAS de dict 128K (perf)
                     self._raw = raw
                     return True
                 except Exception as exc:
@@ -484,7 +484,7 @@ class SaveFileProvider(GameStateProvider):
             return False
         try:
             self._raw = _read_shared(p)          # partage complet → ne bloque pas les saves Cemu
-            self._save = parse(self._raw)
+            self._save = LazyParsedSave(self._raw)
             self._mtime = mtime
             if p != self._active:
                 log.info("Save rotated → %s", p.name)

@@ -31,6 +31,43 @@ ENTRY_SIZE  = 8    # flag_id(4) + value(4)
 
 # ── Data class ────────────────────────────────────────────────────────────────
 
+class LazyParsedSave:
+    """Comme ParsedSave mais SANS construire le dict des ~128 000 flags (coûteux : une itération
+    Python complète à chaque poll faisait ramer le client + retardait la livraison). Le tableau
+    (flag_id, value) est TRIÉ → on binary-search directement dans les octets bruts. Même interface
+    (get_bool / get_s32 / has_id)."""
+    __slots__ = ("_data", "version", "_n")
+
+    def __init__(self, data: bytes) -> None:
+        self._data = data
+        self.version = struct.unpack_from(">I", data, 0)[0] if len(data) >= 4 else 0
+        self._n = max(0, (len(data) - HEADER_SIZE) // ENTRY_SIZE)
+
+    def _find(self, flag_id: int):
+        lo, hi, data = 0, self._n - 1, self._data
+        while lo <= hi:
+            mid = (lo + hi) >> 1
+            off = HEADER_SIZE + mid * ENTRY_SIZE
+            fid = struct.unpack_from(">I", data, off)[0]
+            if fid == flag_id:
+                return struct.unpack_from(">I", data, off + 4)[0]
+            if fid < flag_id:
+                lo = mid + 1
+            else:
+                hi = mid - 1
+        return None
+
+    def get_bool(self, flag_id: int) -> bool:
+        return bool(self._find(flag_id))
+
+    def get_s32(self, flag_id: int) -> int:
+        raw = self._find(flag_id) or 0
+        return struct.unpack(">i", struct.pack(">I", raw))[0]
+
+    def has_id(self, flag_id: int) -> bool:
+        return self._find(flag_id) is not None
+
+
 @dataclass
 class ParsedSave:
     version: int = 0
