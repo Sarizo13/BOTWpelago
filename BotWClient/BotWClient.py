@@ -60,6 +60,10 @@ AP_VERSION = {"major": 0, "minor": 5, "build": 0, "class": "Version"}
 # Le coffre n'est qu'un marqueur (l'item réel vient d'AP) -> on retire cette valeur du
 # portefeuille à chaque check de coffre détecté. Cf. PLACEHOLDER_ACTOR (worlds/botw).
 PLACEHOLDER_RUPEE_VALUE = 1
+# DÉSACTIVÉ (V1) : l'adresse rubis trouvée est un MIROIR que le jeu réécrit → le strip est
+# inefficace (portefeuille reste à +1) et avait causé la corruption -298. On accepte les +1 rubis
+# verts (trivial). TODO V1.1 : localiser le portefeuille AUTORITAIRE puis remettre à True.
+_RUPEE_STRIP_ENABLED = False
 
 # BOTWpelago y écrit le config rando reçu via slot_data (source pour la construction
 # du pack quand l'utilisateur n'a pas fourni de fichier .apbotw).
@@ -422,7 +426,7 @@ class BotWClient:
             # coffre est détecté (fenêtre après attach / mid-réallocation, adresse rubis pas encore
             # localisée), le strip était perdu et le +1 restait → "certains rubis pas retirés".
             # On ne solde la dette QUE si live_add_rupees réussit vraiment (retour non-None).
-            if self._pending_rupee_strip:
+            if _RUPEE_STRIP_ENABLED and self._pending_rupee_strip:
                 bridge = self.injector._bridge
                 if bridge and bridge.is_attached and bridge.has_live_inventory:
                     n = self._pending_rupee_strip
