@@ -916,6 +916,7 @@ class CemuMemoryBridge:
     _NODE_OFF_TYPE = 0x0C
     _NODE_OFF_SUB  = 0x10
     _NODE_OFF_VAL  = 0x14
+    _NODE_OFF_EQUIPPED = 0x18  # bool mEquipped (+ mInInventory) — 0 = non équipé
     _NODE_OFF_SEC  = 0x1C      # liste secondaire (intrusive) : champ "next"
     _NODE_OFF_SECHOOK = 0x28   # cible des pointeurs de la liste secondaire (= région du nom, vérifié hexdump)
     _NODE_OFF_NAME = 0x28      # buffer du FixedSafeString
@@ -1156,9 +1157,18 @@ class CemuMemoryBridge:
         # identité
         nb = item_name.encode("ascii")[:63]; nb += b"\x00" * (64 - len(nb))
         raw[self._NODE_OFF_NAME:self._NODE_OFF_NAME + 64] = nb
-        struct.pack_into(">i", raw, self._NODE_OFF_VAL, value)
+        # VALEUR : pour les EMPILABLES (flèches/matériaux/nourriture) VAL = quantité voulue. Pour
+        # l'ÉQUIPEMENT (arme/arc/bouclier/armure), VAL = durabilité : on GARDE celle du clone (une
+        # vraie arme valide) car generalLife (ActorInfo) ≠ la durabilité pouch (×100) → écrire
+        # 'value' donnerait une arme quasi cassée (val=20 → 0.2 de durabilité).
+        if item_type in _STACKABLE_TYPES:
+            struct.pack_into(">i", raw, self._NODE_OFF_VAL, value)
         if subtype is not None:
             struct.pack_into(">i", raw, self._NODE_OFF_SUB, subtype)
+        # Flag ÉQUIPÉ (mot à +0x18) : si on clone une arme/bouclier ÉQUIPÉ, le nouvel item hérite du
+        # flag → toutes les armes/boucliers apparaissent équipés en même temps (bug). On le remet à 0
+        # (état "non équipé", comme le template).
+        struct.pack_into(">I", raw, self._NODE_OFF_EQUIPPED, 0)
 
         # ── 4) Splice F juste après l'ancre A, dans la SEULE liste (OffsetList primaire) ──
         # IMPORTANT : il n'y a PAS de "liste secondaire". Le dump du nœud (544o) montre que
