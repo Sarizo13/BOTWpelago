@@ -1072,21 +1072,38 @@ class CemuMemoryBridge:
         if item_type == 2 and not any(n["type"] in (1, 2) for n in selfref):
             log.debug("[Mem] (live) catégorie arc/flèche vide — %s reporté", item_name)
             return False
-        # ANCRE : nœud self-ref du plus haut type ≤ item_type (la liste est triée par type). On
-        # splice APRÈS un item de type ≤ (PAS forcément le même type) → le 1er item d'un type peut
-        # se créer même sur une save quasi vide (l'épée/bouclier de départ servent d'ancre).
-        cands = [n for n in selfref if n["type"] <= item_type]
-        if not cands:
-            log.debug("[Mem] (live) pas d'ancre (type ≤ %d) pour %s — reporté", item_type, item_name)
-            return False
-        anchor = max(cands, key=lambda n: n["type"])
-        # CONTENU (clone) : un nœud live du MÊME type si présent (bon icône/structure ; on évite
-        # les plats cuisinés sub=0xA), sinon le TEMPLATE caché du type (~/.botwpelago).
+        # ANCRE. Cas MATÉRIAUX (type 7) : la poche matériaux est UNE catégorie mais TRIÉE par
+        # sous-catégorie (Item_Fruit_*, Item_Enemy_*, Item_Ore_*, Item_Mushroom_*…). Insérer une
+        # sous-catégorie DERRIÈRE une autre DÉSORGANISE l'inventaire → crash quand le jeu le re-trie
+        # (constaté : un Item_Fruit_J inséré après un Item_Enemy_46). On n'ancre donc QUE derrière un
+        # item du MÊME préfixe (même sous-catégorie), après le DERNIER de ce groupe. Sinon on reporte
+        # (le 1er d'une sous-catégorie arrive au reload, qui re-trie proprement).
+        if item_type == 7:
+            prefix = item_name.rsplit("_", 1)[0]
+            same_prefix = [n for n in selfref
+                           if n["type"] == 7 and n["name"].rsplit("_", 1)[0] == prefix]
+            if not same_prefix:
+                log.debug("[Mem] (live) pas d'ancre même sous-catégorie (%s) pour %s — reporté",
+                          prefix, item_name)
+                return False
+            anchor = same_prefix[-1]                        # après le dernier du même groupe
+        else:
+            # Autres types (armes/arcs/boucliers/armures/objets-clés) : ancre = plus haut type ≤.
+            cands = [n for n in selfref if n["type"] <= item_type]
+            if not cands:
+                log.debug("[Mem] (live) pas d'ancre (type ≤ %d) pour %s — reporté", item_type, item_name)
+                return False
+            anchor = max(cands, key=lambda n: n["type"])
+        # CONTENU (clone) : un nœud live du MÊME type (bon icône/structure ; on évite les plats
+        # cuisinés sub=0xA), sinon le TEMPLATE caché du type. Pour les matériaux on clone dans la
+        # MÊME sous-catégorie (préfixe) que l'ancre → la clé de tri copiée est cohérente (sinon un
+        # fruit cloné d'une partie de monstre se re-trierait au mauvais endroit).
         same_type = [n for n in selfref if n["type"] == item_type]
+        pool = (same_prefix if item_type == 7 else same_type) or same_type
         content = (
-            (subtype is not None and next((n for n in same_type if n["sub"] == subtype), None))
-            or next((n for n in same_type if n["sub"] != 0xA), None)
-            or (same_type[0] if same_type else None)
+            (subtype is not None and next((n for n in pool if n["sub"] == subtype), None))
+            or next((n for n in pool if n["sub"] != 0xA), None)
+            or (pool[0] if pool else None)
         )
         if content is not None:
             content_raw, content_Tg = content["raw"], h2g(content["host"])
