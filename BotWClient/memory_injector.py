@@ -218,6 +218,18 @@ class CemuMemoryBridge:
         self._template_store = template_store or (
             Path.home() / ".botwpelago" / "pouch_templates.json")
         self._templates: dict[str, dict] = self._load_templates()
+        # Table {nom_item: sortKey} (ActorInfo, via tools/build_sort_keys.py) : le pouch est trié
+        # par sortKey au sein d'une catégorie → on ancre un nouvel item après le dernier nœud dont
+        # le (type, sortKey) est ≤ le sien (position triée exacte, sinon inventaire désorganisé = crash).
+        self._sort_keys: dict[str, int] = self._load_sort_keys()
+
+    @staticmethod
+    def _load_sort_keys() -> dict[str, int]:
+        p = Path(__file__).resolve().parent.parent / "data" / "item_sort_keys.json"
+        try:
+            return {str(k): int(v) for k, v in json.loads(p.read_text(encoding="utf-8")).items()}
+        except Exception:
+            return {}
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -1057,39 +1069,34 @@ class CemuMemoryBridge:
         if item_type == 2 and not any(n["type"] in (1, 2) for n in selfref):
             log.debug("[Mem] (live) catégorie arc/flèche vide — %s reporté", item_name)
             return False
-        # ANCRE. Cas MATÉRIAUX (type 7) : la poche matériaux est UNE catégorie mais TRIÉE par
-        # sous-catégorie (Item_Fruit_*, Item_Enemy_*, Item_Ore_*, Item_Mushroom_*…). Insérer une
-        # sous-catégorie DERRIÈRE une autre DÉSORGANISE l'inventaire → crash quand le jeu le re-trie
-        # (constaté : un Item_Fruit_J inséré après un Item_Enemy_46). On n'ancre donc QUE derrière un
-        # item du MÊME préfixe (même sous-catégorie), après le DERNIER de ce groupe. Sinon on reporte
-        # (le 1er d'une sous-catégorie arrive au reload, qui re-trie proprement).
-        if item_type == 7:
-            prefix = item_name.rsplit("_", 1)[0]
-            same_prefix = [n for n in selfref
-                           if n["type"] == 7 and n["name"].rsplit("_", 1)[0] == prefix]
-            if not same_prefix:
-                log.debug("[Mem] (live) pas d'ancre même sous-catégorie (%s) pour %s — reporté",
-                          prefix, item_name)
-                return False
-            anchor = same_prefix[-1]                        # après le dernier du même groupe
-        else:
-            # Autres types (armes/arcs/boucliers/armures/objets-clés) : ancre = plus haut type ≤.
-            cands = [n for n in selfref if n["type"] <= item_type]
-            if not cands:
-                log.debug("[Mem] (live) pas d'ancre (type ≤ %d) pour %s — reporté", item_type, item_name)
-                return False
-            anchor = max(cands, key=lambda n: n["type"])
-        # CONTENU (clone) : un nœud live du MÊME type (bon icône/structure ; on évite les plats
-        # cuisinés sub=0xA), sinon le TEMPLATE caché du type. Pour les matériaux on clone dans la
-        # MÊME sous-catégorie (préfixe) que l'ancre → la clé de tri copiée est cohérente (sinon un
-        # fruit cloné d'une partie de monstre se re-trierait au mauvais endroit).
-        same_type = [n for n in selfref if n["type"] == item_type]
-        pool = (same_prefix if item_type == 7 else same_type) or same_type
-        content = (
-            (subtype is not None and next((n for n in pool if n["sub"] == subtype), None))
-            or next((n for n in pool if n["sub"] != 0xA), None)
-            or (pool[0] if pool else None)
-        )
+        # ANCRE par ORDRE DE TRI (sortKey) : la poche est triée par (type, puis sortKey au sein du
+        # type). On ancre APRÈS le dernier nœud dont le (type, sortKey) est ≤ celui du nouvel item →
+        # position triée EXACTE. Insérer ailleurs (ex: un fruit après une partie de monstre)
+        # désorganise l'inventaire → crash au re-tri. `selfref` est en ordre poche = ordre trié, donc
+        # le DERNIER candidat ≤ est le prédécesseur immédiat.
+        _BIG = 1 << 30
+        new_sk = self._sort_keys.get(item_name, _BIG)
+        # Sécurité : matériau (type 7) sans sortKey connu (table absente/incomplète) → on ne sait pas
+        # où l'insérer sans désorganiser → on REPORTE plutôt que risquer un crash.
+        if item_type == 7 and new_sk == _BIG:
+            log.debug("[Mem] (live) sortKey inconnu pour matériau %s — reporté (anti-désorganisation)", item_name)
+            return False
+        def _spos(n):
+            return (n["type"], self._sort_keys.get(n["name"], _BIG))
+        target = (item_type, new_sk)
+        cands = [n for n in selfref if _spos(n) <= target]
+        if not cands:
+            log.debug("[Mem] (live) pas d'ancre triée pour %s (sortKey=%s) — reporté", item_name, new_sk)
+            return False
+        anchor = cands[-1]
+        # CONTENU (clone) : nœud live du MÊME type, le plus PROCHE en sortKey (icône/structure/clé de
+        # tri cohérentes ; on évite les plats cuisinés sub=0xA), sinon le TEMPLATE caché du type.
+        same_type = [n for n in selfref if n["type"] == item_type and n["sub"] != 0xA] \
+            or [n for n in selfref if n["type"] == item_type]
+        sub_match = [n for n in same_type if subtype is not None and n["sub"] == subtype]
+        pool = sub_match or same_type
+        content = (min(pool, key=lambda n: abs(self._sort_keys.get(n["name"], _BIG) - new_sk))
+                   if pool else None)
         if content is not None:
             content_raw, content_Tg = content["raw"], h2g(content["host"])
         else:
