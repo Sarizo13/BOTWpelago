@@ -70,6 +70,9 @@ _ITEM_STRIDE     = 544
 _ITEM_PREFIXES   = ("Item_", "Weapon_", "Armor_", "Animal_", "Obj_", "Material_")
 _EARLY_EXIT_SCORE = 5
 _INV_SCAN_CHUNK   = 16 * 1024 * 1024
+# prefer_free : nb MAX de vérifications "ce buffer a-t-il un nœud libre ?" par scan. Chaque check
+# coûte des centaines de lectures mémoire → plafonné pour ne pas monopoliser le thread (keepalive AP).
+_FREE_NODE_CHECK_CAP = 8
 # Pool de nœuds PouchItem libres épuisé → on ne re-tente une création qu'après ce délai (au lieu
 # de marteler chaque poll, ou de bloquer DÉFINITIVEMENT jusqu'à un reload). Laisse les nouveaux
 # nœuds libres (apparus quand le joueur ramasse/le jeu agrandit la poche) être utilisés.
@@ -502,7 +505,7 @@ class CemuMemoryBridge:
 
         off = 0
         best, best_score = None, -1
-        best_free, best_free_score = None, -1
+        free_checks = 0
         while off < region_size:
             n = min(_INV_SCAN_CHUNK, region_size - off)
             read_n = min(n + _ITEM_STRIDE + 8, region_size - off)
@@ -523,15 +526,18 @@ class CemuMemoryBridge:
                     s = self._score_inventory_candidate(addr)
                     if s > best_score:
                         best, best_score = addr, s
-                        if s >= _EARLY_EXIT_SCORE and not prefer_free:
+                    # early-exit sur un candidat FORT (≥ seuil). Le check "nœud libre" (coûteux,
+                    # ~centaines de lectures) est réservé aux candidats forts ET plafonné → sinon
+                    # il monopolise le thread et fait tomber le keepalive AP (1011).
+                    if s >= _EARLY_EXIT_SCORE:
+                        if not prefer_free:
                             return best
-                    if prefer_free and s > 0 and s > best_free_score and self._addr_has_free_node(addr):
-                        best_free, best_free_score = addr, s
-                        if s >= _EARLY_EXIT_SCORE:
-                            return best_free
+                        if free_checks < _FREE_NODE_CHECK_CAP:
+                            free_checks += 1
+                            if self._addr_has_free_node(addr):
+                                return addr        # candidat fort AVEC nœud libre = buffer vivant
             off += n
-        if prefer_free and best_free is not None:
-            return best_free
+        # aucun candidat fort avec nœud libre → on retombe sur `best` (fallback).
         return best if best_score > 0 else None
 
     def _locate_live_inventory(self, prefer_free: bool = False) -> None:
