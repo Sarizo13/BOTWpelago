@@ -49,13 +49,36 @@ def main() -> None:
         heads = [n for n in nodes if n["name"] and id(n) not in succ_ids]
         print("── ORDRE LISTE (en suivant next 0x04) ──")
         seen = set()
+        tail = None
         for head in heads:
             cur = head
             while cur is not None and id(cur) not in seen:
                 seen.add(id(cur))
                 print(f"   type={cur['type']} sub={cur['sub']:<3} {cur['name']}")
+                tail = cur
                 cur = succ.get(id(cur))
         print()
+
+        # ── SENTINELLE (tête sead::OffsetList, dans PauseMenuDataMgr) + zone autour ──
+        # On suit next depuis la queue jusqu'à sortir des nœuds → c'est l'adresse sentinelle.
+        # On dumpe [sentinelle-0x60 .. +0xC0] : d'éventuels compteurs par catégorie (num boucliers,
+        # etc.) qui verrouillent l'affichage d'une catégorie vide y seraient (petits entiers).
+        if tail is not None:
+            node_bases = {h2g(n["host"]) for n in nodes if n["name"]}
+            nxt = struct.unpack_from(">I", tail["raw"], 0x04)[0]
+            sentinel_g = nxt - 0x04
+            if sentinel_g not in node_bases:
+                sh = sentinel_g + base
+                print(f"── SENTINELLE @ guest 0x{sentinel_g:08X} (host 0x{sh:012X}) : [-0x60..+0xC0] ──")
+                blob = b.read_bytes(sh - 0x60, 0x120) if hasattr(b, "read_bytes") else b._read(sh - 0x60, 0x120)
+                if blob:
+                    for i in range(0, len(blob), 16):
+                        off = i - 0x60
+                        sign = "-" if off < 0 else "+"
+                        words = " ".join(f"{struct.unpack_from('>I', blob, i+j)[0]:08X}"
+                                         for j in range(0, 16, 4) if i + j + 4 <= len(blob))
+                        print(f"   {sign}0x{abs(off):03X}: {words}")
+                print()
 
     print("── Octets bruts équipement (types 0-6) ──")
     for n in nodes:
