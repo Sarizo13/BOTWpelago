@@ -1110,11 +1110,9 @@ class CemuMemoryBridge:
         if item_type == 2 and not any(n["type"] in (1, 2) for n in selfref):
             log.debug("[Mem] (live) catégorie arc/flèche vide — %s reporté", item_name)
             return False
-        # ANCRE par ORDRE DE TRI (sortKey) : la poche est triée par (type, puis sortKey au sein du
-        # type). On ancre APRÈS le dernier nœud dont le (type, sortKey) est ≤ celui du nouvel item →
-        # position triée EXACTE. Insérer ailleurs (ex: un fruit après une partie de monstre)
-        # désorganise l'inventaire → crash au re-tri. `selfref` est en ordre poche = ordre trié, donc
-        # le DERNIER candidat ≤ est le prédécesseur immédiat.
+        # ANCRE par ORDRE DE TRI (sortKey) : la poche est UNE liste chaînée triée par (type, puis
+        # sortKey au sein du type). On insère à la position triée EXACTE (voir la détection de sens
+        # ci-dessous). Insérer ailleurs désorganise l'inventaire → catégories fracturées / crash.
         _BIG = 1 << 30
         new_sk = self._sort_keys.get(item_name, _BIG)
         # Sécurité : matériau (type 7) sans sortKey connu (table absente/incomplète) → on ne sait pas
@@ -1125,15 +1123,34 @@ class CemuMemoryBridge:
         def _spos(n):
             return (n["type"], self._sort_keys.get(n["name"], _BIG))
         target = (item_type, new_sk)
-        cands = [n for n in selfref if _spos(n) <= target]
-        if not cands:
-            log.debug("[Mem] (live) pas d'ancre triée pour %s (sortKey=%s) — reporté", item_name, new_sk)
+        # SENS DU TRI — la poche est une seule liste chaînée triée par (type, sortKey), mais le SENS
+        # du champ next(0x04) doit être CONSTATÉ, pas supposé : les dumps montrent un ordre DÉCROISSANT
+        # (ex: flèches type 2 → armes type 0 en suivant 0x04). Mon ancienne hypothèse « croissant »
+        # insérait un item cross-type (1er bouclier type 3) du MAUVAIS CÔTÉ des flèches → un type 3
+        # coincé entre type 2 et type 0 → catégories fracturées (page vide + menu bugué). On reconstruit
+        # les liens next parmi les nœuds scannés et on lit le sens sur la 1re paire de clés différentes.
+        by_next = {h2g(n["host"]) + self._NODE_OFF_NEXT: n for n in selfref}
+        descending = True                              # défaut = ce que montrent tous les dumps
+        for n in selfref:
+            succ = by_next.get(struct.unpack_from(">I", n["raw"], self._NODE_OFF_NEXT)[0])
+            if succ is not None and _spos(succ) != _spos(n):
+                descending = _spos(succ) < _spos(n)
+                break
+        # PRÉDÉCESSEUR (son champ next(0x04) pointera vers F) :
+        #   • liste DÉCROISSANTE → le plus PETIT nœud encore ≥ à F (F s'insère juste en dessous) ;
+        #   • liste CROISSANTE   → le plus GRAND nœud encore ≤ à F.
+        # Dans les deux cas le voisin de l'autre côté est strictement de l'autre côté de F → tri exact,
+        # y compris à une frontière de catégorie (ex: bouclier inséré entre matériaux et flèches).
+        if descending:
+            cands = [n for n in selfref if _spos(n) >= target]
+            anchor = min(cands, key=_spos) if cands else None
+        else:
+            cands = [n for n in selfref if _spos(n) <= target]
+            anchor = max(cands, key=_spos) if cands else None
+        if anchor is None:
+            log.debug("[Mem] (live) pas d'ancre triée pour %s (sortKey=%s, desc=%s) — reporté",
+                      item_name, new_sk, descending)
             return False
-        # PRÉDÉCESSEUR LOGIQUE = le candidat de (type, sortKey) MAXIMAL (l'ordre d'affichage/liste
-        # chaînée est trié par (type, sortKey), PAS l'ordre physique des slots). Prendre le dernier
-        # en ordre de scan physique mettait un matériau juste après une arme (nouvelle page avant
-        # les armes tant qu'on ne recharge pas). max() donne le vrai voisin trié.
-        anchor = max(cands, key=_spos)
         # CONTENU (clone) : nœud live du MÊME type, le plus PROCHE en sortKey (icône/structure/clé de
         # tri cohérentes ; on évite les plats cuisinés sub=0xA), sinon le TEMPLATE caché du type.
         same_type = [n for n in selfref if n["type"] == item_type and n["sub"] != 0xA] \
