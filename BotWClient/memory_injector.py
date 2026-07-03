@@ -911,6 +911,7 @@ class CemuMemoryBridge:
     # précède le nom. Offsets depuis le vrai début S = (motif - 0x20) :
     _NODE_HEADER_OFF = 0x20    # le motif "10 ?? ?? ?? 00 00 00 40" est à +0x20 du vrai début
     _NODE_OFF_VTABLE = 0x00    # vtable PouchItem 0x1021B5D4
+    _POUCH_VTABLE = 0x1021B5D4  # vtable de la classe PouchItem (à +0x00 d'un nœud BIEN cadré)
     _NODE_OFF_NEXT = 0x04
     _NODE_OFF_PREV = 0x08
     _NODE_OFF_TYPE = 0x0C
@@ -994,9 +995,31 @@ class CemuMemoryBridge:
 
     def _load_templates(self) -> dict[str, dict]:
         try:
-            return json.loads(self._template_store.read_text(encoding="utf-8"))
+            raw = json.loads(self._template_store.read_text(encoding="utf-8"))
         except Exception:
             return {}
+        # PURGE des templates PÉRIMÉS/MAL CADRÉS : d'anciennes captures (avant le fix de cadrage
+        # 0x20) stockaient le nœud cadré au MOTIF du nom → vtable 0x1021B524 (FixedSafeString) à
+        # l'offset 0x00 au lieu de la vtable PouchItem 0x1021B5D4, et un champ "type" lu dans les
+        # octets du nom (clés aberrantes type=grand nombre). Cloner un tel template produit un nœud
+        # malformé (le jeu le rejette à la réallocation → item invisible, ex: bouclier). On ne garde
+        # que les entrées dont (a) la clé est un petit type valide 0..9 et (b) la vtable @0x00 est
+        # bien celle du PouchItem. Les autres sont re-capturées proprement au prochain attach.
+        clean: dict[str, dict] = {}
+        for key, v in (raw.items() if isinstance(raw, dict) else []):
+            if not (key.isdigit() and 0 <= int(key) <= 9):
+                continue
+            try:
+                b = bytes.fromhex(v.get("hex", ""))
+                if len(b) == _ITEM_STRIDE and \
+                        struct.unpack_from(">I", b, self._NODE_OFF_VTABLE)[0] == self._POUCH_VTABLE:
+                    clean[key] = v
+            except Exception:
+                continue
+        if len(clean) != len(raw):
+            log.info("[Mem] templates: %d périmé(s)/mal cadré(s) purgé(s) (re-capture au prochain "
+                     "inventaire peuplé)", len(raw) - len(clean))
+        return clean
 
     def _save_templates(self) -> None:
         try:
@@ -1122,25 +1145,32 @@ class CemuMemoryBridge:
         retype = False
         if content is not None:
             content_raw, content_Tg = content["raw"], h2g(content["host"])
-        else:
-            tpl = self._templates.get(str(item_type))
-            if tpl:
-                content_raw, content_Tg = bytes.fromhex(tpl["hex"]), int(tpl["base"])
-            elif item_type <= 6:
-                # ÉQUIPEMENT sans exemplaire du type NI template (catégorie vide, ex: 1er bouclier
-                # alors que Link n'en a aucun) → on clone N'IMPORTE QUEL autre équipement (arme/arc/
-                # bouclier/armure : même classe PouchItem, même structure de nœud) et on le RE-TYPE.
-                # Casse le problème œuf-poule (pas de template tant que Link n'a jamais eu le type).
-                gear = [n for n in selfref if n["name"] and n["type"] <= 6 and n["sub"] != 0xA]
-                if not gear:
-                    log.debug("[Mem] (live) aucun équipement à cloner pour %s — reporté", item_name)
-                    return False
+        elif item_type <= 6:
+            # ÉQUIPEMENT sans exemplaire du MÊME type (catégorie vide, ex: 1er bouclier alors que
+            # Link n'en a aucun) → on clone N'IMPORTE QUEL autre équipement VIVANT (arme/arc/bouclier/
+            # armure : même classe PouchItem, même structure) et on le RE-TYPE. On PRÉFÈRE un nœud
+            # VIVANT au template caché : un nœud vivant est TOUJOURS bien cadré et à jour, alors qu'un
+            # template peut manquer. (Bug constaté : un template type-3 PÉRIMÉ masquait ce chemin →
+            # bouclier cloné depuis un nœud malformé → rejeté à la réallocation → invisible.) Le
+            # template ne sert QUE de dernier recours si Link n'a AUCUN équipement.
+            gear = [n for n in selfref if n["name"] and n["type"] <= 6 and n["sub"] != 0xA]
+            if gear:
                 src = min(gear, key=lambda n: abs(self._sort_keys.get(n["name"], _BIG) - new_sk))
                 content_raw, content_Tg = src["raw"], h2g(src["host"])
                 retype = True                          # forcer le champ type au type cible
             else:
+                tpl = self._templates.get(str(item_type))
+                if not tpl:
+                    log.debug("[Mem] (live) aucun équipement ni template pour %s — reporté", item_name)
+                    return False
+                content_raw, content_Tg = bytes.fromhex(tpl["hex"]), int(tpl["base"])
+        else:
+            # matériaux/nourriture (7/8) : pas de re-typage possible → template caché obligatoire.
+            tpl = self._templates.get(str(item_type))
+            if not tpl:
                 log.debug("[Mem] (live) pas de template type %d pour %s — reporté", item_type, item_name)
                 return False
+            content_raw, content_Tg = bytes.fromhex(tpl["hex"]), int(tpl["base"])
 
         # ── 2) Nœud libre cible ──
         free = next((n for n in nodes if n["type"] == 0xFFFFFFFF and not n["name"]), None)
