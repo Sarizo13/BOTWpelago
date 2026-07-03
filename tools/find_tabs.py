@@ -94,33 +94,40 @@ def main() -> None:
         addr += nrd
         remaining -= nrd
 
-    print(f"\n── Pointeurs vers DÉBUT de nœud (candidats mTabs) : {len(starts)} ──")
+    print(f"\n── Pointeurs vers DÉBUT de nœud : {len(starts)} (attendu ~0 : le jeu adresse par +0x04)")
+
+    # Les nœuds occupent une plage guest [gmin, gmax]. Les pointeurs +0x04 DANS cette plage sont les
+    # liens internes de la liste (next/prev). Ceux HORS plage = en-tête/pied PauseMenuDataMgr = mTabs
+    # (têtes de page) + tête de liste. On les liste (c'est là qu'est mTabs).
+    gmin = min(node_guests); gmax = max(node_guests)
+    outside = [(a, v) for a, v in links if not (gmin <= v <= gmax + _ITEM_STRIDE)]
+    inside = [(a, v) for a, v in links if (gmin <= v <= gmax + _ITEM_STRIDE)]
+    print(f"── Pointeurs +0x04 : {len(links)} total  ({len(inside)} internes-liste, "
+          f"{len(outside)} HORS-buffer = candidats mTabs) ──")
     prev = None
-    for host_addr, v in sorted(starts):
-        nm, ty = guest_of[v]
+    for host_addr, v in sorted(outside):
+        nm, ty = guest_of.get(v - 0x04, ("?", -1))
         d = "" if prev is None else f"  Δ=0x{host_addr - prev:X}"
-        print(f"   @0x{host_addr:012X} -> 0x{v:08X} [{_TYPE_NAME.get(ty,'?'):8s}] {nm}{d}")
+        print(f"   @0x{host_addr:012X} -> 0x{v:08X} (nœud+4) [{_TYPE_NAME.get(ty,'?'):8s}] {nm}{d}")
         prev = host_addr
 
-    # Dump autour du plus gros cluster de pointeurs-début (fenêtre couvrant tous les 'starts' proches).
-    if starts:
-        addrs = sorted(a for a, _ in starts)
-        # cluster = plus longue suite de starts espacés de ≤ 0x20
-        best_i, best_len = 0, 1
-        i = 0
+    # Dump autour du plus gros cluster HORS-buffer (fenêtre des pointeurs mTabs).
+    if outside:
+        addrs = sorted(a for a, _ in outside)
+        best_i, best_len, i = 0, 1, 0
         while i < len(addrs):
             j = i
-            while j + 1 < len(addrs) and addrs[j + 1] - addrs[j] <= 0x20:
+            while j + 1 < len(addrs) and addrs[j + 1] - addrs[j] <= 0x40:
                 j += 1
             if j - i + 1 > best_len:
                 best_len, best_i = j - i + 1, i
             i = j + 1
         c0 = addrs[best_i]
-        print(f"\n── Dump autour du cluster @0x{c0:012X} ({best_len} pointeurs) : [-0x20..+0x140] ──")
-        blob = b._read(c0 - 0x20, 0x160)
+        print(f"\n── Dump autour du cluster @0x{c0:012X} ({best_len} pointeurs) : [-0x40..+0x180] ──")
+        blob = b._read(c0 - 0x40, 0x1C0)
         if blob:
             for i in range(0, len(blob), 16):
-                off = (c0 - 0x20 + i) - c0
+                off = (c0 - 0x40 + i) - c0
                 sign = "-" if off < 0 else "+"
                 words_s = " ".join(f"{struct.unpack_from('>I', blob, i+j)[0]:08X}"
                                    for j in range(0, 16, 4) if i + j + 4 <= len(blob))
