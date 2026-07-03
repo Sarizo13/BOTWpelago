@@ -27,10 +27,13 @@ from botwpelago.config import Config  # noqa: E402
 
 OUT = PROJECT / "data" / "pouch_db.json"
 
-_PROFILE_TYPE = {
-    "WeaponSmallSword": 0, "WeaponLargeSword": 0, "WeaponSpear": 0, "OptionalWeapon": 0,
-    "WeaponBow": 1, "WeaponShield": 3,
-    "ArmorHead": 4, "ArmorUpper": 5, "ArmorLower": 6,
+# profil ActorInfo -> (PouchItemType, sub=ItemUse). sub confirmé par dump mémoire live :
+# épée=0, épée2main=1, lance=2, arc=3, bouclier=4, armure tête/torse/jambes=5/6/7.
+_PROFILE_TSUB = {
+    "WeaponSmallSword": (0, 0), "WeaponLargeSword": (0, 1), "WeaponSpear": (0, 2),
+    "OptionalWeapon": (0, 0),
+    "WeaponBow": (1, 3), "WeaponShield": (3, 4),
+    "ArmorHead": (4, 5), "ArmorUpper": (5, 6), "ArmorLower": (6, 7),
 }
 
 
@@ -50,9 +53,8 @@ def main() -> None:
         except Exception:
             continue
         # type de poche : armes/armures via profil ; matériaux via préfixe Item_
-        if profile in _PROFILE_TYPE:
-            typ = _PROFILE_TYPE[profile]
-            sub = 0
+        if profile in _PROFILE_TSUB:
+            typ, sub = _PROFILE_TSUB[profile]
         elif name.startswith("Item_"):
             typ, sub = 7, 8
         else:

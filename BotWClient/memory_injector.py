@@ -1171,20 +1171,25 @@ class CemuMemoryBridge:
         # identité
         nb = item_name.encode("ascii")[:63]; nb += b"\x00" * (64 - len(nb))
         raw[self._NODE_OFF_NAME:self._NODE_OFF_NAME + 64] = nb
-        # VALEUR : pour les EMPILABLES (flèches/matériaux/nourriture) VAL = quantité voulue. Pour
-        # l'ÉQUIPEMENT (arme/arc/bouclier/armure), VAL = durabilité : on GARDE celle du clone (une
-        # vraie arme valide) car generalLife (ActorInfo) ≠ la durabilité pouch (×100) → écrire
-        # 'value' donnerait une arme quasi cassée (val=20 → 0.2 de durabilité).
+        # VALEUR (VAL, 0x14) selon le type :
+        #   EMPILABLE (flèches/matériaux/nourriture) → quantité voulue ;
+        #   ARME/ARC/BOUCLIER (0/1/3) → durabilité = life × 100 (le pouch stocke la durabilité ×100 ;
+        #     dump live confirmé : bouclier vie 12 → VAL 1200, épée vie 36 → VAL 3600) ;
+        #   ARMURE (4/5/6) → 0 (état de base, pas de durabilité).
         if item_type in _STACKABLE_TYPES:
             struct.pack_into(">i", raw, self._NODE_OFF_VAL, value)
+        elif item_type in (0, 1, 3):
+            struct.pack_into(">i", raw, self._NODE_OFF_VAL, max(1, int(value)) * 100)
+        elif item_type in (4, 5, 6):
+            struct.pack_into(">i", raw, self._NODE_OFF_VAL, 0)
         if subtype is not None:
-            struct.pack_into(">i", raw, self._NODE_OFF_SUB, subtype)
+            struct.pack_into(">i", raw, self._NODE_OFF_SUB, subtype)   # ItemUse (bouclier=4, etc.)
         if retype:                                     # clone d'un autre équipement → re-typer
             struct.pack_into(">I", raw, self._NODE_OFF_TYPE, item_type)
-        # Flag ÉQUIPÉ (mot à +0x18) : si on clone une arme/bouclier ÉQUIPÉ, le nouvel item hérite du
-        # flag → toutes les armes/boucliers apparaissent équipés en même temps (bug). On le remet à 0
-        # (état "non équipé", comme le template).
-        struct.pack_into(">I", raw, self._NODE_OFF_EQUIPPED, 0)
+        # Flag ÉQUIPÉ = OCTET à +0x18 (mEquipped). On l'efface, mais SANS toucher +0x19 (mInInventory,
+        # doit rester 1). Dump live : non équipé = 0x00 01 00 00, équipé = 0x01 01 00 00. Effacer le
+        # MOT entier mettait mInInventory=0 → l'item disparaissait de l'inventaire.
+        raw[self._NODE_OFF_EQUIPPED] = 0
 
         # ── 4) Splice F juste après l'ancre A, dans la SEULE liste (OffsetList primaire) ──
         # IMPORTANT : il n'y a PAS de "liste secondaire". Le dump du nœud (544o) montre que
