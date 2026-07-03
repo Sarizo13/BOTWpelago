@@ -1123,30 +1123,47 @@ class CemuMemoryBridge:
         def _spos(n):
             return (n["type"], self._sort_keys.get(n["name"], _BIG))
         target = (item_type, new_sk)
-        # SENS DU TRI — la poche est une seule liste chaînée triée par (type, sortKey), mais le SENS
-        # du champ next(0x04) doit être CONSTATÉ, pas supposé : les dumps montrent un ordre DÉCROISSANT
-        # (ex: flèches type 2 → armes type 0 en suivant 0x04). Mon ancienne hypothèse « croissant »
-        # insérait un item cross-type (1er bouclier type 3) du MAUVAIS CÔTÉ des flèches → un type 3
-        # coincé entre type 2 et type 0 → catégories fracturées (page vide + menu bugué). On reconstruit
-        # les liens next parmi les nœuds scannés et on lit le sens sur la 1re paire de clés différentes.
+        # ANCRE via l'ADJACENCE RÉELLE de la liste (PAS via notre table sortKey — elle diverge de
+        # l'ordre du jeu : un matériau à sortKey inconnue est rangé au max, ou l'ordre interne d'un
+        # type ne colle pas → `min{≥cible}` ancrait AU MILIEU des matériaux → bouclier type 3 coincé
+        # entre deux type 7). On reconstruit les liens next(0x04) parmi les nœuds scannés (le champ
+        # next d'un nœud pointe vers le +0x04 du suivant) et on cherche la PAIRE ADJACENTE (P→S) qui
+        # ENCADRE la cible. La frontière de TYPE est sans ambiguïté (tout type>cible d'un côté, tout
+        # type<cible de l'autre), donc ça place correctement même le 1er item d'une catégorie vide.
         by_next = {h2g(n["host"]) + self._NODE_OFF_NEXT: n for n in selfref}
-        descending = True                              # défaut = ce que montrent tous les dumps
+        succ_of = {}                                   # node -> son successeur dans la liste (0x04)
         for n in selfref:
-            succ = by_next.get(struct.unpack_from(">I", n["raw"], self._NODE_OFF_NEXT)[0])
-            if succ is not None and _spos(succ) != _spos(n):
-                descending = _spos(succ) < _spos(n)
+            s = by_next.get(struct.unpack_from(">I", n["raw"], self._NODE_OFF_NEXT)[0])
+            if s is not None:
+                succ_of[id(n)] = s
+        # SENS DU TRI : constaté sur la 1re paire adjacente de clés différentes (défaut décroissant,
+        # comme tous les dumps le montrent : flèches type 2 → armes type 0 en suivant 0x04).
+        descending = True
+        for n in selfref:
+            s = succ_of.get(id(n))
+            if s is not None and _spos(s) != _spos(n):
+                descending = _spos(s) < _spos(n)
                 break
-        # PRÉDÉCESSEUR (son champ next(0x04) pointera vers F) :
-        #   • liste DÉCROISSANTE → le plus PETIT nœud encore ≥ à F (F s'insère juste en dessous) ;
-        #   • liste CROISSANTE   → le plus GRAND nœud encore ≤ à F.
-        # Dans les deux cas le voisin de l'autre côté est strictement de l'autre côté de F → tri exact,
-        # y compris à une frontière de catégorie (ex: bouclier inséré entre matériaux et flèches).
-        if descending:
-            cands = [n for n in selfref if _spos(n) >= target]
-            anchor = min(cands, key=_spos) if cands else None
-        else:
-            cands = [n for n in selfref if _spos(n) <= target]
-            anchor = max(cands, key=_spos) if cands else None
+        # PRÉDÉCESSEUR = le P d'une paire adjacente (P→S) telle que F tombe entre les deux :
+        #   décroissant → _spos(P) ≥ cible > _spos(S) ;  croissant → _spos(P) ≤ cible < _spos(S).
+        anchor = None
+        for n in selfref:
+            s = succ_of.get(id(n))
+            if s is None:
+                continue
+            if (descending and _spos(n) >= target > _spos(s)) or \
+               (not descending and _spos(n) <= target < _spos(s)):
+                anchor = n
+                break
+        if anchor is None:
+            # Frontière hors des paires scannées (F aux extrêmes, ou successeur non scanné) → repli
+            # sur la borne par clé (moins fiable mais rare : F plus grand/petit que tout le scan).
+            if descending:
+                cands = [n for n in selfref if _spos(n) >= target]
+                anchor = min(cands, key=_spos) if cands else None
+            else:
+                cands = [n for n in selfref if _spos(n) <= target]
+                anchor = max(cands, key=_spos) if cands else None
         if anchor is None:
             log.debug("[Mem] (live) pas d'ancre triée pour %s (sortKey=%s, desc=%s) — reporté",
                       item_name, new_sk, descending)
