@@ -102,3 +102,5 @@ apconfig.yaml
 .pytest_cache/
 .coverage
 htmlcov/
+_pause_before.bin
+_pause_before.json
