@@ -106,31 +106,43 @@ def main() -> None:
         n = min(len(before), len(after))
         gmin = min(node_guests) if node_guests else 0
         gmax = (max(node_guests) + _ITEM_STRIDE) if node_guests else 0
-        changes = []
-        for i in range(0, n - 3, 4):
-            bv = struct.unpack_from(">I", before, i)[0]
-            av = struct.unpack_from(">I", after, i)[0]
-            if bv != av:
-                host = start_host + i
-                guest = host - base
-                changes.append((guest, bv, av))
-        # catégorise : dans la plage des nœuds (buffer/liste) vs HORS (verrou candidat)
-        outside = [c for c in changes if not (gmin <= c[0] <= gmax)]
-        inside = [c for c in changes if (gmin <= c[0] <= gmax)]
-        print(f"{len(changes)} mots changés  ({len(inside)} dans buffer/liste, "
-              f"{len(outside)} HORS = candidats VERROU)\n")
-        print("── HORS buffer (candidats verrou catégorie) ──")
-        for guest, bv, av in outside:
-            off = guest - sentinel_g
-            sign = "-" if off < 0 else "+"
-            note = ""
-            if av - bv == 1 or bv - av == 1:
-                note = "  <= +/-1 (COMPTEUR ?)"
-            if av in node_guests or (av - 0x04) in node_guests:
-                note += "  <= pointe vers un nœud"
-            print(f"   guest 0x{guest:08X} (sentinelle{sign}0x{abs(off):X}): "
-                  f"0x{bv:08X} -> 0x{av:08X}{note}")
-        print(f"\n(inside/buffer: {len(inside)} changements — nouveau nœud + liens, ignorés)")
+        # indices des mots changés
+        idx = [i for i in range(0, n - 3, 4)
+               if struct.unpack_from(">I", before, i)[0] != struct.unpack_from(">I", after, i)[0]]
+        # REGROUPE en runs contigus (mots changés espacés de ≤ 0x10 = même struct/bloc). Les GROS runs
+        # (≥ 12 mots) = textures d'icônes + nouveau nœud (544o) → BRUIT, on jette. Le VERROU = un petit
+        # run ISOLÉ (compteur/flag/pointeur) dans une région par ailleurs stable.
+        runs = []
+        i = 0
+        while i < len(idx):
+            j = i
+            while j + 1 < len(idx) and idx[j + 1] - idx[j] <= 0x10:
+                j += 1
+            runs.append(idx[i:j + 1])
+            i = j + 1
+        small = [r for r in runs if len(r) <= 10]
+        big = [r for r in runs if len(r) > 10]
+        print(f"{len(idx)} mots changés → {len(runs)} runs  ({len(big)} gros=textures/nœud jetés, "
+              f"{len(small)} petits runs = candidats VERROU)\n")
+        print("── PETITS runs isolés (candidats verrou catégorie) ──")
+        for r in small:
+            for off_i in r:
+                guest = (start_host + off_i) - base
+                off = guest - sentinel_g
+                sign = "-" if off < 0 else "+"
+                bv = struct.unpack_from(">I", before, off_i)[0]
+                av = struct.unpack_from(">I", after, off_i)[0]
+                note = ""
+                d = av - bv
+                if -4 <= d <= 4 and d != 0:
+                    note += f"  <= {d:+d} (COMPTEUR ?)"
+                if av in node_guests or (av - 0x04) in node_guests:
+                    note += "  <= pointe vers un nœud"
+                if bin(bv ^ av).count("1") <= 3:
+                    note += f"  <= {bin(bv ^ av).count('1')} bit(s) (BITMASK ?)"
+                print(f"   sentinelle{sign}0x{abs(off):X}  (guest 0x{guest:08X}): "
+                      f"0x{bv:08X} -> 0x{av:08X}{note}")
+            print()
 
 
 if __name__ == "__main__":
