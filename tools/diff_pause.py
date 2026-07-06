@@ -68,6 +68,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--before", action="store_true")
     ap.add_argument("--after", action="store_true")
+    ap.add_argument("--dumptabs", action="store_true",
+                    help="dump la zone mTabs (sentinelle+0x37A00..+0x38100) annotée")
     args = ap.parse_args()
 
     b = CemuMemoryBridge()
@@ -79,6 +81,38 @@ def main() -> None:
         print("ERREUR: région PauseMenuDataMgr introuvable.")
         return
     start_host, size, base, sentinel_g, node_guests = reg
+
+    if args.dumptabs:
+        # noms des nœuds pour annoter les pointeurs +0x04
+        nodes = b._scan_pouch_nodes()
+        p4 = {}
+        for nn in nodes:
+            if nn["name"]:
+                g = nn["host"] - base
+                p4[g + 0x04] = (nn["name"], nn["type"])
+        lo = sentinel_g + base + 0x37A00
+        blob = b._read(lo, 0x700)
+        if not blob:
+            print("ERREUR: lecture échouée.")
+            return
+        print(f"── mTabs region  [sentinelle+0x37A00 .. +0x38100]  (base 0x{base:012X}) ──")
+        for i in range(0, len(blob), 4):
+            v = struct.unpack_from(">I", blob, i)[0]
+            guest = (lo + i) - base
+            off = guest - sentinel_g
+            ann = ""
+            if v in p4:
+                nm, ty = p4[v]
+                ann = f"  -> {_TYPE_NAME.get(ty,'?')} {nm} (+4)"
+            elif v in node_guests:
+                ann = f"  -> {_TYPE_NAME.get(node_guests[v],'?')} (début)"
+            elif 0 < v <= 0x40:
+                ann = f"  (int {v})"
+            elif v == 0xFFFFFFFF:
+                ann = "  (-1/vide)"
+            print(f"   +0x{off:05X} (guest 0x{guest:08X}): 0x{v:08X}{ann}")
+        return
+
     blob = b._read(start_host, size)
     if not blob:
         print("ERREUR: lecture région échouée.")
