@@ -205,6 +205,7 @@ class CemuMemoryBridge:
         self._pool_exhausted:    bool  = False   # plus de nœud libre → créations impossibles
         self._pool_exhausted_at: float = 0.0     # instant du dernier épuisement (retry après cooldown)
         self._last_freenode_warn: float = 0.0    # rate-limit du warning "aucun nœud libre"
+        self._last_create_empty_cat = False      # dernier live_create_item : 1er item d'une catégorie VIDE ? (visible au reload)
         self._rupee_shadow: Optional[int] = None # dernière valeur de rubis qu'on a ÉCRITE (anti-strip périmé)
         # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
@@ -1172,6 +1173,11 @@ class CemuMemoryBridge:
         # tri cohérentes ; on évite les plats cuisinés sub=0xA), sinon le TEMPLATE caché du type.
         same_type = [n for n in selfref if n["type"] == item_type and n["sub"] != 0xA] \
             or [n for n in selfref if n["type"] == item_type]
+        # CATÉGORIE VIDE = aucun nœud vivant de ce type. Le nœud sera créé + sérialisé (persiste),
+        # mais la GRILLE UI ne rend le 1er item d'une catégorie vide qu'au prochain rechargement
+        # (couche ksys::ui, cf. [[project_live_memory_injection]]). On l'expose pour un log clair
+        # côté appelant (l'item n'est PAS perdu, juste visible au reload).
+        self._last_create_empty_cat = not same_type
         sub_match = [n for n in same_type if subtype is not None and n["sub"] == subtype]
         pool = sub_match or same_type
         content = (min(pool, key=lambda n: abs(self._sort_keys.get(n["name"], _BIG) - new_sk))

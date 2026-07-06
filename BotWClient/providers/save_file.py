@@ -944,8 +944,17 @@ class DeferredSaveInjector(ItemInjector):
                 else:
                     ok = self._bridge.live_add_item_qty(action.item_name, action.amount) is not None
                 if ok:
-                    log.info("  [Live] %s  +%d %s (instantané)",
-                             spec.ap_item_name, action.amount, action.item_name)
+                    # 1er item d'une catégorie VIDE : le nœud est créé + sérialisé (persiste, JAMAIS
+                    # perdu) mais la grille UI ne le dessine qu'au prochain rechargement (couche
+                    # ksys::ui). On le signale clairement pour que ça ne ressemble pas à une perte.
+                    if getattr(self._bridge, "_last_create_empty_cat", False) \
+                            and typ is not None and typ not in _STACKABLE_TYPES:
+                        log.info("  [Live] %s  +%d %s (livré+persisté ; catégorie vide → VISIBLE au "
+                                 "prochain rechargement)", spec.ap_item_name, action.amount, action.item_name)
+                    else:
+                        log.info("  [Live] %s  +%d %s (instantané)",
+                                 spec.ap_item_name, action.amount, action.item_name)
+                    self._bridge._last_create_empty_cat = False
                 else:
                     all_ok = False
 
