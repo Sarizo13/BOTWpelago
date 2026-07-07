@@ -38,6 +38,7 @@
 
 ### PopTracker
 - [ ] Tester le pack dans PopTracker (autotracking — construit, jamais testé)
+- [ ] Colorer en **ROUGE** les checks **non accessibles** (selon la logique d'accès)
 - [ ] Polish : vraies icônes d'items
 
 ### Transverse / dette
@@ -53,3 +54,16 @@
 - [ ] Rendu live catégorie vide (couche `ksys::ui`) — investigué, différé (reload suffit)
 - [ ] Relics of the Past : décompiler → ré-implémenter des features choisies
 - [ ] Chests comme locations (TODO-8)
+
+### Idées gameplay V2
+- [ ] **Gate région par TÉLÉPORT** (alternative douce au kill) : quand le joueur entre dans une
+      région sans l'objet requis, le TP en arrière à la façon des **Bois Korogu / forêt perdue**
+      (sortie du chemin prévu → renvoi) + **message** « il te manque X pour aller ici ». Remplace le
+      kill DeathLink de la gate armure Créature Divine (V1) par une mécanique moins punitive.
+- [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et d'endurance ;
+      si le joueur en gagnerait au-delà du plafond → convertir en **don de 500 rubis**.
+
+### Décompilations à étudier (apprendre → ré-implémenter, PAS redistribuer)
+- [ ] **`DAR 3.6 - BCML - FREE.zip`** : bloque une action selon une autre (ex : **en combat → sanctuaire
+      non ouvrable** + affichage d'un message). Mécanisme réutilisable pour nos **zones non accessibles**
+      / gates (message + blocage conditionnel). Décompiler pour comprendre le HOW, puis ré-implémenter.
