@@ -1,0 +1,55 @@
+# BOTWpelago — Checklist
+
+> État consolidé du projet. Tout est **V1** sauf les gros chantiers **V2** (différés).
+> Coche au fil de l'eau. Source de vérité pour « ce qu'il reste à faire ».
+
+---
+
+## ✅ Fait & validé
+
+- [x] Détection des checks : sanctuaires, tours, créatures, lieux, quêtes, souvenirs (save-poll + hash CRC32)
+- [x] Gate paravoile + rétention de flags + goal 2 modes (sanctuaires / full)
+- [x] DeathLink (validé — **ne pas toucher**)
+- [x] Injection live d'items instantanée + persistante : matériaux, flèches, armes, arcs, boucliers, armures
+- [x] Master Sword + tenues de Champion (sets complets)
+- [x] Placement trié (décroissant par adjacence réelle) · durabilité ×100 · ItemUse · flag équipé
+- [x] Catégorie vide : livré + persisté, visible au reload (log clair)
+- [x] Crash contention fichier corrigé (lecture/écriture via mémoire quand attaché)
+- [x] Rubis strip désactivé (adresse miroir) · loot diversifié (+184 armes, −Spirit Orbs)
+- [x] Overlay desktop « item reçu »
+- [x] play_local.py (génère + serveur + wipe save) · orchestration BOTWpelago (pack_builder + GUI)
+
+---
+
+## 🔲 V1 — tout le reste
+
+### Finir le jalon / release
+- [ ] Rebuild `BOTWpelago.exe` + merge `dev` → `main`
+- [ ] Potions / plats cuisinés (type 8, portent des effets → un peu de RE)
+- [ ] Validation end-to-end : une vraie run AP multi-slot complète
+- [ ] (option) TODO-7 : remplir `region` dans `locations.json` (graphe de régions / règles plus fines)
+
+### Loot & rubis (ex-V1.1)
+- [ ] Rareté du loot (tiers + tirage pondéré) — diversifié mais pas encore pondéré
+- [ ] Rubis : trouver le vrai portefeuille (pas le miroir) → strip fonctionnel
+
+### Gate difficulté (ex-V1.2)
+- [ ] Gate armure Créature Divine : tuer le joueur s'il entre sans l'équipement adapté (réutilise le kill DeathLink)
+
+### PopTracker
+- [ ] Tester le pack dans PopTracker (autotracking — construit, jamais testé)
+- [ ] Polish : vraies icônes d'items
+
+### Transverse / dette
+- [ ] Réconcilier la doc (`docs/status.md` / README périmés vs état réel)
+- [ ] TODO-9 : valider `memory_injector` sur Cemu 2.x (si upgrade)
+
+---
+
+## 🔲 V2 — gros chantiers (différés)
+
+- [ ] Mod romfs « hard enforcement » (retirer grant paravoile vanilla, gate Ganon) — optionnel
+- [ ] Popup natif in-game « item reçu » (code cave RPX / createPorchItem) — l'overlay desktop suffit pour V1
+- [ ] Rendu live catégorie vide (couche `ksys::ui`) — investigué, différé (reload suffit)
+- [ ] Relics of the Past : décompiler → ré-implémenter des features choisies
+- [ ] Chests comme locations (TODO-8)
