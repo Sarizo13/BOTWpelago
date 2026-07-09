@@ -67,11 +67,12 @@
 - [ ] Chests comme locations (TODO-8)
 
 ### Idées gameplay V2
-- [ ] **Gate région par TÉLÉPORT** — **mécanisme vanilla DÉCODÉ (2026-07-09)**, recette complète
-      dans `mod/README.md` : chaîne `Area (volume) → LinkTagOr/And → EventTag(EventFlowName/
-      EntryName)` + flowchart custom `CheckFlag(IsGet_Armor_*) → Demo_Talk + Demo_WarpPlayer` +
-      entrée EventInfo (Bootup.pack). Remplace la gate kill Créature Divine (V1) — décision user.
-      Reste : prototyper UNE zone (entrée d'Eldin) + test in-game.
+- [ ] **Gate région par TÉLÉPORT** — mécanisme vanilla décodé + **PROTOTYPE CONSTRUIT
+      (2026-07-09)** : gate d'Eldin (entrée Montagne de la Mort → renvoi au relais si pas de
+      plastron Flamebreaker), 3 fichiers générés par `mod/patches/zone_gate.py`, validé à froid.
+      Recette complète : `mod/README.md` §4. Remplace la gate kill Créature Divine (V1).
+      Reste : **test in-game**, puis message MSBT, autres entrées/régions, et client qui pose
+      les flags `IsGet_Armor_*` à la livraison des sets AP.
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et d'endurance ;
       si le joueur en gagnerait au-delà du plafond → convertir en **don de 500 rubis**.
 

@@ -28,7 +28,7 @@ import oead
 from evfl import EventFlow
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from patches import PatchError, get_patches  # noqa: E402
+from patches import PatchError, get_patches, get_file_patches  # noqa: E402
 
 PACK_NAME = "BOTWpelago_Enforcement"
 
@@ -111,12 +111,20 @@ def main() -> None:
     pack_dir = gfx / PACK_NAME
 
     patches = get_patches()
-    print(f"{len(patches)} patch(es) ; dump : {roots[0]}")
+    file_patches = get_file_patches()
+    print(f"{len(patches) + len(file_patches)} patch(es) ; dump : {roots[0]}")
     results: dict[str, bytes] = {}
     for p in patches:
         print(f"  [{p.name}] {p.description}")
         src = _resolve(roots, p.container)
         results[p.container] = build_patched_container(src, p.inner, p.transform, p.verify)
+
+    def read_source(rel: str) -> bytes:
+        return _resolve(roots, rel).read_bytes()
+
+    for fp in file_patches:
+        print(f"  [{fp.NAME}] {fp.DESCRIPTION}")
+        results.update(fp.build(read_source, log=print))
 
     if args.check:
         print("\n--check : tout est patchable et vérifié, rien n'a été écrit.")

@@ -118,7 +118,15 @@ Autres actions vues dans `FindDungeon` directement réutilisables :
       pièce) à la livraison des sets AP.
 
    Le mod DAR n'est plus nécessaire comme référence (mécanisme vanilla plus complet).
-   Reste à prototyper : UNE Area+EventTag sur une entrée d'Eldin + flowchart 2 events,
-   puis test in-game (comportement de re-déclenchement à la ré-entrée, timing du warp).
+
+   **PROTOTYPE CONSTRUIT (`patches/zone_gate.py`, validé à froid — à tester in-game)** :
+   gate d'Eldin à l'entrée de la Montagne de la Mort (2404, 230, −1320, rayon 45 m) ;
+   sans `IsGet_Armor_011_Upper` (plastron Flamebreaker) → warp au Relais du Pied-de-Mont.
+   Produit : `Event/BOTWpelago_Gate.sbeventpack` (flowchart from scratch, 4 events),
+   `Pack/Bootup.pack` (EventInfo + `BOTWpelago_Gate<Gate_Eldin>`),
+   `Map/MainField/H-3/H-3_Dynamic.smubin` (+Area/LinkTagOr/EventTag, HashIds crc32 uniques).
+   À valider in-game : déclenchement du signal Area, timing/fade du warp, re-déclenchement
+   à la ré-entrée, arrivée en paravoile. Ensuite : message MSBT, couverture des autres
+   entrées de région, flags IsGet_Armor_* posés par le client à la livraison AP.
 5. Icônes/noms custom (BFRES/MSBT — Switch Toolbox, `--be`), cap cœurs/endurance,
    coffres-locations.
