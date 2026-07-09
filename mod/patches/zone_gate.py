@@ -49,14 +49,18 @@ GATE_FLAG = "IsGet_Armor_011_Upper"          # Flamebreaker Armor (plastron)
 
 AREA_POS = (2404.0, 230.0, -1320.0)          # Death Mountain Entrance (sol ≈226)
 AREA_RADIUS = 45.0
-WARP_DEST = (2612.0, 254.5, -1144.0)         # Relais du Pied-de-Mont
-WARP_DIR_Y = 140.0
+# Destination en TERRAIN DÉGAGÉ devant le relais (sol ≈253.5) — PAS le bâtiment :
+# une arrivée en paravoile sous le toit coinçait Link dans la charpente (test v5).
+WARP_DEST = (2578.0, 254.0, -1172.0)
+WARP_DIR_Y = 50.0                            # face au relais
 
 MSG_LABEL = "Gate_NoGear"
+# Textes COURTS : le halo bleu de la bannière DungeonMessage ne couvre qu'environ
+# 45 caractères (test v5 — un texte plus long déborde du halo).
 MSG_TEXTS = {                                 # EUfr = joueur ; anglais pour le reste
-    "EUfr": "Vous n'avez pas l'équipement requis pour accéder à cette zone.",
+    "EUfr": "Il vous manque l'équipement pour cette zone.",
 }
-MSG_DEFAULT = "You lack the equipment required to enter this area."
+MSG_DEFAULT = "You lack the gear required for this area."
 EU_LANGS = ("EUen", "EUfr", "EUde", "EUes", "EUit", "EUnl", "EUru")
 # Fader vanilla : TOUJOURS Frame=0 (ou 1) — ce n'est PAS une durée ; Frame=30 avec
 # IsWaitFinish=True bloque l'event indéfiniment (leçon du test v4.1, stall au FadeOut).
@@ -160,7 +164,11 @@ def build_flow_bytes() -> bytes:
                     {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
                      "DispMode": "Auto"}, banner)
     cam = action(camera, "Demo_GameCamera", {"IsWaitFinish": True}, fadein)
-    wait_post = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 40}, cam)
+    # arrivé encore en l'air (paravoile) → on laisse descendre derrière le noir
+    wait_air = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 120}, cam)
+    post_air = switch("CheckPlayerState", {"PlayerState": 5}, {1: cam, 0: wait_air})
+    wait_post = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 40},
+                       post_air)
     warp = action(esa, "Demo_WarpPlayerToDestination",
                   {"IsWaitFinish": True,
                    "DestinationX": WARP_DEST[0], "DestinationY": WARP_DEST[1],
