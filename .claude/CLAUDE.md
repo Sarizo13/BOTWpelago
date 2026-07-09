@@ -17,14 +17,14 @@ Two components: Python `.apworld` (server) + Python client (reads Cemu's `game_d
 | `worlds/botw/items.py` | Item pool (loads from data/gate_items.json) |
 | `worlds/botw/locations.py` | Location pool (loads from data/locations.json) |
 | `worlds/botw/rules.py` | Access rules (Paraglider gate + goal condition) |
-| `worlds/botw/regions.py` | Great Plateau + Hyrule World regions |
+| `worlds/botw/regions.py` | 6 régions : Great Plateau, Hyrule World, Eldin, Hebra, Gerudo Highlands, Gerudo Town |
 | `worlds/botw/options.py` | Per-game options |
 | `BotWClient/BotWClient.py` | Client: save polling + AP WebSocket |
 | `BotWClient/providers/save_file.py` | SaveFileProvider + DeferredSaveInjector |
 | `BotWClient/save_parser.py` | Binary parser for game_data.sav |
 | `BotWClient/item_map.py` | AP item ID → InjectionSpec |
 | `data/locations.json` | 646 AP locations: 120 shrines + 15 towers + 4 beasts + 318 lieux + 175 quêtes + 14 souvenirs (générés par tools/build_locations.py ; flags internes/intro exclus) |
-| `data/gate_items.json` | Key items: Paraglider, Master Sword, 4 Champions + runes |
+| `data/gate_items.json` | Key items (Paraglider, Master Sword, 4 Champions, runes) + 319 fillers avec tier de rareté (régénérés par tools/build_loot_table.py) |
 | `data/shrines.json` | 120 shrines indexed by dungeon_id |
 | `docs/memory_map.md` | Save file format, flag hash recipe, flag names |
 
@@ -77,7 +77,10 @@ Proof: `IsGet_Obj_Magnetglove` = 0x795E7BBC matched Oman Au before/after diff;
 - **Tower flags = `MapTower_NN`**.
 - Never retain rune flags — would softlock the plateau.
 - Outgoing item checks: client sends `LocationChecks(ap_id)`. No injection needed for outgoing.
-- Incoming ap_progression items: inject by setting flag to 1 when save is idle (title screen).
+- Incoming items : Cemu attaché → livraison via MÉMOIRE uniquement (pouch live + flags GameData) ;
+  ne JAMAIS écrire le .sav quand Cemu tourne (bloque ses autosaves → save incohérente → crash).
+  Écriture fichier seulement quand PAS attaché. Certains flags (capacités) ne prennent effet
+  qu'au reload.
 - Gate enforcement: force flag to 0 until item received from AP (flag retention).
 - **Templates PouchItem cachés**: `live_create_item` clone un nœud du même type. Si l'inventaire n'en a aucun (save vide), il utilise un template caché dans `~/.botwpelago/pouch_templates.json` (auto-capturé à chaque attach sur inventaire peuplé ; ou `tools/capture_pouch_templates.py`). Adresses stockées en GUEST (vtables 0x10xxxxxx constantes en v208) → re-basées sur le nœud libre cible. Splice après une ancre live de type ≤ (liste triée).
 - **Baseline checks**: au 1er poll le provider snapshot les checks déjà vrais (ap_baseline.json dans le queue_dir) → jamais ré-émis. Effacée par reset_ap_state. Évite de re-balancer toute la progression/intro à la connexion.
@@ -90,11 +93,10 @@ All messages: JSON arrays `[{"cmd": "...", ...}]`
   handler de réception DOIT écouter `"Bounced"` (piège classique). Tag `DeathLink` requis pour
   recevoir (ajouté via ConnectUpdate). End-to-end validé (2 slots) le 2026-06-28.
 
-## TODO (from docs/status.md)
-- TODO-7: Fill `region` field in data/locations.json for full region graph
-- TODO-5: Reverse PouchItem for armor/shield/weapon injection
-- TODO-6: Identify quest locations via save_watch + diff
-- TODO-9: Validate memory_bridge.py live against Cemu 2.x
+## TODO
+**Source de vérité du backlog : `docs/CHECKLIST.md`** (V1 + V2, tenu à jour).
+Les anciens TODO-5/6/7 (PouchItem gear, quêtes, champ `region`) sont FAITS ;
+reste TODO-9 : valider `memory_injector` sur Cemu 2.x (si upgrade).
 
 ## DO NOT
 - Use `oead.byml.from_binary()` on `game_data.sav`
@@ -103,7 +105,10 @@ All messages: JSON arrays `[{"cmd": "...", ...}]`
 - Use `Location_MainField_Dungeon*` flag names (old, wrong)
 
 ## Testing
-- Unit: `python -m pytest worlds/botw/test/`
-- AP generation: `python Archipelago.py Generate` with a BotW YAML
+- Unit: `python -m pytest tests/` (data-integrity + save-parser)
+- AP generation : rebuild apworld → `C:\ProgramData\Archipelago\custom_worlds\botw.apworld`,
+  puis `ArchipelagoGenerate.exe --player_files_path <dossier du yaml>` (cf. tools/play_local.py).
+  ⚠️ play_local.py complet WIPE la save Cemu et héberge un serveur — pour tester la génération
+  seule, ne répliquer que les étapes apworld + generate.
 - Client: `python -m BotWClient.BotWClient --debug-save --save path/to/game_data.sav`
 - Diff: `python -m BotWClient.BotWClient --diff-saves before.sav after.sav`

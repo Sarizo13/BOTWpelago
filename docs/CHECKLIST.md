@@ -45,7 +45,8 @@
 - [ ] Polish : vraies icônes d'items
 
 ### Transverse / dette
-- [ ] Réconcilier la doc (`docs/status.md` / README périmés vs état réel)
+- [x] Réconcilier la doc : status.md re-cadré (journal RE, CHECKLIST+CLAUDE.md font foi),
+      README (livraison mémoire, layout), CLAUDE.md (tests, TODOs, régions, règle .sav)
 - [ ] TODO-9 : valider `memory_injector` sur Cemu 2.x (si upgrade)
 
 ---

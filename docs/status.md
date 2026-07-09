@@ -1,18 +1,22 @@
-# BotW Archipelago — Status & Handoff Brief
+# BotW Archipelago — Journal de reverse-engineering (historique)
 
-> **How to use this file.** Open the repo in VS Code, then in Claude Code:
-> *"Read `docs/STATUS.md`. This is the current state of the project. Start with the TODO section."*
-> This supersedes the older `AGENT_BRIEF.md` where they conflict. Where this conflicts with
-> `CLAUDE.md` / `memory_map.md` / `README.md`, **this file wins** until those are reconciled (TODO-1).
+> **Statut de ce fichier (2026-07-09).** C'est le **journal complet du RE** — la mine d'or
+> pour la V2 (EventFlow, Ghidra, BCML, calibration mémoire) — mais il est **partiellement
+> périmé côté V1** : il a été écrit pendant le développement et les sections « TODO / what
+> remains » ne reflètent plus l'état réel. **Pour l'état courant et le backlog, la source
+> de vérité est `docs/CHECKLIST.md` + `.claude/CLAUDE.md`** ; en cas de conflit, ce sont EUX
+> qui gagnent. Les sections « SOLVED / do not re-litigate » restent, elles, toujours valides.
 
 ---
 
-## TL;DR — the hard problem is solved
+## TL;DR — où en est le projet (résumé 2026-07)
 
-The save-format hash mapping (the project's blocker) is **cracked and proven**. Detection of
-shrines, towers, and Divine Beasts is fully mapped and named, extracted from the user's own game
-dump. What remains is **integration** (wiring the providers) and **item injection** (inventory),
-plus optional hard-enforcement via a romfs mod.
+V1 est **construite et fonctionnelle** : détection des checks (sanctuaires, coffres, tours,
+créatures, lieux, quêtes, souvenirs), injection live persistante des items (matériaux, armes,
+arcs, boucliers, armures, Master Sword…), gate paravoile, goal 2 modes, DeathLink validé,
+orchestration BOTWpelago (GUI + pack builder) et pack PopTracker. Reste V1 : potions/plats
+(type 8), vrai portefeuille rubis, validation end-to-end multi-slot, test PopTracker — voir
+`docs/CHECKLIST.md`. La V2 (mod BCML) démarre sur la base du RE documenté ici (§6 et suiv.).
 
 ---
 

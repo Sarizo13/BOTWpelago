@@ -25,8 +25,12 @@ BOTWpelago (the player app)  ─►  reads the config  ─►  drives the embedd
   randomizer. It builds the pack from the config, then runs the client during play.
 - A shrine chest opening sets the gamedata flag `CDungeon_TBox_Dungeon_<Material>_<HashId>`;
   the client polls it (`flag_id = crc32(flag_name)`) and sends `LocationChecks(ap_id)`.
-- Received items are injected live into Cemu's memory (rupees / pouch items) or via save
-  flags (Paraglider, Champions, Master Sword) at the title screen.
+- Received items are delivered **live through Cemu's memory** while the game runs: pouch
+  items (materials, weapons, bows, shields, armor…) appear instantly and persist via the
+  game's own autosaves; key items (Paraglider, Champions, Master Sword) are GameData flags
+  written the same way (abilities take effect after a reload). The save file itself is only
+  ever written when Cemu is **not** attached. (Rupees are currently out of the pool — the
+  known address is a mirror the game overwrites.)
 
 ## Locations & game modes
 
@@ -66,9 +70,10 @@ worlds/botw/        # .apworld — items, shrine-chest locations, rules, regions
 BotWClient/         # AP client — save parsing, WebSocket, Cemu live-memory injection
 botwpelago/         # player app: Tkinter GUI + pack_builder (config → embedded rando → pack)
 data/               # generated JSON data (shrine_chests, gate_items, flag maps…)
-tools/              # build pipeline (build_apworld, build_locations…) + RE helpers; archive/ = old
-docs/               # status brief, memory map, setup guide
+tools/              # build pipeline (build_locations, build_loot_table, build_poptracker…) + RE helpers; archive/ = old
+docs/               # CHECKLIST (backlog), RE journal (status.md), memory map, setup guide
 tests/              # data-integrity + save-parser tests
+poptracker/         # generated PopTracker pack + map assets (gitignored — rebuild via tools/build_poptracker.py)
 ```
 
 The modified **BotW Randomizer** (GPL v3, by MelonSpeedruns) lives in [rando/](rando/) — its
