@@ -67,12 +67,14 @@
 - [ ] Chests comme locations (TODO-8)
 
 ### Idées gameplay V2
-- [ ] **Gate région par TÉLÉPORT** — mécanisme vanilla décodé + **PROTOTYPE CONSTRUIT
-      (2026-07-09)** : gate d'Eldin (entrée Montagne de la Mort → renvoi au relais si pas de
-      plastron Flamebreaker), 3 fichiers générés par `mod/patches/zone_gate.py`, validé à froid.
-      Recette complète : `mod/README.md` §4. Remplace la gate kill Créature Divine (V1).
-      Reste : **test in-game**, puis message MSBT, autres entrées/régions, et client qui pose
-      les flags `IsGet_Armor_*` à la livraison des sets AP.
+- [x] **Gate région par TÉLÉPORT — VALIDÉE IN-GAME (2026-07-09)** puis généralisée :
+      brique unitaire testée à pied/cheval/paravoile (fade forêt-perdue, bannière
+      DungeonMessage, monture préservée, descente derrière le noir). **4 murs générés**
+      depuis `mod/data/zone_walls.json` (tracés du joueur) : Eldin→Flamebreaker→relais
+      Pied-de-Mont, Rito→Snowquill→relais Pont de Tabantha, Zora→armure Zora→Soh Kofi,
+      Gerudo→tenue Gerudo→relais Canyon Gerudo. 249 objets / 22 carrés (couche AOC).
+      Client : sets livrés + flags IsGet_Armor_* posés. Remplace la gate kill (V1).
+      Reste : passe de test des 4 murs in-game + ajustement des polylignes au besoin.
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et d'endurance ;
       si le joueur en gagnerait au-delà du plafond → convertir en **don de 500 rubis**.
 

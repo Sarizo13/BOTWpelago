@@ -1,0 +1,77 @@
+{
+  "_comment": [
+    "Murs de zones BOTWpelago — polylignes en coordonnées MONDE (x, z), digitalisées",
+    "depuis les tracés du joueur. Chaque mur = chaîne de boîtes Area (hautes, anti-",
+    "paravoile) le long des segments ; par carré traversé : Area(s) → LinkTagOr →",
+    "EventTag(Gate_<région>). Les destinations de warp (refuges) sont HORS des murs.",
+    "y_center/y_half : couverture verticale ; half_width/half_len : demi-tailles des",
+    "boîtes ; spacing : pas le long du segment. Tout est ajustable ici sans toucher au code."
+  ],
+  "box": {"spacing": 100.0, "half_len": 130.0},
+  "regions": {
+    "Eldin": {
+      "flag": "IsGet_Armor_011_Upper",
+      "warp": {"pos": [2578.0, 254.0, -1172.0], "dir": 50.0},
+      "walls": [
+        {
+          "y_center": 350.0, "y_half": 450.0, "half_width": 70.0,
+          "points": [
+            [1730, -3980], [1720, -3400], [1700, -2900], [1780, -2400],
+            [1950, -1900], [2150, -1500], [2404, -1320], [2650, -1260],
+            [2900, -1350], [3080, -1650], [3180, -2200], [3150, -2800],
+            [3200, -3400], [3350, -3980]
+          ]
+        }
+      ]
+    },
+    "Rito": {
+      "flag": "IsGet_Armor_009_Upper",
+      "warp": {"pos": [-2918.0, 275.3, -562.0], "dir": 300.0},
+      "walls": [
+        {
+          "closed": true,
+          "y_center": 350.0, "y_half": 500.0, "half_width": 70.0,
+          "points": [
+            [-3650, -2500], [-3120, -2280], [-2900, -1750], [-3120, -1220],
+            [-3650, -1000], [-4180, -1220], [-4400, -1750], [-4180, -2280]
+          ]
+        }
+      ]
+    },
+    "Zora": {
+      "flag": "IsGet_Armor_006_Upper",
+      "warp": {"pos": [2233.0, 148.0, -300.0], "dir": 20.0},
+      "walls": [
+        {
+          "y_center": 300.0, "y_half": 400.0, "half_width": 70.0,
+          "points": [
+            [2950, -800], [3020, -450], [3080, -150], [3250, 150],
+            [3600, 400], [4100, 570], [4600, 640], [4990, 660]
+          ]
+        }
+      ]
+    },
+    "Gerudo": {
+      "flag": "IsGet_Armor_053_Upper",
+      "warp": {"pos": [-2790.0, 135.5, 2204.0], "dir": 210.0},
+      "walls": [
+        {
+          "_comment": "rive nord des Hauteurs Gerudo (haut plateau)",
+          "y_center": 1000.0, "y_half": 700.0, "half_width": 70.0,
+          "points": [
+            [-4990, 700], [-4500, 760], [-4000, 800], [-3500, 850],
+            [-3100, 1050], [-2950, 1400], [-2920, 1750]
+          ]
+        },
+        {
+          "_comment": "traversée du canyon au sud du relais (le relais reste hors mur)",
+          "y_center": 500.0, "y_half": 600.0, "half_width": 60.0,
+          "points": [
+            [-2920, 1750], [-2905, 2350], [-2750, 2900], [-2600, 3400],
+            [-2520, 3980]
+          ]
+        }
+      ]
+    }
+  }
+}

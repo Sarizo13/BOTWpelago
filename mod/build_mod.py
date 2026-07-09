@@ -243,6 +243,13 @@ def main() -> None:
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_bytes(data)
         print(f"  écrit {dst}")
+    # fichiers qu'on ne produit plus (ex-PoC) : purge pour ne pas shipper du poids mort
+    if "Pack/TitleBG.pack" not in results:
+        stale_tbg = pack_dir / "content" / "Pack" / "TitleBG.pack"
+        if stale_tbg.is_file():
+            stale_tbg.unlink()
+            print(f"  supprimé (obsolète, ex-PoC) : {stale_tbg}")
+
     if standalone:
         (pack_dir / "rules.txt").write_text(RULES_TXT, encoding="utf-8")
     else:

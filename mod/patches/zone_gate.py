@@ -1,29 +1,29 @@
 """
-Patch « zone gate » — PROTOTYPE : gate d'Eldin par téléport (style forêt perdue).
+Patch « zone gates » — murs de régions par téléport (style forêt perdue), data-driven.
 
-Mécanisme (100 % data, décodé du vanilla — cf. mod/README.md §4) :
-  Area (volume) --BasicSig--> LinkTagOr --BasicSig--> EventTag{EventFlowName,EntryName}
-  → lance notre flowchart : CheckFlag(armure) → si absente, warp vers un point sûr.
+Source : mod/data/zone_walls.json (polylignes MONDE digitalisées depuis les tracés du
+joueur ; destinations = refuges hors murs). Pour chaque région :
+  - un entry point `Gate_<région>` dans Event/BOTWpelago_Gate.sbeventpack :
+    CheckFlag(armure) → [cheval : descendre | sol : Join | air : rien] → FadeOut →
+    WarpToDestination → [encore en l'air : attente] → caméra → FadeIn → bannière.
+  - le long de chaque mur : boîtes `Area` (hautes = anti-paravoile) → LinkTagOr →
+    EventTag(Gate_<région>) par carré traversé, injectés dans les `_Static.smubin`
+    de la couche AOC (celle que le jeu lit avec le DLC).
 
-Ce patch produit TROIS fichiers :
-  1. Event/BOTWpelago_Gate.sbeventpack   — NOUVEAU : flowchart 100 % à nous (construit
-     from scratch avec evfl : Switch CheckFlag → WaitFrame → WarpToDestination → WaitFrame)
-  2. Pack/Bootup.pack                    — EventInfo.product.sbyml + entrée
-     `BOTWpelago_Gate<Gate_Eldin>` (schéma relevé des 5 784 entrées vanilla)
-  3. Pack/TitleBG.pack                   — Area/LinkTagOr/EventTag ajoutés à
-     `Map/MainField/H-3/H-3_Static.smubin` DANS TitleBG.pack (74 Mo) : TOUS les
-     chaînages de trigger vanilla vivent dans les _Static packés — une Area posée en
-     Dynamic (1re tentative) ne se déclenchait pas in-game. Entrée de la Montagne de la
-     Mort (2404, 230, −1320 ; sol ≈226) ; renvoi au Relais du Pied-de-Mont (2612, 254, −1144).
+Toutes les leçons in-game (v3→v5.2) sont encodées ici : params d'acteurs OBLIGATOIRES,
+Fader Frame=0, jamais Demo_StopInAir (gèle le joueur), descente paravoile derrière le
+noir, monture descendue avant warp, bannière Demo_OpenDungeonMessage + MSBT attr 0x0C,
+RSTB à jour pour chaque ressource (sinon crash au boot).
 
-Condition : `IsGet_Armor_011_Upper` (plastron Flamebreaker). Le client devra poser les
-flags IsGet_Armor_* à la livraison des sets AP.
-À VALIDER IN-GAME : re-déclenchement à la ré-entrée, timing du warp, comportement en vol.
+HashIds : plage réservée 0xB0730000+ (idempotence : purge de la plage avant ré-ajout).
 """
 from __future__ import annotations
 
 import io
+import json
+import math
 import zlib
+from pathlib import Path
 
 import oead
 from evfl import EventFlow
@@ -37,66 +37,46 @@ from evfl.util import make_index, make_rindex
 
 from msbt import build_msbt
 
-from . import PatchError
+from . import FlowPatch, PatchError  # noqa: F401  (PatchError utilisé, FlowPatch pour l'API)
 
-NAME = "zone-gate-eldin-poc"
-DESCRIPTION = ("Gate d'Eldin par téléport (PoC) : sans le plastron Flamebreaker, entrer "
-               "par la Montagne de la Mort renvoie au Relais du Pied-de-Mont.")
+NAME = "zone-gates"
+DESCRIPTION = ("Murs de régions par téléport : Eldin/Rito/Zora/Gerudo — sans la tenue "
+               "requise, franchir le mur renvoie au refuge de la région (fade + message).")
 
 FLOW_NAME = "BOTWpelago_Gate"
-ENTRY_NAME = "Gate_Eldin"
-GATE_FLAG = "IsGet_Armor_011_Upper"          # Flamebreaker Armor (plastron)
-
-AREA_POS = (2404.0, 230.0, -1320.0)          # Death Mountain Entrance (sol ≈226)
-AREA_RADIUS = 45.0
-# Destination en TERRAIN DÉGAGÉ devant le relais (sol ≈253.5) — PAS le bâtiment :
-# une arrivée en paravoile sous le toit coinçait Link dans la charpente (test v5).
-WARP_DEST = (2578.0, 254.0, -1172.0)
-WARP_DIR_Y = 50.0                            # face au relais
-
 MSG_LABEL = "Gate_NoGear"
-# Textes COURTS : le halo bleu de la bannière DungeonMessage ne couvre qu'environ
-# 45 caractères (test v5 — un texte plus long déborde du halo).
-MSG_TEXTS = {                                 # EUfr = joueur ; anglais pour le reste
-    "EUfr": "Il vous manque l'équipement pour cette zone.",
-}
+MSG_TEXTS = {"EUfr": "Il vous manque l'équipement pour cette zone."}
 MSG_DEFAULT = "You lack the gear required for this area."
 EU_LANGS = ("EUen", "EUfr", "EUde", "EUes", "EUit", "EUnl", "EUru")
-# Fader vanilla : TOUJOURS Frame=0 (ou 1) — ce n'est PAS une durée ; Frame=30 avec
-# IsWaitFinish=True bloque l'event indéfiniment (leçon du test v4.1, stall au FadeOut).
-# Référence : Electric_Relic_BattleField01 (éjection de zone lancée par tag, comme nous).
-FADE_FRAMES = 0
+FADE_FRAMES = 0                     # vanilla : toujours 0 (≠0 avec IsWaitFinish = stall)
 
-TITLEBG_REL = "Pack/TitleBG.pack"
-MUBIN_INNER = "Map/MainField/H-3/H-3_Static.smubin"
-# Couche DLC : quand le DLC est monté (cas du joueur), le jeu lit les map units depuis
-# l'AOC — c'est là que le rando met ses propres edits de map. SANS cette sortie, le
-# patch TitleBG n'est jamais lu (leçon du 2e test in-game).
-AOC_MUBIN_REL = "aoc/0010/Map/MainField/H-3/H-3_Static.smubin"
 BOOTUP_REL = "Pack/Bootup.pack"
 EVENTPACK_REL = f"Event/{FLOW_NAME}.sbeventpack"
 
+WALLS = json.loads((Path(__file__).resolve().parents[1] / "data" / "zone_walls.json")
+                   .read_text(encoding="utf-8"))
 
-def _hash_id(seed: str) -> int:
-    return zlib.crc32(seed.encode()) & 0xFFFFFFFF
+# Plage de HashId réservée au mod (purge idempotente) + ids hérités du PoC mono-gate.
+HASH_BASE = 0xB0730000
+HASH_END = 0xB0740000
+_LEGACY_IDS = {zlib.crc32(f"BOTWpelago_ZoneGate_Eldin_{k}".encode()) & 0xFFFFFFFF
+               for k in ("area", "link", "tag")}
+
+RSTB_PACK_INNER = {
+    f"Pack/Bootup_{lang}.pack": [f"Message/Msg_{lang}.product.ssarc"]
+    for lang in EU_LANGS
+}
 
 
-# ── 1) flowchart (from scratch, contenu 100 % à nous) ────────────────────────────
+# ── flowchart : un entry point par région ─────────────────────────────────────────
 
 def build_flow_bytes() -> bytes:
-    """Chaîne : CheckFlag(armure)=0 → préambule d'état joueur (réplique EXACTE de la
-    routine vanilla Common::AirStartUP_Player : état 4 → PlayerWait ; état 5 (au sol)
-    → Demo_Join ; sinon (en l'air) → StopInAir — envoyer StopInAir à un joueur au sol
-    BLOQUE l'event, leçon du test v4) → FadeOut → warp → FadeIn → message. Flag → rien."""
     flow = EventFlow()
     flow.name = FLOW_NAME
     fc = Flowchart()
     fc.name = FLOW_NAME
     flow.flowchart = fc
 
-    # Params d'acteur OBLIGATOIRES (relevés sur Electric_Relic vanilla) : sans ce
-    # conteneur (CreateMode etc.), le jeu ne LIE jamais l'acteur à l'event → toute
-    # action sur lui attend à l'infini (cause des soft-locks v4/v4.1/v4.2).
     _BASE_ACTOR_PARAMS = {
         "CreateMode": 0, "IsGrounding": False, "IsWorld": False,
         "PosX": 0.0, "PosY": 0.0, "PosZ": 0.0,
@@ -111,7 +91,7 @@ def build_flow_bytes() -> bytes:
         a.queries = [StringHolder(x) for x in queries]
         a.params = Container()
         a.params.data = dict(_BASE_ACTOR_PARAMS, **(extra_params or {}))
-        a.concurrent_clips = 1          # « flowcharts: always = 1 » (evfl) — vanilla = 1
+        a.concurrent_clips = 1
         fc.actors.append(a)
         return a
 
@@ -120,8 +100,7 @@ def build_flow_bytes() -> bytes:
                       "Demo_OpenDungeonMessage"],
                      ["CheckFlag", "CheckPlayerState", "CheckPlayerRideHorse"])
     player = make_actor("GameROMPlayer",
-                        ["Demo_StopInAir", "Demo_PlayerWait", "Demo_Join",
-                         "Demo_PlayerHorseGetOff"],
+                        ["Demo_PlayerWait", "Demo_Join", "Demo_PlayerHorseGetOff"],
                         extra_params={
                             "Weapon": "", "DisableWeapon": False,
                             "Shield": "", "DisableShield": False,
@@ -154,140 +133,66 @@ def build_flow_bytes() -> bytes:
         fc.events.append(ev)
         return ev
 
-    # construite à l'envers (chaque event pointe sur son successeur)
-    wait_end = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 1}, None)
-    banner = action(esa, "Demo_OpenDungeonMessage",       # bannière type forêt perdue
-                    {"IsWaitFinish": True,
-                     "MessageId": f"EventFlowMsg/{FLOW_NAME}:{MSG_LABEL}"},
-                    wait_end)
-    fadein = action(fader, "Demo_FadeIn",
-                    {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
-                     "DispMode": "Auto"}, banner)
-    cam = action(camera, "Demo_GameCamera", {"IsWaitFinish": True}, fadein)
-    # arrivé encore en l'air (paravoile) → on laisse descendre derrière le noir
-    wait_air = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 120}, cam)
-    post_air = switch("CheckPlayerState", {"PlayerState": 5}, {1: cam, 0: wait_air})
-    wait_post = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 40},
-                       post_air)
-    warp = action(esa, "Demo_WarpPlayerToDestination",
-                  {"IsWaitFinish": True,
-                   "DestinationX": WARP_DEST[0], "DestinationY": WARP_DEST[1],
-                   "DestinationZ": WARP_DEST[2], "DirectionY": WARP_DIR_Y},
-                  wait_post)
-    fadeout = action(fader, "Demo_FadeOut",
-                     {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
-                      "DispMode": "Auto"}, warp)
-    # préambule : cheval d'abord (descendre AVANT le warp — sinon la monture est
-    # téléportée avec le joueur et reste coincée au relais ; séquence GetOff→PlayerWait→
-    # Wait(15) relevée sur DarkWoods/forêt perdue). Au sol → Demo_Join (rattachement
-    # propre). EN L'AIR → RIEN : surtout pas Demo_StopInAir, qui GÈLE physiquement le
-    # joueur (il ne descend plus jamais — test v5.1) ; sans lui, le paravoile continue
-    # de planer pendant le fondu et la descente se fait derrière l'écran noir.
-    join = action(player, "Demo_Join", {"IsWaitFinish": True}, fadeout)
-    state5 = switch("CheckPlayerState", {"PlayerState": 5}, {1: join, 0: fadeout})
-    wait15 = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 15}, state5)
-    player_wait_h = action(player, "Demo_PlayerWait", {"IsWaitFinish": True}, wait15)
-    get_off = action(player, "Demo_PlayerHorseGetOff", {"IsWaitFinish": True},
-                     player_wait_h)
-    horse = switch("CheckPlayerRideHorse", {}, {1: get_off, 0: state5})
-    check = switch("CheckFlag", {"FlagName": GATE_FLAG}, {0: horse})   # 1 → rien
+    for region in sorted(WALLS["regions"]):
+        cfg = WALLS["regions"][region]
+        wx, wy, wz = cfg["warp"]["pos"]
+
+        wait_end = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 1}, None)
+        banner = action(esa, "Demo_OpenDungeonMessage",
+                        {"IsWaitFinish": True,
+                         "MessageId": f"EventFlowMsg/{FLOW_NAME}:{MSG_LABEL}"},
+                        wait_end)
+        fadein = action(fader, "Demo_FadeIn",
+                        {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
+                         "DispMode": "Auto"}, banner)
+        cam = action(camera, "Demo_GameCamera", {"IsWaitFinish": True}, fadein)
+        wait_air = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 120}, cam)
+        post_air = switch("CheckPlayerState", {"PlayerState": 5}, {1: cam, 0: wait_air})
+        wait_post = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 40},
+                           post_air)
+        warp = action(esa, "Demo_WarpPlayerToDestination",
+                      {"IsWaitFinish": True, "DestinationX": wx, "DestinationY": wy,
+                       "DestinationZ": wz, "DirectionY": cfg["warp"]["dir"]},
+                      wait_post)
+        fadeout = action(fader, "Demo_FadeOut",
+                         {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
+                          "DispMode": "Auto"}, warp)
+        join = action(player, "Demo_Join", {"IsWaitFinish": True}, fadeout)
+        state5 = switch("CheckPlayerState", {"PlayerState": 5}, {1: join, 0: fadeout})
+        wait15 = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 15}, state5)
+        pwait = action(player, "Demo_PlayerWait", {"IsWaitFinish": True}, wait15)
+        get_off = action(player, "Demo_PlayerHorseGetOff", {"IsWaitFinish": True}, pwait)
+        horse = switch("CheckPlayerRideHorse", {}, {1: get_off, 0: state5})
+        check = switch("CheckFlag", {"FlagName": cfg["flag"]}, {0: horse})
+
+        ep = EntryPoint(f"Gate_{region}")
+        ep.main_event = make_index(check)
+        fc.entry_points.append(ep)
 
     for i, ev in enumerate(fc.events):
         ev.name = f"Event{i}"
-
-    ep = EntryPoint(ENTRY_NAME)
-    ep.main_event = make_index(check)
-    fc.entry_points.append(ep)
 
     buf = io.BytesIO()
     flow.write(buf)
     return buf.getvalue()
 
 
-# ── 2) EventInfo (Bootup.pack) ────────────────────────────────────────────────────
+# ── EventInfo : une entrée par région ─────────────────────────────────────────────
 
 def patched_eventinfo(data: bytes) -> bytes:
     info = oead.byml.from_binary(bytes(oead.yaz0.decompress(data)) if data[:4] == b"Yaz0" else data)
-    key = f"{FLOW_NAME}<{ENTRY_NAME}>"
-    # idempotent : la source peut être notre propre build précédent (layering) → on écrase
-    info[key] = oead.byml.Hash({
-        "is_startable_air": True,          # le joueur peut arriver en paravoile
-        "is_timeline": False,
-        "mode": "Seamless",
-        "vanish_motorcycle": True,
-    })
+    for region in WALLS["regions"]:
+        info[f"{FLOW_NAME}<Gate_{region}>"] = oead.byml.Hash({
+            "is_startable_air": True,
+            "is_timeline": False,
+            "mode": "Seamless",
+            "vanish_motorcycle": True,
+        })
     out = oead.byml.to_binary(info, big_endian=True)
     return bytes(oead.yaz0.compress(out))
 
 
-# ── 3) mubin (Area → LinkTagOr → EventTag) ─────────────────────────────────────────
-
-def patched_mubin(data: bytes) -> bytes:
-    mubin = oead.byml.from_binary(bytes(oead.yaz0.decompress(data)) if data[:4] == b"Yaz0" else data)
-    objs = mubin["Objs"]
-    ids = {kind: _hash_id(f"BOTWpelago_ZoneGate_Eldin_{kind}")
-           for kind in ("area", "link", "tag")}
-
-    # idempotent : retire nos objets d'un build précédent avant de les re-poser
-    ours = set(ids.values())
-    keep = [o for o in objs if not ("HashId" in o and int(o["HashId"]) in ours)]
-    if len(keep) != len(objs):
-        mubin["Objs"] = oead.byml.Array(keep)
-        objs = mubin["Objs"]
-
-    def f3(x, y, z):
-        return oead.byml.Array([oead.F32(x), oead.F32(y), oead.F32(z)])
-
-    def link_to(dest: int):
-        return oead.byml.Array([oead.byml.Hash({
-            "DefinitionName": "BasicSig",
-            "DestUnitHashId": oead.U32(dest),
-        })])
-
-    x, y, z = AREA_POS
-    area = oead.byml.Hash({
-        "!Parameters": oead.byml.Hash({
-            "AutoSave": False, "CameraPriority": oead.S32(1), "CameraSet": "-",
-            "ForceCalcInEvent": False, "Shape": "Sphere",
-        }),
-        "HashId": oead.U32(ids["area"]),
-        "SRTHash": oead.S32(ids["area"] & 0x7FFFFFFF),
-        "LinksToObj": link_to(ids["link"]),
-        "Scale": oead.F32(AREA_RADIUS),
-        "Translate": f3(x, y, z),
-        "UnitConfigName": "Area",
-    })
-    link = oead.byml.Hash({
-        "!Parameters": oead.byml.Hash({
-            "IncrementSave": False, "MakeSaveFlag": oead.S32(0),
-            "NoChangeSignal": False, "SaveFlagOnOffType": oead.S32(0),
-        }),
-        "HashId": oead.U32(ids["link"]),
-        "SRTHash": oead.S32(ids["link"] & 0x7FFFFFFF),
-        "LinksToObj": link_to(ids["tag"]),
-        "Translate": f3(x, y + 10.0, z),
-        "UnitConfigName": "LinkTagOr",
-    })
-    tag = oead.byml.Hash({
-        "!Parameters": oead.byml.Hash({
-            "EventFlowEntryName": ENTRY_NAME,
-            "EventFlowName": FLOW_NAME,
-            "IsEndlessEvent": False,
-            "LaunchEventByOffSignal": False,
-            "LaunchEventByOnSignal": True,
-        }),
-        "HashId": oead.U32(ids["tag"]),
-        "SRTHash": oead.S32(ids["tag"] & 0x7FFFFFFF),
-        "Translate": f3(x, y + 20.0, z),
-        "UnitConfigName": "EventTag",
-    })
-    for o in (area, link, tag):
-        objs.append(o)
-    out = oead.byml.to_binary(mubin, big_endian=True)
-    return bytes(oead.yaz0.compress(out))
-
-
-# ── packs de langue : ajoute EventFlowMsg/BOTWpelago_Gate.msbt (texte à nous) ─────
+# ── packs de langue (bannière) ────────────────────────────────────────────────────
 
 def patched_langpack(data: bytes, lang: str) -> bytes:
     pack = oead.Sarc(data)
@@ -308,33 +213,140 @@ def patched_langpack(data: bytes, lang: str) -> bytes:
     return bytes(out)
 
 
-# entrées RSTB pour les ressources internes aux packs qu'on modifie (lu par build_mod)
-RSTB_PACK_INNER = {
-    f"Pack/Bootup_{lang}.pack": [f"Message/Msg_{lang}.product.ssarc"]
-    for lang in EU_LANGS
-}
+# ── géométrie : polylignes → boîtes par carré ─────────────────────────────────────
+
+def _square_of(x: float, z: float) -> str:
+    col = "ABCDEFGHIJ"[max(0, min(9, int((x + 5000) // 1000)))]
+    row = max(1, min(8, int((z + 4000) // 1000) + 1))
+    return f"{col}-{row}"
 
 
-# ── build : rel_path → bytes ──────────────────────────────────────────────────────
+def wall_objects() -> dict[str, list]:
+    """Retourne {carré: [objets byml]} — boîtes + LinkTagOr + EventTag par (région, carré)."""
+    spacing = float(WALLS["box"]["spacing"])
+    base_hlen = float(WALLS["box"]["half_len"])
+
+    # boxes[(region, carré)] = [(x, z, yaw, hw, yc, yh, hl), …]
+    boxes: dict[tuple[str, str], list] = {}
+    for region in sorted(WALLS["regions"]):
+        for wall in WALLS["regions"][region]["walls"]:
+            pts = [tuple(map(float, p)) for p in wall["points"]]
+            if wall.get("closed"):
+                pts.append(pts[0])
+            yc, yh = float(wall["y_center"]), float(wall["y_half"])
+            hw = float(wall["half_width"])
+            for (x0, z0), (x1, z1) in zip(pts, pts[1:]):
+                dx, dz = x1 - x0, z1 - z0
+                seg = math.hypot(dx, dz)
+                if seg < 1:
+                    continue
+                n = max(1, math.ceil(seg / spacing))
+                yaw = math.atan2(dx, dz)
+                hl = max(base_hlen, seg / n * 0.75)
+                for i in range(n):
+                    t = (i + 0.5) / n
+                    cx, cz = x0 + dx * t, z0 + dz * t
+                    boxes.setdefault((region, _square_of(cx, cz)), []).append(
+                        (cx, cz, yaw, hw, yc, yh, hl))
+
+    def f3(x, y, z):
+        return oead.byml.Array([oead.F32(x), oead.F32(y), oead.F32(z)])
+
+    def link_to(dest: int):
+        return oead.byml.Array([oead.byml.Hash({
+            "DefinitionName": "BasicSig", "DestUnitHashId": oead.U32(dest)})])
+
+    out: dict[str, list] = {}
+    hid = HASH_BASE
+    for (region, square), blist in sorted(boxes.items()):
+        objs = out.setdefault(square, [])
+        tag_id = hid
+        hid += 1
+        link_id = hid
+        hid += 1
+        mx = sum(b[0] for b in blist) / len(blist)
+        mz = sum(b[1] for b in blist) / len(blist)
+        my = sum(b[4] for b in blist) / len(blist)
+        for (cx, cz, yaw, hw, yc, yh, hl) in blist:
+            objs.append(oead.byml.Hash({
+                "!Parameters": oead.byml.Hash({
+                    "AutoSave": False, "CameraPriority": oead.S32(1), "CameraSet": "-",
+                    "ForceCalcInEvent": False, "Shape": "Box",
+                }),
+                "HashId": oead.U32(hid),
+                "SRTHash": oead.S32(hid & 0x7FFFFFFF),
+                "LinksToObj": link_to(link_id),
+                "Rotate": oead.F32(yaw),
+                "Scale": f3(hw, yh, hl),
+                "Translate": f3(cx, yc, cz),
+                "UnitConfigName": "Area",
+            }))
+            hid += 1
+        objs.append(oead.byml.Hash({
+            "!Parameters": oead.byml.Hash({
+                "IncrementSave": False, "MakeSaveFlag": oead.S32(0),
+                "NoChangeSignal": False, "SaveFlagOnOffType": oead.S32(0),
+            }),
+            "HashId": oead.U32(link_id),
+            "SRTHash": oead.S32(link_id & 0x7FFFFFFF),
+            "LinksToObj": link_to(tag_id),
+            "Translate": f3(mx, my + 10.0, mz),
+            "UnitConfigName": "LinkTagOr",
+        }))
+        objs.append(oead.byml.Hash({
+            "!Parameters": oead.byml.Hash({
+                "EventFlowEntryName": f"Gate_{region}",
+                "EventFlowName": FLOW_NAME,
+                "IsEndlessEvent": False,
+                "LaunchEventByOffSignal": False,
+                "LaunchEventByOnSignal": True,
+            }),
+            "HashId": oead.U32(tag_id),
+            "SRTHash": oead.S32(tag_id & 0x7FFFFFFF),
+            "Translate": f3(mx, my + 20.0, mz),
+            "UnitConfigName": "EventTag",
+        }))
+    if hid >= HASH_END:
+        raise PatchError(f"plage HashId dépassée ({hid - HASH_BASE} objets)")
+    return out
+
+
+def patched_mubin(data: bytes, new_objs: list) -> bytes:
+    mubin = oead.byml.from_binary(bytes(oead.yaz0.decompress(data)) if data[:4] == b"Yaz0" else data)
+    objs = mubin["Objs"]
+    keep = [o for o in objs
+            if not ("HashId" in o and (HASH_BASE <= int(o["HashId"]) < HASH_END
+                                       or int(o["HashId"]) in _LEGACY_IDS))]
+    existing = {int(o["HashId"]) for o in keep if "HashId" in o}
+    for o in new_objs:
+        if int(o["HashId"]) in existing:
+            raise PatchError(f"collision HashId {int(o['HashId']):#x} avec le vanilla")
+        keep.append(o)
+    mubin["Objs"] = oead.byml.Array(keep)
+    out = oead.byml.to_binary(mubin, big_endian=True)
+    return bytes(oead.yaz0.compress(out))
+
+
+# ── build ─────────────────────────────────────────────────────────────────────────
 
 def build(read_source, log=print) -> dict[str, bytes]:
-    """`read_source(rel) -> bytes` lit un fichier du dump (update > base)."""
     out: dict[str, bytes] = {}
 
-    # 1) event pack (SARC BE, mode Legacy, Yaz0)
+    # 1) flowchart (parse-back + entrées vérifiées)
     flow_bytes = build_flow_bytes()
     reparsed = EventFlow()
-    reparsed.read(flow_bytes)                       # vérif : parse-back
-    eps = [e.name for e in reparsed.flowchart.entry_points]
-    if eps != [ENTRY_NAME]:
-        raise PatchError(f"flowchart invalide (entry points : {eps})")
+    reparsed.read(flow_bytes)
+    eps = sorted(e.name for e in reparsed.flowchart.entry_points)
+    expected = sorted(f"Gate_{r}" for r in WALLS["regions"])
+    if eps != expected:
+        raise PatchError(f"entry points inattendus : {eps}")
     writer = oead.SarcWriter(oead.Endianness.Big, oead.SarcWriter.Mode.Legacy)
     writer.files[f"EventFlow/{FLOW_NAME}.bfevfl"] = oead.Bytes(flow_bytes)
     _, sarc_data = writer.write()
     out[EVENTPACK_REL] = bytes(oead.yaz0.compress(bytes(sarc_data)))
-    log(f"    {EVENTPACK_REL}: flowchart {len(flow_bytes)} octets, parse-back OK")
+    log(f"    {EVENTPACK_REL}: {len(eps)} régions, flowchart {len(flow_bytes)} octets")
 
-    # 2) Bootup.pack avec EventInfo enrichi
+    # 2) EventInfo
     bootup = oead.Sarc(read_source(BOOTUP_REL))
     ei = next((f for f in bootup.get_files() if f.name == "Event/EventInfo.product.sbyml"), None)
     if ei is None:
@@ -345,9 +357,9 @@ def build(read_source, log=print) -> dict[str, bytes]:
     bw.files["Event/EventInfo.product.sbyml"] = oead.Bytes(new_ei)
     _, bootup_data = bw.write()
     out[BOOTUP_REL] = bytes(bootup_data)
-    log(f"    {BOOTUP_REL}: EventInfo + {FLOW_NAME}<{ENTRY_NAME}>")
+    log(f"    {BOOTUP_REL}: EventInfo + {len(WALLS['regions'])} entrées Gate_*")
 
-    # 2b) message : MSBT custom dans chaque pack de langue présent
+    # 3) packs de langue
     for lang in EU_LANGS:
         rel = f"Pack/Bootup_{lang}.pack"
         try:
@@ -355,27 +367,17 @@ def build(read_source, log=print) -> dict[str, bytes]:
         except FileNotFoundError:
             continue
         out[rel] = patched_langpack(src, lang)
-        log(f"    {rel}: + EventFlowMsg/{FLOW_NAME}.msbt ({MSG_LABEL})")
+    log(f"    packs de langue : EventFlowMsg/{FLOW_NAME}.msbt ({MSG_LABEL})")
 
-    # 3a) mubin Static de la couche AOC (DLC monté = ce que le jeu lit ; layering sur
-    #     la copie du rando pour préserver sa randomisation)
-    new_aoc = patched_mubin(read_source(AOC_MUBIN_REL))
-    oead.byml.from_binary(bytes(oead.yaz0.decompress(new_aoc)))     # vérif parse-back
-    out[AOC_MUBIN_REL] = new_aoc
-    log(f"    {AOC_MUBIN_REL}: +Area/LinkTagOr/EventTag @ {AREA_POS} (r={AREA_RADIUS})")
-
-    # 3b) même chaîne dans TitleBG.pack (couverture des installs SANS DLC)
-    titlebg = oead.Sarc(read_source(TITLEBG_REL))
-    inner = next((f for f in titlebg.get_files() if f.name == MUBIN_INNER), None)
-    if inner is None:
-        raise PatchError(f"{MUBIN_INNER} absent de TitleBG.pack")
-    new_mubin = patched_mubin(bytes(inner.data))
-    oead.byml.from_binary(bytes(oead.yaz0.decompress(new_mubin)))   # vérif parse-back
-    tw = oead.SarcWriter.from_sarc(titlebg)
-    tw.set_mode(oead.SarcWriter.Mode.Legacy)
-    tw.files[MUBIN_INNER] = oead.Bytes(new_mubin)
-    _, titlebg_data = tw.write()
-    out[TITLEBG_REL] = bytes(titlebg_data)
-    log(f"    {TITLEBG_REL}: {MUBIN_INNER} +Area/LinkTagOr/EventTag @ {AREA_POS} (r={AREA_RADIUS})")
+    # 4) murs → mubins AOC par carré
+    per_square = wall_objects()
+    n_objs = sum(len(v) for v in per_square.values())
+    for square, objs in sorted(per_square.items()):
+        rel = f"aoc/0010/Map/MainField/{square}/{square}_Static.smubin"
+        new_mubin = patched_mubin(read_source(rel), objs)
+        oead.byml.from_binary(bytes(oead.yaz0.decompress(new_mubin)))   # parse-back
+        out[rel] = new_mubin
+    log(f"    murs : {n_objs} objets dans {len(per_square)} carrés "
+        f"({', '.join(sorted(per_square))})")
 
     return out
