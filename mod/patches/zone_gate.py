@@ -178,20 +178,18 @@ def build_flow_bytes() -> bytes:
                      {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
                       "DispMode": "Auto"}, warp)
     # préambule : cheval d'abord (descendre AVANT le warp — sinon la monture est
-    # téléportée avec le joueur et reste coincée au relais, cf. test v4.3 ; séquence
-    # GetOff→PlayerWait→Wait(15) relevée sur DarkWoods/forêt perdue), puis états air/sol
-    # (réplique de Common::AirStartUP_Player).
-    player_wait4 = action(player, "Demo_PlayerWait", {"IsWaitFinish": True}, fadeout)
+    # téléportée avec le joueur et reste coincée au relais ; séquence GetOff→PlayerWait→
+    # Wait(15) relevée sur DarkWoods/forêt perdue). Au sol → Demo_Join (rattachement
+    # propre). EN L'AIR → RIEN : surtout pas Demo_StopInAir, qui GÈLE physiquement le
+    # joueur (il ne descend plus jamais — test v5.1) ; sans lui, le paravoile continue
+    # de planer pendant le fondu et la descente se fait derrière l'écran noir.
     join = action(player, "Demo_Join", {"IsWaitFinish": True}, fadeout)
-    stop_air = action(player, "Demo_StopInAir", {"IsWaitFinish": True, "NoFixed": False},
-                      fadeout)
-    state5 = switch("CheckPlayerState", {"PlayerState": 5}, {1: join, 0: stop_air})
-    state4 = switch("CheckPlayerState", {"PlayerState": 4}, {1: player_wait4, 0: state5})
-    wait15 = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 15}, state4)
+    state5 = switch("CheckPlayerState", {"PlayerState": 5}, {1: join, 0: fadeout})
+    wait15 = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 15}, state5)
     player_wait_h = action(player, "Demo_PlayerWait", {"IsWaitFinish": True}, wait15)
     get_off = action(player, "Demo_PlayerHorseGetOff", {"IsWaitFinish": True},
                      player_wait_h)
-    horse = switch("CheckPlayerRideHorse", {}, {1: get_off, 0: state4})
+    horse = switch("CheckPlayerRideHorse", {}, {1: get_off, 0: state5})
     check = switch("CheckFlag", {"FlagName": GATE_FLAG}, {0: horse})   # 1 → rien
 
     for i, ev in enumerate(fc.events):
