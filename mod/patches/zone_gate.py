@@ -77,9 +77,10 @@ def _hash_id(seed: str) -> int:
 # ── 1) flowchart (from scratch, contenu 100 % à nous) ────────────────────────────
 
 def build_flow_bytes() -> bytes:
-    """Chaîne (patterns vanilla relevés au scan) :
-    CheckFlag(armure)=0 → [cheval ? descendre] → StopInAir (coupe paravoile/saut)
-    → FadeOut → warp → FadeIn → message tips → fin. Flag présent → rien."""
+    """Chaîne : CheckFlag(armure)=0 → préambule d'état joueur (réplique EXACTE de la
+    routine vanilla Common::AirStartUP_Player : état 4 → PlayerWait ; état 5 (au sol)
+    → Demo_Join ; sinon (en l'air) → StopInAir — envoyer StopInAir à un joueur au sol
+    BLOQUE l'event, leçon du test v4) → FadeOut → warp → FadeIn → message. Flag → rien."""
     flow = EventFlow()
     flow.name = FLOW_NAME
     fc = Flowchart()
@@ -91,11 +92,12 @@ def build_flow_bytes() -> bytes:
     esa.actions = [StringHolder("Demo_WarpPlayerToDestination"),
                    StringHolder("Demo_WaitFrame"),
                    StringHolder("Demo_OpenMessageTips")]
-    esa.queries = [StringHolder("CheckFlag"), StringHolder("CheckPlayerRideHorse")]
+    esa.queries = [StringHolder("CheckFlag"), StringHolder("CheckPlayerState")]
     player = Actor()
     player.identifier = ActorIdentifier("GameROMPlayer")
     player.actions = [StringHolder("Demo_StopInAir"),
-                      StringHolder("Demo_PlayerHorseGetOff")]
+                      StringHolder("Demo_PlayerWait"),
+                      StringHolder("Demo_Join")]
     fader = Actor()
     fader.identifier = ActorIdentifier("Fader")
     fader.actions = [StringHolder("Demo_FadeOut"), StringHolder("Demo_FadeIn")]
@@ -141,11 +143,14 @@ def build_flow_bytes() -> bytes:
     fadeout = action(fader, "Demo_FadeOut",
                      {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
                       "DispMode": "Auto"}, warp)
+    # préambule = réplique de Common::AirStartUP_Player
+    player_wait = action(player, "Demo_PlayerWait", {"IsWaitFinish": True}, fadeout)
+    join = action(player, "Demo_Join", {"IsWaitFinish": True}, fadeout)
     stop_air = action(player, "Demo_StopInAir", {"IsWaitFinish": True, "NoFixed": False},
                       fadeout)
-    get_off = action(player, "Demo_PlayerHorseGetOff", {"IsWaitFinish": True}, stop_air)
-    horse = switch("CheckPlayerRideHorse", {}, {1: get_off, 0: stop_air})
-    check = switch("CheckFlag", {"FlagName": GATE_FLAG}, {0: horse})   # 1 → rien
+    state5 = switch("CheckPlayerState", {"PlayerState": 5}, {1: join, 0: stop_air})
+    state4 = switch("CheckPlayerState", {"PlayerState": 4}, {1: player_wait, 0: state5})
+    check = switch("CheckFlag", {"FlagName": GATE_FLAG}, {0: state4})   # 1 → rien
 
     for i, ev in enumerate(fc.events):
         ev.name = f"Event{i}"
