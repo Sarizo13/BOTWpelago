@@ -99,7 +99,15 @@
       "flag_hash": null,
       "role": "ap_progression_logical",
       "gates": "eldin",
-      "note": "Gate logique : l'AP s'assure que le joueur a cet item avant que les locations Eldin soient accessibles. Injection physique non implémentée (TODO-5 — PouchItem)."
+      "inject": [
+        {"type": "add_porch", "item": "Armor_011_Head", "amount": 1},
+        {"type": "add_porch", "item": "Armor_011_Upper", "amount": 1},
+        {"type": "add_porch", "item": "Armor_011_Lower", "amount": 1},
+        {"type": "set_flag", "flag": "IsGet_Armor_011_Head"},
+        {"type": "set_flag", "flag": "IsGet_Armor_011_Upper"},
+        {"type": "set_flag", "flag": "IsGet_Armor_011_Lower"}
+      ],
+      "note": "Gate Eldin : set complet livré en pouch + flags IsGet_Armor_011_* (lus par la zone-gate du mod V2)."
     },
     {
       "name": "Snowquill Set",
@@ -108,7 +116,15 @@
       "flag_hash": null,
       "role": "ap_progression_logical",
       "gates": "hebra,gerudo_highlands",
-      "note": "Gate logique pour les régions froides (Hebra + Gerudo Highlands). TODO-5."
+      "inject": [
+        {"type": "add_porch", "item": "Armor_009_Head", "amount": 1},
+        {"type": "add_porch", "item": "Armor_009_Upper", "amount": 1},
+        {"type": "add_porch", "item": "Armor_009_Lower", "amount": 1},
+        {"type": "set_flag", "flag": "IsGet_Armor_009_Head"},
+        {"type": "set_flag", "flag": "IsGet_Armor_009_Upper"},
+        {"type": "set_flag", "flag": "IsGet_Armor_009_Lower"}
+      ],
+      "note": "Gate régions froides (Hebra + Gerudo Highlands) : set complet + flags IsGet_Armor_009_*."
     },
     {
       "name": "Vai Outfit",
@@ -117,7 +133,15 @@
       "flag_hash": null,
       "role": "ap_progression_logical",
       "gates": "gerudo_town",
-      "note": "Gate logique pour Gerudo Town (2 sanctuaires à l'intérieur). TODO-5."
+      "inject": [
+        {"type": "add_porch", "item": "Armor_053_Head", "amount": 1},
+        {"type": "add_porch", "item": "Armor_053_Upper", "amount": 1},
+        {"type": "add_porch", "item": "Armor_053_Lower", "amount": 1},
+        {"type": "set_flag", "flag": "IsGet_Armor_053_Head"},
+        {"type": "set_flag", "flag": "IsGet_Armor_053_Upper"},
+        {"type": "set_flag", "flag": "IsGet_Armor_053_Lower"}
+      ],
+      "note": "Gate Gerudo Town : tenue Gerudo complète (Veil/Top/Sirwal) + flags IsGet_Armor_053_*."
     },
     {
       "name": "Zora Armor",
@@ -126,7 +150,15 @@
       "flag_hash": null,
       "role": "ap_progression_logical",
       "gates": "zora",
-      "note": "Tenue Zora (nage en cascade / Créature Divine Vah Ruta). Gate logique. On garde la tenue COMPLÈTE comme item AP (l'icône tracker n'est que le casque). TODO-5 / V1.2 armor gate."
+      "inject": [
+        {"type": "add_porch", "item": "Armor_006_Head", "amount": 1},
+        {"type": "add_porch", "item": "Armor_006_Upper", "amount": 1},
+        {"type": "add_porch", "item": "Armor_006_Lower", "amount": 1},
+        {"type": "set_flag", "flag": "IsGet_Armor_006_Head"},
+        {"type": "set_flag", "flag": "IsGet_Armor_006_Upper"},
+        {"type": "set_flag", "flag": "IsGet_Armor_006_Lower"}
+      ],
+      "note": "Tenue Zora complète (nage cascade / Vah Ruta) + flags IsGet_Armor_006_*. L'icône tracker n'est que le casque."
     }
   ],
   "filler_items": [

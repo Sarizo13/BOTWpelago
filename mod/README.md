@@ -136,9 +136,22 @@ Autres actions vues dans `FindDungeon` directement réutilisables :
      les chaînages vanilla y vivent ; une Area posée dans le `_Dynamic` libre ne s'est
      pas déclenchée.
 
-   À valider in-game (v2) : déclenchement, timing/fade du warp, re-déclenchement à la
-   ré-entrée. Ensuite : message MSBT, murs de frontière complets par région (boîtes
-   hautes chaînées le long de polylignes — anti-paravoile), flags `IsGet_Armor_*` posés
-   par le client à la livraison AP.
+   **VALIDÉ IN-GAME (v3)** : le warp se déclenche (couche AOC). Leçon supplémentaire :
+   avec le DLC monté le jeu lit les map units depuis l'**aoc** — patcher TitleBG ne
+   suffit pas ; et la RSTB doit être mise à jour pour toute ressource modifiée/ajoutée
+   (crash au boot sinon — `update_rstb` dans build_mod).
+
+   **v4 (feedback user)** : le TP sec devient une séquence vanilla-like —
+   `CheckPlayerRideHorse → Demo_PlayerHorseGetOff` (cheval), `Demo_StopInAir` (coupe
+   paravoile/chute), `Fader.Demo_FadeOut(30)` → warp → `Demo_FadeIn(30)` →
+   `Demo_OpenMessageTips(EventFlowMsg/BOTWpelago_Gate:Gate_NoGear)`. Le message vit
+   dans un **MSBT custom** (`mod/msbt.py`, writer BE minimal LBL1+ATR1+TXT2 calqué sur
+   le format vanilla) injecté dans les 7 `Pack/Bootup_EU*.pack` (FR réel, EN ailleurs).
+
+   **Étape suivante — murs de frontière par région** (tracés fournis par le user) :
+   générateur de polylignes → chaîne de boîtes `Area` (Shape=Box, hautes de ~400 m
+   pour bloquer le paravoile, se recouvrant) → un `LinkTagOr` par mur → un `EventTag`
+   par région ; un entry point par région dans `BOTWpelago_Gate.bfevfl` (flag d'armure
+   + warp propres à chaque zone). Données : polylignes en JSON committables.
 5. Icônes/noms custom (BFRES/MSBT — Switch Toolbox, `--be`), cap cœurs/endurance,
    coffres-locations.

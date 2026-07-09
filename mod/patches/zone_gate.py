@@ -35,6 +35,8 @@ from evfl.event import ActionEvent, Event, SwitchEvent
 from evfl.flowchart import Flowchart
 from evfl.util import make_index, make_rindex
 
+from msbt import build_msbt
+
 from . import PatchError
 
 NAME = "zone-gate-eldin-poc"
@@ -49,6 +51,14 @@ AREA_POS = (2404.0, 230.0, -1320.0)          # Death Mountain Entrance (sol ≈2
 AREA_RADIUS = 45.0
 WARP_DEST = (2612.0, 254.5, -1144.0)         # Relais du Pied-de-Mont
 WARP_DIR_Y = 140.0
+
+MSG_LABEL = "Gate_NoGear"
+MSG_TEXTS = {                                 # EUfr = joueur ; anglais pour le reste
+    "EUfr": "Vous n'avez pas l'équipement requis pour accéder à cette zone.",
+}
+MSG_DEFAULT = "You lack the equipment required to enter this area."
+EU_LANGS = ("EUen", "EUfr", "EUde", "EUes", "EUit", "EUnl", "EUru")
+FADE_FRAMES = 30
 
 TITLEBG_REL = "Pack/TitleBG.pack"
 MUBIN_INNER = "Map/MainField/H-3/H-3_Static.smubin"
@@ -67,20 +77,31 @@ def _hash_id(seed: str) -> int:
 # ── 1) flowchart (from scratch, contenu 100 % à nous) ────────────────────────────
 
 def build_flow_bytes() -> bytes:
+    """Chaîne (patterns vanilla relevés au scan) :
+    CheckFlag(armure)=0 → [cheval ? descendre] → StopInAir (coupe paravoile/saut)
+    → FadeOut → warp → FadeIn → message tips → fin. Flag présent → rien."""
     flow = EventFlow()
     flow.name = FLOW_NAME
     fc = Flowchart()
     fc.name = FLOW_NAME
     flow.flowchart = fc
 
-    actor = Actor()
-    actor.identifier = ActorIdentifier("EventSystemActor")
-    actor.actions = [StringHolder("Demo_WarpPlayerToDestination"),
-                     StringHolder("Demo_WaitFrame")]
-    actor.queries = [StringHolder("CheckFlag")]
-    fc.actors.append(actor)
+    esa = Actor()
+    esa.identifier = ActorIdentifier("EventSystemActor")
+    esa.actions = [StringHolder("Demo_WarpPlayerToDestination"),
+                   StringHolder("Demo_WaitFrame"),
+                   StringHolder("Demo_OpenMessageTips")]
+    esa.queries = [StringHolder("CheckFlag"), StringHolder("CheckPlayerRideHorse")]
+    player = Actor()
+    player.identifier = ActorIdentifier("GameROMPlayer")
+    player.actions = [StringHolder("Demo_StopInAir"),
+                      StringHolder("Demo_PlayerHorseGetOff")]
+    fader = Actor()
+    fader.identifier = ActorIdentifier("Fader")
+    fader.actions = [StringHolder("Demo_FadeOut"), StringHolder("Demo_FadeIn")]
+    fc.actors += [esa, player, fader]
 
-    def action(name: str, params: dict, nxt: Event | None) -> Event:
+    def action(actor: Actor, name: str, params: dict, nxt: Event | None) -> Event:
         ev = Event()
         ev.data = ActionEvent()
         ev.data.actor = make_rindex(actor)
@@ -91,23 +112,40 @@ def build_flow_bytes() -> bytes:
         fc.events.append(ev)
         return ev
 
-    # chaîne d'actions encadrée de WaitFrame (quirk BotW, cf. evfl botw_add_action_chain)
-    wait_end = action("Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 1}, None)
-    warp = action("Demo_WarpPlayerToDestination",
+    def switch(query: str, params: dict, cases: dict) -> Event:
+        ev = Event()
+        ev.data = SwitchEvent()
+        ev.data.actor = make_rindex(esa)
+        ev.data.actor_query = make_rindex(esa.find_query(query))
+        ev.data.params = Container()
+        ev.data.params.data = dict(params)
+        ev.data.cases = {k: make_rindex(v) for k, v in cases.items()}
+        fc.events.append(ev)
+        return ev
+
+    # construite à l'envers (chaque event pointe sur son successeur)
+    wait_end = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 1}, None)
+    tips = action(esa, "Demo_OpenMessageTips",
+                  {"IsWaitFinish": True, "TipsType": 6,
+                   "MessageId": f"EventFlowMsg/{FLOW_NAME}:{MSG_LABEL}"},
+                  wait_end)
+    fadein = action(fader, "Demo_FadeIn",
+                    {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
+                     "DispMode": "Auto"}, tips)
+    wait_post = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 30}, fadein)
+    warp = action(esa, "Demo_WarpPlayerToDestination",
                   {"IsWaitFinish": True,
                    "DestinationX": WARP_DEST[0], "DestinationY": WARP_DEST[1],
                    "DestinationZ": WARP_DEST[2], "DirectionY": WARP_DIR_Y},
-                  wait_end)
-    wait_start = action("Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 1}, warp)
-
-    check = Event()
-    check.data = SwitchEvent()
-    check.data.actor = make_rindex(actor)
-    check.data.actor_query = make_rindex(actor.find_query("CheckFlag"))
-    check.data.params = Container()
-    check.data.params.data = {"FlagName": GATE_FLAG}
-    check.data.cases = {0: make_rindex(wait_start)}     # 0 = flag absent → warp ; 1 → rien
-    fc.events.append(check)
+                  wait_post)
+    fadeout = action(fader, "Demo_FadeOut",
+                     {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
+                      "DispMode": "Auto"}, warp)
+    stop_air = action(player, "Demo_StopInAir", {"IsWaitFinish": True, "NoFixed": False},
+                      fadeout)
+    get_off = action(player, "Demo_PlayerHorseGetOff", {"IsWaitFinish": True}, stop_air)
+    horse = switch("CheckPlayerRideHorse", {}, {1: get_off, 0: stop_air})
+    check = switch("CheckFlag", {"FlagName": GATE_FLAG}, {0: horse})   # 1 → rien
 
     for i, ev in enumerate(fc.events):
         ev.name = f"Event{i}"
@@ -204,6 +242,34 @@ def patched_mubin(data: bytes) -> bytes:
     return bytes(oead.yaz0.compress(out))
 
 
+# ── packs de langue : ajoute EventFlowMsg/BOTWpelago_Gate.msbt (texte à nous) ─────
+
+def patched_langpack(data: bytes, lang: str) -> bytes:
+    pack = oead.Sarc(data)
+    msg_name = f"Message/Msg_{lang}.product.ssarc"
+    inner = next((f for f in pack.get_files() if f.name == msg_name), None)
+    if inner is None:
+        raise PatchError(f"{msg_name} absent de Bootup_{lang}.pack")
+    msg = oead.Sarc(bytes(oead.yaz0.decompress(bytes(inner.data))))
+    mw = oead.SarcWriter.from_sarc(msg)
+    mw.set_mode(oead.SarcWriter.Mode.Legacy)
+    text = MSG_TEXTS.get(lang, MSG_DEFAULT)
+    mw.files[f"EventFlowMsg/{FLOW_NAME}.msbt"] = oead.Bytes(build_msbt({MSG_LABEL: text}))
+    _, msg_out = mw.write()
+    pw = oead.SarcWriter.from_sarc(pack)
+    pw.set_mode(oead.SarcWriter.Mode.Legacy)
+    pw.files[msg_name] = oead.Bytes(bytes(oead.yaz0.compress(bytes(msg_out))))
+    _, out = pw.write()
+    return bytes(out)
+
+
+# entrées RSTB pour les ressources internes aux packs qu'on modifie (lu par build_mod)
+RSTB_PACK_INNER = {
+    f"Pack/Bootup_{lang}.pack": [f"Message/Msg_{lang}.product.ssarc"]
+    for lang in EU_LANGS
+}
+
+
 # ── build : rel_path → bytes ──────────────────────────────────────────────────────
 
 def build(read_source, log=print) -> dict[str, bytes]:
@@ -235,6 +301,16 @@ def build(read_source, log=print) -> dict[str, bytes]:
     _, bootup_data = bw.write()
     out[BOOTUP_REL] = bytes(bootup_data)
     log(f"    {BOOTUP_REL}: EventInfo + {FLOW_NAME}<{ENTRY_NAME}>")
+
+    # 2b) message : MSBT custom dans chaque pack de langue présent
+    for lang in EU_LANGS:
+        rel = f"Pack/Bootup_{lang}.pack"
+        try:
+            src = read_source(rel)
+        except FileNotFoundError:
+            continue
+        out[rel] = patched_langpack(src, lang)
+        log(f"    {rel}: + EventFlowMsg/{FLOW_NAME}.msbt ({MSG_LABEL})")
 
     # 3a) mubin Static de la couche AOC (DLC monté = ce que le jeu lit ; layering sur
     #     la copie du rando pour préserver sa randomisation)

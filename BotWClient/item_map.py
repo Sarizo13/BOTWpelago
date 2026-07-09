@@ -24,25 +24,6 @@ with open(_GATE_FILE, encoding="utf-8") as _fh:
     _GATE = json.load(_fh)
 
 # Build map: ap_item_id → InjectionSpec
-ITEM_MAP: dict[int, InjectionSpec] = {}
-
-for _item in _GATE["items"]:
-    if _item["role"] == "ap_progression":
-        ITEM_MAP[_item["ap_item_id"]] = InjectionSpec(
-            ap_item_id   = _item["ap_item_id"],
-            ap_item_name = _item["name"],
-            actions      = [InjectionSpec.SetFlag(flag_name=_item["flag_name"])],
-            display_note = _item.get("note", ""),
-        )
-    elif _item["role"] == "ap_progression_logical":
-        # No save injection — the item is tracked logically in _received set
-        # so gate enforcement knows not to block the corresponding region.
-        ITEM_MAP[_item["ap_item_id"]] = InjectionSpec(
-            ap_item_id   = _item["ap_item_id"],
-            ap_item_name = _item["name"],
-            actions      = [],
-            display_note = _item.get("gates", ""),
-        )
 
 def _build_actions(inject) -> list:
     """Build an actions list from a gate_items.json `inject` field (dict or list of dicts)."""
@@ -59,6 +40,27 @@ def _build_actions(inject) -> list:
         elif t == "add_porch":
             actions.append(InjectionSpec.AddPouchItem(item_name=entry["item"], amount=entry.get("amount", 1)))
     return actions
+
+
+ITEM_MAP: dict[int, InjectionSpec] = {}
+
+for _item in _GATE["items"]:
+    if _item["role"] == "ap_progression":
+        ITEM_MAP[_item["ap_item_id"]] = InjectionSpec(
+            ap_item_id   = _item["ap_item_id"],
+            ap_item_name = _item["name"],
+            actions      = [InjectionSpec.SetFlag(flag_name=_item["flag_name"])],
+            display_note = _item.get("note", ""),
+        )
+    elif _item["role"] == "ap_progression_logical":
+        # Tenues gates : depuis la V2 zone-gate, elles sont livrées POUR DE VRAI
+        # (3 pièces pouch + flags IsGet_Armor_* que le mod lit pour ouvrir la zone).
+        ITEM_MAP[_item["ap_item_id"]] = InjectionSpec(
+            ap_item_id   = _item["ap_item_id"],
+            ap_item_name = _item["name"],
+            actions      = _build_actions(_item.get("inject")),
+            display_note = _item.get("gates", ""),
+        )
 
 
 # Filler items — inject if `inject` field present, else name-lookup only.

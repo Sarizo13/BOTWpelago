@@ -84,12 +84,17 @@ def _canonical(name: str) -> str:
     return name
 
 
-def update_rstb(results: dict[str, bytes], read_source, log=print) -> None:
+def update_rstb(results: dict[str, bytes], read_source, log=print,
+                extra_pack_inner: dict[str, list[str]] | None = None) -> None:
     """Met à jour la ResourceSizeTable pour toutes les ressources touchées/ajoutées.
     BotW pré-alloue les buffers d'après cette table : une ressource plus grosse que son
     entrée (ou absente de la table) CRASHE le jeu au chargement — cause du crash-au-boot
     du 1er test. Les tailles ne sont jamais réduites (surdimensionner est inoffensif)."""
     from rstb import ResourceSizeTable, SizeCalculator
+
+    pack_inner = dict(_PACK_INNER_TOUCHED)
+    if extra_pack_inner:
+        pack_inner.update(extra_pack_inner)
 
     raw = read_source(_RSTB_REL)
     dec = bytes(oead.yaz0.decompress(raw)) if raw[:4] == b"Yaz0" else raw
@@ -119,9 +124,9 @@ def update_rstb(results: dict[str, bytes], read_source, log=print) -> None:
         elif rel.endswith((".smubin", ".sbyml", ".mubin", ".byml")):
             payload = bytes(oead.yaz0.decompress(data)) if data[:4] == b"Yaz0" else data
             set_entry(rel, payload)
-        elif rel in _PACK_INNER_TOUCHED:
+        elif rel in pack_inner:
             sarc = oead.Sarc(data)
-            for inner_name in _PACK_INNER_TOUCHED[rel]:
+            for inner_name in pack_inner[rel]:
                 inner = next((f for f in sarc.get_files() if f.name == inner_name), None)
                 if inner is None:
                     raise PatchError(f"{inner_name} absent de {rel} (rstb)")
@@ -221,8 +226,11 @@ def main() -> None:
         print(f"  [{fp.NAME}] {fp.DESCRIPTION}")
         results.update(fp.build(read_source, log=print))
 
+    extra_inner: dict[str, list[str]] = {}
+    for fp in file_patches:
+        extra_inner.update(getattr(fp, "RSTB_PACK_INNER", {}))
     print("  [rstb] mise à jour de la ResourceSizeTable (tailles pré-allouées par le jeu)")
-    update_rstb(results, read_source, log=print)
+    update_rstb(results, read_source, log=print, extra_pack_inner=extra_inner)
 
     if args.check:
         print("\n--check : tout est patchable et vérifié, rien n'a été écrit.")
