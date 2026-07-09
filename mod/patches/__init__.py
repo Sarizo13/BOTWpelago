@@ -39,5 +39,5 @@ def get_patches() -> list[FlowPatch]:
 def get_file_patches():
     """Patches « fichiers entiers » : modules exposant NAME, DESCRIPTION et
     build(read_source, log) -> dict[rel_path, bytes]."""
-    from . import zone_gate
-    return [zone_gate]
+    from . import starter_kit, zone_gate
+    return [zone_gate, starter_kit]
