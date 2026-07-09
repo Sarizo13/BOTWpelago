@@ -19,6 +19,7 @@ redistribuer.
 | `patches/paraglider.py` | Patch 1 : retire le grant paravoile vanilla (voir ci-dessous) |
 | `scan_flows.py` | Recherche : scanne TOUS les `.bfevfl` du dump pour des motifs (actions/flags/acteurs) |
 | `dump_flow.py` | Recherche : dissèque un `.bfevfl` (entry points, chaînes d'events, params) |
+| `scan_map.py` | Recherche : liste les actors déclencheurs des map units MainField (résout aussi les `_Static.smubin` packés dans TitleBG.pack) |
 
 ## Pipeline de build
 
@@ -90,7 +91,34 @@ Autres actions vues dans `FindDungeon` directement réutilisables :
    prochain déclenchement naturel. Questions ouvertes : choix du flow porteur, passage
    du NOM d'item (params EventFlow = statiques → une entrée par item clé, ou mailbox
    à N flags).
-4. **Gate région par téléport** : `Demo_WarpPlayer` + message (cf. mod DAR pour le
-   blocage conditionnel — à décompiler pour apprendre, ré-implémenter ensuite).
+4. **Gate région par téléport — MÉCANISME VANILLA DÉCODÉ (2026-07-09), recette complète** :
+   le champ contient **543 `EventTag`** (dans les `_Static.smubin`, packés dans TitleBG.pack)
+   câblés ainsi (chaîne remontée sur `Wind_Relic_Contact_Retry`, B-3) :
+
+   ```
+   Area (volume invisible : Shape=Sphere/Capsule/Box, Scale = taille)
+     --BasicSig--> LinkTagOr / LinkTagAnd   (logique booléenne ; peut lire/poser des
+     |             SaveFlag GameData directement dans la couche map !)
+     --BasicSig--> EventTag {EventFlowName, EventFlowEntryName, LaunchEventByOnSignal}
+                   → lance l'entry point du flowchart nommé
+   ```
+
+   Recette du patch « zone gate » (tout est à NOUS, aucun merge complexe) :
+   1. `Event/BOTWpelago_Gate.sbeventpack` (NOUVEAU fichier) : flowchart avec un entry
+      point par région — `CheckFlag(IsGet_Armor_XXX_*)` → si absent :
+      `Demo_Talk(message)` + `Demo_WarpPlayer(dest sûre)` ; sinon rien.
+   2. Enregistrer chaque entry dans `Bootup.pack//Event/EventInfo.product.sbyml` :
+      `BOTWpelago_Gate<Gate_Eldin> = {is_timeline: false, mode: "Seamless",
+      subfile: [{file: "Common.bfevfl"}]}` (schéma relevé sur les 5 784 entrées vanilla).
+   3. Poser `Area` + `EventTag` aux entrées de région dans le `_Dynamic.smubin` du carré
+      (fichier LIBRE → remplaçable par graphic pack sans toucher TitleBG.pack).
+   4. Message : entrée MSBT `EventFlowMsg/BOTWpelago_Gate.msbt` (texte à nous) dans le
+      pack de langue ; PoC possible sans message (fade + warp suffisent à prouver).
+   5. Condition côté client : poser les flags `IsGet_Armor_*` (360 existent, un par
+      pièce) à la livraison des sets AP.
+
+   Le mod DAR n'est plus nécessaire comme référence (mécanisme vanilla plus complet).
+   Reste à prototyper : UNE Area+EventTag sur une entrée d'Eldin + flowchart 2 events,
+   puis test in-game (comportement de re-déclenchement à la ré-entrée, timing du warp).
 5. Icônes/noms custom (BFRES/MSBT — Switch Toolbox, `--be`), cap cœurs/endurance,
    coffres-locations.

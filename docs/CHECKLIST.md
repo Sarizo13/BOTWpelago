@@ -67,14 +67,16 @@
 - [ ] Chests comme locations (TODO-8)
 
 ### Idées gameplay V2
-- [ ] **Gate région par TÉLÉPORT** (alternative douce au kill) : quand le joueur entre dans une
-      région sans l'objet requis, le TP en arrière à la façon des **Bois Korogu / forêt perdue**
-      (sortie du chemin prévu → renvoi) + **message** « il te manque X pour aller ici ». Remplace le
-      kill DeathLink de la gate armure Créature Divine (V1) par une mécanique moins punitive.
+- [ ] **Gate région par TÉLÉPORT** — **mécanisme vanilla DÉCODÉ (2026-07-09)**, recette complète
+      dans `mod/README.md` : chaîne `Area (volume) → LinkTagOr/And → EventTag(EventFlowName/
+      EntryName)` + flowchart custom `CheckFlag(IsGet_Armor_*) → Demo_Talk + Demo_WarpPlayer` +
+      entrée EventInfo (Bootup.pack). Remplace la gate kill Créature Divine (V1) — décision user.
+      Reste : prototyper UNE zone (entrée d'Eldin) + test in-game.
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et d'endurance ;
       si le joueur en gagnerait au-delà du plafond → convertir en **don de 500 rubis**.
 
 ### Décompilations à étudier (apprendre → ré-implémenter, PAS redistribuer)
-- [ ] **`DAR 3.6 - BCML - FREE.zip`** : bloque une action selon une autre (ex : **en combat → sanctuaire
-      non ouvrable** + affichage d'un message). Mécanisme réutilisable pour nos **zones non accessibles**
-      / gates (message + blocage conditionnel). Décompiler pour comprendre le HOW, puis ré-implémenter.
+- [x] ~~**`DAR 3.6 - BCML - FREE.zip`**~~ — plus nécessaire : le mécanisme vanilla de blocage
+      conditionnel par zone (Area→LinkTag→EventTag, + SaveFlag lisibles au niveau map) a été
+      décodé directement dans le dump (cf. mod/README.md §4) — plus complet que ce que DAR
+      aurait appris. (Le zip n'a d'ailleurs pas été retrouvé sur le disque.)
