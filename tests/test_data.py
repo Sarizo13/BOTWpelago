@@ -89,9 +89,11 @@ def test_item_and_location_id_ranges_disjoint(locations, gate_items):
 
 # ── shrine_chests.json (the world's actual location source) ──────────────────
 
+# Régions alignées sur les murs physiques du mod V2 (cf. worlds/botw/regions.py
+# et tools/assign_regions.py). "Gerudo Highlands" a été absorbée par "Gerudo".
 VALID_REGIONS = {
     "Great Plateau", "Hyrule World", "Eldin", "Hebra",
-    "Gerudo Highlands", "Gerudo Town",
+    "Zora", "Gerudo", "Gerudo Town",
 }
 
 
