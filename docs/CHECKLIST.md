@@ -30,7 +30,9 @@
 - [ ] (option) TODO-7 : remplir `region` dans `locations.json` (graphe de régions / règles plus fines)
 
 ### Loot & rubis (ex-V1.1)
-- [ ] Rareté du loot (tiers + tirage pondéré) — diversifié mais pas encore pondéré
+- [x] Rareté du loot : 4 tiers (common ×8 / uncommon ×4 / rare ×2 / epic ×1) assignés par
+      mots-clés dans `build_loot_table.py` ; quantités plafonnées (rare ≤ 2, epic = 1) ;
+      specials rescalés (~14 % du tirage). Vérifié sur seed : 50/17/11/1.5 %.
 - [ ] Rubis : trouver le vrai portefeuille (pas le miroir) → strip fonctionnel
 
 ### Gate difficulté (ex-V1.2)

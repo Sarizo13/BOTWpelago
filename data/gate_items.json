@@ -133,7 +133,7 @@
     {
       "name": "Spirit Orb",
       "ap_item_id": 6080100,
-      "count": 25,
+      "count": 111,
       "inject": [
         {
           "type": "add_porch",
@@ -150,7 +150,7 @@
     {
       "name": "Arrows x10",
       "ap_item_id": 6080120,
-      "count": 10,
+      "count": 44,
       "inject": {
         "type": "add_porch",
         "item": "NormalArrow",
@@ -160,7 +160,7 @@
     {
       "name": "Bomb Arrows x5",
       "ap_item_id": 6080121,
-      "count": 5,
+      "count": 22,
       "inject": {
         "type": "add_porch",
         "item": "BombArrow_A",
@@ -170,7 +170,7 @@
     {
       "name": "Fire Arrows x5",
       "ap_item_id": 6080122,
-      "count": 4,
+      "count": 18,
       "inject": {
         "type": "add_porch",
         "item": "FireArrow",
@@ -180,7 +180,7 @@
     {
       "name": "Ice Arrows x5",
       "ap_item_id": 6080123,
-      "count": 4,
+      "count": 18,
       "inject": {
         "type": "add_porch",
         "item": "IceArrow",
@@ -190,7 +190,7 @@
     {
       "name": "Shock Arrows x5",
       "ap_item_id": 6080124,
-      "count": 4,
+      "count": 18,
       "inject": {
         "type": "add_porch",
         "item": "ElectricArrow",
@@ -200,7 +200,8 @@
     {
       "name": "Bokoblin Horn",
       "ap_item_id": 6080200,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_00",
@@ -210,7 +211,8 @@
     {
       "name": "Bokoblin Fang",
       "ap_item_id": 6080201,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_01",
@@ -220,7 +222,8 @@
     {
       "name": "Bokoblin Guts",
       "ap_item_id": 6080202,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_02",
@@ -230,7 +233,8 @@
     {
       "name": "Lizalfos Horn",
       "ap_item_id": 6080203,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_03",
@@ -240,7 +244,8 @@
     {
       "name": "Lizalfos Talon",
       "ap_item_id": 6080204,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_04",
@@ -250,7 +255,8 @@
     {
       "name": "Lizalfos Tail",
       "ap_item_id": 6080205,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_05",
@@ -260,7 +266,8 @@
     {
       "name": "Moblin Horn",
       "ap_item_id": 6080206,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_06",
@@ -270,7 +277,8 @@
     {
       "name": "Moblin Fang",
       "ap_item_id": 6080207,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_07",
@@ -280,7 +288,8 @@
     {
       "name": "Moblin Guts",
       "ap_item_id": 6080208,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_08",
@@ -290,7 +299,8 @@
     {
       "name": "Lynel Horn",
       "ap_item_id": 6080209,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_12",
@@ -300,17 +310,19 @@
     {
       "name": "Lynel Hoof",
       "ap_item_id": 6080210,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_13",
-        "amount": 3
+        "amount": 2
       }
     },
     {
       "name": "Lynel Guts",
       "ap_item_id": 6080211,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_14",
@@ -320,7 +332,8 @@
     {
       "name": "Red Chuchu Jelly",
       "ap_item_id": 6080212,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_15",
@@ -330,7 +343,8 @@
     {
       "name": "Yellow Chuchu Jelly",
       "ap_item_id": 6080213,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_16",
@@ -340,7 +354,8 @@
     {
       "name": "White Chuchu Jelly",
       "ap_item_id": 6080214,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_17",
@@ -350,7 +365,8 @@
     {
       "name": "Keese Wing",
       "ap_item_id": 6080215,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_18",
@@ -360,7 +376,8 @@
     {
       "name": "Keese Eyeball",
       "ap_item_id": 6080216,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_19",
@@ -370,7 +387,8 @@
     {
       "name": "Octorok Tentacle",
       "ap_item_id": 6080217,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_20",
@@ -380,7 +398,8 @@
     {
       "name": "Octorok Eyeball",
       "ap_item_id": 6080218,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_21",
@@ -390,7 +409,8 @@
     {
       "name": "Molduga Fin",
       "ap_item_id": 6080219,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_24",
@@ -400,7 +420,8 @@
     {
       "name": "Molduga Guts",
       "ap_item_id": 6080220,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_25",
@@ -410,7 +431,8 @@
     {
       "name": "Ancient Gear",
       "ap_item_id": 6080221,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_26",
@@ -420,7 +442,8 @@
     {
       "name": "Ancient Screw",
       "ap_item_id": 6080222,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_27",
@@ -430,7 +453,8 @@
     {
       "name": "Ancient Spring",
       "ap_item_id": 6080223,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_28",
@@ -440,7 +464,8 @@
     {
       "name": "Ancient Shaft",
       "ap_item_id": 6080224,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_29",
@@ -450,7 +475,8 @@
     {
       "name": "Ancient Core",
       "ap_item_id": 6080225,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_30",
@@ -460,7 +486,8 @@
     {
       "name": "Giant Ancient Core",
       "ap_item_id": 6080226,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_31",
@@ -470,7 +497,8 @@
     {
       "name": "Hinox Toenail",
       "ap_item_id": 6080227,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_32",
@@ -480,7 +508,8 @@
     {
       "name": "Hinox Tooth",
       "ap_item_id": 6080228,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_33",
@@ -490,7 +519,8 @@
     {
       "name": "Hinox Guts",
       "ap_item_id": 6080229,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_34",
@@ -501,26 +531,29 @@
       "name": "Dinraal's Scale",
       "ap_item_id": 6080230,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_38",
-        "amount": 2
+        "amount": 1
       }
     },
     {
       "name": "Dinraal's Claw",
       "ap_item_id": 6080231,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_39",
-        "amount": 2
+        "amount": 1
       }
     },
     {
       "name": "Chuchu Jelly",
       "ap_item_id": 6080232,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_40",
@@ -530,7 +563,8 @@
     {
       "name": "Red Lizalfos Tail",
       "ap_item_id": 6080233,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_41",
@@ -540,7 +574,8 @@
     {
       "name": "Icy Lizalfos Tail",
       "ap_item_id": 6080234,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_42",
@@ -550,7 +585,8 @@
     {
       "name": "Yellow Lizalfos Tail",
       "ap_item_id": 6080235,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_43",
@@ -560,7 +596,8 @@
     {
       "name": "Fire Keese Wing",
       "ap_item_id": 6080236,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_44",
@@ -570,7 +607,8 @@
     {
       "name": "Electric Keese Wing",
       "ap_item_id": 6080237,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_45",
@@ -580,7 +618,8 @@
     {
       "name": "Ice Keese Wing",
       "ap_item_id": 6080238,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_46",
@@ -591,106 +630,117 @@
       "name": "Shard of Dinraal's Fang",
       "ap_item_id": 6080239,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_47",
-        "amount": 3
+        "amount": 1
       }
     },
     {
       "name": "Shard of Dinraal's Horn",
       "ap_item_id": 6080240,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_48",
-        "amount": 2
+        "amount": 1
       }
     },
     {
       "name": "Naydra's Scale",
       "ap_item_id": 6080241,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_49",
-        "amount": 4
+        "amount": 1
       }
     },
     {
       "name": "Naydra's Claw",
       "ap_item_id": 6080242,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_50",
-        "amount": 4
+        "amount": 1
       }
     },
     {
       "name": "Shard of Naydra's Fang",
       "ap_item_id": 6080243,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_51",
-        "amount": 3
+        "amount": 1
       }
     },
     {
       "name": "Shard of Naydra's Horn",
       "ap_item_id": 6080244,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_52",
-        "amount": 3
+        "amount": 1
       }
     },
     {
       "name": "Farosh's Scale",
       "ap_item_id": 6080245,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_53",
-        "amount": 3
+        "amount": 1
       }
     },
     {
       "name": "Farosh's Claw",
       "ap_item_id": 6080246,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_54",
-        "amount": 3
+        "amount": 1
       }
     },
     {
       "name": "Shard of Farosh's Fang",
       "ap_item_id": 6080247,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_55",
-        "amount": 3
+        "amount": 1
       }
     },
     {
       "name": "Shard of Farosh's Horn",
       "ap_item_id": 6080248,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_56",
-        "amount": 4
+        "amount": 1
       }
     },
     {
       "name": "Octo Balloon",
       "ap_item_id": 6080249,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Enemy_57",
@@ -700,7 +750,8 @@
     {
       "name": "Hyrule Bass",
       "ap_item_id": 6080250,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_A",
@@ -710,7 +761,8 @@
     {
       "name": "Hearty Bass",
       "ap_item_id": 6080251,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_B",
@@ -720,7 +772,8 @@
     {
       "name": "Chillfin Trout",
       "ap_item_id": 6080252,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_C",
@@ -730,7 +783,8 @@
     {
       "name": "Voltfin Trout",
       "ap_item_id": 6080253,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_D",
@@ -740,7 +794,8 @@
     {
       "name": "Mighty Carp",
       "ap_item_id": 6080254,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_E",
@@ -750,7 +805,8 @@
     {
       "name": "Mighty Porgy",
       "ap_item_id": 6080255,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_F",
@@ -760,7 +816,8 @@
     {
       "name": "Armored Porgy",
       "ap_item_id": 6080256,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_G",
@@ -770,7 +827,8 @@
     {
       "name": "Armored Carp",
       "ap_item_id": 6080257,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_H",
@@ -780,7 +838,8 @@
     {
       "name": "Hearty Salmon",
       "ap_item_id": 6080258,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_I",
@@ -790,7 +849,8 @@
     {
       "name": "Sizzlefin Trout",
       "ap_item_id": 6080259,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_J",
@@ -800,17 +860,19 @@
     {
       "name": "Hearty Blueshell Snail",
       "ap_item_id": 6080260,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_K",
-        "amount": 3
+        "amount": 2
       }
     },
     {
       "name": "Staminoka Bass",
       "ap_item_id": 6080261,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_L",
@@ -820,7 +882,8 @@
     {
       "name": "Sneaky River Snail",
       "ap_item_id": 6080262,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_M",
@@ -830,7 +893,8 @@
     {
       "name": "Stealthfin Trout",
       "ap_item_id": 6080263,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_X",
@@ -840,7 +904,8 @@
     {
       "name": "Sanke Carp",
       "ap_item_id": 6080264,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_FishGet_Z",
@@ -850,7 +915,8 @@
     {
       "name": "Apple",
       "ap_item_id": 6080265,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_A",
@@ -860,7 +926,8 @@
     {
       "name": "Wildberry",
       "ap_item_id": 6080266,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_B",
@@ -870,7 +937,8 @@
     {
       "name": "Voltfruit",
       "ap_item_id": 6080267,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_C",
@@ -880,17 +948,19 @@
     {
       "name": "Hearty Durian",
       "ap_item_id": 6080268,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_D",
-        "amount": 3
+        "amount": 2
       }
     },
     {
       "name": "Fleet-Lotus Seeds",
       "ap_item_id": 6080269,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_E",
@@ -900,7 +970,8 @@
     {
       "name": "Hydromelon",
       "ap_item_id": 6080270,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_F",
@@ -910,7 +981,8 @@
     {
       "name": "Palm Fruit",
       "ap_item_id": 6080271,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_G",
@@ -920,7 +992,8 @@
     {
       "name": "Mighty Bananas",
       "ap_item_id": 6080272,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_H",
@@ -930,7 +1003,8 @@
     {
       "name": "Spicy Pepper",
       "ap_item_id": 6080273,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_I",
@@ -940,7 +1014,8 @@
     {
       "name": "Fortified Pumpkin",
       "ap_item_id": 6080274,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_J",
@@ -950,7 +1025,8 @@
     {
       "name": "Acorn",
       "ap_item_id": 6080275,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_K",
@@ -960,7 +1036,8 @@
     {
       "name": "Chickaloo Tree Nut",
       "ap_item_id": 6080276,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Fruit_L",
@@ -970,7 +1047,8 @@
     {
       "name": "Razorclaw Crab",
       "ap_item_id": 6080277,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_InsectGet_K",
@@ -980,7 +1058,8 @@
     {
       "name": "Ironshell Crab",
       "ap_item_id": 6080278,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_InsectGet_O",
@@ -990,7 +1069,8 @@
     {
       "name": "Bright-Eyed Crab",
       "ap_item_id": 6080279,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_InsectGet_Z",
@@ -1000,7 +1080,8 @@
     {
       "name": "Cane Sugar",
       "ap_item_id": 6080280,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Material_01",
@@ -1010,7 +1091,8 @@
     {
       "name": "Goron Spice",
       "ap_item_id": 6080281,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Material_02",
@@ -1020,7 +1102,8 @@
     {
       "name": "Hylian Rice",
       "ap_item_id": 6080282,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Material_03",
@@ -1030,7 +1113,8 @@
     {
       "name": "Bird Egg",
       "ap_item_id": 6080283,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Material_04",
@@ -1040,7 +1124,8 @@
     {
       "name": "Fresh Milk",
       "ap_item_id": 6080284,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Material_05",
@@ -1050,7 +1135,8 @@
     {
       "name": "Goat Butter",
       "ap_item_id": 6080285,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Material_06",
@@ -1060,7 +1146,8 @@
     {
       "name": "Tabantha Wheat",
       "ap_item_id": 6080286,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Material_07",
@@ -1070,7 +1157,8 @@
     {
       "name": "Monster Extract",
       "ap_item_id": 6080287,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Material_08",
@@ -1080,7 +1168,8 @@
     {
       "name": "Raw Meat",
       "ap_item_id": 6080288,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Meat_01",
@@ -1090,7 +1179,8 @@
     {
       "name": "Raw Prime Meat",
       "ap_item_id": 6080289,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Meat_02",
@@ -1100,7 +1190,8 @@
     {
       "name": "Raw Bird Drumstick",
       "ap_item_id": 6080290,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Meat_06",
@@ -1110,7 +1201,8 @@
     {
       "name": "Raw Bird Thigh",
       "ap_item_id": 6080291,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Meat_07",
@@ -1120,7 +1212,8 @@
     {
       "name": "Raw Gourmet Meat",
       "ap_item_id": 6080292,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Meat_11",
@@ -1130,7 +1223,8 @@
     {
       "name": "Raw Whole Bird",
       "ap_item_id": 6080293,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Meat_12",
@@ -1140,7 +1234,8 @@
     {
       "name": "Stamella Shroom",
       "ap_item_id": 6080294,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_A",
@@ -1150,7 +1245,8 @@
     {
       "name": "Chillshroom",
       "ap_item_id": 6080295,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_B",
@@ -1160,7 +1256,8 @@
     {
       "name": "Sunshroom",
       "ap_item_id": 6080296,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_C",
@@ -1170,7 +1267,8 @@
     {
       "name": "Rushroom",
       "ap_item_id": 6080297,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_D",
@@ -1180,7 +1278,8 @@
     {
       "name": "Hylian Shroom",
       "ap_item_id": 6080298,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_E",
@@ -1190,17 +1289,19 @@
     {
       "name": "Hearty Truffle",
       "ap_item_id": 6080299,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_F",
-        "amount": 4
+        "amount": 2
       }
     },
     {
       "name": "Zapshroom",
       "ap_item_id": 6080300,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_H",
@@ -1210,7 +1311,8 @@
     {
       "name": "Silent Shroom",
       "ap_item_id": 6080301,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_J",
@@ -1220,7 +1322,8 @@
     {
       "name": "Razorshroom",
       "ap_item_id": 6080302,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_L",
@@ -1230,7 +1333,8 @@
     {
       "name": "Ironshroom",
       "ap_item_id": 6080303,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_M",
@@ -1240,67 +1344,74 @@
     {
       "name": "Big Hearty Truffle",
       "ap_item_id": 6080304,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_N",
-        "amount": 3
+        "amount": 2
       }
     },
     {
       "name": "Endura Shroom",
       "ap_item_id": 6080305,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Mushroom_O",
-        "amount": 4
+        "amount": 2
       }
     },
     {
       "name": "Diamond",
       "ap_item_id": 6080306,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_A",
-        "amount": 5
+        "amount": 1
       }
     },
     {
       "name": "Ruby",
       "ap_item_id": 6080307,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_B",
-        "amount": 5
+        "amount": 2
       }
     },
     {
       "name": "Sapphire",
       "ap_item_id": 6080308,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_C",
-        "amount": 4
+        "amount": 2
       }
     },
     {
       "name": "Topaz",
       "ap_item_id": 6080309,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_D",
-        "amount": 4
+        "amount": 2
       }
     },
     {
       "name": "Opal",
       "ap_item_id": 6080310,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_E",
@@ -1310,7 +1421,8 @@
     {
       "name": "Amber",
       "ap_item_id": 6080311,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_F",
@@ -1320,17 +1432,19 @@
     {
       "name": "Luminous Stone",
       "ap_item_id": 6080312,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_G",
-        "amount": 3
+        "amount": 2
       }
     },
     {
       "name": "Rock Salt",
       "ap_item_id": 6080313,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_H",
@@ -1340,7 +1454,8 @@
     {
       "name": "Flint",
       "ap_item_id": 6080314,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_I",
@@ -1351,16 +1466,18 @@
       "name": "Star Fragment",
       "ap_item_id": 6080315,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Item_Ore_J",
-        "amount": 4
+        "amount": 1
       }
     },
     {
       "name": "Hyrule Herb",
       "ap_item_id": 6080316,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_A",
@@ -1370,7 +1487,8 @@
     {
       "name": "Hearty Radish",
       "ap_item_id": 6080317,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_B",
@@ -1380,7 +1498,8 @@
     {
       "name": "Big Hearty Radish",
       "ap_item_id": 6080318,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_C",
@@ -1390,7 +1509,8 @@
     {
       "name": "Cool Safflina",
       "ap_item_id": 6080319,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_E",
@@ -1400,7 +1520,8 @@
     {
       "name": "Warm Safflina",
       "ap_item_id": 6080320,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_F",
@@ -1410,7 +1531,8 @@
     {
       "name": "Mighty Thistle",
       "ap_item_id": 6080321,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_G",
@@ -1420,7 +1542,8 @@
     {
       "name": "Armoranth",
       "ap_item_id": 6080322,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_H",
@@ -1430,7 +1553,8 @@
     {
       "name": "Blue Nightshade",
       "ap_item_id": 6080323,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_I",
@@ -1440,17 +1564,19 @@
     {
       "name": "Silent Princess",
       "ap_item_id": 6080324,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_J",
-        "amount": 3
+        "amount": 2
       }
     },
     {
       "name": "Electric Safflina",
       "ap_item_id": 6080325,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_L",
@@ -1460,7 +1586,8 @@
     {
       "name": "Swift Carrot",
       "ap_item_id": 6080326,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_M",
@@ -1470,7 +1597,8 @@
     {
       "name": "Swift Violet",
       "ap_item_id": 6080327,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_O",
@@ -1480,17 +1608,19 @@
     {
       "name": "Endura Carrot",
       "ap_item_id": 6080328,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Item_PlantGet_Q",
-        "amount": 3
+        "amount": 2
       }
     },
     {
       "name": "Traveler's Bow",
       "ap_item_id": 6080600,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_001",
@@ -1500,7 +1630,8 @@
     {
       "name": "Soldier's Bow",
       "ap_item_id": 6080601,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_002",
@@ -1510,7 +1641,8 @@
     {
       "name": "Spiked Boko Bow",
       "ap_item_id": 6080602,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_003",
@@ -1520,7 +1652,8 @@
     {
       "name": "Boko Bow",
       "ap_item_id": 6080603,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_004",
@@ -1530,7 +1663,8 @@
     {
       "name": "Lizal Bow",
       "ap_item_id": 6080604,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_006",
@@ -1540,7 +1674,8 @@
     {
       "name": "Lynel Bow",
       "ap_item_id": 6080605,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_009",
@@ -1550,7 +1685,8 @@
     {
       "name": "Strengthened Lizal Bow",
       "ap_item_id": 6080606,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_011",
@@ -1560,7 +1696,8 @@
     {
       "name": "Forest Dweller's Bow",
       "ap_item_id": 6080607,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_013",
@@ -1570,7 +1707,8 @@
     {
       "name": "Silver Bow",
       "ap_item_id": 6080608,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_014",
@@ -1580,7 +1718,8 @@
     {
       "name": "Golden Bow",
       "ap_item_id": 6080609,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_015",
@@ -1590,7 +1729,8 @@
     {
       "name": "Swallow Bow",
       "ap_item_id": 6080610,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_016",
@@ -1600,7 +1740,8 @@
     {
       "name": "Falcon Bow",
       "ap_item_id": 6080611,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_017",
@@ -1611,6 +1752,7 @@
       "name": "Ancient Bow",
       "ap_item_id": 6080612,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_023",
@@ -1620,7 +1762,8 @@
     {
       "name": "Mighty Lynel Bow",
       "ap_item_id": 6080613,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_026",
@@ -1630,7 +1773,8 @@
     {
       "name": "Dragon Bone Boko Bow",
       "ap_item_id": 6080614,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_027",
@@ -1641,6 +1785,7 @@
       "name": "Great Eagle Bow",
       "ap_item_id": 6080615,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_028",
@@ -1650,7 +1795,8 @@
     {
       "name": "Phrenic Bow",
       "ap_item_id": 6080616,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_029",
@@ -1660,7 +1806,8 @@
     {
       "name": "Steel Lizal Bow",
       "ap_item_id": 6080617,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_030",
@@ -1671,6 +1818,7 @@
       "name": "Savage Lynel Bow",
       "ap_item_id": 6080618,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_032",
@@ -1681,6 +1829,7 @@
       "name": "Royal Guard's Bow",
       "ap_item_id": 6080619,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_033",
@@ -1690,7 +1839,8 @@
     {
       "name": "Knight's Bow",
       "ap_item_id": 6080620,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_035",
@@ -1700,7 +1850,8 @@
     {
       "name": "Royal Bow",
       "ap_item_id": 6080621,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_036",
@@ -1710,7 +1861,8 @@
     {
       "name": "Wooden Bow",
       "ap_item_id": 6080622,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_038",
@@ -1720,7 +1872,8 @@
     {
       "name": "Duplex Bow",
       "ap_item_id": 6080623,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_040",
@@ -1731,6 +1884,7 @@
       "name": "Bow of Light",
       "ap_item_id": 6080624,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_071",
@@ -1741,6 +1895,7 @@
       "name": "Twilight Bow",
       "ap_item_id": 6080625,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Bow_072",
@@ -1750,7 +1905,8 @@
     {
       "name": "Traveler's Claymore",
       "ap_item_id": 6080626,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_001",
@@ -1760,7 +1916,8 @@
     {
       "name": "Soldier's Claymore",
       "ap_item_id": 6080627,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_002",
@@ -1770,7 +1927,8 @@
     {
       "name": "Knight's Claymore",
       "ap_item_id": 6080628,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_003",
@@ -1780,7 +1938,8 @@
     {
       "name": "Boko Bat",
       "ap_item_id": 6080629,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_004",
@@ -1790,7 +1949,8 @@
     {
       "name": "Spiked Boko Bat",
       "ap_item_id": 6080630,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_005",
@@ -1800,7 +1960,8 @@
     {
       "name": "Dragonbone Boko Bat",
       "ap_item_id": 6080631,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_006",
@@ -1810,7 +1971,8 @@
     {
       "name": "Moblin Club",
       "ap_item_id": 6080632,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_010",
@@ -1820,7 +1982,8 @@
     {
       "name": "Spiked Moblin Club",
       "ap_item_id": 6080633,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_011",
@@ -1830,7 +1993,8 @@
     {
       "name": "Dragonbone Moblin Club",
       "ap_item_id": 6080634,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_012",
@@ -1840,7 +2004,8 @@
     {
       "name": "Ancient Battle Axe",
       "ap_item_id": 6080635,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_013",
@@ -1850,7 +2015,8 @@
     {
       "name": "Ancient Battle Axe+",
       "ap_item_id": 6080636,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_014",
@@ -1860,7 +2026,8 @@
     {
       "name": "Ancient Battle Axe++",
       "ap_item_id": 6080637,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_015",
@@ -1870,7 +2037,8 @@
     {
       "name": "Lynel Crusher",
       "ap_item_id": 6080638,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_016",
@@ -1880,7 +2048,8 @@
     {
       "name": "Mighty Lynel Crusher",
       "ap_item_id": 6080639,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_017",
@@ -1891,6 +2060,7 @@
       "name": "Savage Lynel Crusher",
       "ap_item_id": 6080640,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_018",
@@ -1900,7 +2070,8 @@
     {
       "name": "Moblin Arm",
       "ap_item_id": 6080641,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_019",
@@ -1910,7 +2081,8 @@
     {
       "name": "Rusty Claymore",
       "ap_item_id": 6080642,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_020",
@@ -1921,6 +2093,7 @@
       "name": "Ancient Bladesaw",
       "ap_item_id": 6080643,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_023",
@@ -1930,7 +2103,8 @@
     {
       "name": "Royal Claymore",
       "ap_item_id": 6080644,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_024",
@@ -1940,7 +2114,8 @@
     {
       "name": "Silver Longsword",
       "ap_item_id": 6080645,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_027",
@@ -1950,7 +2125,8 @@
     {
       "name": "Golden Claymore",
       "ap_item_id": 6080646,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_029",
@@ -1960,7 +2136,8 @@
     {
       "name": "Double Axe",
       "ap_item_id": 6080647,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_030",
@@ -1970,7 +2147,8 @@
     {
       "name": "Iron Sledgehammer",
       "ap_item_id": 6080648,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_031",
@@ -1980,7 +2158,8 @@
     {
       "name": "Woodcutter's Axe",
       "ap_item_id": 6080649,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_032",
@@ -1990,7 +2169,8 @@
     {
       "name": "Great Flameblade",
       "ap_item_id": 6080650,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_033",
@@ -2000,7 +2180,8 @@
     {
       "name": "Great Frostblade",
       "ap_item_id": 6080651,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_034",
@@ -2010,7 +2191,8 @@
     {
       "name": "Great Thunderblade",
       "ap_item_id": 6080652,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_035",
@@ -2020,7 +2202,8 @@
     {
       "name": "Cobble Crusher",
       "ap_item_id": 6080653,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_036",
@@ -2030,7 +2213,8 @@
     {
       "name": "Stone Smasher",
       "ap_item_id": 6080654,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_037",
@@ -2040,7 +2224,8 @@
     {
       "name": "Boat Oar",
       "ap_item_id": 6080655,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_038",
@@ -2050,7 +2235,8 @@
     {
       "name": "Eightfold Longblade",
       "ap_item_id": 6080656,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_041",
@@ -2060,7 +2246,8 @@
     {
       "name": "Farming Hoe",
       "ap_item_id": 6080657,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_045",
@@ -2071,6 +2258,7 @@
       "name": "Royal Guard's Claymore",
       "ap_item_id": 6080658,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_047",
@@ -2080,7 +2268,8 @@
     {
       "name": "Giant Boomerang",
       "ap_item_id": 6080659,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_051",
@@ -2091,6 +2280,7 @@
       "name": "Boulder Breaker",
       "ap_item_id": 6080660,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_054",
@@ -2100,7 +2290,8 @@
     {
       "name": "Edge of Duality",
       "ap_item_id": 6080661,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_055",
@@ -2110,7 +2301,8 @@
     {
       "name": "Korok Leaf",
       "ap_item_id": 6080662,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_056",
@@ -2121,6 +2313,7 @@
       "name": "Sword of the Six Sages",
       "ap_item_id": 6080663,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_057",
@@ -2131,6 +2324,7 @@
       "name": "Biggoron's Sword",
       "ap_item_id": 6080664,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_059",
@@ -2141,6 +2335,7 @@
       "name": "Fierce Deity Sword",
       "ap_item_id": 6080665,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_060",
@@ -2150,7 +2345,8 @@
     {
       "name": "Windcleaver",
       "ap_item_id": 6080666,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Lsword_074",
@@ -2160,7 +2356,8 @@
     {
       "name": "Wooden Shield",
       "ap_item_id": 6080667,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_001",
@@ -2170,7 +2367,8 @@
     {
       "name": "Soldier's Shield",
       "ap_item_id": 6080668,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_002",
@@ -2180,7 +2378,8 @@
     {
       "name": "Knight's Shield",
       "ap_item_id": 6080669,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_003",
@@ -2190,7 +2389,8 @@
     {
       "name": "Boko Shield",
       "ap_item_id": 6080670,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_004",
@@ -2200,7 +2400,8 @@
     {
       "name": "Spiked Boko Shield",
       "ap_item_id": 6080671,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_005",
@@ -2210,7 +2411,8 @@
     {
       "name": "Dragonbone Boko Shield",
       "ap_item_id": 6080672,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_006",
@@ -2220,7 +2422,8 @@
     {
       "name": "Lizal Shield",
       "ap_item_id": 6080673,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_007",
@@ -2230,7 +2433,8 @@
     {
       "name": "Reinforced Lizal Shield",
       "ap_item_id": 6080674,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_008",
@@ -2240,7 +2444,8 @@
     {
       "name": "Steel Lizal Shield",
       "ap_item_id": 6080675,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_009",
@@ -2250,7 +2455,8 @@
     {
       "name": "Guardian Shield",
       "ap_item_id": 6080676,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_013",
@@ -2260,7 +2466,8 @@
     {
       "name": "Guardian Shield+",
       "ap_item_id": 6080677,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_014",
@@ -2270,7 +2477,8 @@
     {
       "name": "Guardian Shield++",
       "ap_item_id": 6080678,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_015",
@@ -2280,7 +2488,8 @@
     {
       "name": "Lynel Shield",
       "ap_item_id": 6080679,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_016",
@@ -2290,7 +2499,8 @@
     {
       "name": "Mighty Lynel Shield",
       "ap_item_id": 6080680,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_017",
@@ -2301,6 +2511,7 @@
       "name": "Savage Lynel Shield",
       "ap_item_id": 6080681,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_018",
@@ -2310,7 +2521,8 @@
     {
       "name": "Rusty Shield",
       "ap_item_id": 6080682,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_021",
@@ -2320,7 +2532,8 @@
     {
       "name": "Royal Shield",
       "ap_item_id": 6080683,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_022",
@@ -2330,7 +2543,8 @@
     {
       "name": "Forest Dweller's Shield",
       "ap_item_id": 6080684,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_023",
@@ -2340,7 +2554,8 @@
     {
       "name": "Silver Shield",
       "ap_item_id": 6080685,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_025",
@@ -2350,7 +2565,8 @@
     {
       "name": "Gerudo Shield",
       "ap_item_id": 6080686,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_026",
@@ -2361,6 +2577,7 @@
       "name": "Hylian Shield",
       "ap_item_id": 6080687,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_030",
@@ -2370,7 +2587,8 @@
     {
       "name": "Hunter's Shield",
       "ap_item_id": 6080688,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_031",
@@ -2380,7 +2598,8 @@
     {
       "name": "Fisherman's Shield",
       "ap_item_id": 6080689,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_032",
@@ -2391,6 +2610,7 @@
       "name": "Royal Guard's Shield",
       "ap_item_id": 6080690,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_033",
@@ -2400,7 +2620,8 @@
     {
       "name": "Emblazoned Shield",
       "ap_item_id": 6080691,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_034",
@@ -2410,7 +2631,8 @@
     {
       "name": "Traveler's Shield",
       "ap_item_id": 6080692,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_035",
@@ -2420,7 +2642,8 @@
     {
       "name": "Radiant Shield",
       "ap_item_id": 6080693,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_036",
@@ -2431,6 +2654,7 @@
       "name": "Daybreaker",
       "ap_item_id": 6080694,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_037",
@@ -2441,6 +2665,7 @@
       "name": "Ancient Shield",
       "ap_item_id": 6080695,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_038",
@@ -2450,7 +2675,8 @@
     {
       "name": "Pot Lid",
       "ap_item_id": 6080696,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_040",
@@ -2460,7 +2686,8 @@
     {
       "name": "Shield of the Mind's Eye",
       "ap_item_id": 6080697,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_041",
@@ -2470,7 +2697,8 @@
     {
       "name": "Kite Shield",
       "ap_item_id": 6080698,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_042",
@@ -2481,6 +2709,7 @@
       "name": "Hero's Shield",
       "ap_item_id": 6080699,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Shield_057",
@@ -2490,7 +2719,8 @@
     {
       "name": "Traveler's Spear",
       "ap_item_id": 6080700,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_001",
@@ -2500,7 +2730,8 @@
     {
       "name": "Soldier's Spear",
       "ap_item_id": 6080701,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_002",
@@ -2510,7 +2741,8 @@
     {
       "name": "Knight's Halberd",
       "ap_item_id": 6080702,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_003",
@@ -2520,7 +2752,8 @@
     {
       "name": "Boko Spear",
       "ap_item_id": 6080703,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_004",
@@ -2530,7 +2763,8 @@
     {
       "name": "Spiked Boko Spear",
       "ap_item_id": 6080704,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_005",
@@ -2540,7 +2774,8 @@
     {
       "name": "Dragonbone Boko Spear",
       "ap_item_id": 6080705,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_006",
@@ -2550,7 +2785,8 @@
     {
       "name": "Lizal Spear",
       "ap_item_id": 6080706,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_007",
@@ -2560,7 +2796,8 @@
     {
       "name": "Enhanced Lizal Spear",
       "ap_item_id": 6080707,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_008",
@@ -2570,7 +2807,8 @@
     {
       "name": "Forked Lizal Spear",
       "ap_item_id": 6080708,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_009",
@@ -2580,7 +2818,8 @@
     {
       "name": "Moblin Spear",
       "ap_item_id": 6080709,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_010",
@@ -2590,7 +2829,8 @@
     {
       "name": "Spiked Moblin Spear",
       "ap_item_id": 6080710,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_011",
@@ -2600,7 +2840,8 @@
     {
       "name": "Dragonbone Moblin Spear",
       "ap_item_id": 6080711,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_012",
@@ -2610,7 +2851,8 @@
     {
       "name": "Guardian Spear",
       "ap_item_id": 6080712,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_013",
@@ -2620,7 +2862,8 @@
     {
       "name": "Guardian Spear+",
       "ap_item_id": 6080713,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_014",
@@ -2630,7 +2873,8 @@
     {
       "name": "Guardian Spear++",
       "ap_item_id": 6080714,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_015",
@@ -2640,7 +2884,8 @@
     {
       "name": "Lynel Spear",
       "ap_item_id": 6080715,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_016",
@@ -2650,7 +2895,8 @@
     {
       "name": "Mighty Lynel Spear",
       "ap_item_id": 6080716,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_017",
@@ -2661,6 +2907,7 @@
       "name": "Savage Lynel Spear",
       "ap_item_id": 6080717,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_018",
@@ -2670,7 +2917,8 @@
     {
       "name": "Rusty Halberd",
       "ap_item_id": 6080718,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_021",
@@ -2680,7 +2928,8 @@
     {
       "name": "Farmer's Pitchfork",
       "ap_item_id": 6080719,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_022",
@@ -2691,6 +2940,7 @@
       "name": "Ancient Spear",
       "ap_item_id": 6080720,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_023",
@@ -2700,7 +2950,8 @@
     {
       "name": "Royal Halberd",
       "ap_item_id": 6080721,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_024",
@@ -2710,7 +2961,8 @@
     {
       "name": "Forest Dweller's Spear",
       "ap_item_id": 6080722,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_025",
@@ -2720,7 +2972,8 @@
     {
       "name": "Zora Spear",
       "ap_item_id": 6080723,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_027",
@@ -2730,7 +2983,8 @@
     {
       "name": "Silverscale Spear",
       "ap_item_id": 6080724,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_028",
@@ -2740,7 +2994,8 @@
     {
       "name": "Gerudo Spear",
       "ap_item_id": 6080725,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_029",
@@ -2750,7 +3005,8 @@
     {
       "name": "Throwing Spear",
       "ap_item_id": 6080726,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_030",
@@ -2760,7 +3016,8 @@
     {
       "name": "Drillshaft",
       "ap_item_id": 6080727,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_031",
@@ -2770,7 +3027,8 @@
     {
       "name": "Feathered Spear",
       "ap_item_id": 6080728,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_032",
@@ -2780,7 +3038,8 @@
     {
       "name": "Flamespear",
       "ap_item_id": 6080729,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_033",
@@ -2790,7 +3049,8 @@
     {
       "name": "Frostspear",
       "ap_item_id": 6080730,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_034",
@@ -2800,7 +3060,8 @@
     {
       "name": "Thunderspear",
       "ap_item_id": 6080731,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_035",
@@ -2810,7 +3071,8 @@
     {
       "name": "Wooden Mop",
       "ap_item_id": 6080732,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_036",
@@ -2820,7 +3082,8 @@
     {
       "name": "Serpentine Spear",
       "ap_item_id": 6080733,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_037",
@@ -2830,7 +3093,8 @@
     {
       "name": "Fishing Harpoon",
       "ap_item_id": 6080734,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_038",
@@ -2841,6 +3105,7 @@
       "name": "Royal Guard's Spear",
       "ap_item_id": 6080735,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_047",
@@ -2850,7 +3115,8 @@
     {
       "name": "Ceremonial Trident",
       "ap_item_id": 6080736,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_049",
@@ -2861,6 +3127,7 @@
       "name": "Lightscale Trident",
       "ap_item_id": 6080737,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Spear_050",
@@ -2870,7 +3137,8 @@
     {
       "name": "Traveler's Sword",
       "ap_item_id": 6080738,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_001",
@@ -2880,7 +3148,8 @@
     {
       "name": "Soldier's Broadsword",
       "ap_item_id": 6080739,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_002",
@@ -2890,7 +3159,8 @@
     {
       "name": "Knight's Broadsword",
       "ap_item_id": 6080740,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_003",
@@ -2900,7 +3170,8 @@
     {
       "name": "Boko Club",
       "ap_item_id": 6080741,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_004",
@@ -2910,7 +3181,8 @@
     {
       "name": "Spiked Boko Club",
       "ap_item_id": 6080742,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_005",
@@ -2920,7 +3192,8 @@
     {
       "name": "Dragonbone Boko Club",
       "ap_item_id": 6080743,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_006",
@@ -2930,7 +3203,8 @@
     {
       "name": "Lizal Boomerang",
       "ap_item_id": 6080744,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_007",
@@ -2940,7 +3214,8 @@
     {
       "name": "Lizal Forked Boomerang",
       "ap_item_id": 6080745,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_008",
@@ -2950,7 +3225,8 @@
     {
       "name": "Lizal Tri-Boomerang",
       "ap_item_id": 6080746,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_009",
@@ -2960,7 +3236,8 @@
     {
       "name": "Guardian Sword",
       "ap_item_id": 6080747,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_013",
@@ -2970,7 +3247,8 @@
     {
       "name": "Guardian Sword+",
       "ap_item_id": 6080748,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_014",
@@ -2980,7 +3258,8 @@
     {
       "name": "Guardian Sword++",
       "ap_item_id": 6080749,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_015",
@@ -2990,7 +3269,8 @@
     {
       "name": "Lynel Sword",
       "ap_item_id": 6080750,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_016",
@@ -3000,7 +3280,8 @@
     {
       "name": "Mighty Lynel Sword",
       "ap_item_id": 6080751,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_017",
@@ -3011,6 +3292,7 @@
       "name": "Savage Lynel Sword",
       "ap_item_id": 6080752,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_018",
@@ -3020,7 +3302,8 @@
     {
       "name": "Bokoblin Arm",
       "ap_item_id": 6080753,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_019",
@@ -3030,7 +3313,8 @@
     {
       "name": "Lizalfos Arm",
       "ap_item_id": 6080754,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_020",
@@ -3040,7 +3324,8 @@
     {
       "name": "Rusty Broadsword",
       "ap_item_id": 6080755,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_021",
@@ -3050,7 +3335,8 @@
     {
       "name": "Soup Ladle",
       "ap_item_id": 6080756,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_022",
@@ -3061,6 +3347,7 @@
       "name": "Ancient Short Sword",
       "ap_item_id": 6080757,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_023",
@@ -3070,7 +3357,8 @@
     {
       "name": "Royal Broadsword",
       "ap_item_id": 6080758,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_024",
@@ -3080,7 +3368,8 @@
     {
       "name": "Forest Dweller's Sword",
       "ap_item_id": 6080759,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_025",
@@ -3090,7 +3379,8 @@
     {
       "name": "Zora Sword",
       "ap_item_id": 6080760,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_027",
@@ -3100,7 +3390,8 @@
     {
       "name": "Gerudo Scimitar",
       "ap_item_id": 6080761,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_029",
@@ -3110,7 +3401,8 @@
     {
       "name": "Moonlight Scimitar",
       "ap_item_id": 6080762,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_030",
@@ -3120,7 +3412,8 @@
     {
       "name": "Feathered Edge",
       "ap_item_id": 6080763,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_031",
@@ -3130,7 +3423,8 @@
     {
       "name": "Flameblade",
       "ap_item_id": 6080764,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_033",
@@ -3140,7 +3434,8 @@
     {
       "name": "Frostblade",
       "ap_item_id": 6080765,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_034",
@@ -3150,7 +3445,8 @@
     {
       "name": "Thunderblade",
       "ap_item_id": 6080766,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_035",
@@ -3160,7 +3456,8 @@
     {
       "name": "Spring-Loaded Hammer",
       "ap_item_id": 6080767,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_040",
@@ -3170,7 +3467,8 @@
     {
       "name": "Eightfold Blade",
       "ap_item_id": 6080768,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_041",
@@ -3180,7 +3478,8 @@
     {
       "name": "Torch",
       "ap_item_id": 6080769,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_043",
@@ -3190,7 +3489,8 @@
     {
       "name": "Tree Branch",
       "ap_item_id": 6080770,
-      "count": 1,
+      "count": 8,
+      "tier": "common",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_044",
@@ -3201,6 +3501,7 @@
       "name": "Royal Guard's Sword",
       "ap_item_id": 6080771,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_047",
@@ -3210,7 +3511,8 @@
     {
       "name": "Meteor Rod",
       "ap_item_id": 6080772,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_048",
@@ -3220,7 +3522,8 @@
     {
       "name": "Blizzard Rod",
       "ap_item_id": 6080773,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_049",
@@ -3230,7 +3533,8 @@
     {
       "name": "Thunderstorm Rod",
       "ap_item_id": 6080774,
-      "count": 1,
+      "count": 2,
+      "tier": "rare",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_050",
@@ -3240,7 +3544,8 @@
     {
       "name": "Boomerang",
       "ap_item_id": 6080775,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_051",
@@ -3251,6 +3556,7 @@
       "name": "Scimitar of the Seven",
       "ap_item_id": 6080776,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_052",
@@ -3260,7 +3566,8 @@
     {
       "name": "Vicious Sickle",
       "ap_item_id": 6080777,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_053",
@@ -3271,6 +3578,7 @@
       "name": "Goddess Sword",
       "ap_item_id": 6080778,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_057",
@@ -3280,7 +3588,8 @@
     {
       "name": "Sword",
       "ap_item_id": 6080779,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_058",
@@ -3291,6 +3600,7 @@
       "name": "Sea-Breeze Boomerang",
       "ap_item_id": 6080780,
       "count": 1,
+      "tier": "epic",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_059",
@@ -3300,7 +3610,8 @@
     {
       "name": "Fire Rod",
       "ap_item_id": 6080781,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_060",
@@ -3310,7 +3621,8 @@
     {
       "name": "Ice Rod",
       "ap_item_id": 6080782,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_061",
@@ -3320,7 +3632,8 @@
     {
       "name": "Lightning Rod",
       "ap_item_id": 6080783,
-      "count": 1,
+      "count": 4,
+      "tier": "uncommon",
       "inject": {
         "type": "add_porch",
         "item": "Weapon_Sword_062",
