@@ -90,21 +90,41 @@ def build_flow_bytes() -> bytes:
     fc.name = FLOW_NAME
     flow.flowchart = fc
 
-    esa = Actor()
-    esa.identifier = ActorIdentifier("EventSystemActor")
-    esa.actions = [StringHolder("Demo_WarpPlayerToDestination"),
-                   StringHolder("Demo_WaitFrame"),
-                   StringHolder("Demo_OpenMessageTips")]
-    esa.queries = [StringHolder("CheckFlag"), StringHolder("CheckPlayerState")]
-    player = Actor()
-    player.identifier = ActorIdentifier("GameROMPlayer")
-    player.actions = [StringHolder("Demo_StopInAir"),
-                      StringHolder("Demo_PlayerWait"),
-                      StringHolder("Demo_Join")]
-    fader = Actor()
-    fader.identifier = ActorIdentifier("Fader")
-    fader.actions = [StringHolder("Demo_FadeOut"), StringHolder("Demo_FadeIn")]
-    fc.actors += [esa, player, fader]
+    # Params d'acteur OBLIGATOIRES (relevés sur Electric_Relic vanilla) : sans ce
+    # conteneur (CreateMode etc.), le jeu ne LIE jamais l'acteur à l'event → toute
+    # action sur lui attend à l'infini (cause des soft-locks v4/v4.1/v4.2).
+    _BASE_ACTOR_PARAMS = {
+        "CreateMode": 0, "IsGrounding": False, "IsWorld": False,
+        "PosX": 0.0, "PosY": 0.0, "PosZ": 0.0,
+        "RotX": 0.0, "RotY": 0.0, "RotZ": 0.0,
+    }
+
+    def make_actor(name: str, actions: list[str], queries: list[str] = (),
+                   extra_params: dict | None = None) -> Actor:
+        a = Actor()
+        a.identifier = ActorIdentifier(name)
+        a.actions = [StringHolder(x) for x in actions]
+        a.queries = [StringHolder(x) for x in queries]
+        a.params = Container()
+        a.params.data = dict(_BASE_ACTOR_PARAMS, **(extra_params or {}))
+        a.concurrent_clips = 1          # « flowcharts: always = 1 » (evfl) — vanilla = 1
+        fc.actors.append(a)
+        return a
+
+    esa = make_actor("EventSystemActor",
+                     ["Demo_WarpPlayerToDestination", "Demo_WaitFrame",
+                      "Demo_OpenMessageTips"],
+                     ["CheckFlag", "CheckPlayerState"])
+    player = make_actor("GameROMPlayer",
+                        ["Demo_StopInAir", "Demo_PlayerWait", "Demo_Join"],
+                        extra_params={
+                            "Weapon": "", "DisableWeapon": False,
+                            "Shield": "", "DisableShield": False,
+                            "Bow": "", "DisableBow": False,
+                            "ArmorHead": "", "ArmorUpper": "", "ArmorLower": "",
+                            "DisableSheikPad": False,
+                        })
+    fader = make_actor("Fader", ["Demo_FadeOut", "Demo_FadeIn"])
 
     def action(actor: Actor, name: str, params: dict, nxt: Event | None) -> Event:
         ev = Event()
