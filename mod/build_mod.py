@@ -1,20 +1,23 @@
 """
-build_mod — construit le graphic pack Cemu « BOTWpelago_Enforcement » depuis le dump local.
+build_mod — construit les patches mod BOTWpelago depuis le dump local.
 
 Pipeline (100 % local, rien de dérivé du jeu n'entre dans le repo) :
   1. lit les chemins base/update/dlc + graphicPacks dans ~/.botwpelago/config.json
-  2. pour chaque patch (mod/patches/) : ouvre le conteneur SARC (Yaz0 → SARC big-endian),
-     parse le .bfevfl avec evfl, applique transform(), RE-PARSE le résultat et vérifie
-     verify(), repacke le SARC (mode Legacy Wii U) + recompresse Yaz0 si besoin
-  3. émet le pack : graphicPacks/BOTWpelago_Enforcement/{rules.txt, content/…}
+  2. pour chaque patch (mod/patches/) : ouvre les conteneurs (Yaz0/SARC big-endian),
+     applique les transforms, RE-PARSE chaque artefact et vérifie les post-conditions
+  3. écrit les fichiers DANS LE PACK RANDO « BOTWpelago » s'il existe (un seul pack,
+     un seul Bootup.pack — deux packs qui remplacent le même fichier entrent en
+     CONFLIT dans Cemu, c'est ce qui a cassé le 1er test in-game), sinon dans un pack
+     autonome « BOTWpelago_Enforcement ».
 
-Le pack est SÉPARÉ du pack rando « BOTWpelago » : activable/désactivable indépendamment
-dans Cemu (Options ▸ Graphic Packs), et le client fonctionne sans lui (mod optionnel).
+Les sources sont LAYERÉES : un fichier déjà présent dans le pack rando (ex son
+Bootup.pack) sert de base à nos patches — ses modifs sont préservées.
+⚠️ pack_builder RÉGÉNÈRE le pack rando à chaque seed → relancer build_mod après.
 
 Usage :
-    python mod/build_mod.py            # construit + installe dans graphicPacks
+    python mod/build_mod.py            # construit + installe (voir ci-dessus)
     python mod/build_mod.py --check    # dry-run : applique + vérifie, n'écrit rien
-    python mod/build_mod.py --out DIR  # cible autre que graphicPacks
+    python mod/build_mod.py --out DIR  # cible explicite (dossier de pack)
 """
 from __future__ import annotations
 
@@ -106,21 +109,33 @@ def main() -> None:
     args = ap.parse_args()
 
     roots, gfx = _config_paths()
+
+    # Cible : le pack rando « BOTWpelago » s'il existe (UN seul pack → pas de conflit
+    # Cemu sur Bootup.pack), sinon pack autonome. --out force une cible explicite.
+    rando_pack = gfx / "BOTWpelago"
     if args.out:
-        gfx = Path(args.out)
-    pack_dir = gfx / PACK_NAME
+        pack_dir, standalone = Path(args.out), True
+    elif rando_pack.is_dir():
+        pack_dir, standalone = rando_pack, False
+    else:
+        pack_dir, standalone = gfx / PACK_NAME, True
+
+    def read_source(rel: str) -> bytes:
+        # layering : le pack cible d'abord (préserve les modifs du rando), puis le dump
+        in_pack = pack_dir / "content" / rel
+        if in_pack.is_file():
+            return in_pack.read_bytes()
+        return _resolve(roots, rel).read_bytes()
 
     patches = get_patches()
     file_patches = get_file_patches()
     print(f"{len(patches) + len(file_patches)} patch(es) ; dump : {roots[0]}")
+    print(f"cible : {pack_dir}" + ("" if standalone else "  (fusion dans le pack rando)"))
     results: dict[str, bytes] = {}
     for p in patches:
         print(f"  [{p.name}] {p.description}")
         src = _resolve(roots, p.container)
         results[p.container] = build_patched_container(src, p.inner, p.transform, p.verify)
-
-    def read_source(rel: str) -> bytes:
-        return _resolve(roots, rel).read_bytes()
 
     for fp in file_patches:
         print(f"  [{fp.NAME}] {fp.DESCRIPTION}")
@@ -130,16 +145,24 @@ def main() -> None:
         print("\n--check : tout est patchable et vérifié, rien n'a été écrit.")
         return
 
-    if not gfx.is_dir():
-        raise SystemExit(f"graphicPacks introuvable : {gfx}")
+    if not pack_dir.parent.is_dir():
+        raise SystemExit(f"dossier cible introuvable : {pack_dir.parent}")
     for rel, data in results.items():
         dst = pack_dir / "content" / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_bytes(data)
         print(f"  écrit {dst}")
-    (pack_dir / "rules.txt").write_text(RULES_TXT, encoding="utf-8")
-    print(f"\nPack généré : {pack_dir}")
-    print("Dans Cemu : Options > Graphic Packs > coche « BOTWpelago - Enforcement ».")
+    if standalone:
+        (pack_dir / "rules.txt").write_text(RULES_TXT, encoding="utf-8")
+    else:
+        # purge l'ancien pack séparé : son Bootup.pack entre en conflit avec le rando
+        stale = gfx / PACK_NAME
+        if stale.is_dir():
+            import shutil
+            shutil.rmtree(stale)
+            print(f"  supprimé (conflit Bootup.pack) : {stale}")
+    print(f"\nPack : {pack_dir}")
+    print("Dans Cemu : un SEUL pack à cocher — « BOTWpelago ». Relance le jeu après.")
 
 
 if __name__ == "__main__":

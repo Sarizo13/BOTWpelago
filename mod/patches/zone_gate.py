@@ -10,9 +10,11 @@ Ce patch produit TROIS fichiers :
      from scratch avec evfl : Switch CheckFlag → WaitFrame → WarpToDestination → WaitFrame)
   2. Pack/Bootup.pack                    — EventInfo.product.sbyml + entrée
      `BOTWpelago_Gate<Gate_Eldin>` (schéma relevé des 5 784 entrées vanilla)
-  3. Map/MainField/H-3/H-3_Dynamic.smubin — + Area/LinkTagOr/EventTag à l'entrée de la
-     Montagne de la Mort (2404, 230, −1320 ; sol vanilla ≈226) ; renvoi au Relais du
-     Pied-de-Mont (2612, 254, −1144).
+  3. Pack/TitleBG.pack                   — Area/LinkTagOr/EventTag ajoutés à
+     `Map/MainField/H-3/H-3_Static.smubin` DANS TitleBG.pack (74 Mo) : TOUS les
+     chaînages de trigger vanilla vivent dans les _Static packés — une Area posée en
+     Dynamic (1re tentative) ne se déclenchait pas in-game. Entrée de la Montagne de la
+     Mort (2404, 230, −1320 ; sol ≈226) ; renvoi au Relais du Pied-de-Mont (2612, 254, −1144).
 
 Condition : `IsGet_Armor_011_Upper` (plastron Flamebreaker). Le client devra poser les
 flags IsGet_Armor_* à la livraison des sets AP.
@@ -48,7 +50,8 @@ AREA_RADIUS = 45.0
 WARP_DEST = (2612.0, 254.5, -1144.0)         # Relais du Pied-de-Mont
 WARP_DIR_Y = 140.0
 
-MUBIN_REL = "Map/MainField/H-3/H-3_Dynamic.smubin"
+TITLEBG_REL = "Pack/TitleBG.pack"
+MUBIN_INNER = "Map/MainField/H-3/H-3_Static.smubin"
 BOOTUP_REL = "Pack/Bootup.pack"
 EVENTPACK_REL = f"Event/{FLOW_NAME}.sbeventpack"
 
@@ -229,10 +232,18 @@ def build(read_source, log=print) -> dict[str, bytes]:
     out[BOOTUP_REL] = bytes(bootup_data)
     log(f"    {BOOTUP_REL}: EventInfo + {FLOW_NAME}<{ENTRY_NAME}>")
 
-    # 3) mubin
-    new_mubin = patched_mubin(read_source(MUBIN_REL))
+    # 3) mubin Static DANS TitleBG.pack (les triggers vanilla vivent là)
+    titlebg = oead.Sarc(read_source(TITLEBG_REL))
+    inner = next((f for f in titlebg.get_files() if f.name == MUBIN_INNER), None)
+    if inner is None:
+        raise PatchError(f"{MUBIN_INNER} absent de TitleBG.pack")
+    new_mubin = patched_mubin(bytes(inner.data))
     oead.byml.from_binary(bytes(oead.yaz0.decompress(new_mubin)))   # vérif parse-back
-    out[MUBIN_REL] = new_mubin
-    log(f"    {MUBIN_REL}: +Area/LinkTagOr/EventTag @ {AREA_POS} (r={AREA_RADIUS})")
+    tw = oead.SarcWriter.from_sarc(titlebg)
+    tw.set_mode(oead.SarcWriter.Mode.Legacy)
+    tw.files[MUBIN_INNER] = oead.Bytes(new_mubin)
+    _, titlebg_data = tw.write()
+    out[TITLEBG_REL] = bytes(titlebg_data)
+    log(f"    {TITLEBG_REL}: {MUBIN_INNER} +Area/LinkTagOr/EventTag @ {AREA_POS} (r={AREA_RADIUS})")
 
     return out

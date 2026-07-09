@@ -146,4 +146,26 @@ def build_pack(
             f"Le rando s'est terminé mais le pack est introuvable : {pack_dir}\n{tail}"
         )
     log(f"  [OK] Pack généré : {pack_dir}")
+
+    # ── patches mod BOTWpelago (enforcement paravoile + zone gates) ──────────────
+    # Le rando vient de RÉGÉNÉRER le pack (dont Bootup.pack) → on ré-applique nos
+    # patches par-dessus (build_mod fusionne dans CE pack : un seul pack Cemu, pas
+    # de conflit de fichiers). Échec = avertissement, le pack rando reste jouable.
+    mod_script = Path(__file__).resolve().parents[1] / "mod" / "build_mod.py"
+    if mod_script.is_file():
+        log("Application des patches mod (enforcement)…")
+        try:
+            mod_proc = subprocess.run(
+                [sys.executable, str(mod_script)],
+                capture_output=True, text=True, timeout=timeout,
+            )
+            if mod_proc.returncode != 0:
+                err = (mod_proc.stderr or mod_proc.stdout or "").strip()[-300:]
+                log(f"  ! patches mod NON appliqués : {err}")
+            else:
+                log("  [OK] patches mod appliqués (paravoile + zone gate)")
+        except Exception as exc:
+            log(f"  ! patches mod NON appliqués : {exc}")
+    else:
+        log("  (mod/build_mod.py introuvable — patches mod sautés)")
     return pack_dir

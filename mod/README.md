@@ -119,14 +119,26 @@ Autres actions vues dans `FindDungeon` directement réutilisables :
 
    Le mod DAR n'est plus nécessaire comme référence (mécanisme vanilla plus complet).
 
-   **PROTOTYPE CONSTRUIT (`patches/zone_gate.py`, validé à froid — à tester in-game)** :
+   **PROTOTYPE CONSTRUIT (`patches/zone_gate.py`, v2 — à tester in-game)** :
    gate d'Eldin à l'entrée de la Montagne de la Mort (2404, 230, −1320, rayon 45 m) ;
    sans `IsGet_Armor_011_Upper` (plastron Flamebreaker) → warp au Relais du Pied-de-Mont.
    Produit : `Event/BOTWpelago_Gate.sbeventpack` (flowchart from scratch, 4 events),
-   `Pack/Bootup.pack` (EventInfo + `BOTWpelago_Gate<Gate_Eldin>`),
-   `Map/MainField/H-3/H-3_Dynamic.smubin` (+Area/LinkTagOr/EventTag, HashIds crc32 uniques).
-   À valider in-game : déclenchement du signal Area, timing/fade du warp, re-déclenchement
-   à la ré-entrée, arrivée en paravoile. Ensuite : message MSBT, couverture des autres
-   entrées de région, flags IsGet_Armor_* posés par le client à la livraison AP.
+   `Pack/Bootup.pack` (EventInfo + `BOTWpelago_Gate<Gate_Eldin>`), `Pack/TitleBG.pack`
+   (chaîne Area/LinkTagOr/EventTag dans `H-3_Static.smubin`, HashIds crc32 uniques).
+
+   **Leçons du 1er test in-game (échec, corrigé)** :
+   - **Un seul pack Cemu.** Le pack rando ET le pack enforcement shippaient chacun
+     `Pack/Bootup.pack` → conflit, notre EventInfo pouvait ne jamais charger. build_mod
+     fusionne désormais dans le pack rando `BOTWpelago` (sources layerées : les modifs
+     du rando sont préservées) et supprime l'ancien pack séparé. `pack_builder`
+     ré-applique automatiquement les patches après chaque régénération de seed.
+   - **Les triggers vont dans les `_Static.smubin` (packés dans TitleBG.pack)** : tous
+     les chaînages vanilla y vivent ; une Area posée dans le `_Dynamic` libre ne s'est
+     pas déclenchée.
+
+   À valider in-game (v2) : déclenchement, timing/fade du warp, re-déclenchement à la
+   ré-entrée. Ensuite : message MSBT, murs de frontière complets par région (boîtes
+   hautes chaînées le long de polylignes — anti-paravoile), flags `IsGet_Armor_*` posés
+   par le client à la livraison AP.
 5. Icônes/noms custom (BFRES/MSBT — Switch Toolbox, `--be`), cap cœurs/endurance,
    coffres-locations.
