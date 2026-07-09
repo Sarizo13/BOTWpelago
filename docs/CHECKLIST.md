@@ -40,7 +40,8 @@
 
 ### PopTracker
 - [ ] Tester le pack dans PopTracker (autotracking — construit, jamais testé)
-- [ ] Colorer en **ROUGE** les checks **non accessibles** (selon la logique d'accès)
+- [x] Checks non accessibles en **ROUGE** : `access_rules` par région (miroir de rules.py,
+      héritées par les checks + pins carte) — à vérifier lors du test PopTracker
 - [ ] Polish : vraies icônes d'items
 
 ### Transverse / dette

@@ -36,6 +36,19 @@ CATEGORY_LABEL = {
 # Ordre d'affichage des catégories dans chaque région
 CAT_ORDER = ["shrine", "beast", "tower", "memory", "quest", "location", "shrine_chest"]
 
+# Règles d'accès PopTracker par région — miroir de worlds/botw/rules.py. Posées sur le
+# nœud RÉGION (héritées par catégories/checks/pins carte) : un check dont la règle n'est
+# pas satisfaite s'affiche en ROUGE (inaccessible) dans l'arbre ET sur la carte.
+# Syntaxe PopTracker : liste = OU logique ; virgule dans une entrée = ET logique.
+REGION_ACCESS = {
+    "Great Plateau":    [],                            # départ — toujours accessible
+    "Hyrule World":     ["paraglider"],
+    "Eldin":            ["paraglider,flamebreaker"],
+    "Hebra":            ["paraglider,snowquill"],
+    "Gerudo Highlands": ["paraglider,snowquill"],
+    "Gerudo Town":      ["paraglider,vai"],
+}
+
 # Items-clés du tracker.
 #   ap      = id AP (None = pas un item AP → pas d'ITEM_MAPPING ; toggle manuel / compteur goal)
 #   type    = toggle | consumable   ; rgb = couleur du placeholder si pas d'icône fournie
@@ -156,7 +169,11 @@ def build() -> None:
                 (i for i, c in enumerate(CAT_ORDER) if CATEGORY_LABEL.get(c) == l), 99)):
             children.append({"name": label,
                              "children": [_check_node(n, i) for n, i in cats[label]]})
-        locations_json.append({"name": region, "children": children})
+        region_node = {"name": region, "children": children}
+        rules = REGION_ACCESS.get(region, ["paraglider"])   # région inconnue = Hyrule World
+        if rules:
+            region_node["access_rules"] = rules
+        locations_json.append(region_node)
     (OUT / "locations" / "locations.json").write_text(
         json.dumps(locations_json, indent=1, ensure_ascii=False), encoding="utf-8")
     n_pins = sum(1 for i in loc_mapping if str(i) in coords)
