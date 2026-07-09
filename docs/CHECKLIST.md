@@ -51,10 +51,17 @@
 
 ---
 
-## 🔲 V2 — gros chantiers (différés)
+## 🔲 V2 — gros chantiers (démarrés)
 
-- [ ] Mod romfs « hard enforcement » (retirer grant paravoile vanilla, gate Ganon) — optionnel
-- [ ] Popup natif in-game « item reçu » (code cave RPX / createPorchItem) — l'overlay desktop suffit pour V1
+- [x] Scaffold mod V2 (`mod/`) : pipeline evfl+oead validé (round-trip octet-identique),
+      outils `scan_flows.py`/`dump_flow.py`, builder → graphic pack séparé
+      `BOTWpelago_Enforcement` (installé, désactivé par défaut dans Cemu)
+- [ ] Enforcement paravoile : patch CONSTRUIT (grant vanilla excisé de FindDungeon,
+      scène/quête intactes) — **à valider in-game** (finir le plateau avec le pack coché)
+- [ ] Gate Ganon : localiser le flow d'entrée du combat final (`scan_flows.py --patterns Ganon`)
+- [ ] Popup natif in-game « item reçu » : route retenue = patcher un flow récurrent
+      (CheckFlag mailbox → SubFlow GetDemo::GetManyItemsByName → FlagOFF) — cf. mod/README.md ;
+      l'overlay desktop reste la solution V1
 - [ ] Rendu live catégorie vide (couche `ksys::ui`) — investigué, différé (reload suffit)
 - [ ] Relics of the Past : décompiler → ré-implémenter des features choisies
 - [ ] Chests comme locations (TODO-8)
