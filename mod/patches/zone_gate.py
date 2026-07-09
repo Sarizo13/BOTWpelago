@@ -52,6 +52,10 @@ WARP_DIR_Y = 140.0
 
 TITLEBG_REL = "Pack/TitleBG.pack"
 MUBIN_INNER = "Map/MainField/H-3/H-3_Static.smubin"
+# Couche DLC : quand le DLC est monté (cas du joueur), le jeu lit les map units depuis
+# l'AOC — c'est là que le rando met ses propres edits de map. SANS cette sortie, le
+# patch TitleBG n'est jamais lu (leçon du 2e test in-game).
+AOC_MUBIN_REL = "aoc/0010/Map/MainField/H-3/H-3_Static.smubin"
 BOOTUP_REL = "Pack/Bootup.pack"
 EVENTPACK_REL = f"Event/{FLOW_NAME}.sbeventpack"
 
@@ -232,7 +236,14 @@ def build(read_source, log=print) -> dict[str, bytes]:
     out[BOOTUP_REL] = bytes(bootup_data)
     log(f"    {BOOTUP_REL}: EventInfo + {FLOW_NAME}<{ENTRY_NAME}>")
 
-    # 3) mubin Static DANS TitleBG.pack (les triggers vanilla vivent là)
+    # 3a) mubin Static de la couche AOC (DLC monté = ce que le jeu lit ; layering sur
+    #     la copie du rando pour préserver sa randomisation)
+    new_aoc = patched_mubin(read_source(AOC_MUBIN_REL))
+    oead.byml.from_binary(bytes(oead.yaz0.decompress(new_aoc)))     # vérif parse-back
+    out[AOC_MUBIN_REL] = new_aoc
+    log(f"    {AOC_MUBIN_REL}: +Area/LinkTagOr/EventTag @ {AREA_POS} (r={AREA_RADIUS})")
+
+    # 3b) même chaîne dans TitleBG.pack (couverture des installs SANS DLC)
     titlebg = oead.Sarc(read_source(TITLEBG_REL))
     inner = next((f for f in titlebg.get_files() if f.name == MUBIN_INNER), None)
     if inner is None:

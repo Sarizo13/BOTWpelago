@@ -73,7 +73,11 @@ _RSTB_REL = "System/Resource/ResourceSizeTable.product.srsizetable"
 
 
 def _canonical(name: str) -> str:
-    """Nom canonique RSTB : préfixe de compression 's' retiré de l'EXTENSION."""
+    """Nom canonique RSTB : préfixe de compression 's' retiré de l'EXTENSION ;
+    la couche DLC "aoc/0010/…" devient le préfixe canonique "Aoc/0010/…" (convention
+    BotW/BCML — les ressources aoc sont cherchées sous ce nom dans la table)."""
+    if name.startswith("aoc/"):
+        name = "Aoc/" + name[len("aoc/"):]
     stem, dot, ext = name.rpartition(".")
     if dot and ext.startswith("s") and ext not in ("sarc",):
         return f"{stem}.{ext[1:]}"
@@ -112,6 +116,9 @@ def update_rstb(results: dict[str, bytes], read_source, log=print) -> None:
             set_entry(rel, pack_dec)
             for f in oead.Sarc(pack_dec).get_files():
                 set_entry(f.name, bytes(f.data))
+        elif rel.endswith((".smubin", ".sbyml", ".mubin", ".byml")):
+            payload = bytes(oead.yaz0.decompress(data)) if data[:4] == b"Yaz0" else data
+            set_entry(rel, payload)
         elif rel in _PACK_INNER_TOUCHED:
             sarc = oead.Sarc(data)
             for inner_name in _PACK_INNER_TOUCHED[rel]:
@@ -187,7 +194,14 @@ def main() -> None:
         pack_dir, standalone = gfx / PACK_NAME, True
 
     def read_source(rel: str) -> bytes:
-        # layering : le pack cible d'abord (préserve les modifs du rando), puis le dump
+        # layering : le pack cible d'abord (préserve les modifs du rando), puis le dump.
+        # Les rel "aoc/0010/…" (couche DLC — celle que le jeu lit pour les map units
+        # quand le DLC est monté !) se résolvent dans pack/aoc/… puis le dump DLC.
+        if rel.startswith("aoc/"):
+            in_pack = pack_dir / rel
+            if in_pack.is_file():
+                return in_pack.read_bytes()
+            return _resolve(roots, rel[len("aoc/"):]).read_bytes()
         in_pack = pack_dir / "content" / rel
         if in_pack.is_file():
             return in_pack.read_bytes()
@@ -217,7 +231,7 @@ def main() -> None:
     if not pack_dir.parent.is_dir():
         raise SystemExit(f"dossier cible introuvable : {pack_dir.parent}")
     for rel, data in results.items():
-        dst = pack_dir / "content" / rel
+        dst = (pack_dir / rel) if rel.startswith("aoc/") else (pack_dir / "content" / rel)
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_bytes(data)
         print(f"  écrit {dst}")
