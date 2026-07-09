@@ -113,10 +113,11 @@ def build_flow_bytes() -> bytes:
 
     esa = make_actor("EventSystemActor",
                      ["Demo_WarpPlayerToDestination", "Demo_WaitFrame",
-                      "Demo_OpenMessageTips"],
-                     ["CheckFlag", "CheckPlayerState"])
+                      "Demo_OpenDungeonMessage"],
+                     ["CheckFlag", "CheckPlayerState", "CheckPlayerRideHorse"])
     player = make_actor("GameROMPlayer",
-                        ["Demo_StopInAir", "Demo_PlayerWait", "Demo_Join"],
+                        ["Demo_StopInAir", "Demo_PlayerWait", "Demo_Join",
+                         "Demo_PlayerHorseGetOff"],
                         extra_params={
                             "Weapon": "", "DisableWeapon": False,
                             "Shield": "", "DisableShield": False,
@@ -125,6 +126,7 @@ def build_flow_bytes() -> bytes:
                             "DisableSheikPad": False,
                         })
     fader = make_actor("Fader", ["Demo_FadeOut", "Demo_FadeIn"])
+    camera = make_actor("GameRomCamera", ["Demo_GameCamera"])
 
     def action(actor: Actor, name: str, params: dict, nxt: Event | None) -> Event:
         ev = Event()
@@ -150,14 +152,15 @@ def build_flow_bytes() -> bytes:
 
     # construite à l'envers (chaque event pointe sur son successeur)
     wait_end = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 1}, None)
-    tips = action(esa, "Demo_OpenMessageTips",
-                  {"IsWaitFinish": True, "TipsType": 6,
-                   "MessageId": f"EventFlowMsg/{FLOW_NAME}:{MSG_LABEL}"},
-                  wait_end)
+    banner = action(esa, "Demo_OpenDungeonMessage",       # bannière type forêt perdue
+                    {"IsWaitFinish": True,
+                     "MessageId": f"EventFlowMsg/{FLOW_NAME}:{MSG_LABEL}"},
+                    wait_end)
     fadein = action(fader, "Demo_FadeIn",
                     {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
-                     "DispMode": "Auto"}, tips)
-    wait_post = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 30}, fadein)
+                     "DispMode": "Auto"}, banner)
+    cam = action(camera, "Demo_GameCamera", {"IsWaitFinish": True}, fadein)
+    wait_post = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 40}, cam)
     warp = action(esa, "Demo_WarpPlayerToDestination",
                   {"IsWaitFinish": True,
                    "DestinationX": WARP_DEST[0], "DestinationY": WARP_DEST[1],
@@ -166,14 +169,22 @@ def build_flow_bytes() -> bytes:
     fadeout = action(fader, "Demo_FadeOut",
                      {"IsWaitFinish": True, "Frame": FADE_FRAMES, "Color": 1,
                       "DispMode": "Auto"}, warp)
-    # préambule = réplique de Common::AirStartUP_Player
-    player_wait = action(player, "Demo_PlayerWait", {"IsWaitFinish": True}, fadeout)
+    # préambule : cheval d'abord (descendre AVANT le warp — sinon la monture est
+    # téléportée avec le joueur et reste coincée au relais, cf. test v4.3 ; séquence
+    # GetOff→PlayerWait→Wait(15) relevée sur DarkWoods/forêt perdue), puis états air/sol
+    # (réplique de Common::AirStartUP_Player).
+    player_wait4 = action(player, "Demo_PlayerWait", {"IsWaitFinish": True}, fadeout)
     join = action(player, "Demo_Join", {"IsWaitFinish": True}, fadeout)
     stop_air = action(player, "Demo_StopInAir", {"IsWaitFinish": True, "NoFixed": False},
                       fadeout)
     state5 = switch("CheckPlayerState", {"PlayerState": 5}, {1: join, 0: stop_air})
-    state4 = switch("CheckPlayerState", {"PlayerState": 4}, {1: player_wait, 0: state5})
-    check = switch("CheckFlag", {"FlagName": GATE_FLAG}, {0: state4})   # 1 → rien
+    state4 = switch("CheckPlayerState", {"PlayerState": 4}, {1: player_wait4, 0: state5})
+    wait15 = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 15}, state4)
+    player_wait_h = action(player, "Demo_PlayerWait", {"IsWaitFinish": True}, wait15)
+    get_off = action(player, "Demo_PlayerHorseGetOff", {"IsWaitFinish": True},
+                     player_wait_h)
+    horse = switch("CheckPlayerRideHorse", {}, {1: get_off, 0: state4})
+    check = switch("CheckFlag", {"FlagName": GATE_FLAG}, {0: horse})   # 1 → rien
 
     for i, ev in enumerate(fc.events):
         ev.name = f"Event{i}"

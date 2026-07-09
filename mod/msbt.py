@@ -25,8 +25,11 @@ def _section(magic: bytes, body: bytes) -> bytes:
     return sec + b"\xab" * pad
 
 
-def build_msbt(messages: dict[str, str], *, groups: int = 101, attr_size: int = 4) -> bytes:
-    """messages : {label: texte}. Retourne les octets du .msbt (big-endian)."""
+def build_msbt(messages: dict[str, str], *, groups: int = 101, attr_size: int = 4,
+               attr_value: int = 0x0000000C) -> bytes:
+    """messages : {label: texte}. Retourne les octets du .msbt (big-endian).
+    attr_value : attribut par chaîne — 0x0C = style des bannières DungeonMessage
+    (relevé sur EventFlowMsg/DarkWoods.msbt, la bannière de la forêt perdue)."""
     labels = list(messages.keys())
 
     # ── LBL1 : table de hachage des labels ──
@@ -47,8 +50,9 @@ def build_msbt(messages: dict[str, str], *, groups: int = 101, attr_size: int = 
         lbl1 += struct.pack(">II", count, off)
     lbl1 += entries
 
-    # ── ATR1 : attributs (zéros, comme les msbt de tips) ──
-    atr1 = struct.pack(">II", len(labels), attr_size) + b"\x00" * (attr_size * len(labels))
+    # ── ATR1 : attributs (style d'affichage, cf. attr_value) ──
+    atr1 = (struct.pack(">II", len(labels), attr_size)
+            + struct.pack(">I", attr_value) * len(labels))
 
     # ── TXT2 : chaînes UTF-16BE terminées par NUL ──
     blobs = [messages[lab].encode("utf-16-be") + b"\x00\x00" for lab in labels]
