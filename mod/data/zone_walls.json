@@ -53,7 +53,7 @@
     },
     "Gerudo": {
       "flag": "IsGet_Armor_053_Upper",
-      "warp": {"pos": [-2790.0, 135.5, 2204.0], "dir": 210.0},
+      "warp": {"pos": [-2836.0, 135.8, 2192.0], "dir": 45.0},
       "walls": [
         {
           "_comment": "rive nord des Hauteurs Gerudo (haut plateau)",

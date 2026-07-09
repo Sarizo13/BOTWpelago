@@ -1,13 +1,15 @@
 """
 BotW Archipelago — region graph.
 
-Region hierarchy:
+Region hierarchy (alignée sur les MURS physiques du mod V2 — mod/data/zone_walls.json ;
+le champ `region` des locations est assigné par tools/assign_regions.py) :
   Great Plateau       — always accessible (starting area, 4 shrines + Plateau Tower)
   Hyrule World        — after Paraglider (all freely accessible areas)
   Eldin               — from Hyrule World + Flamebreaker Armor
-  Hebra               — from Hyrule World + Snowquill Set
-  Gerudo Highlands    — from Hyrule World + Snowquill Set
-  Gerudo Town         — from Hyrule World + Vai Outfit
+  Hebra               — from Hyrule World + Snowquill Set (cercle village Piaf + monts Hebra)
+  Zora                — from Hyrule World + Zora Armor
+  Gerudo              — from Hyrule World + Vai Outfit (Hauteurs + désert + canyon)
+  Gerudo Town         — from Hyrule World + Vai Outfit (dans la zone Gerudo, même gate)
 
 Access rules are wired in rules.py.
 Location → region routing is driven by the "region" field in data/shrine_chests.json.
@@ -29,7 +31,8 @@ REGION_GREAT_PLATEAU   = "Great Plateau"
 REGION_HYRULE_WORLD    = "Hyrule World"
 REGION_ELDIN           = "Eldin"
 REGION_HEBRA           = "Hebra"
-REGION_GERUDO_HIGHLAND = "Gerudo Highlands"
+REGION_ZORA            = "Zora"
+REGION_GERUDO          = "Gerudo"
 REGION_GERUDO_TOWN     = "Gerudo Town"
 
 _ALL_REGIONS = {
@@ -37,7 +40,8 @@ _ALL_REGIONS = {
     REGION_HYRULE_WORLD,
     REGION_ELDIN,
     REGION_HEBRA,
-    REGION_GERUDO_HIGHLAND,
+    REGION_ZORA,
+    REGION_GERUDO,
     REGION_GERUDO_TOWN,
 }
 
@@ -78,8 +82,10 @@ def create_regions(world: BotWWorld) -> dict[str, Region]:
              regions[REGION_HYRULE_WORLD], regions[REGION_ELDIN])
     _connect(player, "Enter Hebra",
              regions[REGION_HYRULE_WORLD], regions[REGION_HEBRA])
-    _connect(player, "Enter Gerudo Highlands",
-             regions[REGION_HYRULE_WORLD], regions[REGION_GERUDO_HIGHLAND])
+    _connect(player, "Enter Zora",
+             regions[REGION_HYRULE_WORLD], regions[REGION_ZORA])
+    _connect(player, "Enter Gerudo",
+             regions[REGION_HYRULE_WORLD], regions[REGION_GERUDO])
     _connect(player, "Enter Gerudo Town",
              regions[REGION_HYRULE_WORLD], regions[REGION_GERUDO_TOWN])
 

@@ -45,7 +45,8 @@ REGION_ACCESS = {
     "Hyrule World":     ["paraglider"],
     "Eldin":            ["paraglider,flamebreaker"],
     "Hebra":            ["paraglider,snowquill"],
-    "Gerudo Highlands": ["paraglider,snowquill"],
+    "Zora":             ["paraglider,zora"],
+    "Gerudo":           ["paraglider,vai"],
     "Gerudo Town":      ["paraglider,vai"],
 }
 

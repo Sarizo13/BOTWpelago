@@ -1,11 +1,12 @@
 """
 BotW Archipelago — access rules.
 
-Entrance rules:
+Entrance rules (alignées sur les MURS physiques du mod V2) :
   "Leave Great Plateau"   → requires Paraglider
   "Enter Eldin"           → requires Flamebreaker Armor
   "Enter Hebra"           → requires Snowquill Set
-  "Enter Gerudo Highlands"→ requires Snowquill Set
+  "Enter Zora"            → requires Zora Armor
+  "Enter Gerudo"          → requires Vai Outfit
   "Enter Gerudo Town"     → requires Vai Outfit
 
 Goal:
@@ -53,8 +54,12 @@ def set_rules(world: BotWWorld, regions: dict) -> None:
         lambda state: state.has("Snowquill Set", player),
     )
     set_rule(
-        mw.get_entrance("Enter Gerudo Highlands", player),
-        lambda state: state.has("Snowquill Set", player),
+        mw.get_entrance("Enter Zora", player),
+        lambda state: state.has("Zora Armor", player),
+    )
+    set_rule(
+        mw.get_entrance("Enter Gerudo", player),
+        lambda state: state.has("Vai Outfit", player),
     )
     set_rule(
         mw.get_entrance("Enter Gerudo Town", player),
