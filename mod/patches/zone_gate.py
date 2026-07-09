@@ -122,8 +122,7 @@ def build_flow_bytes() -> bytes:
 def patched_eventinfo(data: bytes) -> bytes:
     info = oead.byml.from_binary(bytes(oead.yaz0.decompress(data)) if data[:4] == b"Yaz0" else data)
     key = f"{FLOW_NAME}<{ENTRY_NAME}>"
-    if key in info:
-        raise PatchError(f"EventInfo contient déjà {key}")
+    # idempotent : la source peut être notre propre build précédent (layering) → on écrase
     info[key] = oead.byml.Hash({
         "is_startable_air": True,          # le joueur peut arriver en paravoile
         "is_timeline": False,
@@ -139,14 +138,15 @@ def patched_eventinfo(data: bytes) -> bytes:
 def patched_mubin(data: bytes) -> bytes:
     mubin = oead.byml.from_binary(bytes(oead.yaz0.decompress(data)) if data[:4] == b"Yaz0" else data)
     objs = mubin["Objs"]
-    existing = {int(o["HashId"]) for o in objs if "HashId" in o}
+    ids = {kind: _hash_id(f"BOTWpelago_ZoneGate_Eldin_{kind}")
+           for kind in ("area", "link", "tag")}
 
-    ids = {}
-    for kind in ("area", "link", "tag"):
-        h = _hash_id(f"BOTWpelago_ZoneGate_Eldin_{kind}")
-        if h in existing:
-            raise PatchError(f"collision HashId improbable ({kind}) — changer la seed")
-        ids[kind] = h
+    # idempotent : retire nos objets d'un build précédent avant de les re-poser
+    ours = set(ids.values())
+    keep = [o for o in objs if not ("HashId" in o and int(o["HashId"]) in ours)]
+    if len(keep) != len(objs):
+        mubin["Objs"] = oead.byml.Array(keep)
+        objs = mubin["Objs"]
 
     def f3(x, y, z):
         return oead.byml.Array([oead.F32(x), oead.F32(y), oead.F32(z)])

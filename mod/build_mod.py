@@ -62,6 +62,72 @@ def _resolve(roots: list[Path], rel: str) -> Path:
     raise FileNotFoundError(f"{rel} introuvable dans {[str(r) for r in roots]}")
 
 
+# Fichiers INTERNES aux .pack que nos patches modifient → entrées RSTB à rafraîchir.
+# (Les .pack eux-mêmes ne sont pas dans la RSTB ; leurs ressources internes, si.)
+_PACK_INNER_TOUCHED: dict[str, list[str]] = {
+    "Pack/Bootup.pack": ["Event/EventInfo.product.sbyml"],
+    "Pack/TitleBG.pack": ["Map/MainField/H-3/H-3_Static.smubin"],
+}
+
+_RSTB_REL = "System/Resource/ResourceSizeTable.product.srsizetable"
+
+
+def _canonical(name: str) -> str:
+    """Nom canonique RSTB : préfixe de compression 's' retiré de l'EXTENSION."""
+    stem, dot, ext = name.rpartition(".")
+    if dot and ext.startswith("s") and ext not in ("sarc",):
+        return f"{stem}.{ext[1:]}"
+    return name
+
+
+def update_rstb(results: dict[str, bytes], read_source, log=print) -> None:
+    """Met à jour la ResourceSizeTable pour toutes les ressources touchées/ajoutées.
+    BotW pré-alloue les buffers d'après cette table : une ressource plus grosse que son
+    entrée (ou absente de la table) CRASHE le jeu au chargement — cause du crash-au-boot
+    du 1er test. Les tailles ne sont jamais réduites (surdimensionner est inoffensif)."""
+    from rstb import ResourceSizeTable, SizeCalculator
+
+    raw = read_source(_RSTB_REL)
+    dec = bytes(oead.yaz0.decompress(raw)) if raw[:4] == b"Yaz0" else raw
+    table = ResourceSizeTable(dec, be=True)
+    calc = SizeCalculator()
+
+    def size_for(name: str, payload: bytes) -> int:
+        ext = "." + name.rsplit(".", 1)[-1]
+        computed = calc.calculate_file_size_with_ext(payload, wiiu=True, ext=ext)
+        if computed == 0:                      # type inconnu du calculateur → marge large
+            computed = len(payload) + len(payload) // 2 + 0x2000
+        return computed
+
+    def set_entry(name: str, payload: bytes) -> None:
+        canon = _canonical(name)
+        new = max(size_for(canon, payload),
+                  table.get_size(canon) if table.is_in_table(canon) else 0)
+        table.set_size(canon, new)
+        log(f"      rstb: {canon} = {new}")
+
+    for rel, data in results.items():
+        if rel.endswith(".sbeventpack"):
+            pack_dec = bytes(oead.yaz0.decompress(data)) if data[:4] == b"Yaz0" else data
+            set_entry(rel, pack_dec)
+            for f in oead.Sarc(pack_dec).get_files():
+                set_entry(f.name, bytes(f.data))
+        elif rel in _PACK_INNER_TOUCHED:
+            sarc = oead.Sarc(data)
+            for inner_name in _PACK_INNER_TOUCHED[rel]:
+                inner = next((f for f in sarc.get_files() if f.name == inner_name), None)
+                if inner is None:
+                    raise PatchError(f"{inner_name} absent de {rel} (rstb)")
+                payload = bytes(inner.data)
+                if payload[:4] == b"Yaz0":
+                    payload = bytes(oead.yaz0.decompress(payload))
+                set_entry(inner_name, payload)
+
+    buf = io.BytesIO()
+    table.write(buf, be=True)
+    results[_RSTB_REL] = bytes(oead.yaz0.compress(buf.getvalue()))
+
+
 def build_patched_container(src: Path, inner: str, transform, verify, log=print) -> bytes:
     """Retourne les octets du conteneur patché (même compression que l'original)."""
     raw = src.read_bytes()
@@ -140,6 +206,9 @@ def main() -> None:
     for fp in file_patches:
         print(f"  [{fp.NAME}] {fp.DESCRIPTION}")
         results.update(fp.build(read_source, log=print))
+
+    print("  [rstb] mise à jour de la ResourceSizeTable (tailles pré-allouées par le jeu)")
+    update_rstb(results, read_source, log=print)
 
     if args.check:
         print("\n--check : tout est patchable et vérifié, rien n'a été écrit.")
