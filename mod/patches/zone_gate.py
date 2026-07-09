@@ -58,7 +58,10 @@ MSG_TEXTS = {                                 # EUfr = joueur ; anglais pour le 
 }
 MSG_DEFAULT = "You lack the equipment required to enter this area."
 EU_LANGS = ("EUen", "EUfr", "EUde", "EUes", "EUit", "EUnl", "EUru")
-FADE_FRAMES = 30
+# Fader vanilla : TOUJOURS Frame=0 (ou 1) — ce n'est PAS une durée ; Frame=30 avec
+# IsWaitFinish=True bloque l'event indéfiniment (leçon du test v4.1, stall au FadeOut).
+# Référence : Electric_Relic_BattleField01 (éjection de zone lancée par tag, comme nous).
+FADE_FRAMES = 0
 
 TITLEBG_REL = "Pack/TitleBG.pack"
 MUBIN_INNER = "Map/MainField/H-3/H-3_Static.smubin"
