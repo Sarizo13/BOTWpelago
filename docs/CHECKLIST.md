@@ -25,8 +25,6 @@
 
 ### Finir le jalon / release
 - [ ] Rebuild `BOTWpelago.exe` (inclure `mod/` + deps oead/evfl/rstb) + merge `dev` → `main`
-- [ ] Potions / plats cuisinés (type 8) — **outillé** : `tools/dump_cook.py` prêt, session
-      live « 2 plats + 2 potions en poche » pour extraire les offsets CookData
 - [ ] Validation end-to-end : une vraie run AP multi-slot complète
 - [x] TODO-7 : `region` rempli — et ALIGNÉ sur les murs physiques V2 (tools/assign_regions.py,
       polygones = murs par construction ; régions Zora/Gerudo ajoutées au graphe)
@@ -82,9 +80,8 @@
 - [ ] Enforcement paravoile : patch CONSTRUIT (grant vanilla excisé de FindDungeon,
       scène/quête intactes) — **à valider in-game** (finir le plateau avec le pack coché)
 - [ ] Gate Ganon : localiser le flow d'entrée du combat final (`scan_flows.py --patterns Ganon`)
-- [ ] Popup natif in-game « item reçu » : route retenue = patcher un flow récurrent
-      (CheckFlag mailbox → SubFlow GetDemo::GetManyItemsByName → FlagOFF) — cf. mod/README.md ;
-      l'overlay desktop reste la solution V1
+- [x] ~~Popup natif via mailbox EventFlow/LinkTag~~ — TESTÉ, FERMÉ (2026-07-10, cf. section
+      « Popup natif » ci-dessus). La vraie cible = le toast de ramassage (file UI), session diff.
 - [ ] Rendu live catégorie vide (couche `ksys::ui`) — investigué, différé (reload suffit)
 - [ ] Relics of the Past : décompiler → ré-implémenter des features choisies
 - [ ] Chests comme locations (TODO-8)
