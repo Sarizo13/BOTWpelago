@@ -16,6 +16,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
+from ..memory_injector import cemu_process_running
 from ..save_parser import parse, ParsedSave, LazyParsedSave, flag_id as crc32_id
 from .base import GameStateProvider, ItemInjector, InjectionSpec
 
@@ -735,8 +736,10 @@ class DeferredSaveInjector(ItemInjector):
 
     @property
     def can_inject_now(self) -> bool:
-        # Live injection (bridge) works any time; the save-file fallback (no Cemu) needs idle.
-        return (self._bridge is not None and self._bridge.is_attached) or self._save_is_idle
+        # Live injection (bridge) works any time; the save-file fallback needs idle ET
+        # AUCUN processus Cemu (pas seulement bridge décroché — cf. cemu_process_running).
+        return (self._bridge is not None and self._bridge.is_attached) \
+            or (self._save_is_idle and not cemu_process_running())
 
     def flush(self) -> list[InjectionSpec]:
         """
@@ -776,9 +779,11 @@ class DeferredSaveInjector(ItemInjector):
         naturels ni une dépense au sanctuaire de la déesse au-dessus de la cible AP)."""
         if self._bridge is None:
             return
-        # Cemu attaché : on n'écrit PAS le fichier (contention → Cemu ne peut plus sauver → crash).
-        # L'orbe est maintenu en mémoire (maintain_persistent) et l'autosave de Cemu le persiste.
-        if self._bridge.is_attached:
+        # Cemu attaché OU simplement PRÉSENT : on n'écrit PAS le fichier (contention → Cemu
+        # ne peut plus sauver → crash). L'orbe est maintenu en mémoire (maintain_persistent)
+        # et l'autosave de Cemu le persiste. Garde processus : un bridge décroché avec Cemu
+        # en vie ne doit jamais ouvrir la voie fichier.
+        if self._bridge.is_attached or cemu_process_running():
             return
         # Cible unique = max(pouch orbe, compteur gamedata). Sur une save à 0 orbe, le nœud pouch
         # n'existe pas (orb_pouch_target=None) mais seal_target porte le compte des orbes AP.
@@ -861,11 +866,13 @@ class DeferredSaveInjector(ItemInjector):
             delivered = False
             if self._bridge is not None and self._bridge.has_live_inventory:
                 delivered = self._apply_actions_memory(spec, p)
-            # Voie FICHIER seulement si Cemu N'EST PAS attaché (sinon écrire game_data.sav bloque
-            # les autosaves de Cemu → save incohérente → crash). Attaché : on livre en live, ou on
-            # reporte (l'autosave de Cemu persiste ce qui est déjà en mémoire).
+            # Voie FICHIER seulement si AUCUN processus Cemu ne tourne (écrire game_data.sav
+            # pendant que Cemu tourne bloque ses autosaves → save incohérente → crash).
+            # ⚠️ `is_attached` NE SUFFIT PAS : bridge décroché ≠ Cemu fermé (blip d'attache
+            # pendant un chargement → crash constaté le 2026-07-09) → garde PROCESSUS.
             attached = self._bridge is not None and self._bridge.is_attached
-            if not delivered and self._save_is_idle and not attached:
+            if not delivered and self._save_is_idle and not attached \
+                    and not cemu_process_running():
                 delivered = self._apply_actions_savefile(p, spec)
             if delivered:
                 injected.append(spec)
@@ -1040,6 +1047,10 @@ class DeferredSaveInjector(ItemInjector):
             # quand attaché : un create juste avant une réallocation se perd puis se re-crée =
             # DOUBLON / corruption (constaté). Le paravoile marche via son flag. Livrer l'objet-clé
             # des Champions reste un TODO (probablement inutile si le flag suffit ; à tester).
+            return n
+        # ── Cemu PRÉSENT mais bridge décroché (boot, chargement, réallocation…) : ne JAMAIS
+        # toucher le fichier — on retentera l'attache au prochain poll. (Crash du 2026-07-09.)
+        if cemu_process_running():
             return n
         # ── Cemu NON attaché : voie FICHIER (au menu titre → Cemu ne tourne pas, pas de contention) ──
         try:

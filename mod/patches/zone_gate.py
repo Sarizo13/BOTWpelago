@@ -31,7 +31,7 @@ from evfl.actor import Actor
 from evfl.common import ActorIdentifier, StringHolder
 from evfl.container import Container
 from evfl.entry_point import EntryPoint
-from evfl.event import ActionEvent, Event, SwitchEvent
+from evfl.event import ActionEvent, Event, SubFlowEvent, SwitchEvent
 from evfl.flowchart import Flowchart
 from evfl.util import make_index, make_rindex
 
@@ -51,7 +51,21 @@ EU_LANGS = ("EUen", "EUfr", "EUde", "EUes", "EUit", "EUnl", "EUru")
 FADE_FRAMES = 0                     # vanilla : toujours 0 (≠0 avec IsWaitFinish = stall)
 
 BOOTUP_REL = "Pack/Bootup.pack"
+TITLEBG_REL = "Pack/TitleBG.pack"
 EVENTPACK_REL = f"Event/{FLOW_NAME}.sbeventpack"
+
+# ── EXPÉRIENCE popup natif (mailbox) ─────────────────────────────────────────────
+# Hypothèse : la couche LOGIQUE DE MAP (LinkTag avec SaveFlag) lit les flags GameData
+# en continu (contrairement au système d'events, fermé aux écritures externes). Si oui :
+# le client pose le flag → LinkTagAnd émet BasicSig → EventTag lance Popup_Test →
+# SubFlow GetDemo::GetManyItemsByName = VRAI popup natif (+1 pomme) → FlagOFF (réarme).
+# Flag mailbox = TestQuest_kwz001_Extermination (quête de TEST interne Nintendo, inerte,
+# présente dans toutes les saves). Test : tools/write_flag.py, debout au relais Pied-de-Mont.
+POPUP_TEST = True
+POPUP_ENTRY = "Popup_Test"
+POPUP_FLAG = "TestQuest_kwz001_Extermination"
+POPUP_POS = (2590.0, 258.0, -1160.0)          # relais du Pied-de-Mont (carré H-3)
+POPUP_ITEM = "Item_Fruit_A"                    # pomme : preuve visible + popup natif
 
 WALLS = json.loads((Path(__file__).resolve().parents[1] / "data" / "zone_walls.json")
                    .read_text(encoding="utf-8"))
@@ -97,7 +111,7 @@ def build_flow_bytes() -> bytes:
 
     esa = make_actor("EventSystemActor",
                      ["Demo_WarpPlayerToDestination", "Demo_WaitFrame",
-                      "Demo_OpenDungeonMessage"],
+                      "Demo_OpenDungeonMessage", "Demo_FlagOFF"],
                      ["CheckFlag", "CheckPlayerState", "CheckPlayerRideHorse"])
     player = make_actor("GameROMPlayer",
                         ["Demo_PlayerWait", "Demo_Join", "Demo_PlayerHorseGetOff"],
@@ -169,6 +183,28 @@ def build_flow_bytes() -> bytes:
         ep.main_event = make_index(check)
         fc.entry_points.append(ep)
 
+    if POPUP_TEST:
+        # entry Popup_Test : popup natif GetDemo + réarmement du flag mailbox
+        p_end = action(esa, "Demo_WaitFrame", {"IsWaitFinish": True, "Frame": 1}, None)
+        p_off = action(esa, "Demo_FlagOFF",
+                       {"IsWaitFinish": True, "FlagName": POPUP_FLAG}, p_end)
+        p_get = Event()
+        p_get.data = SubFlowEvent()
+        p_get.data.res_flowchart_name = "GetDemo"
+        p_get.data.entry_point_name = "GetManyItemsByName"
+        p_get.data.params = Container()
+        p_get.data.params.data = {
+            "IsInvalidOpenPouch": False,
+            "IncreaseTargetActorName": POPUP_ITEM,
+            "GetNumber": 1,
+            "ShowDialogTargetActorName": POPUP_ITEM,
+        }
+        p_get.data.nxt = make_index(p_off)
+        fc.events.append(p_get)
+        ep = EntryPoint(POPUP_ENTRY)
+        ep.main_event = make_index(p_get)
+        fc.entry_points.append(ep)
+
     for i, ev in enumerate(fc.events):
         ev.name = f"Event{i}"
 
@@ -186,6 +222,14 @@ def patched_eventinfo(data: bytes) -> bytes:
             "is_startable_air": True,
             "is_timeline": False,
             "mode": "Seamless",
+            "vanish_motorcycle": True,
+        })
+    if POPUP_TEST:
+        info[f"{FLOW_NAME}<{POPUP_ENTRY}>"] = oead.byml.Hash({
+            "is_startable_air": True,
+            "is_timeline": False,
+            "mode": "Seamless",
+            "subfile": oead.byml.Array([oead.byml.Hash({"file": "GetDemo.bfevfl"})]),
             "vanish_motorcycle": True,
         })
     out = oead.byml.to_binary(info, big_endian=True)
@@ -306,6 +350,41 @@ def wall_objects() -> dict[str, list]:
             "Translate": f3(mx, my + 20.0, mz),
             "UnitConfigName": "EventTag",
         }))
+    if POPUP_TEST:
+        # chaîne mailbox : LinkTagAnd(SaveFlag) --BasicSig--> EventTag(Popup_Test)
+        x, y, z = POPUP_POS
+        square = _square_of(x, z)
+        objs = out.setdefault(square, [])
+        tag_id = hid
+        hid += 1
+        link_id = hid
+        hid += 1
+        objs.append(oead.byml.Hash({
+            "!Parameters": oead.byml.Hash({
+                "IncrementSave": False, "MakeSaveFlag": oead.S32(0),
+                "NoChangeSignal": False, "SaveFlag": POPUP_FLAG,
+                "SaveFlagOnOffType": oead.S32(0),
+            }),
+            "HashId": oead.U32(link_id),
+            "SRTHash": oead.S32(link_id & 0x7FFFFFFF),
+            "LinksToObj": link_to(tag_id),
+            "Translate": f3(x, y, z),
+            "UnitConfigName": "LinkTagAnd",
+        }))
+        objs.append(oead.byml.Hash({
+            "!Parameters": oead.byml.Hash({
+                "EventFlowEntryName": POPUP_ENTRY,
+                "EventFlowName": FLOW_NAME,
+                "IsEndlessEvent": False,
+                "LaunchEventByOffSignal": False,
+                "LaunchEventByOnSignal": True,
+            }),
+            "HashId": oead.U32(tag_id),
+            "SRTHash": oead.S32(tag_id & 0x7FFFFFFF),
+            "Translate": f3(x, y + 5.0, z),
+            "UnitConfigName": "EventTag",
+        }))
+
     if hid >= HASH_END:
         raise PatchError(f"plage HashId dépassée ({hid - HASH_BASE} objets)")
     return out
@@ -337,14 +416,25 @@ def build(read_source, log=print) -> dict[str, bytes]:
     reparsed = EventFlow()
     reparsed.read(flow_bytes)
     eps = sorted(e.name for e in reparsed.flowchart.entry_points)
-    expected = sorted(f"Gate_{r}" for r in WALLS["regions"])
+    expected = sorted([f"Gate_{r}" for r in WALLS["regions"]]
+                      + ([POPUP_ENTRY] if POPUP_TEST else []))
     if eps != expected:
         raise PatchError(f"entry points inattendus : {eps}")
     writer = oead.SarcWriter(oead.Endianness.Big, oead.SarcWriter.Mode.Legacy)
     writer.files[f"EventFlow/{FLOW_NAME}.bfevfl"] = oead.Bytes(flow_bytes)
+    if POPUP_TEST:
+        # le SubFlow GetDemo exige que le pack embarque GetDemo.bfevfl (pattern vanilla :
+        # chaque event pack bundle ses subfiles) — extrait du TitleBG du dump au build.
+        titlebg = oead.Sarc(read_source(TITLEBG_REL))
+        gd = next((f for f in titlebg.get_files()
+                   if f.name == "EventFlow/GetDemo.bfevfl"), None)
+        if gd is None:
+            raise PatchError("GetDemo.bfevfl absent de TitleBG.pack")
+        writer.files["EventFlow/GetDemo.bfevfl"] = oead.Bytes(bytes(gd.data))
     _, sarc_data = writer.write()
     out[EVENTPACK_REL] = bytes(oead.yaz0.compress(bytes(sarc_data)))
-    log(f"    {EVENTPACK_REL}: {len(eps)} régions, flowchart {len(flow_bytes)} octets")
+    log(f"    {EVENTPACK_REL}: {len(eps)} régions + popup-test, "
+        f"flowchart {len(flow_bytes)} octets")
 
     # 2) EventInfo
     bootup = oead.Sarc(read_source(BOOTUP_REL))

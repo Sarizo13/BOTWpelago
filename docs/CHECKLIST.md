@@ -24,19 +24,36 @@
 ## 🔲 V1 — tout le reste
 
 ### Finir le jalon / release
-- [ ] Rebuild `BOTWpelago.exe` + merge `dev` → `main`
-- [ ] Potions / plats cuisinés (type 8, portent des effets → un peu de RE)
+- [ ] Rebuild `BOTWpelago.exe` (inclure `mod/` + deps oead/evfl/rstb) + merge `dev` → `main`
+- [ ] Potions / plats cuisinés (type 8) — **outillé** : `tools/dump_cook.py` prêt, session
+      live « 2 plats + 2 potions en poche » pour extraire les offsets CookData
 - [ ] Validation end-to-end : une vraie run AP multi-slot complète
-- [ ] (option) TODO-7 : remplir `region` dans `locations.json` (graphe de régions / règles plus fines)
+- [x] TODO-7 : `region` rempli — et ALIGNÉ sur les murs physiques V2 (tools/assign_regions.py,
+      polygones = murs par construction ; régions Zora/Gerudo ajoutées au graphe)
+- [x] **Garde absolue anti-écriture-save (2026-07-10)** : `cemu_process_running()` verrouille
+      TOUTES les voies fichier (`_inject_pending`, `_enforce_retention`, `_bank_spirit_orbs`,
+      `can_inject_now`) — un bridge décroché avec Cemu en vie n'ouvre plus jamais la voie
+      fichier (cause du crash « item inséré en save » du 2026-07-09)
 
 ### Loot & rubis (ex-V1.1)
 - [x] Rareté du loot : 4 tiers (common ×8 / uncommon ×4 / rare ×2 / epic ×1) assignés par
       mots-clés dans `build_loot_table.py` ; quantités plafonnées (rare ≤ 2, epic = 1) ;
       specials rescalés (~14 % du tirage). Vérifié sur seed : 50/17/11/1.5 %.
-- [ ] Rubis : trouver le vrai portefeuille (pas le miroir) → strip fonctionnel
+- [ ] Rubis : trouver le vrai portefeuille — **outillé** : `tools/hunt_wallet.py`
+      (snap/narrow/verify), session live interactive
+- [ ] Plats rôtis (`Item_Roast_*`, sans CookData) dans le pool — 1 test live suffit
+      (le kit de départ garantit un modèle type 8 dans la poche)
 
 ### Gate difficulté (ex-V1.2)
-- [ ] Gate armure Créature Divine : tuer le joueur s'il entre sans l'équipement adapté (réutilise le kill DeathLink)
+- [x] ~~Gate armure Créature Divine (kill)~~ — REMPLACÉE par les murs de régions par
+      téléport (V2, validés in-game) : moins punitif, même contrat logique
+
+### Popup natif « item reçu » (V2 — expérience prête)
+- [ ] **Expérience mailbox posée dans le pack** : LinkTagAnd(SaveFlag=TestQuest_kwz001_
+      Extermination) → EventTag(Popup_Test) au relais du Pied-de-Mont ; entry Popup_Test =
+      SubFlow GetDemo::GetManyItemsByName (popup natif, +1 pomme) → FlagOFF. Test :
+      `python tools/write_flag.py TestQuest_kwz001_Extermination 1` debout au relais.
+      Si le popup part → mailbox par item clé (10 entries) = notifications natives.
 
 ### PopTracker
 - [ ] Tester le pack dans PopTracker (autotracking — construit, jamais testé)

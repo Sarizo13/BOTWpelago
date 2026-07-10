@@ -83,14 +83,20 @@ Autres actions vues dans `FindDungeon` directement réutilisables :
 1. **[fait, à valider in-game]** Enforcement paravoile.
 2. **Gate Ganon** : conditionner l'entrée du combat final (localiser le flow d'entrée,
    `scan_flows.py --patterns Ganon`).
-3. **Popup natif « item reçu »** : la route « écriture externe d'un flag → popup
-   instantané » est FERMÉE (testé, cf. docs/status.md §Tips). La route ouverte :
-   patcher un flow **naturellement récurrent** (dialogue PNJ fréquent, autosave…) pour
-   `CheckFlag(mailbox) → SubFlow GetDemo::GetManyItemsByName → Demo_FlagOFF(mailbox)`.
-   Le client écrit le flag mailbox (write gd_base prouvé) ; la livraison se fait au
-   prochain déclenchement naturel. Questions ouvertes : choix du flow porteur, passage
-   du NOM d'item (params EventFlow = statiques → une entrée par item clé, ou mailbox
-   à N flags).
+3. **Popup natif « item reçu » — NOUVEAU design (2026-07-09, à expérimenter)** : la route
+   « écriture externe d'un flag → le système d'EVENTS réagit » est fermée (testé §Tips),
+   mais la couche **LOGIQUE DE MAP** (LinkTag*) est un moteur distinct : les `LinkTagAnd/
+   NAnd/Or` avec param `SaveFlag` pilotent en continu l'existence/état d'objets selon des
+   flags GameData (c'est ainsi que des objets apparaissent quand une quête avance). Si ce
+   moteur POLL les flags en live, alors :
+   `client pose flag mailbox → LinkTag (SaveFlag=mailbox) émet BasicSig → EventTag →
+   entry popup : SubFlow GetDemo::GetManyItemsByName (popup natif + son) → Demo_FlagOFF`.
+   Params EventFlow statiques → une entry + un flag mailbox par ITEM CLÉ (paravoile,
+   Master Sword, 4 capacités, 4 tenues = 10) ; les fillers gardent l'overlay desktop.
+   Le générateur de murs sait déjà poser la chaîne dans tous les carrés (couverture
+   monde). **Expérience 1 (cheap)** : un LinkTagAnd(SaveFlag=<flag test>) → EventTag
+   dans un carré de test + write du flag par le client → si le popup part, la voie est
+   ouverte. Flags mailbox : réutiliser des bools vanilla inertes, sinon ajout bgdata.
 4. **Gate région par téléport — MÉCANISME VANILLA DÉCODÉ (2026-07-09), recette complète** :
    le champ contient **543 `EventTag`** (dans les `_Static.smubin`, packés dans TitleBG.pack)
    câblés ainsi (chaîne remontée sur `Wind_Relic_Contact_Retry`, B-3) :

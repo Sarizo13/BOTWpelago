@@ -177,6 +177,18 @@ def _find_pid(exe_name: str = "cemu.exe") -> Optional[int]:
         _k32.CloseHandle(snap)
 
 
+def cemu_process_running(exe_name: str = "cemu.exe") -> bool:
+    """True si un processus Cemu EXISTE — garde ABSOLUE contre toute écriture de
+    game_data.sav pendant que le jeu tourne. `bridge.is_attached` ne suffit PAS :
+    un blip d'attache (boot, écran de chargement, réallocation) laisse le bridge
+    décroché alors que Cemu tourne → la voie fichier écrirait → collision avec les
+    autosaves → save incohérente → CRASH (constaté en jeu le 2026-07-09)."""
+    try:
+        return _find_pid(exe_name) is not None
+    except Exception:
+        return True      # doute → on suppose Cemu présent : interdiction d'écrire le fichier
+
+
 # ── CemuMemoryBridge ──────────────────────────────────────────────────────────
 
 class CemuMemoryBridge:
