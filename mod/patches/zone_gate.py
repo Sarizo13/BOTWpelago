@@ -61,7 +61,9 @@ EVENTPACK_REL = f"Event/{FLOW_NAME}.sbeventpack"
 # SubFlow GetDemo::GetManyItemsByName = VRAI popup natif (+1 pomme) → FlagOFF (réarme).
 # Flag mailbox = TestQuest_kwz001_Extermination (quête de TEST interne Nintendo, inerte,
 # présente dans toutes les saves). Test : tools/write_flag.py, debout au relais Pied-de-Mont.
-POPUP_TEST = True
+# RÉSULTAT (2026-07-10) : FERMÉ — la couche map ne poll pas les flags en live (flag écrit +
+# joueur au relais + aller-retour zone → aucun popup, flag resté à 1). On désactive.
+POPUP_TEST = False
 POPUP_ENTRY = "Popup_Test"
 POPUP_FLAG = "TestQuest_kwz001_Extermination"
 POPUP_POS = (2590.0, 258.0, -1160.0)          # relais du Pied-de-Mont (carré H-3)
@@ -433,8 +435,8 @@ def build(read_source, log=print) -> dict[str, bytes]:
         writer.files["EventFlow/GetDemo.bfevfl"] = oead.Bytes(bytes(gd.data))
     _, sarc_data = writer.write()
     out[EVENTPACK_REL] = bytes(oead.yaz0.compress(bytes(sarc_data)))
-    log(f"    {EVENTPACK_REL}: {len(eps)} régions + popup-test, "
-        f"flowchart {len(flow_bytes)} octets")
+    log(f"    {EVENTPACK_REL}: {len(eps)} entrées"
+        f"{' (+popup-test)' if POPUP_TEST else ''}, flowchart {len(flow_bytes)} octets")
 
     # 2) EventInfo
     bootup = oead.Sarc(read_source(BOOTUP_REL))

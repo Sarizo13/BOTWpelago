@@ -39,21 +39,27 @@
 - [x] Rareté du loot : 4 tiers (common ×8 / uncommon ×4 / rare ×2 / epic ×1) assignés par
       mots-clés dans `build_loot_table.py` ; quantités plafonnées (rare ≤ 2, epic = 1) ;
       specials rescalés (~14 % du tirage). Vérifié sur seed : 50/17/11/1.5 %.
-- [ ] Rubis : trouver le vrai portefeuille — **outillé** : `tools/hunt_wallet.py`
-      (snap/narrow/verify), session live interactive
-- [ ] Plats rôtis (`Item_Roast_*`, sans CookData) dans le pool — 1 test live suffit
-      (le kit de départ garantit un modèle type 8 dans la poche)
+- [~] Rubis : **vrai portefeuille TROUVÉ + prouvé** (2026-07-10, `tools/hunt_wallet.py`
+      snap/narrow/probe/context : écrit 55555 → achat −60 → écran 55495 = le jeu débite depuis
+      cette adresse ; l'AOB actuel visait un miroir). Reste : localisateur STABLE (hypothèse =
+      value+0x14 d'un nœud PouchItem "Money" → scan de nœuds) puis câbler `live_add_rupees`.
+- [x] CookData (plats/potions type 8) **décodé** (2026-07-10) : +0x68 soin, +0x6C durée, +0x70 prix,
+      +0x74 type d'effet (f32), +0x78 niveau/quantité — vérifié sur 4 plats. Débloque plats à effet.
+- [ ] Plats rôtis (`Item_Roast_*`, sans CookData) + plats à effet (`Item_Cook_*` + bloc CookData)
+      dans le pool — câbler `InjectionSpec.AddCookedItem` ; le kit de départ garantit un modèle type 8
 
 ### Gate difficulté (ex-V1.2)
 - [x] ~~Gate armure Créature Divine (kill)~~ — REMPLACÉE par les murs de régions par
       téléport (V2, validés in-game) : moins punitif, même contrat logique
 
-### Popup natif « item reçu » (V2 — expérience prête)
-- [ ] **Expérience mailbox posée dans le pack** : LinkTagAnd(SaveFlag=TestQuest_kwz001_
-      Extermination) → EventTag(Popup_Test) au relais du Pied-de-Mont ; entry Popup_Test =
-      SubFlow GetDemo::GetManyItemsByName (popup natif, +1 pomme) → FlagOFF. Test :
-      `python tools/write_flag.py TestQuest_kwz001_Extermination 1` debout au relais.
-      Si le popup part → mailbox par item clé (10 entries) = notifications natives.
+### Popup natif « item reçu » (V2)
+- [x] ~~Expérience mailbox (LinkTag SaveFlag → EventTag → GetDemo)~~ — **TESTÉE, FERMÉE**
+      (2026-07-10) : flag écrit + joueur au relais + aller-retour zone → aucun popup, flag resté
+      à 1 (event non déclenché). La couche map ne poll pas les flags en live (comme le sys. d'events).
+- [ ] Cible réelle = le **toast de ramassage** (« item — Sacoche + », cf. capture user), PAS le grand
+      dialogue GetDemo. Piste : trouver la FILE UI du toast en mémoire (diff avant/après un ramassage
+      naturel, comme la localisation des onglets) → si writable, le client pousse ses propres toasts.
+      Session dédiée (lecture d'abord, écriture prudente ensuite).
 
 ### PopTracker
 - [ ] Tester le pack dans PopTracker (autotracking — construit, jamais testé)
