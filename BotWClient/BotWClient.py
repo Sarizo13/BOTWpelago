@@ -60,10 +60,11 @@ AP_VERSION = {"major": 0, "minor": 5, "build": 0, "class": "Version"}
 # Le coffre n'est qu'un marqueur (l'item réel vient d'AP) -> on retire cette valeur du
 # portefeuille à chaque check de coffre détecté. Cf. PLACEHOLDER_ACTOR (worlds/botw).
 PLACEHOLDER_RUPEE_VALUE = 1
-# DÉSACTIVÉ (V1) : l'adresse rubis trouvée est un MIROIR que le jeu réécrit → le strip est
-# inefficace (portefeuille reste à +1) et avait causé la corruption -298. On accepte les +1 rubis
-# verts (trivial). TODO V1.1 : localiser le portefeuille AUTORITAIRE puis remettre à True.
-_RUPEE_STRIP_ENABLED = False
+# RÉACTIVÉ (2026-07-11) : live_add_rupees écrit désormais le VRAI portefeuille (entrée
+# CurrentRupee du storage gdt live, validée structurellement à chaque écriture — cf.
+# memory_injector, bloc _GDT_*). L'ancien miroir AOB (que le jeu réécrivait, d'où le strip
+# inefficace et la corruption -298 historiques) ne sert plus qu'à l'affichage HUD.
+_RUPEE_STRIP_ENABLED = True
 
 # BOTWpelago y écrit le config rando reçu via slot_data (source pour la construction
 # du pack quand l'utilisateur n'a pas fourni de fichier .apbotw).

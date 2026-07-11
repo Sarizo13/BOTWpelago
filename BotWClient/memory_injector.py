@@ -83,11 +83,37 @@ _STACKABLE_TYPES = {2, 7, 8}
 # de marteler chaque poll, ou de bloquer DÉFINITIVEMENT jusqu'à un reload). Laisse les nouveaux
 # nœuds libres (apparus quand le joueur ramasse/le jeu agrandit la poche) être utilisés.
 _POOL_RETRY_COOLDOWN = 6.0
-# Rubis : si le compteur lu chute de +de ça depuis notre dernière écriture, l'adresse est
-# probablement PÉRIMÉE (réallocation) → on ne strip PAS (sinon on "set" une valeur minuscule sur
-# un portefeuille réel plus gros = corruption, ex: 300 -> 2). Sur le Plateau il n'y a pas de
-# boutique, donc aucune dépense légitime aussi brutale.
+# Rubis : divergence forte entre le compteur lu et notre dernière écriture — depuis le vrai
+# portefeuille (validé structurellement à chaque write, cf. _wallet_valid) ce n'est PLUS un
+# signe d'adresse périmée mais une dépense/recette légitime du joueur → on LOG seulement
+# (l'ancienne garde bloquait le strip ; avec le miroir AOB périmable elle évitait une
+# corruption type 300 -> 2, désormais impossible par construction).
 _RUPEE_STALE_DROP  = 50
+
+# ── Vrai portefeuille (gdt live, v208) ─────────────────────────────────────────
+# Le jeu tient TROIS copies de CurrentRupee (prouvé 2026-07-10, tools/hunt_wallet.py puis
+# session recon : write 55555 -> achat -60 -> écran 55495 sur la copie STORAGE) :
+#   1. l'entrée {hash, value} du buffer game_data sérialisé (gd_base) — persistance ;
+#   2. l'objet gdt::Flag<s32> (vtable guest 0x102984C8) : value @+0x14, hash @+0x18.
+#      C'est LUI que l'AOB _RUPEE_PATTERN trouve (« miroir », alimente le HUD) ;
+#   3. l'entrée du STORAGE s32 live {typeinfo guest 0x10297C88, ptr flagobj, value} —
+#      la copie AUTORITAIRE (le jeu débite/crédite ICI ; 2792 entrées stride 12).
+# Localisateur STABLE : hash crc32("CurrentRupee") -> flagobj (vérif vtable) -> backref de
+# son adresse GUEST dans le storage (vérif typeinfo) -> value = backref+4. Les constantes
+# guest sont stables v208 ; les adresses host restent session-specific (rescan à l'attach).
+_GDT_FLAG_S32_VTABLE    = 0x102984C8
+_GDT_S32_STORE_TYPEINFO = 0x10297C88
+_RUPEE_FLAG_HASH        = 0x23149BF8      # zlib.crc32(b"CurrentRupee")
+_FLAG_S32_OFF_VALUE     = 0x14            # value dans l'objet gdt::Flag<s32>
+_FLAG_S32_OFF_HASH      = 0x18            # hash CRC32 du nom dans l'objet
+
+# Bloc CookData des PouchItem type 8 (offsets nœud host-cadré ; décodé 2026-07-10 via
+# tools/dump_cook.py sur 4 plats live) :
+_COOK_OFF_HEAL     = 0x68   # soin (quarts de cœur, s32)
+_COOK_OFF_DURATION = 0x6C   # durée d'effet (secondes, s32)
+_COOK_OFF_PRICE    = 0x70   # prix de vente (s32)
+_COOK_OFF_EFFECT   = 0x74   # type d'effet (f32 CookEffectId ; -1.0 = aucun)
+_COOK_OFF_LEVEL    = 0x78   # niveau/quantité d'effet (f32)
 
 # ── ctypes bindings ───────────────────────────────────────────────────────────
 
@@ -218,7 +244,10 @@ class CemuMemoryBridge:
         self._pool_exhausted_at: float = 0.0     # instant du dernier épuisement (retry après cooldown)
         self._last_freenode_warn: float = 0.0    # rate-limit du warning "aucun nœud libre"
         self._last_create_empty_cat = False      # dernier live_create_item : 1er item d'une catégorie VIDE ? (visible au reload)
-        self._rupee_shadow: Optional[int] = None # dernière valeur de rubis qu'on a ÉCRITE (anti-strip périmé)
+        self._rupee_shadow: Optional[int] = None # dernière valeur de rubis qu'on a ÉCRITE (log de divergence)
+        self._wallet_addr: Optional[int] = None    # VRAI portefeuille : value de l'entrée storage gdt s32
+        self._wallet_flagobj: Optional[int] = None # objet gdt::Flag<s32> CurrentRupee (host) — miroir HUD
+        self._heap_base: Optional[int] = None      # mapping guest->host (fixe pour la vie du process)
         # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
         # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
@@ -277,6 +306,9 @@ class CemuMemoryBridge:
         self._rupees_addr = None
         self._inv_base = None
         self._rupee_shadow = None
+        self._wallet_addr = None
+        self._wallet_flagobj = None
+        self._heap_base = None
         # NB: _persistent_qty / _seal_target ne sont PAS effacés (valeurs, pas adresses) : sur un
         # ré-attach le compteur d'orbes en jeu est inchangé et les orbes ne sont pas re-livrés →
         # les oublier stopperait la maintenance et l'orbe reverterait.
@@ -487,6 +519,89 @@ class CemuMemoryBridge:
                 off += n
         return results
 
+    def _scan_u32be(self, value: int):
+        """Génère les adresses ALIGNÉES-4 contenant `value` (u32 big-endian), dans l'ordre
+        mémoire — l'appelant peut s'arrêter au premier hit validé (économise le reste du scan)."""
+        needle = struct.pack(">I", value & 0xFFFFFFFF)
+        for base, size in self._iter_regions():
+            off = 0
+            while off < size:
+                n = min(_INV_SCAN_CHUNK, size - off)
+                chunk = self._read(base + off, min(n + 8, size - off))
+                if chunk:
+                    start = 0
+                    while True:
+                        i = chunk.find(needle, start)
+                        if i < 0 or i >= n:
+                            break
+                        if ((base + off + i) & 3) == 0:
+                            yield base + off + i
+                        start = i + 1
+                off += n
+
+    def _find_wallet(self) -> bool:
+        """Localise le VRAI portefeuille (entrée CurrentRupee du storage gdt s32 live).
+        Topologie/preuve : bloc de constantes _GDT_* en tête de fichier. Nécessite la base
+        heap (dérivée des nœuds pouch) pour convertir host <-> guest."""
+        if self._heap_base is None:
+            nodes = self._scan_pouch_nodes()
+            self._heap_base = self._derive_heap_base(nodes) if nodes else None
+        if self._heap_base is None:
+            log.debug("[Mem] wallet: base heap indisponible (inventaire non localisé ?)")
+            return False
+        flagobj = None
+        # Raccourci (économise un full-scan, ~45 s) : l'AOB _RUPEE_PATTERN résolu à la
+        # localisation d'inventaire matche le champ value du Flag<s32> CurrentRupee →
+        # flagobj = _rupees_addr - 0x14. VALIDÉ (vtable + hash) avant usage.
+        if self._rupees_addr is not None:
+            cand = self._rupees_addr - _FLAG_S32_OFF_VALUE
+            head = self._read(cand, 4)
+            h = self._read(cand + _FLAG_S32_OFF_HASH, 4)
+            if head and h and struct.unpack(">I", head)[0] == _GDT_FLAG_S32_VTABLE \
+                    and struct.unpack(">I", h)[0] == _RUPEE_FLAG_HASH:
+                flagobj = cand
+        if flagobj is None:
+            for a in self._scan_u32be(_RUPEE_FLAG_HASH):
+                head = self._read(a - _FLAG_S32_OFF_HASH, 4)
+                if head and struct.unpack(">I", head)[0] == _GDT_FLAG_S32_VTABLE:
+                    flagobj = a - _FLAG_S32_OFF_HASH
+                    break
+        if flagobj is None:
+            log.info("[Mem] wallet: objet gdt::Flag<s32> CurrentRupee introuvable")
+            return False
+        guest = flagobj - self._heap_base
+        if not (0 < guest <= 0xFFFFFFFF):
+            log.info("[Mem] wallet: flagobj hors mapping guest (base périmée ?)")
+            return False
+        for a in self._scan_u32be(guest):
+            head = self._read(a - 4, 4)
+            if head and struct.unpack(">I", head)[0] == _GDT_S32_STORE_TYPEINFO:
+                raw = self._read(a + 4, 4)
+                v = struct.unpack(">i", raw)[0] if raw else -1
+                if 0 <= v <= 999999:
+                    self._wallet_addr = a + 4
+                    self._wallet_flagobj = flagobj
+                    log.info("[Mem] Portefeuille (storage gdt) @ 0x%012X = %d rubis "
+                             "(flagobj @ 0x%012X)", a + 4, v, flagobj)
+                    return True
+        log.info("[Mem] wallet: entrée storage introuvable pour flagobj 0x%012X", flagobj)
+        return False
+
+    def _wallet_valid(self) -> bool:
+        """Re-validation structurelle (3 lectures) avant chaque écriture rubis : l'entrée
+        storage référence TOUJOURS notre flagobj (typeinfo + ptr) et le flagobj porte
+        toujours le hash CurrentRupee. Rend l'adresse périmée impossible par construction."""
+        if self._wallet_addr is None or self._wallet_flagobj is None or self._heap_base is None:
+            return False
+        raw = self._read(self._wallet_addr - 8, 8)
+        if not raw or len(raw) < 8:
+            return False
+        ti, ptr = struct.unpack(">II", raw)
+        if ti != _GDT_S32_STORE_TYPEINFO or ptr != self._wallet_flagobj - self._heap_base:
+            return False
+        h = self._read(self._wallet_flagobj + _FLAG_S32_OFF_HASH, 4)
+        return h is not None and struct.unpack(">I", h)[0] == _RUPEE_FLAG_HASH
+
     @staticmethod
     def _matches_item_pattern(buf: Optional[bytes]) -> bool:
         return bool(buf) and len(buf) >= 8 and buf[0] == 16 and buf[4] == 0 and buf[5] == 0 and buf[6] == 0 and buf[7] == 64
@@ -580,6 +695,11 @@ class CemuMemoryBridge:
                 self._inv_base = inv_base
                 log.info("[Mem] Inventaire live localise @ 0x%012X (rupees @ 0x%012X)",
                          inv_base, rupees_addr)
+                # VRAI portefeuille (storage gdt) — best effort : 2 scans de plus à l'attach ;
+                # en cas d'échec, live_add_rupees re-tentera (lazy) au premier besoin. En
+                # RE-localisation (réalloc pouch), inutile si l'entrée est encore valide.
+                if not self._wallet_valid():
+                    self._find_wallet()
                 return
         log.info("[Mem] Inventaire live introuvable — injection PorchItem (save-file) uniquement")
 
@@ -735,36 +855,41 @@ class CemuMemoryBridge:
         return new_val
 
     def live_get_rupees(self) -> Optional[int]:
-        if self._rupees_addr is None:
+        """Lit le VRAI portefeuille (storage gdt) ; repli LECTURE sur le flagobj/miroir AOB."""
+        addr = self._wallet_addr if self._wallet_addr is not None else self._rupees_addr
+        if addr is None:
             return None
-        raw = self._read(self._rupees_addr, 4)
+        raw = self._read(addr, 4)
         return struct.unpack(">i", raw)[0] if raw else None
 
     def live_add_rupees(self, amount: int) -> Optional[int]:
-        if self._rupees_addr is None:
-            return None
-        current = self.live_get_rupees()
-        # Garde-fou : le max de rubis en jeu est 999999. Une valeur hors bornes = adresse rubis
-        # PÉRIMÉE (inventaire en cours de réallocation) → on n'écrit PAS (sinon corruption, ex: -298).
+        # ÉCRIRE exige le VRAI portefeuille (storage gdt) : écrire le seul miroir (flagobj)
+        # est inefficace — le jeu resynchronise depuis le storage (rubis « ajoutés puis
+        # disparus », bug historique de l'AOB). Validation structurelle avant CHAQUE write ;
+        # re-localisation lazy en cas d'échec (l'appelant reporte, la dette est rejouée).
+        if not self._wallet_valid():
+            self._wallet_addr = None
+            if not self._find_wallet():
+                log.debug("[Mem] (live) rubis: portefeuille non localisé — reporté")
+                return None
+        raw = self._read(self._wallet_addr, 4)
+        current = struct.unpack(">i", raw)[0] if raw else None
+        # Garde-fou bornes jeu (0..999999) : hors bornes = état transitoire → on n'écrit pas.
         if current is None or not (0 <= current <= 999999):
             return None
-        # Garde anti-adresse-périmée pour les STRIPS (amount < 0) : si le compteur lu DIVERGE d'un
-        # coup de notre dernière écriture (chute OU bond, ex: on a mis 100, on relit 3 ou 9999),
-        # l'adresse a bougé/pointe sur du garbage → écrire corromprait. On re-localise une fois ;
-        # si toujours incohérent, on NE strip PAS (dette rejouée plus tard).
-        if amount < 0 and self._rupee_shadow is not None and abs(current - self._rupee_shadow) >= _RUPEE_STALE_DROP:
-            self._relocate_inventory()
-            current = self.live_get_rupees()
-            if current is None or not (0 <= current <= 999999):
-                return None
-            if abs(current - self._rupee_shadow) >= _RUPEE_STALE_DROP:
-                log.info("[Mem] (live) strip rubis reporté : lecture %d vs shadow %d (adresse périmée)",
-                         current, self._rupee_shadow)
-                return None
+        # Divergence forte vs notre dernière écriture : dépense/recette légitime du joueur
+        # (l'adresse, elle, est validée structurellement) — on trace pour le débogage.
+        if self._rupee_shadow is not None and abs(current - self._rupee_shadow) >= _RUPEE_STALE_DROP:
+            log.debug("[Mem] (live) rubis: %d vs shadow %d (activité joueur)", current, self._rupee_shadow)
         new_val = max(0, min(999999, current + amount))
-        self._write(self._rupees_addr, struct.pack(">i", new_val))
-        self._rupee_shadow = new_val          # notre valeur autoritaire (indépendante de l'adresse)
-        log.info("[Mem] (live) Rupees: %d -> %d", current, new_val)
+        if not self._write(self._wallet_addr, struct.pack(">i", new_val)):
+            return None
+        # Miroir HUD : l'objet gdt::Flag<s32> alimente l'affichage — on l'aligne pour que le
+        # compteur à l'écran soit juste sans attendre la resync du jeu.
+        if self._wallet_flagobj is not None:
+            self._write(self._wallet_flagobj + _FLAG_S32_OFF_VALUE, struct.pack(">i", new_val))
+        self._rupee_shadow = new_val
+        log.info("[Mem] (live) Rubis: %d -> %d", current, new_val)
         return new_val
 
     # ── Flag read/write ───────────────────────────────────────────────────────
@@ -1072,11 +1197,16 @@ class CemuMemoryBridge:
                      "possible même sur inventaire vide", sorted(set(added)))
 
     def live_create_item(self, item_name: str, item_type: int,
-                          subtype: Optional[int] = None, value: int = 1) -> bool:
+                          subtype: Optional[int] = None, value: int = 1,
+                          cook_data: Optional[dict] = None) -> bool:
         """
         Crée un NOUVEL item live dans la poche (l'item ne doit pas déjà exister).
         Retourne True si l'insertion a réussi. Nécessite qu'au moins un item du même
         type soit déjà présent (sert de template). Sinon retourne False (fallback appelant).
+
+        cook_data (plats/potions type 8 uniquement) : dict {heal, duration, price,
+        effect_type, effect_level} écrit dans le bloc CookData (+0x68..+0x78). Un plat
+        cuisiné ne s'empile JAMAIS (chaque assiette = un nœud, comme en jeu).
         """
         if not self.has_live_inventory:
             return False
@@ -1089,11 +1219,12 @@ class CemuMemoryBridge:
         #   ÉQUIPEMENT UNIQUE (armes 0 / arcs 1 / boucliers 3 / armures 4-6) → on NE bump PAS
         #   (ça monterait la durabilité) : on continue pour créer un NOUVEAU slot (2e exemplaire).
         if self.live_find_item(item_name) is not None:
-            if item_type in _STACKABLE_TYPES:
+            if item_type in _STACKABLE_TYPES and cook_data is None:
                 log.info("[Mem] (live) %s déjà présent — incrément quantité (+%d)", item_name, value)
                 return self.live_add_item_qty(item_name, value) is not None
             if item_type == 9:
                 return True                              # objet-clé déjà là → rien à faire
+            # plat cuisiné (cook_data) déjà présent : on CONTINUE → nouveau nœud (2e assiette)
         nodes = self._scan_pouch_nodes()
         base = self._derive_heap_base(nodes) if nodes else None
         if base is None:
@@ -1183,8 +1314,14 @@ class CemuMemoryBridge:
             return False
         # CONTENU (clone) : nœud live du MÊME type, le plus PROCHE en sortKey (icône/structure/clé de
         # tri cohérentes ; on évite les plats cuisinés sub=0xA), sinon le TEMPLATE caché du type.
-        same_type = [n for n in selfref if n["type"] == item_type and n["sub"] != 0xA] \
-            or [n for n in selfref if n["type"] == item_type]
+        # Pour un PLAT (cook_data), préférence INVERSE : cloner un vrai plat sub=0xA (bloc
+        # CookData et structure déjà conformes) ; à défaut un ingrédient type 8 re-subé.
+        if cook_data is not None:
+            same_type = [n for n in selfref if n["type"] == item_type and n["sub"] == 0xA] \
+                or [n for n in selfref if n["type"] == item_type]
+        else:
+            same_type = [n for n in selfref if n["type"] == item_type and n["sub"] != 0xA] \
+                or [n for n in selfref if n["type"] == item_type]
         # CATÉGORIE VIDE = aucun nœud vivant de ce type. Le nœud sera créé + sérialisé (persiste),
         # mais la GRILLE UI ne rend le 1er item d'une catégorie vide qu'au prochain rechargement
         # (couche ksys::ui, cf. [[project_live_memory_injection]]). On l'expose pour un log clair
@@ -1268,6 +1405,14 @@ class CemuMemoryBridge:
             struct.pack_into(">i", raw, self._NODE_OFF_SUB, subtype)   # ItemUse (bouclier=4, etc.)
         if retype:                                     # clone d'un autre équipement → re-typer
             struct.pack_into(">I", raw, self._NODE_OFF_TYPE, item_type)
+        if cook_data is not None:
+            # Bloc CookData : soin (quarts de cœur), durée (s), prix, effet {type f32
+            # CookEffectId, -1.0 = aucun ; niveau f32}. Offsets décodés le 2026-07-10.
+            struct.pack_into(">i", raw, _COOK_OFF_HEAL,     int(cook_data.get("heal", 0)))
+            struct.pack_into(">i", raw, _COOK_OFF_DURATION, int(cook_data.get("duration", 0)))
+            struct.pack_into(">i", raw, _COOK_OFF_PRICE,    int(cook_data.get("price", 2)))
+            struct.pack_into(">f", raw, _COOK_OFF_EFFECT,   float(cook_data.get("effect_type", -1.0)))
+            struct.pack_into(">f", raw, _COOK_OFF_LEVEL,    float(cook_data.get("effect_level", 0.0)))
         # Flag ÉQUIPÉ = OCTET à +0x18 (mEquipped). On l'efface, mais SANS toucher +0x19 (mInInventory,
         # doit rester 1). Dump live : non équipé = 0x00 01 00 00, équipé = 0x01 01 00 00. Effacer le
         # MOT entier mettait mInInventory=0 → l'item disparaissait de l'inventaire.
@@ -1308,7 +1453,8 @@ class CemuMemoryBridge:
             # réutilise plus ce nœud libre (plus de corruption en rafale) et le sérialise au
             # save (persistance fiable). Sentinelle = on suit la liste jusqu'à sortir du pool.
             bumped = self._bump_pouch_count(nodes, base, F_g)
-            self._qty_targets[item_name] = value      # cible à ré-asserter après réallocation
+            if cook_data is None:                     # cible qty à ré-asserter après réallocation
+                self._qty_targets[item_name] = value  # (pas pour un plat : 1 nœud = 1 assiette)
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s%s",
                      item_name, item_type, value, anchor["name"],
                      "" if bumped else "  (!! mCount NON incrémenté)")

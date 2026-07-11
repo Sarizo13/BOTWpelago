@@ -100,12 +100,33 @@
       "role": "ap_progression_logical",
       "gates": "eldin",
       "inject": [
-        {"type": "add_porch", "item": "Armor_011_Head", "amount": 1},
-        {"type": "add_porch", "item": "Armor_011_Upper", "amount": 1},
-        {"type": "add_porch", "item": "Armor_011_Lower", "amount": 1},
-        {"type": "set_flag", "flag": "IsGet_Armor_011_Head"},
-        {"type": "set_flag", "flag": "IsGet_Armor_011_Upper"},
-        {"type": "set_flag", "flag": "IsGet_Armor_011_Lower"}
+        {
+          "type": "add_porch",
+          "item": "Armor_011_Head",
+          "amount": 1
+        },
+        {
+          "type": "add_porch",
+          "item": "Armor_011_Upper",
+          "amount": 1
+        },
+        {
+          "type": "add_porch",
+          "item": "Armor_011_Lower",
+          "amount": 1
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_011_Head"
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_011_Upper"
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_011_Lower"
+        }
       ],
       "note": "Gate Eldin : set complet livré en pouch + flags IsGet_Armor_011_* (lus par la zone-gate du mod V2)."
     },
@@ -117,12 +138,33 @@
       "role": "ap_progression_logical",
       "gates": "hebra,gerudo_highlands",
       "inject": [
-        {"type": "add_porch", "item": "Armor_009_Head", "amount": 1},
-        {"type": "add_porch", "item": "Armor_009_Upper", "amount": 1},
-        {"type": "add_porch", "item": "Armor_009_Lower", "amount": 1},
-        {"type": "set_flag", "flag": "IsGet_Armor_009_Head"},
-        {"type": "set_flag", "flag": "IsGet_Armor_009_Upper"},
-        {"type": "set_flag", "flag": "IsGet_Armor_009_Lower"}
+        {
+          "type": "add_porch",
+          "item": "Armor_009_Head",
+          "amount": 1
+        },
+        {
+          "type": "add_porch",
+          "item": "Armor_009_Upper",
+          "amount": 1
+        },
+        {
+          "type": "add_porch",
+          "item": "Armor_009_Lower",
+          "amount": 1
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_009_Head"
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_009_Upper"
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_009_Lower"
+        }
       ],
       "note": "Gate régions froides (Hebra + Gerudo Highlands) : set complet + flags IsGet_Armor_009_*."
     },
@@ -134,12 +176,33 @@
       "role": "ap_progression_logical",
       "gates": "gerudo_town",
       "inject": [
-        {"type": "add_porch", "item": "Armor_053_Head", "amount": 1},
-        {"type": "add_porch", "item": "Armor_053_Upper", "amount": 1},
-        {"type": "add_porch", "item": "Armor_053_Lower", "amount": 1},
-        {"type": "set_flag", "flag": "IsGet_Armor_053_Head"},
-        {"type": "set_flag", "flag": "IsGet_Armor_053_Upper"},
-        {"type": "set_flag", "flag": "IsGet_Armor_053_Lower"}
+        {
+          "type": "add_porch",
+          "item": "Armor_053_Head",
+          "amount": 1
+        },
+        {
+          "type": "add_porch",
+          "item": "Armor_053_Upper",
+          "amount": 1
+        },
+        {
+          "type": "add_porch",
+          "item": "Armor_053_Lower",
+          "amount": 1
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_053_Head"
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_053_Upper"
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_053_Lower"
+        }
       ],
       "note": "Gate Gerudo Town : tenue Gerudo complète (Veil/Top/Sirwal) + flags IsGet_Armor_053_*."
     },
@@ -151,12 +214,33 @@
       "role": "ap_progression_logical",
       "gates": "zora",
       "inject": [
-        {"type": "add_porch", "item": "Armor_006_Head", "amount": 1},
-        {"type": "add_porch", "item": "Armor_006_Upper", "amount": 1},
-        {"type": "add_porch", "item": "Armor_006_Lower", "amount": 1},
-        {"type": "set_flag", "flag": "IsGet_Armor_006_Head"},
-        {"type": "set_flag", "flag": "IsGet_Armor_006_Upper"},
-        {"type": "set_flag", "flag": "IsGet_Armor_006_Lower"}
+        {
+          "type": "add_porch",
+          "item": "Armor_006_Head",
+          "amount": 1
+        },
+        {
+          "type": "add_porch",
+          "item": "Armor_006_Upper",
+          "amount": 1
+        },
+        {
+          "type": "add_porch",
+          "item": "Armor_006_Lower",
+          "amount": 1
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_006_Head"
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_006_Upper"
+        },
+        {
+          "type": "set_flag",
+          "flag": "IsGet_Armor_006_Lower"
+        }
       ],
       "note": "Tenue Zora complète (nage cascade / Vah Ruta) + flags IsGet_Armor_006_*. L'icône tracker n'est que le casque."
     }
@@ -227,6 +311,305 @@
         "type": "add_porch",
         "item": "ElectricArrow",
         "amount": 5
+      }
+    },
+    {
+      "name": "Rupees (50)",
+      "ap_item_id": 6080125,
+      "count": 44,
+      "inject": {
+        "type": "add_s32",
+        "flag": "CurrentRupee",
+        "amount": 50
+      }
+    },
+    {
+      "name": "Rupees (100)",
+      "ap_item_id": 6080126,
+      "count": 27,
+      "inject": {
+        "type": "add_s32",
+        "flag": "CurrentRupee",
+        "amount": 100
+      }
+    },
+    {
+      "name": "Rupees (300)",
+      "ap_item_id": 6080127,
+      "count": 13,
+      "inject": {
+        "type": "add_s32",
+        "flag": "CurrentRupee",
+        "amount": 300
+      }
+    },
+    {
+      "name": "Baked Apple",
+      "ap_item_id": 6080130,
+      "count": 8,
+      "tier": "common",
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Roast_03",
+        "amount": 5
+      }
+    },
+    {
+      "name": "Roasted Bird Drumstick",
+      "ap_item_id": 6080131,
+      "count": 8,
+      "tier": "common",
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Roast_02",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Seared Steak",
+      "ap_item_id": 6080132,
+      "count": 8,
+      "tier": "common",
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Roast_01",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Hard-Boiled Egg",
+      "ap_item_id": 6080133,
+      "count": 8,
+      "tier": "common",
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Boiled_01",
+        "amount": 3
+      }
+    },
+    {
+      "name": "Seared Prime Steak",
+      "ap_item_id": 6080134,
+      "count": 4,
+      "tier": "uncommon",
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Roast_40",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Roasted Whole Bird",
+      "ap_item_id": 6080135,
+      "count": 4,
+      "tier": "uncommon",
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Roast_46",
+        "amount": 2
+      }
+    },
+    {
+      "name": "Seared Gourmet Steak",
+      "ap_item_id": 6080136,
+      "count": 2,
+      "tier": "rare",
+      "inject": {
+        "type": "add_porch",
+        "item": "Item_Roast_45",
+        "amount": 1
+      }
+    },
+    {
+      "name": "Mushroom Skewer",
+      "ap_item_id": 6080137,
+      "count": 8,
+      "tier": "common",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_A_01",
+        "amount": 1,
+        "heal": 16,
+        "duration": 0,
+        "price": 10,
+        "effect_type": -1.0,
+        "effect_level": 0.0
+      }
+    },
+    {
+      "name": "Meat Skewer",
+      "ap_item_id": 6080138,
+      "count": 4,
+      "tier": "uncommon",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_B_06",
+        "amount": 1,
+        "heal": 24,
+        "duration": 0,
+        "price": 16,
+        "effect_type": -1.0,
+        "effect_level": 0.0
+      }
+    },
+    {
+      "name": "Meat Stew",
+      "ap_item_id": 6080139,
+      "count": 4,
+      "tier": "uncommon",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_K_01",
+        "amount": 1,
+        "heal": 32,
+        "duration": 0,
+        "price": 30,
+        "effect_type": -1.0,
+        "effect_level": 0.0
+      }
+    },
+    {
+      "name": "Fairy Tonic",
+      "ap_item_id": 6080140,
+      "count": 4,
+      "tier": "uncommon",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_16",
+        "amount": 1,
+        "heal": 28,
+        "duration": 0,
+        "price": 20,
+        "effect_type": -1.0,
+        "effect_level": 0.0
+      }
+    },
+    {
+      "name": "Spicy Elixir",
+      "ap_item_id": 6080141,
+      "count": 4,
+      "tier": "uncommon",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_17",
+        "amount": 1,
+        "heal": 0,
+        "duration": 600,
+        "price": 30,
+        "effect_type": 5.0,
+        "effect_level": 1.0
+      }
+    },
+    {
+      "name": "Chilly Elixir",
+      "ap_item_id": 6080142,
+      "count": 4,
+      "tier": "uncommon",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_17",
+        "amount": 1,
+        "heal": 0,
+        "duration": 600,
+        "price": 30,
+        "effect_type": 4.0,
+        "effect_level": 1.0
+      }
+    },
+    {
+      "name": "Electro Elixir",
+      "ap_item_id": 6080143,
+      "count": 4,
+      "tier": "uncommon",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_17",
+        "amount": 1,
+        "heal": 0,
+        "duration": 600,
+        "price": 30,
+        "effect_type": 6.0,
+        "effect_level": 2.0
+      }
+    },
+    {
+      "name": "Fireproof Elixir",
+      "ap_item_id": 6080144,
+      "count": 2,
+      "tier": "rare",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_17",
+        "amount": 1,
+        "heal": 0,
+        "duration": 600,
+        "price": 40,
+        "effect_type": 16.0,
+        "effect_level": 1.0
+      }
+    },
+    {
+      "name": "Hasty Elixir",
+      "ap_item_id": 6080145,
+      "count": 2,
+      "tier": "rare",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_17",
+        "amount": 1,
+        "heal": 0,
+        "duration": 450,
+        "price": 40,
+        "effect_type": 13.0,
+        "effect_level": 2.0
+      }
+    },
+    {
+      "name": "Mighty Elixir",
+      "ap_item_id": 6080146,
+      "count": 2,
+      "tier": "rare",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_17",
+        "amount": 1,
+        "heal": 0,
+        "duration": 450,
+        "price": 40,
+        "effect_type": 10.0,
+        "effect_level": 2.0
+      }
+    },
+    {
+      "name": "Tough Elixir",
+      "ap_item_id": 6080147,
+      "count": 2,
+      "tier": "rare",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_17",
+        "amount": 1,
+        "heal": 0,
+        "duration": 450,
+        "price": 40,
+        "effect_type": 11.0,
+        "effect_level": 2.0
+      }
+    },
+    {
+      "name": "Hearty Elixir",
+      "ap_item_id": 6080148,
+      "count": 1,
+      "tier": "epic",
+      "inject": {
+        "type": "add_cooked",
+        "item": "Item_Cook_C_17",
+        "amount": 1,
+        "heal": 120,
+        "duration": 0,
+        "price": 60,
+        "effect_type": 2.0,
+        "effect_level": 12.0
       }
     },
     {

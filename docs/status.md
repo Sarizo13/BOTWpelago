@@ -74,6 +74,10 @@ structures are elsewhere, in the same multi-GB `cemu.exe` heap region (~3.6GB on
   match_pos + 20. Confirmed: value == `CurrentRupee`, and writing it updates the HUD
   **instantly** (no UI refresh needed). Implemented as `CemuMemoryBridge._find_rupees_addresses`
   / `live_get_rupees` / `live_add_rupees`.
+  **⚠️ SUPERSEDED (2026-07-11)**: this address is the value field of a `gdt::Flag<s32>`
+  object — a **mirror** the game resyncs from the authoritative copy (rupees written there
+  "vanished"). The TRUE wallet is the matching entry in the live gdt s32 STORAGE;
+  `live_add_rupees` now writes BOTH. See §gdt-live below.
 - **Live PouchItem array**: items are 544-byte structs, found via pattern `10 ?? ?? ?? 00 00 00 40`
   repeating every 544 bytes. For a match at `pos`: `itemAddress = pos + 7`, `itemID` = ASCII
   string at `itemAddress+1`, `itemQtDurAddress = itemAddress - 19` (qty/durability, int32 BE),
@@ -880,6 +884,51 @@ root) for future use in custom item popups — relevant once V2 (any flavor) get
 3. `D:\Tools\GhidraProjects\BotW.gpr` is fully analyzed and ready for the GUI (not just
    headless) — opening it in the Ghidra UI may be much faster for manual exploration
    than further headless scripting.
+
+---
+
+## 6b. §gdt-live — vrai portefeuille, storage s32 live, piste bools (2026-07-10/11)
+
+**Contexte** : la chasse au portefeuille (`tools/hunt_wallet.py`, change-detection 10219→3
+candidats, preuve par achat : write 55555 → achat −60 → écran 55495) puis la session recon
+du 2026-07-11 ont révélé la topologie **gdt LIVE** complète des flags s32. Le jeu tient
+**TROIS copies** de `CurrentRupee` (les 3 candidats du narrow, deltas identiques entre
+sessions car allocations Cemu déterministes) :
+
+1. **save-buffer** (`gd_base`) : paire `{hash u32be, value u32be}` triée — sérialisation.
+2. **objet `gdt::Flag<s32>`** (vtable guest `0x102984C8`) : layout
+   `{vtable, 0x0107, min=0, initial=0, max (999999), value @+0x14, hash @+0x18}`.
+   L'AOB `_RUPEE_PATTERN` (vtable + 0107 + zéros + max 999999) matche CET objet →
+   l'« adresse rubis » historique = son champ value (miroir HUD, resynchronisé).
+3. **storage s32 live** — LA copie autoritaire (le jeu débite ICI) : array de ~2792
+   entrées de 12 o `{typeinfo guest 0x10297C88, ptr guest → flagobj, value}`.
+   ⚠️ cadrage : la value du flag est le 3e champ de l'entrée qui RÉFÉRENCE son flagobj
+   (backref+4), pas le 1er mot lu à côté (piège du premier parse).
+
+**Localisateur STABLE (implémenté `memory_injector._find_wallet`)** : flagobj candidat =
+`_rupees_addr − 0x14` (validé vtable + hash `crc32("CurrentRupee")=0x23149BF8`, fallback
+scan du hash) → guest = host − heap_base (base dérivée des nœuds pouch, FIXE pour la vie
+du process) → scan backref du guest, entrée validée par typeinfo → value = backref+4.
+Re-validation structurelle 3-lectures avant chaque write (`_wallet_valid`) → adresse
+périmée impossible par construction. Écriture = storage + flagobj (HUD). Validé sur Cemu
+relancé : ±1 rubis cohérent sur les 2 copies. Coût : +~40 s à l'attach (scan backref
+one-shot, thread lourd) — optimisable en restreignant le scan à la région du heap.
+
+**Piste BOOLS live (à creuser — chantier « flags sans reload »)** : le hash
+`IsGet_Obj_Magnetglove` (0x795E7BBC) sort à 4 endroits :
+1. save-buffer (paires hash/value) ; 2. table de lookup `{hash, index u32, offset u32, 0}`
+stride 16 triée par hash (mapping hash→index !) ; 3. **objets bool 16 o
+`{hash, ?, vtable guest 0x10298410, meta}`** où meta `0x000F0101` semble encoder
+{catégorie u16, initial u8, **value u8**} (Magnetglove lu =1 ✔) ; 4. table reset
+`{hash, 0x80000000, 0, 0x12}`. Si écrire meta.value prend effet sans reload → runes/
+capacités/gates instantanées. Write-test prudent sur un flag réversible à prévoir.
+
+**CookData (PouchItem type 8)** : offsets nœud host-cadré `+0x68 heal (¼-cœurs),
++0x6C durée (s), +0x70 prix, +0x74 effect_type (f32 CookEffectId, −1.0 = aucun),
++0x78 effect_level (f32)`. Câblé : `InjectionSpec.AddCookedItem` → `live_create_item(...,
+cook_data=...)` (live-only, préfère un template sub=0xA, ne stack jamais). Validé live :
+Mushroom Skewer (heal 16) + Spicy Elixir (fx 5.0 lvl 1 600 s) créés et relus conformes.
+Énum CookEffectId (decomp uking) à confirmer à l'écran au premier élixir goûté.
 
 ---
 

@@ -106,8 +106,59 @@ SPECIALS = [
      "inject": {"type": "add_porch", "item": "IceArrow", "amount": 5}},
     {"name": "Shock Arrows x5", "ap_item_id": 6080124, "count": 4,
      "inject": {"type": "add_porch", "item": "ElectricArrow", "amount": 5}},
-    # Rubis RETIRÉS du pool (V1) : l'adresse rubis trouvée est un MIROIR que le jeu réécrit → les
-    # rubis livrés disparaissent ("ajouté puis supprimé"). À restaurer en V1.1 (vrai portefeuille).
+    # Rubis RESTAURÉS (2026-07-11) : live_add_rupees écrit le VRAI portefeuille (storage gdt,
+    # validé structurellement) — les livraisons persistent, plus de "ajouté puis supprimé".
+    {"name": "Rupees (50)", "ap_item_id": 6080125, "count": 10,
+     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 50}},
+    {"name": "Rupees (100)", "ap_item_id": 6080126, "count": 6,
+     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 100}},
+    {"name": "Rupees (300)", "ap_item_id": 6080127, "count": 3,
+     "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 300}},
+]
+
+# ── Plats & potions ───────────────────────────────────────────────────────────
+# Rôtis (type 8 SANS CookData : soin porté par l'actor, empilables) → add_porch.
+# Plats/élixirs cuisinés (type 8 sub 0xA + bloc CookData) → add_cooked, livraison LIVE
+# uniquement (offsets décodés 2026-07-10). CookEffectId (decomp uking) — l'énum est à
+# CONFIRMER in-game au premier drop d'élixir : LifeMaxUp=2, ResistHot=4, ResistCold=5,
+# ResistElectric=6, AttackUp=10, DefenseUp=11, Quietness=12, MovingSpeed=13, Fireproof=16 ;
+# -1 = aucun effet (heal seul). heal en quarts de cœur ; duration en secondes.
+_FX = {"none": -1.0, "life_max": 2.0, "res_hot": 4.0, "res_cold": 5.0, "res_elec": 6.0,
+       "atk": 10.0, "def": 11.0, "speed": 13.0, "fireproof": 16.0}
+COOKED_BASE_ID = 6_080_130
+
+def _cooked(name, actor, tier, *, heal=0, dur=0, price=2, fx="none", lvl=0.0, amount=1):
+    return {"name": name, "tier": tier, "actor": actor, "cook": True, "amount": amount,
+            "heal": heal, "duration": dur, "price": price,
+            "effect_type": _FX[fx], "effect_level": lvl}
+
+def _roast(name, actor, tier, amount):
+    return {"name": name, "tier": tier, "actor": actor, "cook": False, "amount": amount}
+
+COOKED = [
+    # rôtis simples (empilables, zéro risque)
+    _roast("Baked Apple",            "Item_Roast_03", "common",   5),
+    _roast("Roasted Bird Drumstick", "Item_Roast_02", "common",   3),
+    _roast("Seared Steak",           "Item_Roast_01", "common",   3),
+    _roast("Hard-Boiled Egg",        "Item_Boiled_01", "common",  3),
+    _roast("Seared Prime Steak",     "Item_Roast_40", "uncommon", 2),
+    _roast("Roasted Whole Bird",     "Item_Roast_46", "uncommon", 2),
+    _roast("Seared Gourmet Steak",   "Item_Roast_45", "rare",     1),
+    # plats cuisinés soin pur (effet -1 = aucun, comme les nœuds ingrédients par défaut)
+    _cooked("Mushroom Skewer", "Item_Cook_A_01", "common",   heal=16,  price=10),
+    _cooked("Meat Skewer",     "Item_Cook_B_06", "uncommon", heal=24,  price=16),
+    _cooked("Meat Stew",       "Item_Cook_K_01", "uncommon", heal=32,  price=30),
+    _cooked("Fairy Tonic",     "Item_Cook_C_16", "uncommon", heal=28,  price=20),
+    # élixirs à effet — thématiques avec les murs de régions V2 (froid/chaud/foudre/feu)
+    _cooked("Spicy Elixir",     "Item_Cook_C_17", "uncommon", dur=600, price=30, fx="res_cold", lvl=1.0),
+    _cooked("Chilly Elixir",    "Item_Cook_C_17", "uncommon", dur=600, price=30, fx="res_hot", lvl=1.0),
+    _cooked("Electro Elixir",   "Item_Cook_C_17", "uncommon", dur=600, price=30, fx="res_elec", lvl=2.0),
+    _cooked("Fireproof Elixir", "Item_Cook_C_17", "rare",     dur=600, price=40, fx="fireproof", lvl=1.0),
+    _cooked("Hasty Elixir",     "Item_Cook_C_17", "rare",     dur=450, price=40, fx="speed", lvl=2.0),
+    _cooked("Mighty Elixir",    "Item_Cook_C_17", "rare",     dur=450, price=40, fx="atk", lvl=2.0),
+    _cooked("Tough Elixir",     "Item_Cook_C_17", "rare",     dur=450, price=40, fx="def", lvl=2.0),
+    # 3 cœurs jaunes + soin complet (LifeMaxUp : level = quarts de cœur bonus)
+    _cooked("Hearty Elixir",    "Item_Cook_C_17", "epic",     heal=120, price=60, fx="life_max", lvl=12.0),
 ]
 
 
@@ -124,6 +175,23 @@ def main() -> None:
     filler = [dict(s) for s in SPECIALS]
     used_names = {f["name"] for f in filler}
     tier_census: dict[str, int] = {t: 0 for t in TIER_WEIGHTS}
+
+    # plats & potions (liste curée) — pondérés par tier comme le reste du pool
+    n_cooked = 0
+    for i, c in enumerate(COOKED):
+        tier = c["tier"]
+        tier_census[tier] += 1
+        if c["cook"]:
+            inject = {"type": "add_cooked", "item": c["actor"], "amount": c["amount"],
+                      "heal": c["heal"], "duration": c["duration"], "price": c["price"],
+                      "effect_type": c["effect_type"], "effect_level": c["effect_level"]}
+        else:
+            inject = {"type": "add_porch", "item": c["actor"], "amount": c["amount"]}
+        filler.append({"name": c["name"], "ap_item_id": COOKED_BASE_ID + i,
+                       "count": TIER_WEIGHTS[tier], "tier": tier, "inject": inject})
+        used_names.add(c["name"])
+        n_cooked += 1
+
     next_id = INGREDIENT_BASE_ID
     n_ing = 0
     for actor in sorted(db):
@@ -175,7 +243,7 @@ def main() -> None:
 
     # ── rescale des specials : ils gardent leur part relative du pool (~15 %).
     #    Avant tiers : nonspecials pesaient 1 chacun (total = N) ; maintenant total = T.
-    n_nonspecial = n_ing + n_gear
+    n_nonspecial = n_ing + n_gear + n_cooked
     total_tiered = sum(f["count"] for f in filler[len(SPECIALS):])
     scale = (total_tiered / n_nonspecial) if n_nonspecial else 1.0
     for f in filler[:len(SPECIALS)]:
@@ -186,7 +254,7 @@ def main() -> None:
         data["filler_items"] = filler
         gate_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"  écrit {gate_path}  ({len(filler)} fillers : {len(SPECIALS)} specials + "
-              f"{n_ing} ingrédients + {n_gear} armes/arcs/boucliers)")
+              f"{n_cooked} plats/élixirs + {n_ing} ingrédients + {n_gear} armes/arcs/boucliers)")
 
     # aperçu tiers + quantités
     total = sum(f["count"] for f in filler)
@@ -198,9 +266,11 @@ def main() -> None:
     spec_w = sum(f["count"] for f in filler[:len(SPECIALS)])
     print(f"  specials      : {len(SPECIALS):3d} items  ({spec_w * 100 // total}% du tirage)")
     print("\nAperçu:")
-    for f in filler[8:14]:
-        print(f"  [{f.get('tier', '?'):8s}] {f['name']:22s} {f['inject']['item']:18s} "
-              f"x{f['inject']['amount']} poids {f['count']}")
+    for f in filler[8:20]:
+        inj = f["inject"]
+        target = inj.get("item") or inj.get("flag") or "?"
+        print(f"  [{f.get('tier', '?'):8s}] {f['name']:22s} {target:18s} "
+              f"x{inj.get('amount', 1)} poids {f['count']}")
 
 
 if __name__ == "__main__":

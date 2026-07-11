@@ -49,6 +49,27 @@ class InjectionSpec:
         amount: int = 1
 
     @dataclass
+    class AddCookedItem:
+        """
+        Create a cooked dish/elixir (PouchItem type 8, sub 0xA) with its CookData block.
+        LIVE-only (the CookData lives in the runtime pouch node; the game serializes it
+        on autosave). Dishes never stack: `amount` = number of plates (one node each).
+        effect_type is a CookEffectId as f32 (-1.0 = none); heal is in quarter-hearts.
+        """
+        item_name: str
+        amount: int = 1
+        heal: int = 0
+        duration: int = 0
+        price: int = 2
+        effect_type: float = -1.0
+        effect_level: float = 0.0
+
+        @property
+        def cook_data(self) -> dict:
+            return {"heal": self.heal, "duration": self.duration, "price": self.price,
+                    "effect_type": self.effect_type, "effect_level": self.effect_level}
+
+    @dataclass
     class GiveActor:
         """
         Spawn an actor (weapon/shield/bow/food) in Link's inventory.

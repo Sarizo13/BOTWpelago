@@ -965,6 +965,22 @@ class DeferredSaveInjector(ItemInjector):
                 else:
                     all_ok = False
 
+            elif isinstance(action, InjectionSpec.AddCookedItem):
+                # Plat/potion (type 8 + bloc CookData) : LIVE uniquement — chaque assiette
+                # est un nœud séparé (les plats ne s'empilent jamais en jeu). Échec (pool
+                # épuisé, pas de template type 8...) → report en file, jamais de voie fichier.
+                ok = bool(_LIVE_CREATE_ENABLED) and not self._bridge.pool_exhausted
+                if ok:
+                    for _ in range(max(1, action.amount)):
+                        ok = ok and self._bridge.live_create_item(
+                            action.item_name, 8, 0xA, 1, cook_data=action.cook_data)
+                if ok:
+                    log.info("  [Live] %s  %s ×%d (plat, instantané)",
+                             spec.ap_item_name, action.item_name, max(1, action.amount))
+                    self._bridge._last_create_empty_cat = False
+                else:
+                    all_ok = False
+
             else:
                 log.debug("Action %s not implemented for memory injection", type(action).__name__)
         return all_ok
@@ -1004,6 +1020,12 @@ class DeferredSaveInjector(ItemInjector):
                                              allow_create=False)
                 if not ok:
                     all_ok = False
+
+            elif isinstance(action, InjectionSpec.AddCookedItem):
+                # Le bloc CookData ne vit que dans le nœud pouch runtime → pas de voie
+                # fichier (un plat créé en save sortirait à 0 cœur). ÉCHEC explicite pour
+                # que la spec reste en file et parte en LIVE au prochain attach.
+                all_ok = False
 
             else:
                 log.debug("Action %s skipped (save-file injection)",

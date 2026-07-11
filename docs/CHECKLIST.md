@@ -15,7 +15,8 @@
 - [x] Placement trié (décroissant par adjacence réelle) · durabilité ×100 · ItemUse · flag équipé
 - [x] Catégorie vide : livré + persisté, visible au reload (log clair)
 - [x] Crash contention fichier corrigé (lecture/écriture via mémoire quand attaché)
-- [x] Rubis strip désactivé (adresse miroir) · loot diversifié (+184 armes, −Spirit Orbs)
+- [x] Rubis : vrai portefeuille câblé (strip réactivé, rubis au pool) · loot diversifié
+      (+184 armes, +19 plats/élixirs, −Spirit Orbs)
 - [x] Overlay desktop « item reçu »
 - [x] play_local.py (génère + serveur + wipe save) · orchestration BOTWpelago (pack_builder + GUI)
 
@@ -37,14 +38,26 @@
 - [x] Rareté du loot : 4 tiers (common ×8 / uncommon ×4 / rare ×2 / epic ×1) assignés par
       mots-clés dans `build_loot_table.py` ; quantités plafonnées (rare ≤ 2, epic = 1) ;
       specials rescalés (~14 % du tirage). Vérifié sur seed : 50/17/11/1.5 %.
-- [~] Rubis : **vrai portefeuille TROUVÉ + prouvé** (2026-07-10, `tools/hunt_wallet.py`
-      snap/narrow/probe/context : écrit 55555 → achat −60 → écran 55495 = le jeu débite depuis
-      cette adresse ; l'AOB actuel visait un miroir). Reste : localisateur STABLE (hypothèse =
-      value+0x14 d'un nœud PouchItem "Money" → scan de nœuds) puis câbler `live_add_rupees`.
+- [x] Rubis : **RÉSOLU (2026-07-11)** — localisateur STABLE câblé + validé live sur Cemu
+      relancé. Topologie (3 copies de `CurrentRupee`, cf. docs/status.md §gdt-live) :
+      save-buffer / objet `gdt::Flag<s32>` (= l'ancien « miroir » AOB, alimente le HUD) /
+      **storage gdt live** (la copie AUTORITAIRE, prouvée par achat le 2026-07-10).
+      `_find_wallet()` : flagobj (via AOB+vérif vtable/hash, fallback scan du hash) →
+      backref guest dans le storage → value ; re-validation structurelle avant CHAQUE
+      écriture (`_wallet_valid`, adresse périmée impossible par construction).
+      `live_add_rupees` écrit storage + flagobj (HUD). Testé : ±1 cohérent sur les 2 copies.
+      Strip placeholder RÉACTIVÉ (`_RUPEE_STRIP_ENABLED=True`) ; rubis restaurés au pool
+      (50/100/300, ap_id 6080125-27). NB attach +~40 s (scan backref one-shot, thread lourd).
 - [x] CookData (plats/potions type 8) **décodé** (2026-07-10) : +0x68 soin, +0x6C durée, +0x70 prix,
       +0x74 type d'effet (f32), +0x78 niveau/quantité — vérifié sur 4 plats. Débloque plats à effet.
-- [ ] Plats rôtis (`Item_Roast_*`, sans CookData) + plats à effet (`Item_Cook_*` + bloc CookData)
-      dans le pool — câbler `InjectionSpec.AddCookedItem` ; le kit de départ garantit un modèle type 8
+- [x] Plats **CÂBLÉS (2026-07-11)** : `InjectionSpec.AddCookedItem` (live-only, jamais de voie
+      fichier — le CookData ne vit que dans le nœud runtime) ; `live_create_item(cook_data=...)`
+      écrit le bloc +0x68..+0x78, préfère un template sub=0xA, ne stack jamais (1 nœud = 1
+      assiette). Pool : 19 entrées (7 rôtis add_porch + 4 plats soin + 8 élixirs, ap_id
+      6080130+). Testé live : Mushroom Skewer + Spicy Elixir créés, CookData relu conforme.
+      ⚠️ Énum CookEffectId (decomp : LifeMaxUp=2 ResistHot=4 ResistCold=5 ResistElectric=6
+      AttackUp=10 DefenseUp=11 MovingSpeed=13 Fireproof=16) à CONFIRMER à l'écran au premier
+      élixir goûté (un Spicy Elixir de test est dans la poche).
 
 ### Gate difficulté (ex-V1.2)
 - [x] ~~Gate armure Créature Divine (kill)~~ — REMPLACÉE par les murs de régions par
@@ -83,6 +96,13 @@
 - [x] ~~Popup natif via mailbox EventFlow/LinkTag~~ — TESTÉ, FERMÉ (2026-07-10, cf. section
       « Popup natif » ci-dessus). La vraie cible = le toast de ramassage (file UI), session diff.
 - [ ] Rendu live catégorie vide (couche `ksys::ui`) — investigué, différé (reload suffit)
+- [ ] **Flags BOOLS live sans reload (piste ouverte 2026-07-11)** : la chasse au wallet a
+      révélé le **gdt live complet** (storage s32 {typeinfo 0x10297C88, ptr flagobj, value}
+      + objets `Flag<s32>` vtable 0x102984C8). Les BOOLS ont le même schéma : objets 16 o
+      `{hash, ?, vtable 0x10298410, meta}` où meta semble contenir la valeur (Magnetglove
+      lu =1, cohérent). Si écrire meta prend effet SANS reload → capacités/gates/Paraglider
+      instantanés (fin du « reload-gated »). Session dédiée : write-test prudent sur un flag
+      réversible + observation. Détails : docs/status.md §gdt-live.
 - [ ] Relics of the Past : décompiler → ré-implémenter des features choisies
 - [ ] Chests comme locations (TODO-8)
 

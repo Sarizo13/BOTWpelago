@@ -39,6 +39,16 @@ def _build_actions(inject) -> list:
             actions.append(InjectionSpec.AddS32(flag_name=entry["flag"], amount=entry.get("amount", 1)))
         elif t == "add_porch":
             actions.append(InjectionSpec.AddPouchItem(item_name=entry["item"], amount=entry.get("amount", 1)))
+        elif t == "add_cooked":
+            actions.append(InjectionSpec.AddCookedItem(
+                item_name    = entry["item"],
+                amount       = entry.get("amount", 1),
+                heal         = entry.get("heal", 0),
+                duration     = entry.get("duration", 0),
+                price        = entry.get("price", 2),
+                effect_type  = entry.get("effect_type", -1.0),
+                effect_level = entry.get("effect_level", 0.0),
+            ))
     return actions
 
 
