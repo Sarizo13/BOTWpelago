@@ -10,7 +10,8 @@ Entrance rules (alignées sur les MURS physiques du mod V2) :
   "Enter Gerudo Town"     → requires Vai Outfit
 
 Goal:
-  All 4 champion abilities (if randomized) + Master Sword (if randomized).
+  All 4 champion abilities (if randomized) + Master Sword (if randomized)
+  + Bow of Light (always — physical Sanctum wall, mod V2 region "Ganon").
   DungeonClearCounter >= required_shrine_count is checked client-side only.
 
 Anti-soft-lock:
@@ -76,6 +77,10 @@ def set_rules(world: BotWWorld, regions: dict) -> None:
         if champions_required and not all(state.has(c, player) for c in CHAMPION_NAMES):
             return False
         if sword_required and not state.has("Master Sword", player):
+            return False
+        # Mur physique du Sanctum (mod V2, région "Ganon") : sans l'Arc de Lumière,
+        # entrer dans la salle du boss téléporte dehors — toujours requis.
+        if not state.has("Bow of Light", player):
             return False
         return True
 

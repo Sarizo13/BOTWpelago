@@ -62,6 +62,16 @@ def test_armor_sets_complete(gate):
         inject = it.get("inject") or []
         porch = [a for a in inject if a["type"] == "add_porch"]
         flags = [a for a in inject if a["type"] == "set_flag"]
+        if it["name"] == "Bow of Light":
+            # Gate Ganon : 1 arc + le flag MAILBOX du mur (TestQuest inerte) — surtout
+            # PAS IsGet_Weapon_Bow_071, qui est la preuve du goal 'full' (posé par
+            # Zelda pendant Dark Beast, jamais par le client).
+            assert [a["item"] for a in porch] == ["Weapon_Bow_071"], it["name"]
+            assert [f["flag"] for f in flags] == ["TestQuest_Takano_01_Finish"], it["name"]
+            goal_full = gate["goal"]["modes"]["full"]
+            assert "IsGet_Weapon_Bow_071" in goal_full
+            assert all(f["flag"] not in goal_full for f in flags), it["name"]
+            continue
         assert len(porch) == 3 and len(flags) == 3, it["name"]
         actors = {a["item"] for a in porch}
         # un seul set Armor_XXX, avec les 3 pièces

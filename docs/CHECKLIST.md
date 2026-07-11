@@ -96,9 +96,20 @@
       `BOTWpelago_Enforcement` (installé, désactivé par défaut dans Cemu)
 - [ ] Enforcement paravoile : patch CONSTRUIT (grant vanilla excisé de FindDungeon,
       scène/quête intactes) — **à valider in-game** (finir le plateau avec le pack coché)
-- [ ] Gate Ganon / **Arc de Lumière** : localiser le flow d'entrée du combat final
-      (`scan_flows.py --patterns Ganon`) ; design pressenti : l'Arc de Lumière comme
-      item AP (requis pour le combat final) — à confirmer avec le user
+- [~] Gate Ganon / **Arc de Lumière** — **CONSTRUIT (2026-07-11), reste le test in-game** :
+      - Flow d'entrée localisé : `HyruleCastle.bfevfl` entry `BossRoom0` (boss room au
+        warp vanilla (-254, 295, -1049)) — mais implémentation = **5e mur zone_walls**
+        (brique validée) : région "Ganon", octogone fermé r~130 autour du Sanctum
+        (carrés E-3/E-4, 261 objets/24 carrés au total), warp PROVISOIRE porte sud du
+        château (-254, 130, -580) à ajuster à la passe de test.
+      - Flag du mur = **mailbox inerte `TestQuest_Takano_01_Finish`** posé par le client
+        à la réception — PAS `IsGet_Weapon_Bow_071` (preuve du goal 'full', posé par
+        Zelda pendant Dark Beast ; conflit détecté et évité, test data-integrity ajouté).
+      - Item AP **« Bow of Light » (6080018, progression)** : add_porch Weapon_Bow_071
+        (dura 100) + set_flag mailbox ; retiré du filler gear (était epic) ; goal AP
+        l'exige toujours (rules.py). Génération 2 slots revalidée.
+      - NB : comme les tenues, l'ouverture du mur après réception ≠ instantanée
+        (flags reload-gated) → cf. piste bools live.
 - [ ] Popup natif = **toast de ramassage** (« item — Sacoche + ») : session diff live
       (snapshot avant/après un ramassage naturel → trouver la file UI ; si writable,
       le client pousse ses propres toasts). Lecture d'abord, écriture prudente ensuite.

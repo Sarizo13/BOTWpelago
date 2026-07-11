@@ -33,7 +33,8 @@ GEAR_BASE_ID       = 6_080_600   # plage dédiée aux armes/arcs/boucliers
 
 # armes/arcs/boucliers de BASE (numérotés 0xx) — exclut test (5xx)/amiibo/DLC. type poche 0/1/3.
 _GEAR_RE = re.compile(r"^Weapon_(Sword|Lsword|Spear|Bow|Shield)_0\d\d$")
-_GEAR_EXCLUDE = {"Weapon_Sword_070", "Weapon_Sword_071", "Weapon_Sword_072", "Weapon_Sword_073"}  # Master Sword & co (gate)
+_GEAR_EXCLUDE = {"Weapon_Sword_070", "Weapon_Sword_071", "Weapon_Sword_072", "Weapon_Sword_073",  # Master Sword & co (gate)
+                 "Weapon_Bow_071"}   # Arc de Lumière = item de PROGRESSION (gate Ganon), plus un filler
 
 # quantité de base par famille (amount = base + variation déterministe 0..2)
 FAMILY_AMOUNT = {

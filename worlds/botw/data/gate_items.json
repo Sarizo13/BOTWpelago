@@ -243,6 +243,26 @@
         }
       ],
       "note": "Tenue Zora complète (nage cascade / Vah Ruta) + flags IsGet_Armor_006_*. L'icône tracker n'est que le casque."
+    },
+    {
+      "name": "Bow of Light",
+      "ap_item_id": 6080018,
+      "flag_name": null,
+      "flag_hash": null,
+      "role": "ap_progression_logical",
+      "gates": "ganon",
+      "inject": [
+        {
+          "type": "add_porch",
+          "item": "Weapon_Bow_071",
+          "amount": 100
+        },
+        {
+          "type": "set_flag",
+          "flag": "TestQuest_Takano_01_Finish"
+        }
+      ],
+      "note": "Gate du combat final (mur Sanctum). Le flag mailbox TestQuest ouvre le mur ; IsGet_Weapon_Bow_071 reste la preuve du goal full (pose par Zelda pendant Dark Beast)."
     }
   ],
   "filler_items": [
@@ -2296,19 +2316,8 @@
       }
     },
     {
-      "name": "Bow of Light",
-      "ap_item_id": 6080624,
-      "count": 1,
-      "tier": "epic",
-      "inject": {
-        "type": "add_porch",
-        "item": "Weapon_Bow_071",
-        "amount": 100
-      }
-    },
-    {
       "name": "Twilight Bow",
-      "ap_item_id": 6080625,
+      "ap_item_id": 6080624,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2319,7 +2328,7 @@
     },
     {
       "name": "Traveler's Claymore",
-      "ap_item_id": 6080626,
+      "ap_item_id": 6080625,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2330,7 +2339,7 @@
     },
     {
       "name": "Soldier's Claymore",
-      "ap_item_id": 6080627,
+      "ap_item_id": 6080626,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2341,7 +2350,7 @@
     },
     {
       "name": "Knight's Claymore",
-      "ap_item_id": 6080628,
+      "ap_item_id": 6080627,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2352,7 +2361,7 @@
     },
     {
       "name": "Boko Bat",
-      "ap_item_id": 6080629,
+      "ap_item_id": 6080628,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2363,7 +2372,7 @@
     },
     {
       "name": "Spiked Boko Bat",
-      "ap_item_id": 6080630,
+      "ap_item_id": 6080629,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2374,7 +2383,7 @@
     },
     {
       "name": "Dragonbone Boko Bat",
-      "ap_item_id": 6080631,
+      "ap_item_id": 6080630,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2385,7 +2394,7 @@
     },
     {
       "name": "Moblin Club",
-      "ap_item_id": 6080632,
+      "ap_item_id": 6080631,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2396,7 +2405,7 @@
     },
     {
       "name": "Spiked Moblin Club",
-      "ap_item_id": 6080633,
+      "ap_item_id": 6080632,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2407,7 +2416,7 @@
     },
     {
       "name": "Dragonbone Moblin Club",
-      "ap_item_id": 6080634,
+      "ap_item_id": 6080633,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2418,7 +2427,7 @@
     },
     {
       "name": "Ancient Battle Axe",
-      "ap_item_id": 6080635,
+      "ap_item_id": 6080634,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2429,7 +2438,7 @@
     },
     {
       "name": "Ancient Battle Axe+",
-      "ap_item_id": 6080636,
+      "ap_item_id": 6080635,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2440,7 +2449,7 @@
     },
     {
       "name": "Ancient Battle Axe++",
-      "ap_item_id": 6080637,
+      "ap_item_id": 6080636,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2451,7 +2460,7 @@
     },
     {
       "name": "Lynel Crusher",
-      "ap_item_id": 6080638,
+      "ap_item_id": 6080637,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2462,7 +2471,7 @@
     },
     {
       "name": "Mighty Lynel Crusher",
-      "ap_item_id": 6080639,
+      "ap_item_id": 6080638,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2473,7 +2482,7 @@
     },
     {
       "name": "Savage Lynel Crusher",
-      "ap_item_id": 6080640,
+      "ap_item_id": 6080639,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2484,7 +2493,7 @@
     },
     {
       "name": "Moblin Arm",
-      "ap_item_id": 6080641,
+      "ap_item_id": 6080640,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2495,7 +2504,7 @@
     },
     {
       "name": "Rusty Claymore",
-      "ap_item_id": 6080642,
+      "ap_item_id": 6080641,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2506,7 +2515,7 @@
     },
     {
       "name": "Ancient Bladesaw",
-      "ap_item_id": 6080643,
+      "ap_item_id": 6080642,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2517,7 +2526,7 @@
     },
     {
       "name": "Royal Claymore",
-      "ap_item_id": 6080644,
+      "ap_item_id": 6080643,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2528,7 +2537,7 @@
     },
     {
       "name": "Silver Longsword",
-      "ap_item_id": 6080645,
+      "ap_item_id": 6080644,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2539,7 +2548,7 @@
     },
     {
       "name": "Golden Claymore",
-      "ap_item_id": 6080646,
+      "ap_item_id": 6080645,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2550,7 +2559,7 @@
     },
     {
       "name": "Double Axe",
-      "ap_item_id": 6080647,
+      "ap_item_id": 6080646,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2561,7 +2570,7 @@
     },
     {
       "name": "Iron Sledgehammer",
-      "ap_item_id": 6080648,
+      "ap_item_id": 6080647,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2572,7 +2581,7 @@
     },
     {
       "name": "Woodcutter's Axe",
-      "ap_item_id": 6080649,
+      "ap_item_id": 6080648,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2583,7 +2592,7 @@
     },
     {
       "name": "Great Flameblade",
-      "ap_item_id": 6080650,
+      "ap_item_id": 6080649,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2594,7 +2603,7 @@
     },
     {
       "name": "Great Frostblade",
-      "ap_item_id": 6080651,
+      "ap_item_id": 6080650,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2605,7 +2614,7 @@
     },
     {
       "name": "Great Thunderblade",
-      "ap_item_id": 6080652,
+      "ap_item_id": 6080651,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2616,7 +2625,7 @@
     },
     {
       "name": "Cobble Crusher",
-      "ap_item_id": 6080653,
+      "ap_item_id": 6080652,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2627,7 +2636,7 @@
     },
     {
       "name": "Stone Smasher",
-      "ap_item_id": 6080654,
+      "ap_item_id": 6080653,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2638,7 +2647,7 @@
     },
     {
       "name": "Boat Oar",
-      "ap_item_id": 6080655,
+      "ap_item_id": 6080654,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2649,7 +2658,7 @@
     },
     {
       "name": "Eightfold Longblade",
-      "ap_item_id": 6080656,
+      "ap_item_id": 6080655,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2660,7 +2669,7 @@
     },
     {
       "name": "Farming Hoe",
-      "ap_item_id": 6080657,
+      "ap_item_id": 6080656,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2671,7 +2680,7 @@
     },
     {
       "name": "Royal Guard's Claymore",
-      "ap_item_id": 6080658,
+      "ap_item_id": 6080657,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2682,7 +2691,7 @@
     },
     {
       "name": "Giant Boomerang",
-      "ap_item_id": 6080659,
+      "ap_item_id": 6080658,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2693,7 +2702,7 @@
     },
     {
       "name": "Boulder Breaker",
-      "ap_item_id": 6080660,
+      "ap_item_id": 6080659,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2704,7 +2713,7 @@
     },
     {
       "name": "Edge of Duality",
-      "ap_item_id": 6080661,
+      "ap_item_id": 6080660,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2715,7 +2724,7 @@
     },
     {
       "name": "Korok Leaf",
-      "ap_item_id": 6080662,
+      "ap_item_id": 6080661,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2726,7 +2735,7 @@
     },
     {
       "name": "Sword of the Six Sages",
-      "ap_item_id": 6080663,
+      "ap_item_id": 6080662,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2737,7 +2746,7 @@
     },
     {
       "name": "Biggoron's Sword",
-      "ap_item_id": 6080664,
+      "ap_item_id": 6080663,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2748,7 +2757,7 @@
     },
     {
       "name": "Fierce Deity Sword",
-      "ap_item_id": 6080665,
+      "ap_item_id": 6080664,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2759,7 +2768,7 @@
     },
     {
       "name": "Windcleaver",
-      "ap_item_id": 6080666,
+      "ap_item_id": 6080665,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2770,7 +2779,7 @@
     },
     {
       "name": "Wooden Shield",
-      "ap_item_id": 6080667,
+      "ap_item_id": 6080666,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2781,7 +2790,7 @@
     },
     {
       "name": "Soldier's Shield",
-      "ap_item_id": 6080668,
+      "ap_item_id": 6080667,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2792,7 +2801,7 @@
     },
     {
       "name": "Knight's Shield",
-      "ap_item_id": 6080669,
+      "ap_item_id": 6080668,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2803,7 +2812,7 @@
     },
     {
       "name": "Boko Shield",
-      "ap_item_id": 6080670,
+      "ap_item_id": 6080669,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2814,7 +2823,7 @@
     },
     {
       "name": "Spiked Boko Shield",
-      "ap_item_id": 6080671,
+      "ap_item_id": 6080670,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2825,7 +2834,7 @@
     },
     {
       "name": "Dragonbone Boko Shield",
-      "ap_item_id": 6080672,
+      "ap_item_id": 6080671,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2836,7 +2845,7 @@
     },
     {
       "name": "Lizal Shield",
-      "ap_item_id": 6080673,
+      "ap_item_id": 6080672,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2847,7 +2856,7 @@
     },
     {
       "name": "Reinforced Lizal Shield",
-      "ap_item_id": 6080674,
+      "ap_item_id": 6080673,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2858,7 +2867,7 @@
     },
     {
       "name": "Steel Lizal Shield",
-      "ap_item_id": 6080675,
+      "ap_item_id": 6080674,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2869,7 +2878,7 @@
     },
     {
       "name": "Guardian Shield",
-      "ap_item_id": 6080676,
+      "ap_item_id": 6080675,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2880,7 +2889,7 @@
     },
     {
       "name": "Guardian Shield+",
-      "ap_item_id": 6080677,
+      "ap_item_id": 6080676,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2891,7 +2900,7 @@
     },
     {
       "name": "Guardian Shield++",
-      "ap_item_id": 6080678,
+      "ap_item_id": 6080677,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2902,7 +2911,7 @@
     },
     {
       "name": "Lynel Shield",
-      "ap_item_id": 6080679,
+      "ap_item_id": 6080678,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2913,7 +2922,7 @@
     },
     {
       "name": "Mighty Lynel Shield",
-      "ap_item_id": 6080680,
+      "ap_item_id": 6080679,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2924,7 +2933,7 @@
     },
     {
       "name": "Savage Lynel Shield",
-      "ap_item_id": 6080681,
+      "ap_item_id": 6080680,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -2935,7 +2944,7 @@
     },
     {
       "name": "Rusty Shield",
-      "ap_item_id": 6080682,
+      "ap_item_id": 6080681,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -2946,7 +2955,7 @@
     },
     {
       "name": "Royal Shield",
-      "ap_item_id": 6080683,
+      "ap_item_id": 6080682,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2957,7 +2966,7 @@
     },
     {
       "name": "Forest Dweller's Shield",
-      "ap_item_id": 6080684,
+      "ap_item_id": 6080683,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2968,7 +2977,7 @@
     },
     {
       "name": "Silver Shield",
-      "ap_item_id": 6080685,
+      "ap_item_id": 6080684,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -2979,7 +2988,7 @@
     },
     {
       "name": "Gerudo Shield",
-      "ap_item_id": 6080686,
+      "ap_item_id": 6080685,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -2990,7 +2999,7 @@
     },
     {
       "name": "Hylian Shield",
-      "ap_item_id": 6080687,
+      "ap_item_id": 6080686,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3001,7 +3010,7 @@
     },
     {
       "name": "Hunter's Shield",
-      "ap_item_id": 6080688,
+      "ap_item_id": 6080687,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3012,7 +3021,7 @@
     },
     {
       "name": "Fisherman's Shield",
-      "ap_item_id": 6080689,
+      "ap_item_id": 6080688,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3023,7 +3032,7 @@
     },
     {
       "name": "Royal Guard's Shield",
-      "ap_item_id": 6080690,
+      "ap_item_id": 6080689,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3034,7 +3043,7 @@
     },
     {
       "name": "Emblazoned Shield",
-      "ap_item_id": 6080691,
+      "ap_item_id": 6080690,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3045,7 +3054,7 @@
     },
     {
       "name": "Traveler's Shield",
-      "ap_item_id": 6080692,
+      "ap_item_id": 6080691,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3056,7 +3065,7 @@
     },
     {
       "name": "Radiant Shield",
-      "ap_item_id": 6080693,
+      "ap_item_id": 6080692,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3067,7 +3076,7 @@
     },
     {
       "name": "Daybreaker",
-      "ap_item_id": 6080694,
+      "ap_item_id": 6080693,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3078,7 +3087,7 @@
     },
     {
       "name": "Ancient Shield",
-      "ap_item_id": 6080695,
+      "ap_item_id": 6080694,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3089,7 +3098,7 @@
     },
     {
       "name": "Pot Lid",
-      "ap_item_id": 6080696,
+      "ap_item_id": 6080695,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3100,7 +3109,7 @@
     },
     {
       "name": "Shield of the Mind's Eye",
-      "ap_item_id": 6080697,
+      "ap_item_id": 6080696,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3111,7 +3120,7 @@
     },
     {
       "name": "Kite Shield",
-      "ap_item_id": 6080698,
+      "ap_item_id": 6080697,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3122,7 +3131,7 @@
     },
     {
       "name": "Hero's Shield",
-      "ap_item_id": 6080699,
+      "ap_item_id": 6080698,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3133,7 +3142,7 @@
     },
     {
       "name": "Traveler's Spear",
-      "ap_item_id": 6080700,
+      "ap_item_id": 6080699,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3144,7 +3153,7 @@
     },
     {
       "name": "Soldier's Spear",
-      "ap_item_id": 6080701,
+      "ap_item_id": 6080700,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3155,7 +3164,7 @@
     },
     {
       "name": "Knight's Halberd",
-      "ap_item_id": 6080702,
+      "ap_item_id": 6080701,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3166,7 +3175,7 @@
     },
     {
       "name": "Boko Spear",
-      "ap_item_id": 6080703,
+      "ap_item_id": 6080702,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3177,7 +3186,7 @@
     },
     {
       "name": "Spiked Boko Spear",
-      "ap_item_id": 6080704,
+      "ap_item_id": 6080703,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3188,7 +3197,7 @@
     },
     {
       "name": "Dragonbone Boko Spear",
-      "ap_item_id": 6080705,
+      "ap_item_id": 6080704,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3199,7 +3208,7 @@
     },
     {
       "name": "Lizal Spear",
-      "ap_item_id": 6080706,
+      "ap_item_id": 6080705,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3210,7 +3219,7 @@
     },
     {
       "name": "Enhanced Lizal Spear",
-      "ap_item_id": 6080707,
+      "ap_item_id": 6080706,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3221,7 +3230,7 @@
     },
     {
       "name": "Forked Lizal Spear",
-      "ap_item_id": 6080708,
+      "ap_item_id": 6080707,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3232,7 +3241,7 @@
     },
     {
       "name": "Moblin Spear",
-      "ap_item_id": 6080709,
+      "ap_item_id": 6080708,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3243,7 +3252,7 @@
     },
     {
       "name": "Spiked Moblin Spear",
-      "ap_item_id": 6080710,
+      "ap_item_id": 6080709,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3254,7 +3263,7 @@
     },
     {
       "name": "Dragonbone Moblin Spear",
-      "ap_item_id": 6080711,
+      "ap_item_id": 6080710,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3265,7 +3274,7 @@
     },
     {
       "name": "Guardian Spear",
-      "ap_item_id": 6080712,
+      "ap_item_id": 6080711,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3276,7 +3285,7 @@
     },
     {
       "name": "Guardian Spear+",
-      "ap_item_id": 6080713,
+      "ap_item_id": 6080712,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3287,7 +3296,7 @@
     },
     {
       "name": "Guardian Spear++",
-      "ap_item_id": 6080714,
+      "ap_item_id": 6080713,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3298,7 +3307,7 @@
     },
     {
       "name": "Lynel Spear",
-      "ap_item_id": 6080715,
+      "ap_item_id": 6080714,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3309,7 +3318,7 @@
     },
     {
       "name": "Mighty Lynel Spear",
-      "ap_item_id": 6080716,
+      "ap_item_id": 6080715,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3320,7 +3329,7 @@
     },
     {
       "name": "Savage Lynel Spear",
-      "ap_item_id": 6080717,
+      "ap_item_id": 6080716,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3331,7 +3340,7 @@
     },
     {
       "name": "Rusty Halberd",
-      "ap_item_id": 6080718,
+      "ap_item_id": 6080717,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3342,7 +3351,7 @@
     },
     {
       "name": "Farmer's Pitchfork",
-      "ap_item_id": 6080719,
+      "ap_item_id": 6080718,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3353,7 +3362,7 @@
     },
     {
       "name": "Ancient Spear",
-      "ap_item_id": 6080720,
+      "ap_item_id": 6080719,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3364,7 +3373,7 @@
     },
     {
       "name": "Royal Halberd",
-      "ap_item_id": 6080721,
+      "ap_item_id": 6080720,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3375,7 +3384,7 @@
     },
     {
       "name": "Forest Dweller's Spear",
-      "ap_item_id": 6080722,
+      "ap_item_id": 6080721,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3386,7 +3395,7 @@
     },
     {
       "name": "Zora Spear",
-      "ap_item_id": 6080723,
+      "ap_item_id": 6080722,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3397,7 +3406,7 @@
     },
     {
       "name": "Silverscale Spear",
-      "ap_item_id": 6080724,
+      "ap_item_id": 6080723,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3408,7 +3417,7 @@
     },
     {
       "name": "Gerudo Spear",
-      "ap_item_id": 6080725,
+      "ap_item_id": 6080724,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3419,7 +3428,7 @@
     },
     {
       "name": "Throwing Spear",
-      "ap_item_id": 6080726,
+      "ap_item_id": 6080725,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3430,7 +3439,7 @@
     },
     {
       "name": "Drillshaft",
-      "ap_item_id": 6080727,
+      "ap_item_id": 6080726,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3441,7 +3450,7 @@
     },
     {
       "name": "Feathered Spear",
-      "ap_item_id": 6080728,
+      "ap_item_id": 6080727,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3452,7 +3461,7 @@
     },
     {
       "name": "Flamespear",
-      "ap_item_id": 6080729,
+      "ap_item_id": 6080728,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3463,7 +3472,7 @@
     },
     {
       "name": "Frostspear",
-      "ap_item_id": 6080730,
+      "ap_item_id": 6080729,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3474,7 +3483,7 @@
     },
     {
       "name": "Thunderspear",
-      "ap_item_id": 6080731,
+      "ap_item_id": 6080730,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3485,7 +3494,7 @@
     },
     {
       "name": "Wooden Mop",
-      "ap_item_id": 6080732,
+      "ap_item_id": 6080731,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3496,7 +3505,7 @@
     },
     {
       "name": "Serpentine Spear",
-      "ap_item_id": 6080733,
+      "ap_item_id": 6080732,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3507,7 +3516,7 @@
     },
     {
       "name": "Fishing Harpoon",
-      "ap_item_id": 6080734,
+      "ap_item_id": 6080733,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3518,7 +3527,7 @@
     },
     {
       "name": "Royal Guard's Spear",
-      "ap_item_id": 6080735,
+      "ap_item_id": 6080734,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3529,7 +3538,7 @@
     },
     {
       "name": "Ceremonial Trident",
-      "ap_item_id": 6080736,
+      "ap_item_id": 6080735,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3540,7 +3549,7 @@
     },
     {
       "name": "Lightscale Trident",
-      "ap_item_id": 6080737,
+      "ap_item_id": 6080736,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3551,7 +3560,7 @@
     },
     {
       "name": "Traveler's Sword",
-      "ap_item_id": 6080738,
+      "ap_item_id": 6080737,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3562,7 +3571,7 @@
     },
     {
       "name": "Soldier's Broadsword",
-      "ap_item_id": 6080739,
+      "ap_item_id": 6080738,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3573,7 +3582,7 @@
     },
     {
       "name": "Knight's Broadsword",
-      "ap_item_id": 6080740,
+      "ap_item_id": 6080739,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3584,7 +3593,7 @@
     },
     {
       "name": "Boko Club",
-      "ap_item_id": 6080741,
+      "ap_item_id": 6080740,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3595,7 +3604,7 @@
     },
     {
       "name": "Spiked Boko Club",
-      "ap_item_id": 6080742,
+      "ap_item_id": 6080741,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3606,7 +3615,7 @@
     },
     {
       "name": "Dragonbone Boko Club",
-      "ap_item_id": 6080743,
+      "ap_item_id": 6080742,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3617,7 +3626,7 @@
     },
     {
       "name": "Lizal Boomerang",
-      "ap_item_id": 6080744,
+      "ap_item_id": 6080743,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3628,7 +3637,7 @@
     },
     {
       "name": "Lizal Forked Boomerang",
-      "ap_item_id": 6080745,
+      "ap_item_id": 6080744,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3639,7 +3648,7 @@
     },
     {
       "name": "Lizal Tri-Boomerang",
-      "ap_item_id": 6080746,
+      "ap_item_id": 6080745,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3650,7 +3659,7 @@
     },
     {
       "name": "Guardian Sword",
-      "ap_item_id": 6080747,
+      "ap_item_id": 6080746,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3661,7 +3670,7 @@
     },
     {
       "name": "Guardian Sword+",
-      "ap_item_id": 6080748,
+      "ap_item_id": 6080747,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3672,7 +3681,7 @@
     },
     {
       "name": "Guardian Sword++",
-      "ap_item_id": 6080749,
+      "ap_item_id": 6080748,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3683,7 +3692,7 @@
     },
     {
       "name": "Lynel Sword",
-      "ap_item_id": 6080750,
+      "ap_item_id": 6080749,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3694,7 +3703,7 @@
     },
     {
       "name": "Mighty Lynel Sword",
-      "ap_item_id": 6080751,
+      "ap_item_id": 6080750,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3705,7 +3714,7 @@
     },
     {
       "name": "Savage Lynel Sword",
-      "ap_item_id": 6080752,
+      "ap_item_id": 6080751,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3716,7 +3725,7 @@
     },
     {
       "name": "Bokoblin Arm",
-      "ap_item_id": 6080753,
+      "ap_item_id": 6080752,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3727,7 +3736,7 @@
     },
     {
       "name": "Lizalfos Arm",
-      "ap_item_id": 6080754,
+      "ap_item_id": 6080753,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3738,7 +3747,7 @@
     },
     {
       "name": "Rusty Broadsword",
-      "ap_item_id": 6080755,
+      "ap_item_id": 6080754,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3749,7 +3758,7 @@
     },
     {
       "name": "Soup Ladle",
-      "ap_item_id": 6080756,
+      "ap_item_id": 6080755,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3760,7 +3769,7 @@
     },
     {
       "name": "Ancient Short Sword",
-      "ap_item_id": 6080757,
+      "ap_item_id": 6080756,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3771,7 +3780,7 @@
     },
     {
       "name": "Royal Broadsword",
-      "ap_item_id": 6080758,
+      "ap_item_id": 6080757,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3782,7 +3791,7 @@
     },
     {
       "name": "Forest Dweller's Sword",
-      "ap_item_id": 6080759,
+      "ap_item_id": 6080758,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3793,7 +3802,7 @@
     },
     {
       "name": "Zora Sword",
-      "ap_item_id": 6080760,
+      "ap_item_id": 6080759,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3804,7 +3813,7 @@
     },
     {
       "name": "Gerudo Scimitar",
-      "ap_item_id": 6080761,
+      "ap_item_id": 6080760,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3815,7 +3824,7 @@
     },
     {
       "name": "Moonlight Scimitar",
-      "ap_item_id": 6080762,
+      "ap_item_id": 6080761,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3826,7 +3835,7 @@
     },
     {
       "name": "Feathered Edge",
-      "ap_item_id": 6080763,
+      "ap_item_id": 6080762,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3837,7 +3846,7 @@
     },
     {
       "name": "Flameblade",
-      "ap_item_id": 6080764,
+      "ap_item_id": 6080763,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3848,7 +3857,7 @@
     },
     {
       "name": "Frostblade",
-      "ap_item_id": 6080765,
+      "ap_item_id": 6080764,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3859,7 +3868,7 @@
     },
     {
       "name": "Thunderblade",
-      "ap_item_id": 6080766,
+      "ap_item_id": 6080765,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3870,7 +3879,7 @@
     },
     {
       "name": "Spring-Loaded Hammer",
-      "ap_item_id": 6080767,
+      "ap_item_id": 6080766,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3881,7 +3890,7 @@
     },
     {
       "name": "Eightfold Blade",
-      "ap_item_id": 6080768,
+      "ap_item_id": 6080767,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3892,7 +3901,7 @@
     },
     {
       "name": "Torch",
-      "ap_item_id": 6080769,
+      "ap_item_id": 6080768,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3903,7 +3912,7 @@
     },
     {
       "name": "Tree Branch",
-      "ap_item_id": 6080770,
+      "ap_item_id": 6080769,
       "count": 8,
       "tier": "common",
       "inject": {
@@ -3914,7 +3923,7 @@
     },
     {
       "name": "Royal Guard's Sword",
-      "ap_item_id": 6080771,
+      "ap_item_id": 6080770,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3925,7 +3934,7 @@
     },
     {
       "name": "Meteor Rod",
-      "ap_item_id": 6080772,
+      "ap_item_id": 6080771,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3936,7 +3945,7 @@
     },
     {
       "name": "Blizzard Rod",
-      "ap_item_id": 6080773,
+      "ap_item_id": 6080772,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3947,7 +3956,7 @@
     },
     {
       "name": "Thunderstorm Rod",
-      "ap_item_id": 6080774,
+      "ap_item_id": 6080773,
       "count": 2,
       "tier": "rare",
       "inject": {
@@ -3958,7 +3967,7 @@
     },
     {
       "name": "Boomerang",
-      "ap_item_id": 6080775,
+      "ap_item_id": 6080774,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3969,7 +3978,7 @@
     },
     {
       "name": "Scimitar of the Seven",
-      "ap_item_id": 6080776,
+      "ap_item_id": 6080775,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -3980,7 +3989,7 @@
     },
     {
       "name": "Vicious Sickle",
-      "ap_item_id": 6080777,
+      "ap_item_id": 6080776,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -3991,7 +4000,7 @@
     },
     {
       "name": "Goddess Sword",
-      "ap_item_id": 6080778,
+      "ap_item_id": 6080777,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -4002,7 +4011,7 @@
     },
     {
       "name": "Sword",
-      "ap_item_id": 6080779,
+      "ap_item_id": 6080778,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -4013,7 +4022,7 @@
     },
     {
       "name": "Sea-Breeze Boomerang",
-      "ap_item_id": 6080780,
+      "ap_item_id": 6080779,
       "count": 1,
       "tier": "epic",
       "inject": {
@@ -4024,7 +4033,7 @@
     },
     {
       "name": "Fire Rod",
-      "ap_item_id": 6080781,
+      "ap_item_id": 6080780,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -4035,7 +4044,7 @@
     },
     {
       "name": "Ice Rod",
-      "ap_item_id": 6080782,
+      "ap_item_id": 6080781,
       "count": 4,
       "tier": "uncommon",
       "inject": {
@@ -4046,7 +4055,7 @@
     },
     {
       "name": "Lightning Rod",
-      "ap_item_id": 6080783,
+      "ap_item_id": 6080782,
       "count": 4,
       "tier": "uncommon",
       "inject": {
