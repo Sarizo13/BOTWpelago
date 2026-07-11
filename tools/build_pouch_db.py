@@ -52,9 +52,17 @@ def main() -> None:
             profile = str(a["profile"])
         except Exception:
             continue
-        # type de poche : armes/armures via profil ; matériaux via préfixe Item_
+        # type de poche : armes/armures via profil ; matériaux/nourriture via préfixe Item_.
+        # NOURRITURE (type 8) — sub VÉRIFIÉ sur nœuds live naturels (2026-07-11) :
+        # plats CUISINÉS Item_Cook_* = sub 0x8 ; grillés/bouillis/gelés (feu de camp,
+        # froid : Roast/RoastFish/Boiled/Chilled) = sub 0xA.
         if profile in _PROFILE_TSUB:
             typ, sub = _PROFILE_TSUB[profile]
+        elif name.startswith("Item_Cook_"):
+            typ, sub = 8, 0x8
+        elif name.startswith(("Item_Roast_", "Item_RoastFish_", "Item_Boiled_",
+                              "Item_Chilled_", "Item_ChilledFish_")):
+            typ, sub = 8, 0xA
         elif name.startswith("Item_"):
             typ, sub = 7, 8
         else:

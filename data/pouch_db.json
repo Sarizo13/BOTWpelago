@@ -2023,83 +2023,83 @@
 },
 "Item_Boiled_01": {
 "sortKey": 61820,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_01": {
 "sortKey": 65010,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_02": {
 "sortKey": 65030,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_03": {
 "sortKey": 65040,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_04": {
 "sortKey": 65050,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_05": {
 "sortKey": 65060,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_06": {
 "sortKey": 65020,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_07": {
 "sortKey": 65070,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_08": {
 "sortKey": 65080,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_ChilledFish_09": {
 "sortKey": 65090,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Chilled_01": {
 "sortKey": 64010,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Chilled_02": {
 "sortKey": 64020,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Chilled_03": {
 "sortKey": 64030,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Chilled_04": {
 "sortKey": 64040,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Chilled_05": {
 "sortKey": 64050,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Chilled_06": {
 "sortKey": 64060,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Conductor": {
 "sortKey": 0,
@@ -2119,677 +2119,677 @@
 "Item_Cook_A_01": {
 "sortKey": 50020,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_02": {
 "sortKey": 50100,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_03": {
 "sortKey": 50090,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_04": {
 "sortKey": 50110,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_05": {
 "sortKey": 50120,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_07": {
 "sortKey": 50060,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_08": {
 "sortKey": 50070,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_09": {
 "sortKey": 50080,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_10": {
 "sortKey": 50240,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_11": {
 "sortKey": 50250,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_12": {
 "sortKey": 50280,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_13": {
 "sortKey": 50270,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_A_14": {
 "sortKey": 50260,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_01": {
 "sortKey": 50030,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_02": {
 "sortKey": 50010,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_03": {
 "sortKey": 59999,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_04": {
 "sortKey": 59999,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_05": {
 "sortKey": 50040,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_06": {
 "sortKey": 50050,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_11": {
 "sortKey": 50031,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_12": {
 "sortKey": 50011,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_13": {
 "sortKey": 50021,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_14": {
 "sortKey": 59999,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_15": {
 "sortKey": 50042,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_16": {
 "sortKey": 50051,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_17": {
 "sortKey": 50190,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_18": {
 "sortKey": 50191,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_19": {
 "sortKey": 50192,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_20": {
 "sortKey": 50220,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_21": {
 "sortKey": 50231,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_22": {
 "sortKey": 50230,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_B_23": {
 "sortKey": 50041,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_01": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_02": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_05": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_06": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_07": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_08": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_11": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_12": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_13": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_14": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_15": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_16": {
 "sortKey": 50571,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_17": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_C_17_00": {
 "sortKey": 50570,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_01": {
 "sortKey": 50130,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_02": {
 "sortKey": 50140,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_03": {
 "sortKey": 50150,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_04": {
 "sortKey": 50160,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_05": {
 "sortKey": 50161,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_06": {
 "sortKey": 50162,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_07": {
 "sortKey": 50180,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_08": {
 "sortKey": 50170,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_09": {
 "sortKey": 50151,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_D_10": {
 "sortKey": 50169,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_E_01": {
 "sortKey": 50310,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_E_02": {
 "sortKey": 50311,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_E_03": {
 "sortKey": 50312,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_E_04": {
 "sortKey": 50314,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_F_01": {
 "sortKey": 50380,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_F_02": {
 "sortKey": 50370,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_F_03": {
 "sortKey": 50362,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_F_04": {
 "sortKey": 50363,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_02": {
 "sortKey": 50470,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_03": {
 "sortKey": 50460,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_04": {
 "sortKey": 50459,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_05": {
 "sortKey": 50510,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_06": {
 "sortKey": 50511,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_07": {
 "sortKey": 59999,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_08": {
 "sortKey": 59999,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_09": {
 "sortKey": 50512,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_10": {
 "sortKey": 50300,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_11": {
 "sortKey": 50313,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_12": {
 "sortKey": 50320,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_13": {
 "sortKey": 50330,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_14": {
 "sortKey": 50340,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_15": {
 "sortKey": 50480,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_16": {
 "sortKey": 50301,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_G_17": {
 "sortKey": 50341,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_H_01": {
 "sortKey": 50290,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_H_02": {
 "sortKey": 50291,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_H_03": {
 "sortKey": 50292,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_01": {
 "sortKey": 50550,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_02": {
 "sortKey": 50551,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_03": {
 "sortKey": 50560,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_04": {
 "sortKey": 50553,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_05": {
 "sortKey": 50532,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_06": {
 "sortKey": 50533,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_07": {
 "sortKey": 50564,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_08": {
 "sortKey": 50563,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_09": {
 "sortKey": 50562,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_10": {
 "sortKey": 50540,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_11": {
 "sortKey": 50541,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_12": {
 "sortKey": 50530,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_13": {
 "sortKey": 50565,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_14": {
 "sortKey": 50566,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_15": {
 "sortKey": 50552,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_16": {
 "sortKey": 50561,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_I_17": {
 "sortKey": 50542,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_01": {
 "sortKey": 50430,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_02": {
 "sortKey": 50431,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_03": {
 "sortKey": 50440,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_04": {
 "sortKey": 50450,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_05": {
 "sortKey": 50451,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_06": {
 "sortKey": 50453,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_07": {
 "sortKey": 50454,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_08": {
 "sortKey": 50452,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_J_09": {
 "sortKey": 50455,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_01": {
 "sortKey": 50420,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_02": {
 "sortKey": 50421,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_03": {
 "sortKey": 50401,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_04": {
 "sortKey": 50410,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_05": {
 "sortKey": 50422,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_06": {
 "sortKey": 50361,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_07": {
 "sortKey": 50360,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_08": {
 "sortKey": 50400,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_K_09": {
 "sortKey": 50567,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_L_01": {
 "sortKey": 50423,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_L_02": {
 "sortKey": 50381,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_L_03": {
 "sortKey": 50534,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_L_04": {
 "sortKey": 50481,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_L_05": {
 "sortKey": 50456,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_M_01": {
 "sortKey": 50520,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_N_01": {
 "sortKey": 50302,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_N_02": {
 "sortKey": 50531,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_N_03": {
 "sortKey": 50458,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_N_04": {
 "sortKey": 50457,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_O_01": {
 "sortKey": 50580,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_O_02": {
 "sortKey": 50581,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_P_01": {
 "sortKey": 50210,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_P_02": {
 "sortKey": 50211,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_P_03": {
 "sortKey": 50200,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_P_04": {
 "sortKey": 50201,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Cook_P_05": {
 "sortKey": 50202,
 "sub": 8,
-"type": 7
+"type": 8
 },
 "Item_Enemy_00": {
 "sortKey": 37010,
@@ -3548,233 +3548,233 @@
 },
 "Item_RoastFish_01": {
 "sortKey": 63010,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_RoastFish_02": {
 "sortKey": 63020,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_RoastFish_03": {
 "sortKey": 63040,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_RoastFish_04": {
 "sortKey": 63030,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_RoastFish_07": {
 "sortKey": 63050,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_RoastFish_09": {
 "sortKey": 63060,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_RoastFish_11": {
 "sortKey": 63080,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_RoastFish_13": {
 "sortKey": 63070,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_RoastFish_15": {
 "sortKey": 63090,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_01": {
 "sortKey": 62010,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_02": {
 "sortKey": 62060,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_03": {
 "sortKey": 61010,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_04": {
 "sortKey": 61220,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_05": {
 "sortKey": 61230,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_06": {
 "sortKey": 61210,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_07": {
 "sortKey": 61030,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_08": {
 "sortKey": 61080,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_09": {
 "sortKey": 61050,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_10": {
 "sortKey": 61020,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_11": {
 "sortKey": 61100,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_12": {
 "sortKey": 61060,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_13": {
 "sortKey": 61070,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_15": {
 "sortKey": 61491,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_16": {
 "sortKey": 61090,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_18": {
 "sortKey": 61420,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_19": {
 "sortKey": 61430,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_24": {
 "sortKey": 61480,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_27": {
 "sortKey": 61512,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_28": {
 "sortKey": 61522,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_31": {
 "sortKey": 61250,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_32": {
 "sortKey": 61260,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_33": {
 "sortKey": 61270,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_36": {
 "sortKey": 61280,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_37": {
 "sortKey": 61290,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_38": {
 "sortKey": 61300,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_39": {
 "sortKey": 61310,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_40": {
 "sortKey": 62020,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_41": {
 "sortKey": 62070,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_45": {
 "sortKey": 62030,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_46": {
 "sortKey": 62080,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_48": {
 "sortKey": 61040,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_49": {
 "sortKey": 61231,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_50": {
 "sortKey": 61490,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_51": {
 "sortKey": 61810,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_52": {
 "sortKey": 61041,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "Item_Roast_53": {
 "sortKey": 61220,
-"sub": 8,
-"type": 7
+"sub": 10,
+"type": 8
 },
 "NPC_Item_Plant_M": {
 "life": 100,

@@ -1313,15 +1313,13 @@ class CemuMemoryBridge:
                       item_name, new_sk, descending)
             return False
         # CONTENU (clone) : nœud live du MÊME type, le plus PROCHE en sortKey (icône/structure/clé de
-        # tri cohérentes ; on évite les plats cuisinés sub=0xA), sinon le TEMPLATE caché du type.
-        # Pour un PLAT (cook_data), préférence INVERSE : cloner un vrai plat sub=0xA (bloc
-        # CookData et structure déjà conformes) ; à défaut un ingrédient type 8 re-subé.
-        if cook_data is not None:
-            same_type = [n for n in selfref if n["type"] == item_type and n["sub"] == 0xA] \
-                or [n for n in selfref if n["type"] == item_type]
-        else:
-            same_type = [n for n in selfref if n["type"] == item_type and n["sub"] != 0xA] \
-                or [n for n in selfref if n["type"] == item_type]
+        # tri cohérentes ; on évite les grillés sub=0xA), sinon le TEMPLATE caché du type.
+        # NB sub VÉRIFIÉ sur nœuds naturels (2026-07-11) : plats CUISINÉS Item_Cook_* = sub 0x8,
+        # GRILLÉS Item_Roast*/RoastFish = sub 0xA (l'ancienne note de juin disait l'inverse).
+        # Pour un PLAT (cook_data) : idéal = cloner un autre plat sub 0x8 (bloc CookData déjà
+        # conforme) — c'est ce que la préférence par défaut fait déjà.
+        same_type = [n for n in selfref if n["type"] == item_type and n["sub"] != 0xA] \
+            or [n for n in selfref if n["type"] == item_type]
         # CATÉGORIE VIDE = aucun nœud vivant de ce type. Le nœud sera créé + sérialisé (persiste),
         # mais la GRILLE UI ne rend le 1er item d'une catégorie vide qu'au prochain rechargement
         # (couche ksys::ui, cf. [[project_live_memory_injection]]). On l'expose pour un log clair
