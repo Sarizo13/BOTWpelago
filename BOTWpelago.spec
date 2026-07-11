@@ -16,11 +16,16 @@ RANDO_PUBLISH = "rando/bin/Release/net8.0-windows/win-x64/publish"
 datas = [
     ("data", "data"),            # JSON lus par le client (résolus en _MEIPASS/data)
     (RANDO_PUBLISH, "rando"),    # rando .NET self-contained -> _MEIPASS/rando/BotwRandoCLI.exe
+    ("mod", "mod"),              # patches enforcement (build_mod exécuté in-process via runpy)
 ]
 hiddenimports = (
     collect_submodules("websockets")
     + collect_submodules("BotWClient")
     + collect_submodules("botwpelago")
+    # deps de mod/build_mod.py (importées dynamiquement via runpy → invisibles à l'analyse)
+    + ["oead"]
+    + collect_submodules("evfl")
+    + collect_submodules("rstb")
 )
 
 a = Analysis(

@@ -151,21 +151,31 @@ def build_pack(
     # Le rando vient de RÉGÉNÉRER le pack (dont Bootup.pack) → on ré-applique nos
     # patches par-dessus (build_mod fusionne dans CE pack : un seul pack Cemu, pas
     # de conflit de fichiers). Échec = avertissement, le pack rando reste jouable.
-    mod_script = Path(__file__).resolve().parents[1] / "mod" / "build_mod.py"
+    # Invocation IN-PROCESS (runpy) : dans l'exe figé, sys.executable = BOTWpelago.exe
+    # (pas un python) → un subprocess relancerait le GUI. runpy marche en dev ET figé
+    # (mod/ embarqué en datas → _MEIPASS/mod ; oead/evfl/rstb dans le bundle).
+    if getattr(sys, "frozen", False):
+        mod_base = Path(getattr(sys, "_MEIPASS", Path(sys.executable).parent))
+    else:
+        mod_base = Path(__file__).resolve().parents[1]
+    mod_script = mod_base / "mod" / "build_mod.py"
     if mod_script.is_file():
         log("Application des patches mod (enforcement)…")
+        import runpy
+        old_argv = sys.argv
         try:
-            mod_proc = subprocess.run(
-                [sys.executable, str(mod_script)],
-                capture_output=True, text=True, timeout=timeout,
-            )
-            if mod_proc.returncode != 0:
-                err = (mod_proc.stderr or mod_proc.stdout or "").strip()[-300:]
-                log(f"  ! patches mod NON appliqués : {err}")
+            sys.argv = [str(mod_script)]
+            runpy.run_path(str(mod_script), run_name="__main__")
+            log("  [OK] patches mod appliqués (paravoile + zone gates)")
+        except SystemExit as exc:
+            if exc.code in (0, None):
+                log("  [OK] patches mod appliqués (paravoile + zone gates)")
             else:
-                log("  [OK] patches mod appliqués (paravoile + zone gate)")
+                log(f"  ! patches mod NON appliqués : exit {exc.code}")
         except Exception as exc:
             log(f"  ! patches mod NON appliqués : {exc}")
+        finally:
+            sys.argv = old_argv
     else:
         log("  (mod/build_mod.py introuvable — patches mod sautés)")
     return pack_dir

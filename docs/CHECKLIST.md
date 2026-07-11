@@ -24,9 +24,14 @@
 
 ## 🔲 V1 — tout le reste
 
-### Finir le jalon / release
-- [ ] Rebuild `BOTWpelago.exe` (inclure `mod/` + deps oead/evfl/rstb) + merge `dev` → `main`
-- [ ] Validation end-to-end : une vraie run AP multi-slot complète
+### Release — EN DERNIER (consigne user 2026-07-11 : pas de rebuild exe / merge
+### tant que TOUTE la checklist ci-dessous n'est pas ✅)
+- [ ] Rebuild `BOTWpelago.exe` + merge `dev` → `main`. Préparation DÉJÀ faite (2026-07-11) :
+      spec embarque `mod/` + oead/evfl/rstb ; `pack_builder` exécute `build_mod` in-process
+      (runpy — dans l'exe figé `sys.executable` n'est plus un python) ; dry-run `--check` OK.
+- [ ] Validation end-to-end : une vraie run AP multi-slot complète.
+      Génération 2 slots ✅ (2026-07-11 : apworld rebuild + p1/p2 → 1422 items placés,
+      seed + 2 `.apbotw` × 186 coffres) — reste la RUN jouée.
 - [x] TODO-7 : `region` rempli — et ALIGNÉ sur les murs physiques V2 (tools/assign_regions.py,
       polygones = murs par construction ; régions Zora/Gerudo ajoutées au graphe)
 - [x] **Garde absolue anti-écriture-save (2026-07-10)** : `cemu_process_running()` verrouille
@@ -50,27 +55,26 @@
       (50/100/300, ap_id 6080125-27). NB attach +~40 s (scan backref one-shot, thread lourd).
 - [x] CookData (plats/potions type 8) **décodé** (2026-07-10) : +0x68 soin, +0x6C durée, +0x70 prix,
       +0x74 type d'effet (f32), +0x78 niveau/quantité — vérifié sur 4 plats. Débloque plats à effet.
-- [x] Plats **CÂBLÉS (2026-07-11)** : `InjectionSpec.AddCookedItem` (live-only, jamais de voie
-      fichier — le CookData ne vit que dans le nœud runtime) ; `live_create_item(cook_data=...)`
-      écrit le bloc +0x68..+0x78, préfère un template sub=0xA, ne stack jamais (1 nœud = 1
-      assiette). Pool : 19 entrées (7 rôtis add_porch + 4 plats soin + 8 élixirs, ap_id
-      6080130+). Testé live : Mushroom Skewer + Spicy Elixir créés, CookData relu conforme.
-      ⚠️ Énum CookEffectId (decomp : LifeMaxUp=2 ResistHot=4 ResistCold=5 ResistElectric=6
-      AttackUp=10 DefenseUp=11 MovingSpeed=13 Fireproof=16) à CONFIRMER à l'écran au premier
-      élixir goûté (un Spicy Elixir de test est dans la poche).
+- [x] Plats **CÂBLÉS (2026-07-11) + CONFIRMÉS IN-GAME** : `InjectionSpec.AddCookedItem`
+      (live-only, jamais de voie fichier — le CookData ne vit que dans le nœud runtime) ;
+      `live_create_item(cook_data=...)` écrit le bloc +0x68..+0x78, ne stack jamais (1 nœud
+      = 1 assiette). sub vérifié sur nœuds naturels : plats cuisinés Cook_* = **0x8**,
+      grillés Roast*/Boiled/Chilled = **0xA** (pouch_db régénéré, nourriture type 8).
+      Pool : 19 entrées (7 rôtis add_porch + 4 plats soin + 8 élixirs, ap_id 6080130+).
+      ✅ Vérif joueur (2026-07-11) : plats/icônes corrects, Spicy Elixir donne bien rés.
+      froid 10:00 → **énum CookEffectId VALIDÉE** (LifeMaxUp=2 ResistHot=4 ResistCold=5
+      ResistElectric=6 AttackUp=10 DefenseUp=11 MovingSpeed=13 Fireproof=16) ; rubis
+      inchangés après l'aller-retour ±1.
 
 ### Gate difficulté (ex-V1.2)
 - [x] ~~Gate armure Créature Divine (kill)~~ — REMPLACÉE par les murs de régions par
       téléport (V2, validés in-game) : moins punitif, même contrat logique
 
-### Popup natif « item reçu » (V2)
+### Popup natif « item reçu »
 - [x] ~~Expérience mailbox (LinkTag SaveFlag → EventTag → GetDemo)~~ — **TESTÉE, FERMÉE**
       (2026-07-10) : flag écrit + joueur au relais + aller-retour zone → aucun popup, flag resté
       à 1 (event non déclenché). La couche map ne poll pas les flags en live (comme le sys. d'events).
-- [ ] Cible réelle = le **toast de ramassage** (« item — Sacoche + », cf. capture user), PAS le grand
-      dialogue GetDemo. Piste : trouver la FILE UI du toast en mémoire (diff avant/après un ramassage
-      naturel, comme la localisation des onglets) → si writable, le client pousse ses propres toasts.
-      Session dédiée (lecture d'abord, écriture prudente ensuite).
+- La cible réelle (toast de ramassage) est suivie dans « V1 — gameplay & enforcement » ci-dessous.
 
 ### PopTracker
 - [ ] Tester le pack dans PopTracker (autotracking — construit, jamais testé)
@@ -85,17 +89,23 @@
 
 ---
 
-## 🔲 V2 — gros chantiers (démarrés)
+## 🔲 V1 — gameplay & enforcement (ex-V2, TOUT passé en V1 le 2026-07-11, consigne user)
 
 - [x] Scaffold mod V2 (`mod/`) : pipeline evfl+oead validé (round-trip octet-identique),
       outils `scan_flows.py`/`dump_flow.py`, builder → graphic pack séparé
       `BOTWpelago_Enforcement` (installé, désactivé par défaut dans Cemu)
 - [ ] Enforcement paravoile : patch CONSTRUIT (grant vanilla excisé de FindDungeon,
       scène/quête intactes) — **à valider in-game** (finir le plateau avec le pack coché)
-- [ ] Gate Ganon : localiser le flow d'entrée du combat final (`scan_flows.py --patterns Ganon`)
-- [x] ~~Popup natif via mailbox EventFlow/LinkTag~~ — TESTÉ, FERMÉ (2026-07-10, cf. section
-      « Popup natif » ci-dessus). La vraie cible = le toast de ramassage (file UI), session diff.
-- [ ] Rendu live catégorie vide (couche `ksys::ui`) — investigué, différé (reload suffit)
+- [ ] Gate Ganon / **Arc de Lumière** : localiser le flow d'entrée du combat final
+      (`scan_flows.py --patterns Ganon`) ; design pressenti : l'Arc de Lumière comme
+      item AP (requis pour le combat final) — à confirmer avec le user
+- [ ] Popup natif = **toast de ramassage** (« item — Sacoche + ») : session diff live
+      (snapshot avant/après un ramassage naturel → trouver la file UI ; si writable,
+      le client pousse ses propres toasts). Lecture d'abord, écriture prudente ensuite.
+- [ ] Passe de test des 4 murs de régions in-game + ajustement des polylignes au besoin
+- [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
+      d'endurance ; au-delà du plafond → convertir en **don de 500 rubis** (le vrai
+      portefeuille est câblé → faisable proprement maintenant)
 - [ ] **Flags BOOLS live sans reload (piste ouverte 2026-07-11)** : la chasse au wallet a
       révélé le **gdt live complet** (storage s32 {typeinfo 0x10297C88, ptr flagobj, value}
       + objets `Flag<s32>` vtable 0x102984C8). Les BOOLS ont le même schéma : objets 16 o
@@ -103,10 +113,14 @@
       lu =1, cohérent). Si écrire meta prend effet SANS reload → capacités/gates/Paraglider
       instantanés (fin du « reload-gated »). Session dédiée : write-test prudent sur un flag
       réversible + observation. Détails : docs/status.md §gdt-live.
+
+## 🔲 Différé APRÈS la V1
+
+- [ ] Rendu live catégorie vide (couche `ksys::ui`) — investigué, différé (reload suffit)
 - [ ] Relics of the Past : décompiler → ré-implémenter des features choisies
 - [ ] Chests comme locations (TODO-8)
 
-### Idées gameplay V2
+### Détail gameplay (référence)
 - [x] **Gate région par TÉLÉPORT — VALIDÉE IN-GAME (2026-07-09)** puis généralisée :
       brique unitaire testée à pied/cheval/paravoile (fade forêt-perdue, bannière
       DungeonMessage, monture préservée, descente derrière le noir). **4 murs générés**
