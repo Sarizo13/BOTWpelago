@@ -951,6 +951,70 @@ Mushroom Skewer (heal 16) + Spicy Elixir (fx 5.0 lvl 1 600 s) créés et relus c
 
 ---
 
+## 6c. §toast-natif — architecture du toast « item reçu » RE (session 2026-07-11, décomp v208 + live)
+
+**Méthode** : xrefs statiques depuis les strings rodata (`find_str_refs`, décodeur lis/addi
+numpy) + DecompileAt Ghidra headless + lecture live des singletons (heap_base **mappe TOUT
+l'espace guest**, .data/.bss inclus : host = heap_base + guest, y compris `DAT_10xxxxxx` —
+lire les globals statiques ne coûte AUCUN scan). Scripts session (scratchpad, jetables) :
+`toast_recon.py` (handles/stockitem/base/backrefs/scanvals/dump/watch), `scan_screens.py`,
+`find_str_refs.py`/`find_vtable_refs.py`/`find_ptrs.py` (offline sur tmp/rpx_v208).
+
+**Chaîne du toast reconstituée** :
+1. **Source nom** : singleton contexte `ctx = *(0x1047B054)` (~115 lecteurs, alloué heap ;
+   vtable 0x102F7A08). `ctx+0x20` = SafeString nom d'actor : layout WiiU **{mStringTop
+   @+0x20 → ctx+0x2C, vtable 0x102F78E0 @+0x24, bufsize 0x40 @+0x28, buffer inline @+0x2C}**.
+   VIDÉE après consommation (lue vide en idle). NB : le « slot pickup vt 0x1024BDA8 » de
+   toast_watch est un AUTRE miroir (l'acteur monde), pas cette source.
+2. **Source item** : `PauseMenuDataMgr+0x37cec` = tête de mLastAddedItems ;
+   `getLastAddedItem = FUN_02eb6d00` (skippe `Weapon_Sword_070`, exige mInInventory=1).
+   Le refresh **tolère item absent** (fallback nom seul via `FUN_02eae914(name,0)` +
+   `FUN_03084370`) mais FERME si l'item existe et mInInventory==0.
+3. **Écran toast** = « MessageGet_00Screen », **créé à la demande puis détruit** (absent du
+   registre hors affichage — vérifié live). Registre écrans : `reg = *(0x1047E650)`,
+   `reg+0x14` = count (99), `reg+0x18` = array de ptrs (id → screen). Écran très
+   probablement **id 0x24** (2 événements UI l'ouvrent, cf. 5). Layout écran : vtable
+   classe @ `screen+0xC` (base commune @+0xC=0x10260ED4 pour l'interface interne) ; état
+   FSM @+0x96 ; champs toast : +0x1b68 byte «open request», +0x1b6c/+0x1b70 msg-handles,
+   +0x1b74..+0x1b84 panes/anims, +0x1b88 «wait-anim lancée», +0x1b89 «textes posés»,
+   +0x1b8c handle texte MSBT async, +0x1b90..98 = 2 panes texte (flag visible @pane+0x44
+   bit0), refresh lit aussi type/dye de l'item. Slots vtable : +0x14 getAs(key),
+   **+0x2C trigger/replay**, +0x34 close(code).
+4. **Refresh** = `FUN_02fd0ce4` (vtable rodata, ptr @ 0x102455AC) : early-close si nom ctx
+   vide ; construit `UI/StockItem/<actor>.bitemico` (`FUN_03084370` générique — gère
+   Weapon_Sword_502→503 Master Sword éveillée + suffixe teinture `.%02d` ;
+   `FUN_03084b64` = variante ActorInfo, clés hash 0x216a3a63/0xefb9041d non résolues) ;
+   pose le texte via le système de messages (`FUN_037e63a4`) ; anime les panes. Strings
+   pivot rodata : `UI/StockItem/%s` @0x1025DE90 (3 sites .text), `%s.bitemico` @0x1025DEEC.
+5. **Ouverture** : `FUN_03080a14(id) → FUN_03058e84` (tables d'exclusion mutuelles
+   DAT_105481e0/e4 stride 12 + DAT_105481e8/ec) `→ FUN_030806f0` = **factory native par
+   nom** (`thunk_FUN_030a857c`) + enregistrement + open : PAS émulable en écritures.
+   MAIS le jeu lui-même passe par des **ÉVÉNEMENTS UI différés** : handlers
+   `FUN_0207ec78`/`FUN_020800b0` (vtables rodata ~0x1000EA6C/~0x1000ED64, slot commun
+   FUN_030ea334) = « assure écran 0x24 ouvert + vtable+0x2C(screen,1) » ;
+   `FUN_030ea2e0(evt)` = **re-poste l'événement en posant bit1 du byte `evt+0xB`**
+   (700+ handlers l'utilisent) → les événements sont des objets persistants à FLAGS,
+   la boucle UI draine ceux marqués pending. Si le POST = poser ce bit → pur données.
+6. **Dispatcher priorité** (slot vtable+8, `FUN_02fd1534`) : cède la place aux écrans
+   guides/tips 0x1a/0x19/0x49 (`FUN_03074fc0/af8`, `FUN_030756b4(0..3)` →
+   `FUN_030751f0(n)` → `FUN_02f8f608(screen49, n)`). L'écran 0x49 (guides) : état @+0x1b90
+   (2=open), type courant @+0x1bbc, show direct = `FUN_02f8f3f0`.
+
+**Correction structurelle POUCH (importante, hors toast)** : le layout SafeString WiiU est
+`{mStringTop, vtable, [size], buf}` → dans le nœud PouchItem le nom est un
+FixedSafeString<64> à S+0x1C : {top @S+0x1C → S+0x28, vt 0x1021B524 @S+0x20, 0x40 @S+0x24,
+buf @S+0x28}. **La « liste secondaire +0x21C » des notes précédentes N'EXISTE PAS** :
+c'était le mStringTop du nœud SUIVANT (cadrage décalé de 0x20). Le « splice secondaire »
+de live_create_item réécrit en réalité un mStringTop — à réauditer (il marche parce qu'il
+re-pointe le buffer du même cadre, mais le code mérite un nettoyage V1.1).
+
+**RESTE (session en cours)** : décompiler slot +0x2C de base (FUN_036066EC) et close
+(FUN_03606750) ; protocole utilisateur = toast affiché + pause → lire vtable exacte de
+l'instance, état, backrefs → identifier l'événement « show toast » et tester le POST par
+bit pending ; write-test push_toast (nom ctx + trigger) sur profil 80000010.
+
+---
+
 ## 7. MelonSpeedruns rando — can we reuse / modify it?
 
 **What it is:** a **static** randomizer (.NET app) that generates a Cemu **graphic pack**, shuffling items by editing romfs. Self-contained, single-game, **no server/AP hooks**. Relevant gating it already implements: paraglider placed in a random Great Plateau chest, Master Sword required to enter Ganon (⇒ 13 hearts), shrines no longer grant Spirit Orbs.

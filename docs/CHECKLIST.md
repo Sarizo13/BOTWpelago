@@ -112,16 +112,17 @@
         l'exige toujours (rules.py). Génération 2 slots revalidée.
       - NB : comme les tenues, l'ouverture du mur après réception ≠ instantanée
         (flags reload-gated) → cf. piste bools live.
-- [~] Popup natif = **toast de ramassage** — session diff FAITE (2026-07-12,
-      `tools/toast_hunt.py`, pomme + champignon croisés). ACQUIS :
-      (1) **slot pickup à adresse FIXE** (réécrit à chaque ramassage : FixedSafeString<64>
-      vt 0x1024BDA8 = actor name, position f32, table de ptrs — le « dernier ramassage ») ;
-      (2) pipeline icône : handle ressource `UI/StockItem/<actor>.bitemico` ÉPHÉMÈRE
-      (chargé à l'affichage, déchargé après) + anim `1_OpenWait.bas` ; le layout du toast
-      s'appelle **StockItem** ; (3) signature AOB générique des handles ressources
-      (4 vtables 0x102FD2B4/0x1031FBFC/0x10263910/0x10334734 — 245 vivants, outil réutilisable).
-      RESTE : trouver la structure PILOTE (file logique StockItem : états/anim/texte/timer)
-      via scan « StockItem » hors-path + backrefs, puis test d'écriture prudent.
+- [~] Popup natif = **toast de ramassage** — ARCHITECTURE COMPLÈTE RE (2026-07-11,
+      décomp v208 + live ; détail → docs/status.md §6c). Chaîne : nom d'actor écrit dans
+      le singleton contexte `*(0x1047B054)+0x2C` (SafeString, vidée après consommation) +
+      item via mLastAddedItems (`PauseMenuDataMgr+0x37cec`, FALLBACK nom seul OK) →
+      écran « MessageGet_00Screen » (id probable 0x24, créé à la demande, refresh =
+      FUN_02fd0ce4) ouvert par des ÉVÉNEMENTS UI persistants à bit «pending» (`evt+0xB`,
+      re-post = FUN_030ea2e0) ; trigger écran = slot vtable+0x2C (FUN_036066EC, quasi pur
+      setter +0x180/+0x182). Le scan « StockItem hors-path » est ÉPUISÉ (0 hit — le nom du
+      layout n'existe pas isolé en RAM). RESTE : protocole live toast-affiché+pause
+      (vtable exacte, état, backrefs → l'événement show-toast), write-test du POST
+      (nom + bit pending / état trigger), puis push_toast() dans memory_injector.
 - [x] Passe de test des murs in-game — **VALIDÉE (2026-07-12)** par le joueur ; warps
       Zora/Gerudo réajustés à la main dans zone_walls.json (coords in-game du joueur)
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
