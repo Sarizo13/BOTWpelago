@@ -914,14 +914,25 @@ périmée impossible par construction. Écriture = storage + flagobj (HUD). Vali
 relancé : ±1 rubis cohérent sur les 2 copies. Coût : +~40 s à l'attach (scan backref
 one-shot, thread lourd) — optimisable en restreignant le scan à la région du heap.
 
-**Piste BOOLS live (à creuser — chantier « flags sans reload »)** : le hash
-`IsGet_Obj_Magnetglove` (0x795E7BBC) sort à 4 endroits :
+**BOOLS live — STRUCTURE CONFIRMÉE + WRITE PERSISTANT (2026-07-11, recon4→6)** : le hash
+d'un bool (`IsGet_Obj_Magnetglove` 0x795E7BBC) sort à 4 endroits + le storage :
 1. save-buffer (paires hash/value) ; 2. table de lookup `{hash, index u32, offset u32, 0}`
-stride 16 triée par hash (mapping hash→index !) ; 3. **objets bool 16 o
-`{hash, ?, vtable guest 0x10298410, meta}`** où meta `0x000F0101` semble encoder
-{catégorie u16, initial u8, **value u8**} (Magnetglove lu =1 ✔) ; 4. table reset
-`{hash, 0x80000000, 0, 0x12}`. Si écrire meta.value prend effet sans reload → runes/
-capacités/gates instantanées. Write-test prudent sur un flag réversible à prévoir.
+stride 16 triée par hash (mapping hash→index) ; 3. **table des objets bool**, stride 16 :
+`{hash @+0, 0 @+4, vtable guest 0x10298410 @+8, meta @+C}` — meta = `{cat u16, value u8,
+x u8}` (Magnetglove `000F0101`→1, RemoteBomb `000F0100`→1, Takano `000C0000`→0) ;
+4. table reset `{hash, 0x80000000, 0, 0x12}` ; et surtout :
+5. **STORAGE bool live** (l'équivalent exact du storage s32 du wallet) : entrées 12 o
+`{typeinfo guest 0x10297BD0, ptr → SOUS-OBJET {vt,meta} à hash+8, value u8<<24}`.
+⚠️ Pièges de cadrage résolus : le dump périodique est ambigu ({hash,0,vt,meta} vs
+{vt,meta,hash,0}) — le backref du storage tranche : il pointe hash+8 (le sous-objet) ;
+et la value storage est le PREMIER octet (u8 de poids fort en BE).
+Localisateur : hash → table bool (vérif vt@+8 & pad@+4==0) → backref guest(hash+8)
+(vérif typeinfo) → value = backref+4. **Write-test validé** (Takano_Finish, flag inerte) :
+storage 0→1 persiste (22 s, pas réécrit), miroir meta+2 aligné, restauré à 0.
+RESTE À PROUVER in-game : (a) sérialisation (autosave → gd_base reflète le write) ;
+(b) la couche map/LinkTag lit-elle ce storage EN LIVE (mur qui s'ouvre sans reload) —
+banc de test idéal = le mur Ganon (flag mailbox Takano). Si oui → fin du reload-gated
+(runes/capacités/gates instantanées via ce chemin).
 
 **CookData (PouchItem type 8)** : offsets nœud host-cadré `+0x68 heal (¼-cœurs),
 +0x6C durée (s), +0x70 prix, +0x74 effect_type (f32 CookEffectId, −1.0 = aucun),

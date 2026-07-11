@@ -117,13 +117,15 @@
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
       d'endurance ; au-delà du plafond → convertir en **don de 500 rubis** (le vrai
       portefeuille est câblé → faisable proprement maintenant)
-- [ ] **Flags BOOLS live sans reload (piste ouverte 2026-07-11)** : la chasse au wallet a
-      révélé le **gdt live complet** (storage s32 {typeinfo 0x10297C88, ptr flagobj, value}
-      + objets `Flag<s32>` vtable 0x102984C8). Les BOOLS ont le même schéma : objets 16 o
-      `{hash, ?, vtable 0x10298410, meta}` où meta semble contenir la valeur (Magnetglove
-      lu =1, cohérent). Si écrire meta prend effet SANS reload → capacités/gates/Paraglider
-      instantanés (fin du « reload-gated »). Session dédiée : write-test prudent sur un flag
-      réversible + observation. Détails : docs/status.md §gdt-live.
+- [~] **Flags BOOLS live — storage TROUVÉ + write PERSISTANT (2026-07-11)** : structure
+      complète confirmée (table objets `{hash, 0, vt 0x10298410, meta}` stride 16 ;
+      **storage** `{typeinfo 0x10297BD0, ptr → sous-objet hash+8, value u8<<24}` —
+      l'analogue exact du wallet s32). Write-test validé sur `TestQuest_Takano_01_Finish`
+      (inerte) : 0→1 persiste 22 s, miroir meta+2 aligné, restauré. RESTE le test in-game :
+      (a) sérialisation à l'autosave ; (b) la couche map lit-elle le storage EN LIVE →
+      banc de test = **le mur Ganon** (même flag mailbox). Si oui → livraisons de flags
+      instantanées (runes/capacités/gates sans reload) → câbler `write_flag_live` dans
+      memory_injector. Détails : docs/status.md §gdt-live.
 
 ## 🔲 Différé APRÈS la V1
 
