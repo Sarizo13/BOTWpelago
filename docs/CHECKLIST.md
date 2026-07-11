@@ -117,15 +117,15 @@
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
       d'endurance ; au-delà du plafond → convertir en **don de 500 rubis** (le vrai
       portefeuille est câblé → faisable proprement maintenant)
-- [~] **Flags BOOLS live — storage TROUVÉ + write PERSISTANT (2026-07-11)** : structure
-      complète confirmée (table objets `{hash, 0, vt 0x10298410, meta}` stride 16 ;
-      **storage** `{typeinfo 0x10297BD0, ptr → sous-objet hash+8, value u8<<24}` —
-      l'analogue exact du wallet s32). Write-test validé sur `TestQuest_Takano_01_Finish`
-      (inerte) : 0→1 persiste 22 s, miroir meta+2 aligné, restauré. RESTE le test in-game :
-      (a) sérialisation à l'autosave ; (b) la couche map lit-elle le storage EN LIVE →
-      banc de test = **le mur Ganon** (même flag mailbox). Si oui → livraisons de flags
-      instantanées (runes/capacités/gates sans reload) → câbler `write_flag_live` dans
-      memory_injector. Détails : docs/status.md §gdt-live.
+- [x] **Flags BOOLS live — TRANCHÉ (2026-07-12, tests in-game mur Ganon)** : storage bool
+      trouvé + write persistant en RAM, MAIS (a) **pas sérialisé** (le jeu ne resérialise
+      que ses flags « dirty » — 3 saves manuelles, .sav resté à 0) et (b) **pas relu en
+      live par la couche map** (mur TP malgré storage+meta à 1). La voie de livraison des
+      flags RESTE gd_base/fichier + reload. Le storage bool garde une valeur en LECTURE
+      (état runtime réel). Corollaire rubis : `live_add_rupees` écrit désormais AUSSI
+      gd_base (sans transaction joueur, le storage seul n'aurait pas été sérialisé).
+      Fermé — pas de « flags sans reload » par ce chemin ; il faudrait l'API native
+      setBool (mur du recompilateur). Détails : docs/status.md §gdt-live.
 
 ## 🔲 Différé APRÈS la V1
 

@@ -77,14 +77,15 @@
       "_comment": [
         "Gate du combat final : octogone fermé r~130 autour du Sanctum d'Hyrule",
         "(boss room ~(-254, 295, -1049), coord. du warp vanilla de HyruleCastle.bfevfl",
-        "BossRoom0/Event161). Sans l'Arc de Lumière (item AP) -> renvoi à la grande",
-        "porte sud du château. WARP PROVISOIRE (y estimé) : à valider/ajuster à la",
-        "passe de test des murs. FLAG = mailbox inerte (TestQuest) posé par le client",
+        "BossRoom0/Event161). Sans l'Arc de Lumière (item AP) -> renvoi devant la",
+        "grande porte du château (coord. fournies par le joueur = la sortie « quitter",
+        "le château » de la carte ; l'ancien y=130 estimé mettait le joueur dans le",
+        "sol). FLAG = mailbox inerte (TestQuest) posé par le client",
         "à la réception de « Bow of Light » — PAS IsGet_Weapon_Bow_071, qui reste la",
         "preuve du combat final pour le goal 'full' (posé par Zelda pendant Dark Beast)."
       ],
       "flag": "TestQuest_Takano_01_Finish",
-      "warp": {"pos": [-254.0, 130.0, -580.0], "dir": 0.0},
+      "warp": {"pos": [-254.0, 140.59629821777344, -544.6483764648438], "dir": 180.0},
       "walls": [
         {
           "closed": true,

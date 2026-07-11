@@ -888,6 +888,12 @@ class CemuMemoryBridge:
         # compteur à l'écran soit juste sans attendre la resync du jeu.
         if self._wallet_flagobj is not None:
             self._write(self._wallet_flagobj + _FLAG_S32_OFF_VALUE, struct.pack(">i", new_val))
+        # gd_base (buffer de sérialisation) : le jeu ne resérialise que ses flags « dirty »
+        # (prouvé le 2026-07-12 sur un bool : write storage + save manuelle → .sav resté à 0).
+        # Nos writes storage ne sont donc PAS repris au save tant que le joueur ne fait pas
+        # de transaction ; le buffer gd_base, lui, est flushé intégralement au fichier → on
+        # y écrit AUSSI la valeur pour que les rubis livrés survivent à un save/reload sec.
+        self.write_flag("CurrentRupee", new_val & 0xFFFFFFFF)
         self._rupee_shadow = new_val
         log.info("[Mem] (live) Rubis: %d -> %d", current, new_val)
         return new_val

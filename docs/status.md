@@ -929,10 +929,18 @@ et la value storage est le PREMIER octet (u8 de poids fort en BE).
 Localisateur : hash → table bool (vérif vt@+8 & pad@+4==0) → backref guest(hash+8)
 (vérif typeinfo) → value = backref+4. **Write-test validé** (Takano_Finish, flag inerte) :
 storage 0→1 persiste (22 s, pas réécrit), miroir meta+2 aligné, restauré à 0.
-RESTE À PROUVER in-game : (a) sérialisation (autosave → gd_base reflète le write) ;
-(b) la couche map/LinkTag lit-elle ce storage EN LIVE (mur qui s'ouvre sans reload) —
-banc de test idéal = le mur Ganon (flag mailbox Takano). Si oui → fin du reload-gated
-(runes/capacités/gates instantanées via ce chemin).
+**VERDICT IN-GAME (2026-07-12, test mur Ganon + saves manuelles)** :
+(a) **PAS de sérialisation** : write storage+meta puis 3 saves manuelles → `.sav` resté à 0.
+Le jeu ne resérialise que ses flags marqués « dirty » par son API interne (setBool) ; un
+write mémoire brut ne marque rien → jamais repris au save. (b) **PAS de lecture live par
+la couche map** : storage+meta à 1 → le mur TP quand même (cohérent avec le test mailbox
+du 07-10). CONCLUSION : le storage bool reste utile en LECTURE (état runtime réel) et
+peut-être pour les queries EventFlow, mais la voie de LIVRAISON des flags reste
+**gd_base/fichier + reload** (gd_base RAM est flushé INTÉGRALEMENT au fichier lors d'un
+save → nos octets y survivent, contrairement au storage). Corollaire s32/RUBIS : un
+crédit AP écrit au seul storage n'est sérialisé QUE si le joueur fait ensuite une
+transaction (le jeu setInt → dirty) → `live_add_rupees` écrit désormais AUSSI l'entrée
+gd_base (ceinture + bretelles).
 
 **CookData (PouchItem type 8)** : offsets nœud host-cadré `+0x68 heal (¼-cœurs),
 +0x6C durée (s), +0x70 prix, +0x74 effect_type (f32 CookEffectId, −1.0 = aucun),
