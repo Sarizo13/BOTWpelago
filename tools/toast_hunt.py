@@ -1,5 +1,5 @@
 """
-toast_hunt — localise la structure/file UI du TOAST de ramassage (« item — Sacoche ▲ »).
+toast_hunt — localise la structure/file UI du TOAST de ramassage (« item — Sacoche ^ »).
 
 Méthode = diff par OCCURRENCES du nom d'actor entre AVANT et APRÈS un ramassage
 naturel. Quand Link ramasse un objet, le jeu écrit des structures qui référencent
@@ -7,7 +7,7 @@ l'actor (file du toast UI, event pickup…) : les NOUVELLES occurrences post-ram
 croisées entre 2+ items différents, isolent la file du toast des structures propres
 à l'item. Conseils de session :
   - ramasser un item DÉJÀ possédé en stock (le pouch fait un simple bump de quantité
-    → pas de nouvelle string côté inventaire → moins de bruit) ;
+    -> pas de nouvelle string côté inventaire -> moins de bruit) ;
   - le POSER soi-même au sol d'abord (l'actor au sol existe dès la baseline) ;
   - rester immobile entre les deux passes.
 
@@ -117,7 +117,7 @@ def main() -> None:
         st[actor] = {"baseline": hits}
         _save(st)
         print(f"baseline {actor} : {len(hits)} occurrence(s).")
-        print("→ ramasse L'OBJET (rien d'autre), reste immobile, puis :  diff", actor)
+        print("-> ramasse L'OBJET (rien d'autre), reste immobile, puis :  diff", actor)
 
     elif cmd == "diff":
         actor = sys.argv[2]

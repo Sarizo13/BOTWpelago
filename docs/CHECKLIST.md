@@ -112,9 +112,16 @@
         l'exige toujours (rules.py). Génération 2 slots revalidée.
       - NB : comme les tenues, l'ouverture du mur après réception ≠ instantanée
         (flags reload-gated) → cf. piste bools live.
-- [ ] Popup natif = **toast de ramassage** (« item — Sacoche + ») : session diff live
-      (snapshot avant/après un ramassage naturel → trouver la file UI ; si writable,
-      le client pousse ses propres toasts). Lecture d'abord, écriture prudente ensuite.
+- [~] Popup natif = **toast de ramassage** — session diff FAITE (2026-07-12,
+      `tools/toast_hunt.py`, pomme + champignon croisés). ACQUIS :
+      (1) **slot pickup à adresse FIXE** (réécrit à chaque ramassage : FixedSafeString<64>
+      vt 0x1024BDA8 = actor name, position f32, table de ptrs — le « dernier ramassage ») ;
+      (2) pipeline icône : handle ressource `UI/StockItem/<actor>.bitemico` ÉPHÉMÈRE
+      (chargé à l'affichage, déchargé après) + anim `1_OpenWait.bas` ; le layout du toast
+      s'appelle **StockItem** ; (3) signature AOB générique des handles ressources
+      (4 vtables 0x102FD2B4/0x1031FBFC/0x10263910/0x10334734 — 245 vivants, outil réutilisable).
+      RESTE : trouver la structure PILOTE (file logique StockItem : états/anim/texte/timer)
+      via scan « StockItem » hors-path + backrefs, puis test d'écriture prudent.
 - [x] Passe de test des murs in-game — **VALIDÉE (2026-07-12)** par le joueur ; warps
       Zora/Gerudo réajustés à la main dans zone_walls.json (coords in-game du joueur)
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
