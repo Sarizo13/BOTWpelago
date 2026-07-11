@@ -40,7 +40,7 @@
     },
     "Zora": {
       "flag": "IsGet_Armor_006_Upper",
-      "warp": {"pos": [2233.0, 148.0, -300.0], "dir": 20.0},
+      "warp": {"pos": [2333.187744140625, 119.42508697509766, -264.7934875488281], "dir": 20.0},
       "walls": [
         {
           "y_center": 300.0, "y_half": 400.0, "half_width": 70.0,
@@ -53,7 +53,7 @@
     },
     "Gerudo": {
       "flag": "IsGet_Armor_053_Upper",
-      "warp": {"pos": [-2836.0, 135.8, 2192.0], "dir": 45.0},
+      "warp": {"pos": [2799.43994140625, 134.7676239013672, 2249.70849609375], "dir": 45.0},
       "walls": [
         {
           "_comment": "rive nord des Hauteurs Gerudo (haut plateau)",

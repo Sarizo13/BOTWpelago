@@ -94,9 +94,11 @@
 - [x] Scaffold mod V2 (`mod/`) : pipeline evfl+oead validé (round-trip octet-identique),
       outils `scan_flows.py`/`dump_flow.py`, builder → graphic pack séparé
       `BOTWpelago_Enforcement` (installé, désactivé par défaut dans Cemu)
-- [ ] Enforcement paravoile : patch CONSTRUIT (grant vanilla excisé de FindDungeon,
-      scène/quête intactes) — **à valider in-game** (finir le plateau avec le pack coché)
-- [~] Gate Ganon / **Arc de Lumière** — **CONSTRUIT (2026-07-11), reste le test in-game** :
+- [x] Enforcement paravoile : patch construit (grant vanilla excisé de FindDungeon,
+      scène/quête intactes) — **VALIDÉ IN-GAME (2026-07-12)** par le joueur
+- [x] Gate Ganon / **Arc de Lumière** — **VALIDÉE IN-GAME DE BOUT EN BOUT (2026-07-12)** :
+      mur actif (TP), ouverture par flag+reload (simulation réception AP), renvoi grande
+      porte confirmé par le joueur. Détail de construction :
       - Flow d'entrée localisé : `HyruleCastle.bfevfl` entry `BossRoom0` (boss room au
         warp vanilla (-254, 295, -1049)) — mais implémentation = **5e mur zone_walls**
         (brique validée) : région "Ganon", octogone fermé r~130 autour du Sanctum
@@ -113,7 +115,8 @@
 - [ ] Popup natif = **toast de ramassage** (« item — Sacoche + ») : session diff live
       (snapshot avant/après un ramassage naturel → trouver la file UI ; si writable,
       le client pousse ses propres toasts). Lecture d'abord, écriture prudente ensuite.
-- [ ] Passe de test des 4 murs de régions in-game + ajustement des polylignes au besoin
+- [x] Passe de test des murs in-game — **VALIDÉE (2026-07-12)** par le joueur ; warps
+      Zora/Gerudo réajustés à la main dans zone_walls.json (coords in-game du joueur)
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
       d'endurance ; au-delà du plafond → convertir en **don de 500 rubis** (le vrai
       portefeuille est câblé → faisable proprement maintenant)
