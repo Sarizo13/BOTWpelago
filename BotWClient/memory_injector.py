@@ -1028,6 +1028,20 @@ class CemuMemoryBridge:
                     toast_idx = k
                 if victim_idx is None and head.startswith(self._TOAST_VICTIM_MARK[:0x20]):
                     victim_idx = k
+            if toast_idx is not None and victim_idx is None:
+                # zone victime déjà réécrite par une session précédente du client (même
+                # boot de Cemu). Redirection active → la victime est l'entrée (≠ toast)
+                # qui partage l'offset du toast ; sinon, celle qui porte notre préfixe.
+                for k in range(count):
+                    if k == toast_idx:
+                        continue
+                    if offs[k] == offs[toast_idx]:
+                        victim_idx = k
+                        break
+                    head = self._read(txt2 + offs[k], len(self._TOAST_PREFIX)) or b""
+                    if head == self._TOAST_PREFIX:
+                        victim_idx = k
+                        break
             if toast_idx is None or victim_idx is None:
                 raise RuntimeError(f"entrées TXT2 introuvables ({toast_idx}/{victim_idx})")
             victim = txt2 + offs[victim_idx]

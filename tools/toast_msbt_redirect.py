@@ -94,16 +94,20 @@ def find_msbt(b) -> dict:
             toast_idx = k
         if victim_idx is None and head.startswith(VICTIM_MARK[:0x20]):
             victim_idx = k
-    # si déjà redirigé, l'entrée toast pointe la victime (préfixe custom) — la string
-    # originale « Vous avez lâché » existe toujours ailleurs mais n'est plus référencée.
-    if toast_idx is None or victim_idx is None:
-        # victime déjà réécrite par un install précédent ? repère-la par notre préfixe
+    # si déjà redirigé : la zone victime est réécrite (préfixe custom) et l'entrée toast
+    # pointe la MÊME zone. La victime = l'entrée (≠ toast) qui PARTAGE l'offset du toast
+    # (redirection active) ; à défaut, celle qui porte notre préfixe.
+    if toast_idx is not None and victim_idx is None:
         for k in range(count):
-            a = txt2 + offs[k]
-            head = b._read(a, len(PREFIX)) or b""
+            if k == toast_idx:
+                continue
+            if offs[k] == offs[toast_idx]:
+                victim_idx = k
+                break
+            head = b._read(txt2 + offs[k], len(PREFIX)) or b""
             if head == PREFIX:
-                victim_idx = k if victim_idx is None else victim_idx
-                toast_idx = k if toast_idx is None else toast_idx
+                victim_idx = k
+                break
     if toast_idx is None or victim_idx is None:
         raise RuntimeError(f"entrées introuvables (toast={toast_idx} victime={victim_idx})")
     vic_end = offs[victim_idx + 1] if victim_idx + 1 < count else txt2_size
