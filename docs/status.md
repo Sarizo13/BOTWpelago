@@ -1039,21 +1039,49 @@ a un **canal de données** — la file du HUD reqMgr — que la boucle UI draine
 `{type 0xB, nom d'écran}` dans cette file + peupler le nom d'actor dans le contexte
 `*(0x1047B054)+0x2C` déclencherait le bandeau SANS aucun appel natif de notre part. C'est
 le même patron que l'insertion pouch (déjà maîtrisée) : dépiler la freelist, construire la
-FixedSafeString, splicer, `count++`. **Le layout du nœud et le splice sont désormais
-CERTAINS (décomp 2026-07-12, cf. point 6)** — la capture live n'est plus qu'une
-CONFIRMATION ; reste l'inconnue empirique : le drain consomme-t-il notre nœud et le
-bandeau s'affiche-t-il ? — nécessite la boucle utilisateur (protocole ci-dessous).
+FixedSafeString, splicer, `count++`.
 
-**PROTOCOLE LIVE (à faire avec l'utilisateur, profil 80000010, jeu chargé, Link en jeu)** :
-1. `python tools/toast_recon.py base` (cache heap_base ; à refaire si Cemu relancé).
-2. `python tools/toast_queue_watch.py 40` puis RAMASSER 2-3 objets variés → même si le
-   busy-loop rate la transition, le POST-MORTEM freelist fige la string résiduelle d'un
-   vrai pickup (+ `defstr` DAT_10549FEC lue live). Claude lit `~/.botwpelago/toast_queue.json`.
-3. `python tools/toast_push_test.py --dry` (état + patchs, 0 write) puis
-   `python tools/toast_push_test.py --actor Item_Fruit_A` — Link IMMOBILE, file au repos.
-   Backup auto ; post-check 10 s : « consommé » = le drain a dépilé (bandeau ?) ;
-   « inchangé » = auto-restore. Si bandeau → `push_toast(actor_name)` dans
-   `memory_injector`, câblé sur la réception AP, et validation in-game finale.
+**VALIDÉ IN-GAME 2026-07-12 (boucle utilisateur, ~40 pushs) — résultats complets** :
+- Le drain CONSOMME nos nœuds (recyclés freelist en <1 s) et OUVRE l'écran MessageGet à
+  CHAQUE push conforme — la voie pur-mémoire fonctionne, reproductible à 100 %.
+- **Le pickup naturel n'utilise PAS cette file** (capture 104 kHz pendant un ramassage
+  réel : file inerte, ctx inerte, slot écran 0x24 jamais créé → le petit encart de
+  ramassage est une pane du HUD, pas un écran). Les nœuds freelist étaient VIERGES depuis
+  le boot. `FUN_03076e94(bool,bool)` (2 seuls callers : (0,0) silencieux et (1,1) gated
+  par le TIMER DE RECHARGE de la Master Sword) → le type 0xB = « MS rechargée », pas le
+  ramassage. La « signature (actor,doShow) » de la veille était fausse.
+- **Cartographie COMPLÈTE des types 0x00-0x2F** (pushs in-game, tous les textes notés) :
+  0-7 « compartiment X plein »/limites ; **8/9/0xA = messages À PLACEHOLDER**
+  (« Votre {item} va bientôt se briser » / « s'est brisé » / « Vous avez lâché {item} ») ;
+  0xB/0xC/0xD Master Sword (rechargée/s'amenuise/rassemble ses forces) ; 0xE-0x11
+  cheval/compagnon (nom du cheval résolu : « Epona ») ; 0x12-0x14 « rien à exposer » ;
+  0x15-0x17 « pas équipé » ; 0x18 MS pas exposable ; 0x19/0x1A amiibo ; 0x1B/0x25
+  ennemis ; 0x1C/0x22/0x26 pas maintenant ; 0x1D/0x1E balises ; 0x1F/0x20 rubis/matériaux
+  insuffisants ; 0x21 MS retournée en forêt ; 0x23/0x2D pas ici ; 0x24 énergie vitale ;
+  0x27 obstacle ; 0x28 Link loup ; 0x29/0x2E/0x2A pas plus loin ; 0x2B charge complète ;
+  0x2C destrier 0.1 ; 0x2F bandeau vide. **AUCUN « vous obtenez » natif** (les obtentions
+  BotW passent par GetDemo/dialogue). NE PAS pousser de type > 0x2F (hors table dispatch).
+- **Le placeholder {item} est rempli par la STRING DU NŒUD** (callers directs de
+  FUN_03073184 : ils passent le nom d'arme — types 8 vs 0xC etc. choisis selon MS ou non).
+  Poussé avec la string « Weapon_Sword_001 » → « Vous avez lâché Épée de voyageur. » : le
+  jeu résout le nom LOCALISÉ (articles français corrects).
+- **SOLUTION FINALE : type 0xA + patch MSBT en RAM.** La string UTF-16BE
+  « Vous avez lâché » (message 0xA, tag UiInfoString) existe en UNE occurrence en RAM ;
+  « lâché » → « **gagné** » (5 unités UTF-16 chacune, remplacement in-place strict, tag
+  intact) → bandeau « **Vous avez gagné {item}.** » VALIDÉ in-game (« la pomme »,
+  « l'épée royale »). (« reçu␣ » testé d'abord : double espace — « gagné » est exact.)
+  Outil : `tools/toast_msbt_patch.py` (scan ~35 s, --patch/--restore, backup JSON).
+
+**IMPLÉMENTÉ (BotWClient)** : `CemuMemoryBridge.push_toast(actor)` +
+`toast_enqueue(actor)` (deque maxlen 20) + `toast_pump()` (1 bandeau max/cycle, throttle
+4 s) dans `memory_injector.py` ; préparation (dérivation heap_base si absente + scan/patch
+MSBT) sur THREAD DAEMON au 1er toast ; revalidation du patch avant chaque bandeau (buffer
+message rechargeable par le jeu) ; sanity stricte avant chaque push (file vide, freelist
+plausible, cap==3) → best-effort intégral, ne bloque JAMAIS une livraison. Câblage :
+`_apply_actions_memory` → toast_enqueue (pouch/plats : item_name ; SetFlag `IsGet_<actor>`
+→ actor — convention BotW) ; `flush()` → toast_pump. Langue ≠ FR : motif introuvable →
+texte vanilla (« lâché ») ; prévoir des motifs par langue si demande. RESTE : validation
+end-to-end en session AP réelle.
 
 **Dispatcher priorité** (slot vtable+8, `FUN_02fd1534`) : les écrans guides/tips
 0x1a/0x19/0x49 passent avant (`FUN_03074fc0/af8`, `FUN_030756b4(0..3)` → `FUN_030751f0(n)`

@@ -19,8 +19,10 @@ import ctypes
 import json
 import logging
 import struct
+import threading
 import time
 import zlib
+from collections import deque
 from ctypes import wintypes
 from pathlib import Path
 from typing import Optional
@@ -267,6 +269,12 @@ class CemuMemoryBridge:
         # par sortKey au sein d'une catégorie → on ancre un nouvel item après le dernier nœud dont
         # le (type, sortKey) est ≤ le sien (position triée exacte, sinon inventaire désorganisé = crash).
         self._sort_keys: dict[str, int] = self._load_sort_keys()
+        # Toast natif « item reçu » (file du HUD, docs/status.md §6c — validé in-game 2026-07-12)
+        self._toast_reqmgr: Optional[int] = None      # request manager du HUD (guest, session)
+        self._toast_msbt_addr: Optional[int] = None   # adresse host du mot patché ; 0 = introuvable
+        self._toast_last_push: float = 0.0            # throttle (~1 bandeau / 4 s)
+        self._toast_pending: deque[str] = deque(maxlen=20)   # actors en attente de bandeau
+        self._toast_prep_thread: Optional[threading.Thread] = None  # heap_base + patch MSBT
 
     @staticmethod
     def _load_sort_keys() -> dict[str, int]:
@@ -309,6 +317,8 @@ class CemuMemoryBridge:
         self._wallet_addr = None
         self._wallet_flagobj = None
         self._heap_base = None
+        self._toast_reqmgr = None
+        self._toast_msbt_addr = None      # adresses de session ; _toast_pending survit
         # NB: _persistent_qty / _seal_target ne sont PAS effacés (valeurs, pas adresses) : sur un
         # ré-attach le compteur d'orbes en jeu est inchangé et les orbes ne sont pas re-livrés →
         # les oublier stopperait la maintenance et l'orbe reverterait.
@@ -897,6 +907,165 @@ class CemuMemoryBridge:
         self._rupee_shadow = new_val
         log.info("[Mem] (live) Rubis: %d -> %d", current, new_val)
         return new_val
+
+    # ── Toast natif « item reçu » ─────────────────────────────────────────────
+    # Canal RE 2026-07-12 (docs/status.md §6c, VALIDÉ in-game) : la boucle UI draine la
+    # file de requêtes du HUD MainScreen (écran registre 0x25) → écran MessageGet_00.
+    # push_toast reproduit l'enqueue natif FUN_02ed1f7c : pop freelist → nœud
+    # {type 0xA, FixedSafeString<64> = nom d'actor} → splice front sur le sentinel →
+    # count++ → nom d'actor au contexte + bit « HUD dirty ». Le type 0xA (« Vous avez
+    # lâché {item}. ») insère le nom LOCALISÉ de l'actor ; son verbe est patché en RAM
+    # (« lâché » → « gagné », UTF-16BE in-place, même longueur) → « Vous avez gagné X. »
+
+    _TOAST_REG_PTR = 0x1047E650      # registre des écrans (guest)
+    _TOAST_CTX_PTR = 0x1047B054      # contexte toast (nom d'actor @ctx+0x2C)
+    _TOAST_UIROOT_PTR = 0x1046BDD8   # uiroot (bit dirty @+0x4075C, cf. FUN_03058b44)
+    _TOAST_HUD_ID = 0x25
+    _TOAST_REQMGR_OFF = 0x1B84
+    _TOAST_DIRTY_OFF = 0x4075C
+    _TOAST_NODE_VT = 0x1021D0FC      # vtable FixedSafeString<64> finale du nœud
+    _TOAST_TYPE = 0xA                # « Vous avez lâché/gagné {item}. »
+    # offsets reqMgr : sentinel {next=head @+0x14C, prev=tail @+0x150}, count, freelist, cap
+    _TOAST_SENT, _TOAST_TAIL = 0x14C, 0x150
+    _TOAST_COUNT, _TOAST_FREE, _TOAST_CAP = 0x154, 0x158, 0x160
+    _TOAST_MSBT_NEEDLE = "Vous avez lâché".encode("utf-16-be")
+    _TOAST_MSBT_SKIP = len("Vous avez ".encode("utf-16-be"))
+    _TOAST_MSBT_OLD = "lâché".encode("utf-16-be")
+    _TOAST_MSBT_NEW = "gagné".encode("utf-16-be")
+    _TOAST_MIN_INTERVAL = 4.0        # le bandeau reste ~3 s à l'écran
+
+    def _toast_rd32(self, guest: int) -> int:
+        raw = self._read(self._heap_base + guest, 4) if self._heap_base else None
+        return struct.unpack(">I", raw)[0] if raw else 0
+
+    def _toast_wr32(self, guest: int, val: int) -> bool:
+        return self._write(self._heap_base + guest, struct.pack(">I", val & 0xFFFFFFFF))
+
+    def _toast_locate(self) -> Optional[int]:
+        """Localise (cache session) le request manager du HUD ; revalidé par sa capacité."""
+        if self._toast_reqmgr and self._toast_rd32(self._toast_reqmgr + self._TOAST_CAP) == 3:
+            return self._toast_reqmgr
+        self._toast_reqmgr = None
+        reg = self._toast_rd32(self._TOAST_REG_PTR)
+        arr = self._toast_rd32(reg + 0x18) if reg else 0
+        hud = self._toast_rd32(arr + self._TOAST_HUD_ID * 4) if arr else 0
+        mgr = self._toast_rd32(hud + self._TOAST_REQMGR_OFF) if hud else 0
+        if mgr and self._toast_rd32(mgr + self._TOAST_CAP) == 3:
+            self._toast_reqmgr = mgr
+        return self._toast_reqmgr
+
+    def _toast_prepare(self) -> None:
+        """Thread de préparation (1×/session) : dérive heap_base si absent puis localise
+        et patche le message MSBT (« lâché » → « gagné »). Scans lourds (~1 min au pire) —
+        les toasts s'accumulent dans _toast_pending et sortent une fois prêt."""
+        try:
+            if self._heap_base is None:
+                nodes = self._scan_pouch_nodes()
+                self._heap_base = self._derive_heap_base(nodes) if nodes else None
+            if self._heap_base is None:
+                log.info("[Toast] base heap indisponible — bandeaux désactivés cette session")
+                self._toast_msbt_addr = 0
+                return
+            chunk_sz = 16 << 20
+            for base, size in self._iter_regions():
+                off = 0
+                while off < size:
+                    n = min(chunk_sz, size - off)
+                    chunk = self._read(base + off, min(n + 0x40, size - off))
+                    if chunk:
+                        i = chunk.find(self._TOAST_MSBT_NEEDLE)
+                        if 0 <= i < n:
+                            addr = base + off + i + self._TOAST_MSBT_SKIP
+                            if self._read(addr, len(self._TOAST_MSBT_OLD)) == self._TOAST_MSBT_OLD:
+                                self._write(addr, self._TOAST_MSBT_NEW)
+                            self._toast_msbt_addr = addr
+                            log.info("[Toast] message MSBT patché (« gagné ») @0x%012X", addr)
+                            return
+                    off += n
+            log.info("[Toast] string MSBT introuvable (langue ≠ FR ?) — texte vanilla conservé")
+            self._toast_msbt_addr = 0
+        except Exception as exc:                       # le toast ne doit JAMAIS casser le client
+            log.debug("[Toast] préparation échouée: %s", exc)
+            self._toast_msbt_addr = 0
+
+    def toast_enqueue(self, actor_name: str) -> None:
+        """File un bandeau « Vous avez gagné <item>. » (émis par toast_pump, throttlé).
+        Lance la préparation (heap_base + patch MSBT) au premier appel."""
+        if not actor_name:
+            return
+        self._toast_pending.append(actor_name)
+        if self._toast_prep_thread is None or not self._toast_prep_thread.is_alive():
+            if self._toast_msbt_addr is None:
+                self._toast_prep_thread = threading.Thread(
+                    target=self._toast_prepare, name="toast-prep", daemon=True)
+                self._toast_prep_thread.start()
+
+    def toast_pump(self) -> None:
+        """Émet AU PLUS UN bandeau en attente (appelé à chaque cycle poll/flush).
+        Best-effort intégral : tout état inattendu = on retentera au cycle suivant."""
+        if not self._toast_pending or self._toast_msbt_addr is None:
+            return                                    # rien à faire / préparation en cours
+        if time.monotonic() - self._toast_last_push < self._TOAST_MIN_INTERVAL:
+            return
+        # revalide le patch MSBT (le buffer message peut être rechargé par le jeu)
+        if self._toast_msbt_addr:
+            cur = self._read(self._toast_msbt_addr, len(self._TOAST_MSBT_NEW))
+            if cur == self._TOAST_MSBT_OLD:
+                self._write(self._toast_msbt_addr, self._TOAST_MSBT_NEW)
+            elif cur != self._TOAST_MSBT_NEW:
+                self._toast_msbt_addr = None          # adresse périmée → re-préparation
+                self._toast_prep_thread = threading.Thread(
+                    target=self._toast_prepare, name="toast-prep", daemon=True)
+                self._toast_prep_thread.start()
+                return
+        if self.push_toast(self._toast_pending[0]):
+            self._toast_pending.popleft()
+
+    def push_toast(self, actor_name: str) -> bool:
+        """Affiche le bandeau natif MessageGet pour actor_name. True si enfilé.
+        Exige la file AU REPOS (vide, freelist saine) — sinon échec silencieux (retry)."""
+        try:
+            if not self.is_attached or self._heap_base is None:
+                return False
+            mgr = self._toast_locate()
+            if not mgr:
+                return False
+            sent = mgr + self._TOAST_SENT
+            head = self._toast_rd32(sent)
+            tail = self._toast_rd32(mgr + self._TOAST_TAIL)
+            count = self._toast_rd32(mgr + self._TOAST_COUNT)
+            node = self._toast_rd32(mgr + self._TOAST_FREE)
+            if head != sent or tail != sent or count != 0 \
+                    or not (0x02000000 <= node < 0x80000000) or node % 4:
+                return False                          # toast du jeu en cours / état inattendu
+            name = actor_name.encode("ascii", "ignore")[:0x3F].ljust(0x40, b"\x00")
+            # nom d'actor au contexte (consommé par le refresh de l'écran)
+            ctx = self._toast_rd32(self._TOAST_CTX_PTR)
+            if ctx and self._toast_rd32(ctx + 0x20) == ctx + 0x2C:
+                self._write(self._heap_base + ctx + 0x2C, name)
+            # enqueue natif (FUN_02ed1f7c) — publication head/count en dernier
+            self._toast_wr32(mgr + self._TOAST_FREE, self._toast_rd32(node))
+            self._toast_wr32(node + 0x00, self._TOAST_TYPE)
+            self._toast_wr32(node + 0x04, node + 0x10)
+            self._toast_wr32(node + 0x08, self._TOAST_NODE_VT)
+            self._toast_wr32(node + 0x0C, 0x40)
+            self._write(self._heap_base + node + 0x10, name)
+            self._write(self._heap_base + node + 0x50, b"\x00")
+            self._toast_wr32(node + 0x58, sent)       # link.prev = sentinel
+            self._toast_wr32(node + 0x54, head)       # link.next = sentinel (file vide)
+            self._toast_wr32(head + 4, node + 0x54)   # tail = link
+            self._toast_wr32(sent, node + 0x54)       # head = link (publication)
+            self._toast_wr32(mgr + self._TOAST_COUNT, count + 1)
+            uiroot = self._toast_rd32(self._TOAST_UIROOT_PTR)
+            if uiroot:
+                w = self._toast_rd32(uiroot + self._TOAST_DIRTY_OFF)
+                self._toast_wr32(uiroot + self._TOAST_DIRTY_OFF, w | 1)
+            self._toast_last_push = time.monotonic()
+            log.info("[Toast] bandeau natif : %s", actor_name)
+            return True
+        except Exception as exc:
+            log.debug("[Toast] push échoué: %s", exc)
+            return False
 
     # ── Flag read/write ───────────────────────────────────────────────────────
 

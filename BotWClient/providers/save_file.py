@@ -755,6 +755,9 @@ class DeferredSaveInjector(ItemInjector):
         # BANQUE dans la save pour qu'il survive au reload (le live seul ne persiste pas).
         if self._bridge is not None and self._bridge.has_live_inventory:
             self._bridge.maintain_persistent()
+        # Bandeau natif « Vous avez gagné <item> » : au plus un par cycle (throttlé en interne).
+        if self._bridge is not None and self._bridge.is_attached:
+            self._bridge.toast_pump()
         self._bank_spirit_orbs()
         injected = self._inject_pending()
         # Objets-clés companion (paravoile / capacités) : ajoutés APRÈS _inject_pending (buffer
@@ -902,11 +905,15 @@ class DeferredSaveInjector(ItemInjector):
         au reload (live_create_item = vrai nœud PouchItem sérialisé). Voie de livraison
         PRINCIPALE quand Cemu est attaché (cf. _inject_pending) ; fallback = fichier-save."""
         all_ok = True
+        toast_actor: Optional[str] = None            # 1er actor livré → bandeau natif in-game
         for action in spec.actions:
             if isinstance(action, InjectionSpec.SetFlag):
                 ok = self._bridge.write_flag(action.flag_name, 1)
                 if ok:
                     log.info("  [Mem] %s  %s = 1", spec.ap_item_name, action.flag_name)
+                    # convention BotW : IsGet_<actor> → l'actor localisable du bandeau
+                    if toast_actor is None and action.flag_name.startswith("IsGet_"):
+                        toast_actor = action.flag_name[len("IsGet_"):]
                 else:
                     all_ok = False
 
@@ -962,6 +969,8 @@ class DeferredSaveInjector(ItemInjector):
                         log.info("  [Live] %s  +%d %s (instantané)",
                                  spec.ap_item_name, action.amount, action.item_name)
                     self._bridge._last_create_empty_cat = False
+                    if toast_actor is None:
+                        toast_actor = action.item_name
                 else:
                     all_ok = False
 
@@ -981,11 +990,15 @@ class DeferredSaveInjector(ItemInjector):
                     log.info("  [Live] %s  %s ×%d (plat, instantané)",
                              spec.ap_item_name, action.item_name, max(1, action.amount))
                     self._bridge._last_create_empty_cat = False
+                    if toast_actor is None:
+                        toast_actor = action.item_name
                 else:
                     all_ok = False
 
             else:
                 log.debug("Action %s not implemented for memory injection", type(action).__name__)
+        if toast_actor is not None:
+            self._bridge.toast_enqueue(toast_actor)
         return all_ok
 
     def _apply_actions_savefile(self, p: Path, spec: InjectionSpec) -> bool:

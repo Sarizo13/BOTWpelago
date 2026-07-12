@@ -112,29 +112,28 @@
         l'exige toujours (rules.py). Génération 2 slots revalidée.
       - NB : comme les tenues, l'ouverture du mur après réception ≠ instantanée
         (flags reload-gated) → cf. piste bools live.
-- [~] Popup natif = **toast de ramassage** — ENQUEUE DÉCOMPILÉ AU CYCLE PRÈS, WRITE-TEST
-      PRÊT (2026-07-12 ; architecture 2026-07-11 ; détail → docs/status.md §6c).
-      **Chemin pickup tracé de bout en bout** : `FUN_03076e94(actor,show)` = (a) ajoute à
-      mLastAddedItems [déjà fait par notre injection], (b) ENFILE la requête toast (type
-      0xB) dans la **file du HUD** `reqMgr = *(HUD+0x1B84)` (HUD = écran registre id 0x25).
-      **File (offsets EXACTS, décomp FUN_02ed1f7c + asm FUN_0308e7e8/e808)** : sentinel
-      {next @+0x14C = head, prev @+0x150 = tail} (self-référent = vide), count +0x154,
-      freelist +0x158 (pop = 1er mot du nœud), cap +0x160=3. Nœud = 0x54 data {type @+0x00,
-      top→+0x10 @+0x04, vt 0x1021D0FC @+0x08, 0x40 @+0x0C, char[64] @+0x10, u8 @+0x50}
-      + ListNode {next,prev} @+0x54/+0x58 (les links pointent les +0x54). Les **handlers
-      du type 0xB** (FUN_0207ec78/FUN_020800b0, xref par table) ouvrent l'écran par ID
-      (`FUN_03080a14(0x24,0)` + trigger vt+0x2C) sans lire la string du nœud. En sus du
-      splice : nom d'actor `*(0x1047B054)+0x2C` + bit dirty `*(*(0x1046BDD8))+0x4075C |= 1`.
-      **VERDICT : voie pur-mémoire OUVERTE** — même patron que l'insertion pouch.
-      Session 2026-07-12 : capture live #1 VIDE (polling 30 Hz < fenêtre 1-2 frames) →
-      `toast_queue_watch` v2 (busy-loop ~kHz + POST-MORTEM freelist : les nœuds recyclés
-      gardent la string résiduelle) ; `tools/toast_push_test.py` ÉCRIT (backup par patch,
-      post-check consommé/inchangé, restore intelligent). **RESTE (fenêtre de jeu, profil
-      80000010)** : 1) `toast_recon.py base` ; 2) `toast_queue_watch.py 40` + ramasser 2-3
-      objets (confirmation layout par post-mortem) ; 3) `toast_push_test.py --dry` puis
-      sans --dry, Link immobile → si bandeau : `push_toast()` dans memory_injector.
-      Le scan « StockItem hors-path » est ÉPUISÉ (0 hit).
-      Outils : tools/{toast_recon,toast_screens,toast_queue_watch,toast_push_test}.py.
+- [x] Popup natif « item reçu » — **VALIDÉ IN-GAME + IMPLÉMENTÉ (2026-07-12)** : bandeau
+      natif MessageGet « **Vous avez gagné {item}.** » (nom LOCALISÉ résolu par le jeu,
+      articles français corrects : « la pomme », « l'épée royale »). Détail → status §6c.
+      **Recette complète** : (1) enqueue pur-mémoire dans la file du HUD (reqMgr =
+      *(HUD+0x1B84), HUD = écran registre 0x25) — sentinel {head +0x14C, tail +0x150},
+      count +0x154, freelist +0x158 (pop = 1er mot), cap 3 ; nœud 0x54+8 {type @0,
+      top→+0x10, vt 0x1021D0FC, 0x40, char[64] nom d'ACTOR @+0x10, u8 @+0x50, links
+      @+0x54/58} ; type **0xA** (« Vous avez lâché {string du nœud} ») ; + nom d'actor au
+      ctx *(0x1047B054)+0x2C + bit dirty *(*(0x1046BDD8))+0x4075C |= 1. (2) **patch MSBT
+      en RAM** : « lâché »→« gagné » (UTF-16BE, 5 unités, in-place strict, occurrence
+      UNIQUE ; scan ~35 s 1×/session). Cartographie COMPLÈTE des 0x30 types de toasts
+      faite in-game (0-7 compartiments pleins, 8/9/0xA placeholder-item, 0xB-0xD Master
+      Sword, 0xE-0x11 compagnons, 0x12-0x18 exposition/équipement, 0x19-0x2F annonces
+      diverses) : AUCUN « vous obtenez » natif → le patch verbe est LA solution.
+      **Implémenté** : `push_toast`/`toast_enqueue`/`toast_pump` dans memory_injector
+      (deque throttlée 4 s, préparation heap_base+MSBT sur thread daemon, revalidation
+      du patch avant chaque bandeau, best-effort intégral), câblé dans
+      `_apply_actions_memory` (pouch/plats → item_name ; SetFlag `IsGet_<actor>` →
+      actor) + `flush()` (pump). RESTE : valider le câblage en session AP réelle ;
+      langues ≠ FR = texte vanilla (« lâché ») en attendant des motifs par langue.
+      Outils : tools/{toast_recon,toast_screens,toast_queue_watch,toast_push_test,
+      toast_msbt_patch}.py.
 - [x] Passe de test des murs in-game — **VALIDÉE (2026-07-12)** par le joueur ; warps
       Zora/Gerudo réajustés à la main dans zone_walls.json (coords in-game du joueur)
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
