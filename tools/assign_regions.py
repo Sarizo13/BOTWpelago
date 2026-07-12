@@ -47,8 +47,65 @@ NAME_OVERRIDES = [
 ]
 
 
-def _zone_polygons() -> dict[str, list[tuple[float, float]]]:
-    """Ferme les murs en polygones de zone avec les bords de carte (~±5100)."""
+def _convex_hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    """Enveloppe convexe (Andrew monotone chain), sens trigo."""
+    pts = sorted(set(points))
+    if len(pts) <= 2:
+        return pts
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    lower = []
+    for p in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    upper = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    return lower[:-1] + upper[:-1]
+
+
+def _grow(poly: list[tuple[float, float]], margin: float) -> list[tuple[float, float]]:
+    """Élargit un polygone convexe en poussant chaque sommet de `margin` unités depuis le
+    centroïde. Rend le test point-dans-polygone inclusif pour les points coïncidant avec un
+    sommet (les lieux de sanctuaire sont AUX coords des sanctuaires = sommets de l'enveloppe)."""
+    if not poly:
+        return poly
+    cx = sum(p[0] for p in poly) / len(poly)
+    cz = sum(p[1] for p in poly) / len(poly)
+    out = []
+    for x, z in poly:
+        dx, dz = x - cx, z - cz
+        d = (dx * dx + dz * dz) ** 0.5 or 1.0
+        out.append((x + dx / d * margin, z + dz / d * margin))
+    return out
+
+
+def _plateau_polygon(ref_locs: list[dict], margin: float = 120.0) -> list[tuple[float, float]]:
+    """Zone Grand Plateau = enveloppe convexe des checks DÉJÀ tagués 'Great Plateau'
+    (4 sanctuaires + tour), élargie d'une marge conservatrice. Le Plateau n'est pas muré
+    (pas de zone_walls) mais forme une zone géographique nette et ISOLÉE : tout ce qui est
+    DESSUS est atteignable SANS la paravoile (comme les sanctuaires ; la paravoile ne garde
+    que la SORTIE du plateau). Sans ça, les LIEUX du plateau (Location_* co-localisés aux
+    sanctuaires + Temple du Temps) retombaient en 'Hyrule World' → affichés inaccessibles
+    dans le tracker et gatés à tort dans la logique AP. Marge 120 u : l'Hyrule central le
+    plus proche (Dah Kaso) est à ~390 u → aucun risque de sur-inclusion."""
+    pts = []
+    for loc in ref_locs:
+        if (loc.get("region") or "") == "Great Plateau":
+            w = _world(loc["ap_id"])
+            if w:
+                pts.append(w)
+    return _grow(_convex_hull(pts), margin) if len(pts) >= 3 else []
+
+
+def _zone_polygons(ref_locs: list[dict] | None = None) -> dict[str, list[tuple[float, float]]]:
+    """Ferme les murs en polygones de zone avec les bords de carte (~±5100). Ajoute la zone
+    Grand Plateau (dérivée des checks du plateau, cf. _plateau_polygon) si `ref_locs` fourni."""
     w = WALLS["regions"]
     eldin = [tuple(p) for p in w["Eldin"]["walls"][0]["points"]]
     eldin += [(eldin[-1][0], -4200.0), (eldin[0][0], -4200.0)]          # bord nord
@@ -57,7 +114,14 @@ def _zone_polygons() -> dict[str, list[tuple[float, float]]]:
     zora += [(5200.0, zora[-1][1]), (5200.0, zora[0][1])]               # bord est
     gerudo = [tuple(p) for wall in w["Gerudo"]["walls"] for p in wall["points"]]
     gerudo += [(gerudo[-1][0], 4200.0), (-5200.0, 4200.0), (-5200.0, gerudo[0][1])]
-    return {"Eldin": eldin, "Hebra": rito, "Zora": zora, "Gerudo": gerudo}
+    polys: dict[str, list[tuple[float, float]]] = {}
+    # Plateau EN PREMIER : petite zone isolée, prioritaire sur les grandes zones murées.
+    if ref_locs is not None:
+        plateau = _plateau_polygon(ref_locs)
+        if plateau:
+            polys["Great Plateau"] = plateau
+    polys.update({"Eldin": eldin, "Hebra": rito, "Zora": zora, "Gerudo": gerudo})
+    return polys
 
 
 def _inside(x: float, z: float, poly: list[tuple[float, float]]) -> bool:
@@ -85,7 +149,9 @@ def main() -> None:
     ap.add_argument("--write", action="store_true", help="applique les changements")
     args = ap.parse_args()
 
-    polys = _zone_polygons()
+    # Zone Grand Plateau dérivée des checks du plateau de la copie de référence (data/).
+    ref_locs = json.loads(DATA_FILES[0].read_text(encoding="utf-8"))
+    polys = _zone_polygons(ref_locs)
     changes: dict[int, tuple[str, str, str]] = {}     # ap_id -> (name, old, new)
     no_coords: list[str] = []
     census: dict[str, int] = {}

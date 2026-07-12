@@ -1501,7 +1501,7 @@
     "flag_hash": "0xE6B95B31",
     "ap_id": 6081433,
     "name": "Dungeon009",
-    "region": "Hyrule World"
+    "region": "Great Plateau"
   },
   {
     "category": "location",
@@ -1733,7 +1733,7 @@
     "flag_hash": "0xBA933864",
     "ap_id": 6081462,
     "name": "Dungeon038",
-    "region": "Hyrule World"
+    "region": "Great Plateau"
   },
   {
     "category": "location",
@@ -1757,7 +1757,7 @@
     "flag_hash": "0x8C0E1607",
     "ap_id": 6081465,
     "name": "Dungeon041",
-    "region": "Hyrule World"
+    "region": "Great Plateau"
   },
   {
     "category": "location",
@@ -1949,7 +1949,7 @@
     "flag_hash": "0xB955B09C",
     "ap_id": 6081489,
     "name": "Dungeon065",
-    "region": "Hyrule World"
+    "region": "Great Plateau"
   },
   {
     "category": "location",
@@ -3173,7 +3173,7 @@
     "flag_hash": "0xA996F3DD",
     "ap_id": 6081642,
     "name": "Map Tower07",
-    "region": "Hyrule World"
+    "region": "Great Plateau"
   },
   {
     "category": "location",
@@ -3621,7 +3621,7 @@
     "flag_hash": "0x095288B6",
     "ap_id": 6081698,
     "name": "Times Shrine",
-    "region": "Hyrule World"
+    "region": "Great Plateau"
   },
   {
     "category": "location",

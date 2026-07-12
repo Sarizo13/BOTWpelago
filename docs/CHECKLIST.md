@@ -80,6 +80,16 @@
 - [ ] Tester le pack dans PopTracker (autotracking — construit, jamais testé)
 - [x] Checks non accessibles en **ROUGE** : `access_rules` par région (miroir de rules.py,
       héritées par les checks + pins carte) — à vérifier lors du test PopTracker
+- [x] **Grand Plateau accessible AVANT la paravoile — VÉRIFIÉ + CORRIGÉ (2026-07-12)** : la
+      région "Great Plateau" n'a AUCUNE `access_rules` (toujours verte) — cohérent avec
+      rules.py (seule la SORTIE « Leave Great Plateau » exige la paravoile). Bug trouvé : 6
+      LIEUX physiquement sur le plateau (Location_* co-localisés aux sanctuaires : Dungeon009/
+      038/041/065, Map Tower07, + Temple du Temps « Times Shrine ») étaient tagués "Hyrule
+      World" → rouges/gatés à tort. Fix à la SOURCE dans `tools/assign_regions.py` : polygone
+      Grand Plateau (enveloppe convexe des sanctuaires/tour, marge 120 u conservatrice — Hyrule
+      central le plus proche à ~390 u) → assigne les lieux DESSUS à "Great Plateau" (survit au
+      rebuild build_locations→assign_regions). Données régénérées (4 fichiers) + pack PopTracker
+      reconstruit : région Great Plateau = 16 checks, aucune access_rules. Tests 36 OK.
 - [ ] Polish : vraies icônes d'items
 
 ### Transverse / dette
