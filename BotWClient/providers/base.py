@@ -79,6 +79,19 @@ class InjectionSpec:
         actor_name: str
         modifier: int = 0  # durability/value bonus
 
+    @dataclass
+    class AddMaxStat:
+        """
+        Increase a CAPPED max stat by `amount` units — a Heart Container (`stat="heart"`)
+        or a Stamina Vessel (`stat="stamina"`). Each unit raises the persistent max
+        (reload-gated gamedata flag) up to BotW's hard game cap. Any unit that would push
+        PAST the cap is converted to a gift of `overflow_rupees` rubies instead (the player
+        is already maxed → the container/vessel would be wasted). See save_file._MAX_STAT.
+        """
+        stat: str            # "heart" | "stamina"
+        amount: int = 1      # number of containers / vessels received
+        overflow_rupees: int = 500
+
     ap_item_id: int
     ap_item_name: str
     # Ordered list of injection actions; the injector tries each until one succeeds.

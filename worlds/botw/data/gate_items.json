@@ -364,6 +364,28 @@
       }
     },
     {
+      "name": "Heart Container",
+      "ap_item_id": 6080128,
+      "count": 27,
+      "inject": {
+        "type": "add_max_stat",
+        "stat": "heart",
+        "amount": 1,
+        "overflow_rupees": 500
+      }
+    },
+    {
+      "name": "Stamina Vessel",
+      "ap_item_id": 6080129,
+      "count": 27,
+      "inject": {
+        "type": "add_max_stat",
+        "stat": "stamina",
+        "amount": 1,
+        "overflow_rupees": 500
+      }
+    },
+    {
       "name": "Baked Apple",
       "ap_item_id": 6080130,
       "count": 8,

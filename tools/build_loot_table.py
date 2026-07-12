@@ -115,6 +115,13 @@ SPECIALS = [
      "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 100}},
     {"name": "Rupees (300)", "ap_item_id": 6080127, "count": 3,
      "inject": {"type": "add_s32", "flag": "CurrentRupee", "amount": 300}},
+    # Réceptacle de Cœur / Fiole d'Endurance : montent le MAX persistant jusqu'au plafond du
+    # jeu (30 cœurs / 3 roues) ; au-delà (joueur déjà au max) → don de 500 rubis (voir
+    # save_file._deliver_max_stat / _MAX_STAT). Poids modéré : l'overflow gère l'excédent.
+    {"name": "Heart Container", "ap_item_id": 6080128, "count": 6,
+     "inject": {"type": "add_max_stat", "stat": "heart", "amount": 1, "overflow_rupees": 500}},
+    {"name": "Stamina Vessel", "ap_item_id": 6080129, "count": 6,
+     "inject": {"type": "add_max_stat", "stat": "stamina", "amount": 1, "overflow_rupees": 500}},
 ]
 
 # ── Plats & potions ───────────────────────────────────────────────────────────

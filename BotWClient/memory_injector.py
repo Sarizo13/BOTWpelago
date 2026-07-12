@@ -1306,6 +1306,18 @@ class CemuMemoryBridge:
             log.debug("[Mem] %s = %d", flag_name, value)
         return ok
 
+    def read_flag_f32(self, flag_name: str) -> Optional[float]:
+        """Lit un flag GameData de type f32 (ex: StaminaMax). None si absent."""
+        raw = self.read_flag(flag_name)
+        if raw is None:
+            return None
+        return struct.unpack(">f", struct.pack(">I", raw))[0]
+
+    def write_flag_f32(self, flag_name: str, value: float) -> bool:
+        """Écrit un flag GameData de type f32 (bits float en big-endian)."""
+        bits = struct.unpack(">I", struct.pack(">f", value))[0]
+        return self.write_flag(flag_name, bits)
+
     def add_s32_flag(self, flag_name: str, amount: int) -> bool:
         """Incrémente un compteur S32 (ex: DungeonClearSealNum, CurrentRupee)."""
         current = self.read_flag(flag_name)

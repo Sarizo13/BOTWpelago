@@ -41,6 +41,45 @@ _LIVE_CREATE_ENABLED = True
 # jamais saturée. Les flags (paravoile, champions…) ne comptent pas dans la limite.
 MAX_DELIVER_PER_FLUSH = 6
 
+# ── Cap cœurs / endurance + overflow rubis ──────────────────────────────────────
+# Réceptacles de Cœur / Fioles d'Endurance reçus d'AP → augmentent le MAX PERSISTANT (flag
+# gamedata, reload-gated) jusqu'au plafond DUR de BotW. Chaque unité qui dépasserait le plafond
+# (joueur déjà au max) est convertie en don de rubis (le réceptacle/fiole serait sinon perdu).
+#
+# ⚠️ CONSTANTES À CONFIRMER IN-GAME (procédure : diff save avant/après avoir ramassé UN
+# réceptacle et UNE fiole en jeu — `python -m BotWClient.BotWClient --diff-saves av.sav ap.sav`) :
+#   • CŒURS : le flag de max-PV persistant N'EST PAS dans le dump de cette version
+#     (`Item_LifeMaxUp`, nom STANDARD BotW, absent ; le dump n'a que `Item_LifeMaxAdd`). On
+#     TENTE `Item_LifeMaxUp` ; si `read_flag` renvoie None (flag absent) OU une valeur hors
+#     plage, on ne CORROMPT rien : on convertit l'unité en rubis et on logue « flag à confirmer ».
+#     Unité présumée = ¼-cœurs (1 réceptacle = +4 = 1 cœur ; base 12 = 3 cœurs ; plafond 120 = 30).
+#   • ENDURANCE : `StaminaMax` (f32) est présent. Échelle présumée : 1 roue = 1000, 1 fiole =
+#     +200 (1/5 roue), plafond 3000 = 3 roues. À confirmer (unité/plafond exacts).
+_MAX_STAT: dict[str, dict] = {
+    "heart":   {"flag": "Item_LifeMaxUp", "kind": "s32",
+                "per_unit": 4,     "cap": 120,    "lo": 0,   "hi": 200},
+    "stamina": {"flag": "StaminaMax",     "kind": "f32",
+                "per_unit": 200.0, "cap": 3000.0, "lo": 0.0, "hi": 4000.0},
+}
+
+
+def _plan_max_stat(current: float, per_unit: float, cap: float, amount: int
+                   ) -> tuple[float, int, int]:
+    """Planifie l'application de `amount` unités (réceptacles/fioles) à un max plafonné.
+    Applique chaque unité tant qu'elle NE dépasse PAS `cap` ; les unités restantes débordent.
+    Retourne (nouvelle_valeur_max, unités_appliquées, unités_overflow). Pur → testable."""
+    applied = 0
+    val = current
+    for _ in range(max(0, amount)):
+        if val + per_unit <= cap + 1e-6:
+            val += per_unit
+            applied += 1
+    return val, applied, max(0, amount) - applied
+
+
+def _fmt_stat(v: float, is_f32: bool) -> str:
+    return f"{v:g}" if is_f32 else str(int(v))
+
 
 # ── Load canonical data ───────────────────────────────────────────────────────
 
@@ -1019,6 +1058,12 @@ class DeferredSaveInjector(ItemInjector):
                 else:
                     all_ok = False
 
+            elif isinstance(action, InjectionSpec.AddMaxStat):
+                # Réceptacle de Cœur / Fiole d'Endurance : ↑ le max persistant (reload-gated)
+                # jusqu'au plafond du jeu ; overflow → rubis (live, portefeuille câblé).
+                if not self._deliver_max_stat(action, spec, memory=True):
+                    all_ok = False
+
             else:
                 log.debug("Action %s not implemented for memory injection", type(action).__name__)
         if toast_actor is not None:
@@ -1067,10 +1112,99 @@ class DeferredSaveInjector(ItemInjector):
                 # que la spec reste en file et parte en LIVE au prochain attach.
                 all_ok = False
 
+            elif isinstance(action, InjectionSpec.AddMaxStat):
+                # Réceptacle/Fiole hors-ligne (menu titre) : ↑ le max dans la save + overflow
+                # rubis dans CurrentRupee (tout reload-gated). Voir _deliver_max_stat.
+                if not self._deliver_max_stat(action, spec, memory=False, p=p):
+                    all_ok = False
+
             else:
                 log.debug("Action %s skipped (save-file injection)",
                           type(action).__name__)
         return all_ok
+
+    def _deliver_max_stat(self, action, spec, *, memory: bool, p: Optional[Path] = None) -> bool:
+        """Livre un Réceptacle de Cœur / Fiole d'Endurance : monte le MAX persistant (flag
+        gamedata, reload-gated) jusqu'au plafond DUR du jeu ; toute unité au-delà du plafond
+        (joueur déjà au max) devient un don de `overflow_rupees` rubis. `memory=True` passe par
+        le bridge (Cemu attaché) ; sinon par la save-fichier. SÉCURITÉ (constantes non encore
+        confirmées in-game, cf. _MAX_STAT) : si le flag est absent OU sa valeur hors plage
+        plausible, on ne CORROMPT rien — on convertit toute la réception en rubis et on logue.
+        Retourne True si livré (stat ± rubis), False si à reporter."""
+        cfg = _MAX_STAT.get(action.stat)
+        if cfg is None:
+            log.warning("[MaxStat] type inconnu %r — ignoré", action.stat)
+            return True                       # inconnu → on ne bloque pas la file
+        amount = max(1, int(action.amount))
+        is_f32 = cfg["kind"] == "f32"
+
+        # ── lecture du max courant ──
+        if memory:
+            cur = (self._bridge.read_flag_f32(cfg["flag"]) if is_f32
+                   else self._bridge.read_flag(cfg["flag"]))
+            if cur is not None and not is_f32:
+                cur = struct.unpack(">i", struct.pack(">I", cur & 0xFFFFFFFF))[0]  # s32 signé
+        else:
+            if p is None:
+                return False
+            try:
+                save = parse(_read_shared(p))
+                fid = crc32_id(cfg["flag"])
+                if not save.has_id(fid):                 # get_s32 renvoie 0 si absent → piège :
+                    cur = None                           # on distingue explicitement l'absence
+                else:
+                    raw = save.get_s32(fid)
+                    cur = (struct.unpack(">f", struct.pack(">I", raw & 0xFFFFFFFF))[0]
+                           if is_f32 else raw)
+            except Exception:
+                cur = None
+
+        # flag introuvable / valeur aberrante → repli SÛR = tout en rubis (jamais de write hasardeux)
+        plausible = cur is not None and cfg["lo"] <= cur <= cfg["hi"]
+        if not plausible:
+            rupees = amount * action.overflow_rupees
+            log.warning("[MaxStat] %s : max '%s' introuvable/hors plage (lu=%r) — À CONFIRMER "
+                        "IN-GAME ; converti en %d rubis (aucune écriture du flag)",
+                        spec.ap_item_name, cfg["flag"], cur, rupees)
+            return self._award_rupees(rupees, memory=memory, p=p)
+
+        new_val, applied, overflow = _plan_max_stat(cur, cfg["per_unit"], cfg["cap"], amount)
+
+        ok = True
+        if applied > 0:
+            if memory:
+                ok = (self._bridge.write_flag_f32(cfg["flag"], new_val) if is_f32
+                      else self._bridge.write_flag(cfg["flag"], int(new_val) & 0xFFFFFFFF))
+            else:
+                bits = (struct.unpack(">I", struct.pack(">f", new_val))[0] if is_f32
+                        else int(new_val) & 0xFFFFFFFF)
+                ok = _write_flag_to_save(p, crc32_id(cfg["flag"]), bits)
+            if ok:
+                log.info("  [MaxStat] %s : +%d %s (max %s %s→%s, RECHARGE pour appliquer)",
+                         spec.ap_item_name, applied, action.stat, cfg["flag"],
+                         _fmt_stat(cur, is_f32), _fmt_stat(new_val, is_f32))
+        if ok and overflow > 0:
+            rupees = overflow * action.overflow_rupees
+            log.info("  [MaxStat] %s : %d unité(s) au-delà du plafond → +%d rubis",
+                     spec.ap_item_name, overflow, rupees)
+            ok = self._award_rupees(rupees, memory=memory, p=p)
+        return ok
+
+    def _award_rupees(self, amount: int, *, memory: bool, p: Optional[Path] = None) -> bool:
+        """Crédite `amount` rubis : live (portefeuille câblé) si Cemu attaché, sinon dans la
+        save (CurrentRupee, reload-gated)."""
+        if amount <= 0:
+            return True
+        if memory and self._bridge is not None and self._bridge.has_live_inventory:
+            return self._bridge.live_add_rupees(amount) is not None
+        if not memory and p is not None:
+            try:
+                cur = parse(_read_shared(p)).get_s32(crc32_id("CurrentRupee"))
+                return _write_flag_to_save(p, crc32_id("CurrentRupee"),
+                                           max(0, min(999999, cur + amount)) & 0xFFFFFFFF)
+            except Exception:
+                return False
+        return False
 
     def _enforce_retention(self) -> int:
         """

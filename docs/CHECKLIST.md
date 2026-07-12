@@ -157,9 +157,21 @@
       toast_msbt_redirect,toast_msbt_patch}.py.
 - [x] Passe de test des murs in-game — **VALIDÉE (2026-07-12)** par le joueur ; warps
       Zora/Gerudo réajustés à la main dans zone_walls.json (coords in-game du joueur)
-- [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
-      d'endurance ; au-delà du plafond → convertir en **don de 500 rubis** (le vrai
-      portefeuille est câblé → faisable proprement maintenant)
+- [x] **Cap cœurs / endurance + overflow en rubis — IMPLÉMENTÉ (2026-07-13, constantes À
+      CONFIRMER IN-GAME)** : nouveaux items AP **Réceptacle de Cœur** (6080128) + **Fiole
+      d'Endurance** (6080129) ajoutés à la loot table (`build_loot_table.py` SPECIALS, poids
+      27). Livraison via `InjectionSpec.AddMaxStat` → `_deliver_max_stat` : monte le MAX
+      persistant (flag gamedata, reload-gated) jusqu'au plafond DUR du jeu (30 cœurs / 3 roues) ;
+      chaque unité au-delà (joueur déjà au max) → **don de 500 rubis** (live via le portefeuille
+      câblé, ou CurrentRupee save hors-ligne). Planificateur pur `_plan_max_stat` + repli SÛR
+      (flag absent/valeur aberrante → tout en rubis, AUCUNE écriture hasardeuse). Tests :
+      `tests/test_max_stat.py` (12). ⚠️ **CONSTANTES À CONFIRMER IN-GAME** (`_MAX_STAT` dans
+      save_file.py) : le flag de max-PV **`Item_LifeMaxUp` est ABSENT du dump de cette version**
+      (42536 flags ; seul `Item_LifeMaxAdd` existe) → tant qu'il n'est pas confirmé, un
+      Réceptacle donne 500 rubis (jamais perdu) + log « à confirmer ». Endurance = `StaminaMax`
+      (f32, présent) mais échelle/plafond (1000/roue, +200/fiole, cap 3000) à vérifier.
+      **Procédure** : ramasser 1 réceptacle + 1 fiole en jeu, `--diff-saves av.sav ap.sav`,
+      mettre à jour `_MAX_STAT`.
 - [x] **Flags BOOLS live — TRANCHÉ (2026-07-12, tests in-game mur Ganon)** : storage bool
       trouvé + write persistant en RAM, MAIS (a) **pas sérialisé** (le jeu ne resérialise
       que ses flags « dirty » — 3 saves manuelles, .sav resté à 0) et (b) **pas relu en
@@ -198,8 +210,8 @@
       instantané ; idle=save-fichier). Flags reload-gated → le mur de région s'ouvre au
       rechargement (attendu). Cohérent avec rules.py/regions.py (chaque tenue garde sa
       région). Tests : `test_gate_items.py` (+3). **RESTE : confirmer in-game.**
-- [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et d'endurance ;
-      si le joueur en gagnerait au-delà du plafond → convertir en **don de 500 rubis**.
+- [x] **Cap cœurs / endurance + overflow en rubis** — IMPLÉMENTÉ (voir la section « V1 —
+      gameplay & enforcement » ci-dessus ; constantes de flags à confirmer in-game).
 
 ### Décompilations à étudier (apprendre → ré-implémenter, PAS redistribuer)
 - [x] ~~**`DAR 3.6 - BCML - FREE.zip`**~~ — plus nécessaire : le mécanisme vanilla de blocage

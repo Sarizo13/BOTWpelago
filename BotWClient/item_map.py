@@ -39,6 +39,10 @@ def _build_actions(inject) -> list:
             actions.append(InjectionSpec.AddS32(flag_name=entry["flag"], amount=entry.get("amount", 1)))
         elif t == "add_porch":
             actions.append(InjectionSpec.AddPouchItem(item_name=entry["item"], amount=entry.get("amount", 1)))
+        elif t == "add_max_stat":
+            actions.append(InjectionSpec.AddMaxStat(
+                stat=entry["stat"], amount=entry.get("amount", 1),
+                overflow_rupees=entry.get("overflow_rupees", 500)))
         elif t == "add_cooked":
             actions.append(InjectionSpec.AddCookedItem(
                 item_name    = entry["item"],
