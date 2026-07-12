@@ -993,16 +993,39 @@ lire les globals statiques ne coûte AUCUN scan). Scripts session (scratchpad, j
    &str)` → `FUN_02fbcaf8(HUD)` **= `FUN_02ed1f7c(reqMgr=*(HUD+0x1B84), 0xB, &str)`**
    [ENQUEUE] + `FUN_03058b44(uiroot, 0)` = `uiroot+0x4075C |= 1<<0` [bit « HUD dirty »].
    → **IL Y A BIEN UNE FILE DE DONNÉES drainée par la boucle UI** = piste 2 confirmée.
-6. **LA FILE (localisée + lue live)** : `HUD MainScreen` = **registre écran id 0x25**
-   (`reg = *(0x1047E650)`, `HUD = *(*(reg+0x18) + 0x25*4)`, vtable 0x102433D4). Son
-   **request manager** `reqMgr = *(HUD+0x1B84)` contient la file : `reqMgr+0x150` tête de
-   liste active, `+0x154`, `+0x158` freelist, `+0x160` **capacité (=3, lu live)** ; les
-   nœuds font **0x54 octets** {id de type @+0x00, sead::FixedSafeString<64> à +0x08 (nom
-   d'écran/message)}. `FUN_02ed1f7c` = enqueue : dépile un nœud de la freelist (`+0x158`,
-   sinon alloc `FUN_0308e578(0x54)`), construit la FixedSafeString (`FUN_030b0fbc`), copie
-   le nom, splice en tête, `count++`. La boucle UI du HUD dépile → `openScreen` par nom →
-   factory. **Au repos la file est VIDE** (sentinel self-référent) → un ramassage y fait
-   apparaître un nœud transitoire. Outil de capture : `tools/toast_queue_watch.py`.
+6. **LA FILE (structure EXACTE, décomp 2026-07-12)** : `HUD MainScreen` = **registre
+   écran id 0x25** (`reg = *(0x1047E650)`, `HUD = *(*(reg+0x18) + 0x25*4)`, vtable
+   0x102433D4). Son **request manager** `reqMgr = *(HUD+0x1B84)` : critsec @+0x110
+   (le jeu locke l'enqueue) ; **sentinel ListNode {next @+0x14C = head, prev @+0x150 =
+   tail}** (liste circulaire ; self-référent = vide — les DEUX mots = reqMgr+0x14C) ;
+   count @+0x154 ; **freelist head @+0x158** (pop : `node=*0x158 ; *0x158=*node` — le
+   1er mot du nœud libre = chaînage) ; capacité @+0x160 (=3, lu live). **Nœud = 0x54
+   octets de données + ListNode 8 o** : {type @+0x00 (0xB=toast), mStringTop @+0x04
+   → node+0x10, vtable **0x1021D0FC** @+0x08, bufsize 0x40 @+0x0C, char[64] @+0x10,
+   u8 flag=0 @+0x50, **link {next @+0x54, prev @+0x58}**} — les links pointent les
+   +0x54 des voisins / le sentinel (asm `FUN_0308e7e8` pushBack-front : link.prev=sent,
+   link.next=old, old.prev=link, head=link ; `FUN_0308e808` = unlink standard ; sur
+   liste vide `old.prev` retombe sur +0x150 → cohérent avec le self-référent lu live).
+   `FUN_02ed1f7c` = enqueue complet : guard count≥cap (purge du plus ancien), DÉDUP par
+   comparaison de string si non-vide, pop freelist (sinon alloc `FUN_0308e578(0x54)`),
+   placement-new (chaîne de ctors SafeString→…→FixedSafeString<64>, vtable finale
+   0x1021D0FC, `FUN_030b0fbc`), copie de la string, pushBack, `count++` — le tout sous
+   critsec +0x110 (nous écrivons SANS lock : fenêtre de course ~µs vs frame 33 ms,
+   accepté ; publication head/count en dernier). En amont `FUN_03073184` : guard
+   `FUN_03089a30()==0`, HUD «actif» (vtable(+0xC)+0x14), puis enqueue + **bit dirty
+   `*(uiroot+0x4075C) |= 1<<0` avec uiroot = *(0x1046BDD8)** (`FUN_03058b44`). La
+   string par défaut du pickup = SafeString **DAT_10549FEC (.bss** — pas de contenu
+   statique dans le RPX, à lire LIVE ; probablement vide). **Les handlers du type 0xB**
+   (`FUN_0207ec78`/`FUN_020800b0`, appelés par table de ptrs — callers vides) ouvrent
+   l'écran par ID : `FUN_03080a14(0x24,0)` + re-lookup + trigger `vt+0x2C(screen,1)`,
+   **sans lire la string du nœud** → le routage est par TYPE ; la string semble
+   accessoire pour 0xB. Au repos la file est VIDE. Outils : `tools/toast_queue_watch.py`
+   (v2 2026-07-12 : busy-loop ~kHz — la v1 à 30 Hz a raté la transition, capture #1
+   vide — + **post-mortem freelist** : les nœuds recyclés gardent la string résiduelle
+   du dernier toast → layout confirmable sans attraper la transition) et
+   `tools/toast_push_test.py` (write-test : reproduit l'enqueue à l'identique, backup
+   par patch, post-check consommé/inchangé/autre, restore intelligent qui ne réécrit
+   que nos valeurs).
 7. **Ouverture finale** : `FUN_03080a14(id) → FUN_03058e84` (tables d'exclusion mutuelle
    `DAT_105481e0/e4` stride 12 = pré-décodées : id, prio, flag, arg — MessageGet est
    l'entrée id 0x24 prio 0) `→ FUN_030806f0` = **factory native par nom**
@@ -1016,19 +1039,21 @@ a un **canal de données** — la file du HUD reqMgr — que la boucle UI draine
 `{type 0xB, nom d'écran}` dans cette file + peupler le nom d'actor dans le contexte
 `*(0x1047B054)+0x2C` déclencherait le bandeau SANS aucun appel natif de notre part. C'est
 le même patron que l'insertion pouch (déjà maîtrisée) : dépiler la freelist, construire la
-FixedSafeString, splicer, `count++`. **Non trivial mais faisable.** Ce qui MANQUE avant
-d'écrire `push_toast()` = la VALIDATION LIVE (capture d'un vrai ramassage pour figer le
-layout exact du nœud + confirmer que remplir la file suffit) — nécessite la boucle
-utilisateur (protocole ci-dessous).
+FixedSafeString, splicer, `count++`. **Le layout du nœud et le splice sont désormais
+CERTAINS (décomp 2026-07-12, cf. point 6)** — la capture live n'est plus qu'une
+CONFIRMATION ; reste l'inconnue empirique : le drain consomme-t-il notre nœud et le
+bandeau s'affiche-t-il ? — nécessite la boucle utilisateur (protocole ci-dessous).
 
-**PROTOCOLE LIVE (à faire avec l'utilisateur, profil 80000010)** :
+**PROTOCOLE LIVE (à faire avec l'utilisateur, profil 80000010, jeu chargé, Link en jeu)** :
 1. `python tools/toast_recon.py base` (cache heap_base ; à refaire si Cemu relancé).
-2. `python tools/toast_queue_watch.py 40` puis RAMASSER 3-4 objets variés (un déjà en
-   stock = moins de bruit) → capture la file qui se remplit + le nom d'actor. Claude lit
-   `~/.botwpelago/toast_queue.json` → fige le layout exact du nœud 0x54 + la string.
-3. Write-test : reproduire l'enqueue (freelist→nœud, FixedSafeString, splice, count++) +
-   nom d'actor, sur état réversible (backup des octets touchés). Si le bandeau s'affiche →
-   `push_toast(actor_name)` dans `memory_injector`, câblé sur la réception AP.
+2. `python tools/toast_queue_watch.py 40` puis RAMASSER 2-3 objets variés → même si le
+   busy-loop rate la transition, le POST-MORTEM freelist fige la string résiduelle d'un
+   vrai pickup (+ `defstr` DAT_10549FEC lue live). Claude lit `~/.botwpelago/toast_queue.json`.
+3. `python tools/toast_push_test.py --dry` (état + patchs, 0 write) puis
+   `python tools/toast_push_test.py --actor Item_Fruit_A` — Link IMMOBILE, file au repos.
+   Backup auto ; post-check 10 s : « consommé » = le drain a dépilé (bandeau ?) ;
+   « inchangé » = auto-restore. Si bandeau → `push_toast(actor_name)` dans
+   `memory_injector`, câblé sur la réception AP, et validation in-game finale.
 
 **Dispatcher priorité** (slot vtable+8, `FUN_02fd1534`) : les écrans guides/tips
 0x1a/0x19/0x49 passent avant (`FUN_03074fc0/af8`, `FUN_030756b4(0..3)` → `FUN_030751f0(n)`
