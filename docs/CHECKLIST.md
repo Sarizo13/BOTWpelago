@@ -175,6 +175,19 @@
       Gerudo→tenue Gerudo→relais Canyon Gerudo. 249 objets / 22 carrés (couche AOC).
       Client : sets livrés + flags IsGet_Armor_* posés. Remplace la gate kill (V1).
       Reste : passe de test des 4 murs in-game + ajustement des polylignes au besoin.
+- [x] **Livraison des tenues de région + Arc de Lumière — CORRIGÉE (2026-07-12)** : bug — un
+      spec MIXTE porch+flag (3 pièces + 3 flags `IsGet_Armor_*`) passé à `_inject_pending`
+      était classé « flag-only » (`any(SetFlag)` → `continue`) → log trompeur « Flags écrits —
+      RECHARGE » alors que NI les pièces NI les flags n'étaient réellement livrés (le Bow of
+      Light avait le même bug). Fix : les items `ap_progression_logical` n'exposent plus
+      d'action injectable (item_map) → `queue_item` ne fait que TRACER la réception ; la
+      livraison passe par le mécanisme COMPANION du provider — pièces via `_COMPANION_POUCH`
+      (tenue complète casque 4 + torse 5 + jambes 6, + l'arc), flags via `_COMPANION_FLAGS`
+      (`IsGet_Armor_*` / mailbox de gate), les DEUX construits depuis `gate_items.json`
+      (source unique). Idempotent + retenu chaque poll, dans les deux modes (attaché=live
+      instantané ; idle=save-fichier). Flags reload-gated → le mur de région s'ouvre au
+      rechargement (attendu). Cohérent avec rules.py/regions.py (chaque tenue garde sa
+      région). Tests : `test_gate_items.py` (+3). **RESTE : confirmer in-game.**
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et d'endurance ;
       si le joueur en gagnerait au-delà du plafond → convertir en **don de 500 rubis**.
 

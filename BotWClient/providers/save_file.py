@@ -170,12 +170,31 @@ _COMPANION_POUCH: dict[int, list[str]] = {
     6_080_011: ["Obj_HeroSoul_Zora"],     # Mipha's Grace
     6_080_012: ["Obj_HeroSoul_Goron"],    # Daruk's Protection
     6_080_013: ["Obj_HeroSoul_Gerudo"],   # Urbosa's Fury
-    # Tenues = objet AP → on donne la TENUE COMPLÈTE (casque type 4 + torse 5 + jambes 6).
-    6_080_014: ["Armor_011_Head", "Armor_011_Upper", "Armor_011_Lower"],  # Flamebreaker
-    6_080_015: ["Armor_009_Head", "Armor_009_Upper", "Armor_009_Lower"],  # Snowquill
-    6_080_016: ["Armor_053_Head", "Armor_053_Upper", "Armor_053_Lower"],  # Vai (Gerudo)
-    6_080_017: ["Armor_006_Head", "Armor_006_Upper", "Armor_006_Lower"],  # Zora
+    # Tenues de région (Flamebreaker 6080014, Snowquill 015, Vai 016, Zora 017) + Arc de
+    # Lumière (018) : AJOUTÉS plus bas depuis leur champ `inject` (source unique de vérité) —
+    # TENUE COMPLÈTE (casque type 4 + torse 5 + jambes 6) et l'arc, livrés + retenus comme
+    # les objets-clés companion.
 }
+
+# Tenues de région + Arc de Lumière (role ap_progression_logical) : on ALIMENTE les maps
+# companion depuis leur `inject` (add_porch → pièces pouch, set_flag → flags IsGet_/gate) pour
+# une livraison UNIQUE, idempotente et retenue chaque poll dans les deux modes. Évite le double
+# routage (queue vs companion) et garde data/gate_items.json comme source unique. Les flags
+# IsGet_Armor_* / mailbox de gate sont ainsi forcés ON à la réception (voie companion) et
+# comptés comme écrits par le client (voir _CLIENT_WRITTEN_FLAGS plus bas).
+for _lit in _GATE_ITEMS["items"]:
+    if _lit.get("role") != "ap_progression_logical":
+        continue
+    _ap = _lit["ap_item_id"]
+    for _inj in (_lit.get("inject") or []):
+        if _inj.get("type") == "add_porch":
+            _COMPANION_POUCH.setdefault(_ap, [])
+            if _inj["item"] not in _COMPANION_POUCH[_ap]:
+                _COMPANION_POUCH[_ap].append(_inj["item"])
+        elif _inj.get("type") == "set_flag":
+            _COMPANION_FLAGS.setdefault(_ap, [])
+            if _inj["flag"] not in _COMPANION_FLAGS[_ap]:
+                _COMPANION_FLAGS[_ap].append(_inj["flag"])
 
 # Flags que le CLIENT ÉCRIT lui-même (livraison gate + companion) → à NE PAS détecter comme des
 # checks joueur : sinon on envoie un faux check. Critique en lecture mémoire (nos écritures sont
@@ -814,10 +833,13 @@ class DeferredSaveInjector(ItemInjector):
             log.debug("[Orbe] banking save échoué : %s", exc)
 
     def _deliver_companion_pouch(self) -> None:
-        """Ajoute en LIVE les objets-clés companion (paravoile PlayerStole2, capacités Obj_HeroSoul_*)
-        = type 9. Sans « écriture save quand attaché », c'est la SEULE voie ; sinon le paravoile
-        n'apparaît pas dans l'inventaire. Idempotent (create seulement si absent → pas de doublon).
-        Appelé APRÈS _inject_pending (buffer stable/relocalisé) pour éviter le doublon d'avant."""
+        """Ajoute en LIVE les objets companion : objets-clés (paravoile PlayerStole2, capacités
+        Obj_HeroSoul_* type 9) ET les TENUES de région (casque 4 + torse 5 + jambes 6) + l'Arc
+        de Lumière (Weapon_Bow_071) — tous alimentés dans _COMPANION_POUCH depuis gate_items.json.
+        Sans « écriture save quand attaché », c'est la SEULE voie live ; les flags associés
+        (IsGet_Armor_*, mailbox de gate) sont posés par _enforce_retention (reload-gated → le mur
+        de région s'ouvre au rechargement). Idempotent (create seulement si absent → pas de
+        doublon). Appelé APRÈS _inject_pending (buffer stable/relocalisé)."""
         b = self._bridge
         if not (b and b.is_attached and b.has_live_inventory):
             return
@@ -830,7 +852,9 @@ class DeferredSaveInjector(ItemInjector):
                     typ = info.get("type", 9)              # défaut objet-clé (type 9)
                     # arme/arc/bouclier : value = durabilité ; armures/objets-clés : 1
                     val = info.get("life", 1) if typ in (0, 1, 3) else 1
-                    b.live_create_item(iname, typ, info.get("sub"), val)
+                    if b.live_create_item(iname, typ, info.get("sub"), val):
+                        log.info("  [Live] %s livré (instantané ; flag associé au rechargement)",
+                                 iname)
 
     def _inject_pending(self) -> list[InjectionSpec]:
         if not self._queue:

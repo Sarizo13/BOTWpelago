@@ -81,3 +81,45 @@ def test_armor_sets_complete(gate):
         assert parts == {"Head", "Upper", "Lower"}, it["name"]
         # chaque flag correspond exactement à un actor livré
         assert {f["flag"] for f in flags} == {f"IsGet_{a}" for a in actors}, it["name"]
+
+
+def test_logical_items_wired_to_companion_delivery(gate):
+    """Fix 2026-07-12 : les items logiques (tenues + Arc) sont livrés via le MÉCANISME
+    COMPANION du provider (pièces pouch + flags IsGet_/gate), PAS via _inject_pending (où
+    un spec mixte porch+flag était mal routé vers la voie flag-only → rien livré). On
+    verrouille que chaque pièce et chaque flag du champ `inject` est bien câblé."""
+    from BotWClient.providers.save_file import _COMPANION_FLAGS, _COMPANION_POUCH
+
+    logical = [it for it in gate["items"] if it.get("role") == "ap_progression_logical"]
+    assert logical, "aucun item logique — la fixture a changé ?"
+    for it in logical:
+        ap = it["ap_item_id"]
+        want_pouch = [e["item"] for e in it["inject"] if e["type"] == "add_porch"]
+        want_flags = [e["flag"] for e in it["inject"] if e["type"] == "set_flag"]
+        for item in want_pouch:
+            assert item in _COMPANION_POUCH.get(ap, []), f"{it['name']}: pièce {item} non câblée"
+        for flag in want_flags:
+            assert flag in _COMPANION_FLAGS.get(ap, []), f"{it['name']}: flag {flag} non câblé"
+
+
+def test_logical_flags_are_client_written(gate):
+    """Les flags posés par le client (IsGet_Armor_*, mailbox de gate) ne doivent JAMAIS être
+    détectés comme des checks joueur (sinon faux check envoyé au serveur)."""
+    from BotWClient.providers.save_file import _CLIENT_WRITTEN_FLAGS
+    from BotWClient.save_parser import flag_id
+
+    for it in gate["items"]:
+        if it.get("role") != "ap_progression_logical":
+            continue
+        for e in it["inject"]:
+            if e["type"] == "set_flag":
+                assert flag_id(e["flag"]) in _CLIENT_WRITTEN_FLAGS, e["flag"]
+
+
+def test_logical_items_have_no_injectable_actions():
+    """item_map n'expose AUCUNE action pour les items logiques → queue_item ne fait que
+    tracer la réception (pas de spec mixte mal routé). Régression du bug de livraison."""
+    from BotWClient.item_map import get_spec
+
+    for ap in (6_080_014, 6_080_015, 6_080_016, 6_080_017, 6_080_018):
+        assert get_spec(ap).actions == [], ap

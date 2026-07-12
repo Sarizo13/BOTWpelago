@@ -63,12 +63,18 @@ for _item in _GATE["items"]:
             display_note = _item.get("note", ""),
         )
     elif _item["role"] == "ap_progression_logical":
-        # Tenues gates : depuis la V2 zone-gate, elles sont livrées POUR DE VRAI
-        # (3 pièces pouch + flags IsGet_Armor_* que le mod lit pour ouvrir la zone).
+        # Tenues de région (3 pièces + flags IsGet_Armor_*) + Arc de Lumière : livrés via le
+        # MÉCANISME COMPANION du provider (_COMPANION_POUCH pièces / _COMPANION_FLAGS flags,
+        # construits depuis ce même champ `inject`) — idempotent, retenu chaque poll, dans les
+        # deux modes (Cemu attaché = live ; idle = save-fichier). On n'expose donc PAS ici
+        # d'actions injectables : un spec MIXTE porch+flag passé à _inject_pending était mal
+        # routé vers la voie flag-only (« Flags écrits — RECHARGE ») → les 3 pièces n'étaient
+        # jamais livrées et les flags jamais écrits. Sans action, queue_item ne fait que TRACER
+        # la réception (_received) → la livraison réelle vient du provider (companion).
         ITEM_MAP[_item["ap_item_id"]] = InjectionSpec(
             ap_item_id   = _item["ap_item_id"],
             ap_item_name = _item["name"],
-            actions      = _build_actions(_item.get("inject")),
+            actions      = [],
             display_note = _item.get("gates", ""),
         )
 
