@@ -20,7 +20,8 @@ import sys
 from capstone import Cs, CS_ARCH_PPC, CS_MODE_BIG_ENDIAN, CS_MODE_32
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEXT_BASE = 0x02000000
+TEXT_BASE = 0x02000020   # vaddr réel de l'octet 0 de 02_text.bin (section ELF @0x02000020,
+                         # corrigé 2026-07-11 — l'ancien 0x02000000 décalait tout de -0x20)
 RODATA_BASE = 0x10000000
 
 KNOWN = {

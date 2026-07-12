@@ -112,17 +112,23 @@
         l'exige toujours (rules.py). Génération 2 slots revalidée.
       - NB : comme les tenues, l'ouverture du mur après réception ≠ instantanée
         (flags reload-gated) → cf. piste bools live.
-- [~] Popup natif = **toast de ramassage** — ARCHITECTURE COMPLÈTE RE (2026-07-11,
-      décomp v208 + live ; détail → docs/status.md §6c). Chaîne : nom d'actor écrit dans
-      le singleton contexte `*(0x1047B054)+0x2C` (SafeString, vidée après consommation) +
-      item via mLastAddedItems (`PauseMenuDataMgr+0x37cec`, FALLBACK nom seul OK) →
-      écran « MessageGet_00Screen » (id probable 0x24, créé à la demande, refresh =
-      FUN_02fd0ce4) ouvert par des ÉVÉNEMENTS UI persistants à bit «pending» (`evt+0xB`,
-      re-post = FUN_030ea2e0) ; trigger écran = slot vtable+0x2C (FUN_036066EC, quasi pur
-      setter +0x180/+0x182). Le scan « StockItem hors-path » est ÉPUISÉ (0 hit — le nom du
-      layout n'existe pas isolé en RAM). RESTE : protocole live toast-affiché+pause
-      (vtable exacte, état, backrefs → l'événement show-toast), write-test du POST
-      (nom + bit pending / état trigger), puis push_toast() dans memory_injector.
+- [~] Popup natif = **toast de ramassage** — ARCHITECTURE COMPLÈTE RE + VOIE PUR-MÉMOIRE
+      IDENTIFIÉE (2026-07-11, décomp v208 + live ; détail → docs/status.md §6c).
+      **Chemin pickup tracé de bout en bout** : `FUN_03076e94(actor,show)` = (a) ajoute à
+      mLastAddedItems [déjà fait par notre injection], (b) ENFILE la requête toast (type
+      0xB + nom) dans la **file du HUD** `reqMgr = *(HUD+0x1B84)` (HUD = écran registre id
+      0x25) : liste de nœuds 0x54 à `reqMgr+0x150`, freelist +0x158, cap +0x160=3. La
+      **boucle UI draine cette file** → factory native `new Screen(name)` — donc on ne
+      touche PAS au natif, on POUSSE dans la file (piste 2 du brief = CONFIRMÉE).
+      **VERDICT : voie pur-mémoire OUVERTE** (contrairement à GetDemo, irréductiblement
+      natif) — c'est le même patron d'insertion que le pouch (freelist→FixedSafeString→
+      splice→count++) + peupler le nom d'actor `*(0x1047B054)+0x2C`. Non trivial, FAISABLE.
+      **RESTE = validation live + write-test** (nécessite la boucle utilisateur) :
+      1) `python tools/toast_recon.py base` ; 2) `python tools/toast_queue_watch.py 40`
+      puis ramasser 3-4 objets → capture la file (Claude fige le layout du nœud) ;
+      3) reproduire l'enqueue sur état réversible → si bandeau OK → `push_toast()` dans
+      memory_injector câblé sur la réception AP. Le scan « StockItem hors-path » est
+      ÉPUISÉ (0 hit). Outils : tools/{toast_recon,toast_screens,toast_queue_watch}.py.
 - [x] Passe de test des murs in-game — **VALIDÉE (2026-07-12)** par le joueur ; warps
       Zora/Gerudo réajustés à la main dans zone_walls.json (coords in-game du joueur)
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et

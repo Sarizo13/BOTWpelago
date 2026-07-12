@@ -986,19 +986,54 @@ lire les globals statiques ne coûte AUCUN scan). Scripts session (scratchpad, j
    `FUN_03084b64` = variante ActorInfo, clés hash 0x216a3a63/0xefb9041d non résolues) ;
    pose le texte via le système de messages (`FUN_037e63a4`) ; anime les panes. Strings
    pivot rodata : `UI/StockItem/%s` @0x1025DE90 (3 sites .text), `%s.bitemico` @0x1025DEEC.
-5. **Ouverture** : `FUN_03080a14(id) → FUN_03058e84` (tables d'exclusion mutuelles
-   DAT_105481e0/e4 stride 12 + DAT_105481e8/ec) `→ FUN_030806f0` = **factory native par
-   nom** (`thunk_FUN_030a857c`) + enregistrement + open : PAS émulable en écritures.
-   MAIS le jeu lui-même passe par des **ÉVÉNEMENTS UI différés** : handlers
-   `FUN_0207ec78`/`FUN_020800b0` (vtables rodata ~0x1000EA6C/~0x1000ED64, slot commun
-   FUN_030ea334) = « assure écran 0x24 ouvert + vtable+0x2C(screen,1) » ;
-   `FUN_030ea2e0(evt)` = **re-poste l'événement en posant bit1 du byte `evt+0xB`**
-   (700+ handlers l'utilisent) → les événements sont des objets persistants à FLAGS,
-   la boucle UI draine ceux marqués pending. Si le POST = poser ce bit → pur données.
-6. **Dispatcher priorité** (slot vtable+8, `FUN_02fd1534`) : cède la place aux écrans
-   guides/tips 0x1a/0x19/0x49 (`FUN_03074fc0/af8`, `FUN_030756b4(0..3)` →
-   `FUN_030751f0(n)` → `FUN_02f8f608(screen49, n)`). L'écran 0x49 (guides) : état @+0x1b90
-   (2=open), type courant @+0x1bbc, show direct = `FUN_02f8f3f0`.
+5. **CHEMIN DE L'ÉVÉNEMENT PICKUP tracé de bout en bout** (le vrai canal du bandeau) :
+   `FUN_0236f994` (traite l'acteur ramassé) → `FUN_03076e94(actor, doShow)` qui fait
+   DEUX choses : (a) `FUN_02eb7a70(mgr, actor)` = **ajoute à mLastAddedItems** [DÉJÀ fait
+   par notre injection pouch] ; (b) si doShow : `FUN_030731ec(0xB)` → `FUN_03073184(0xB,
+   &str)` → `FUN_02fbcaf8(HUD)` **= `FUN_02ed1f7c(reqMgr=*(HUD+0x1B84), 0xB, &str)`**
+   [ENQUEUE] + `FUN_03058b44(uiroot, 0)` = `uiroot+0x4075C |= 1<<0` [bit « HUD dirty »].
+   → **IL Y A BIEN UNE FILE DE DONNÉES drainée par la boucle UI** = piste 2 confirmée.
+6. **LA FILE (localisée + lue live)** : `HUD MainScreen` = **registre écran id 0x25**
+   (`reg = *(0x1047E650)`, `HUD = *(*(reg+0x18) + 0x25*4)`, vtable 0x102433D4). Son
+   **request manager** `reqMgr = *(HUD+0x1B84)` contient la file : `reqMgr+0x150` tête de
+   liste active, `+0x154`, `+0x158` freelist, `+0x160` **capacité (=3, lu live)** ; les
+   nœuds font **0x54 octets** {id de type @+0x00, sead::FixedSafeString<64> à +0x08 (nom
+   d'écran/message)}. `FUN_02ed1f7c` = enqueue : dépile un nœud de la freelist (`+0x158`,
+   sinon alloc `FUN_0308e578(0x54)`), construit la FixedSafeString (`FUN_030b0fbc`), copie
+   le nom, splice en tête, `count++`. La boucle UI du HUD dépile → `openScreen` par nom →
+   factory. **Au repos la file est VIDE** (sentinel self-référent) → un ramassage y fait
+   apparaître un nœud transitoire. Outil de capture : `tools/toast_queue_watch.py`.
+7. **Ouverture finale** : `FUN_03080a14(id) → FUN_03058e84` (tables d'exclusion mutuelle
+   `DAT_105481e0/e4` stride 12 = pré-décodées : id, prio, flag, arg — MessageGet est
+   l'entrée id 0x24 prio 0) `→ FUN_030806f0` = **factory native par nom**
+   (`thunk_FUN_030a857c` = `new Screen(name)` + alloc sead) + enregistrement + trigger
+   (`screen.vtable+0x2C`). La factory elle-même = **appel natif irréductible** (comme
+   GetDemo), MAIS on ne l'appelle PAS : on pousse dans la file (6) et la boucle UI l'appelle.
+
+**VERDICT (voie pur-mémoire OUVERTE, pas fermée) :** contrairement au popup GetDemo (qui
+n'était atteignable que par un appel natif → mur du recompilateur), le toast de ramassage
+a un **canal de données** — la file du HUD reqMgr — que la boucle UI draine seule. Pousser
+`{type 0xB, nom d'écran}` dans cette file + peupler le nom d'actor dans le contexte
+`*(0x1047B054)+0x2C` déclencherait le bandeau SANS aucun appel natif de notre part. C'est
+le même patron que l'insertion pouch (déjà maîtrisée) : dépiler la freelist, construire la
+FixedSafeString, splicer, `count++`. **Non trivial mais faisable.** Ce qui MANQUE avant
+d'écrire `push_toast()` = la VALIDATION LIVE (capture d'un vrai ramassage pour figer le
+layout exact du nœud + confirmer que remplir la file suffit) — nécessite la boucle
+utilisateur (protocole ci-dessous).
+
+**PROTOCOLE LIVE (à faire avec l'utilisateur, profil 80000010)** :
+1. `python tools/toast_recon.py base` (cache heap_base ; à refaire si Cemu relancé).
+2. `python tools/toast_queue_watch.py 40` puis RAMASSER 3-4 objets variés (un déjà en
+   stock = moins de bruit) → capture la file qui se remplit + le nom d'actor. Claude lit
+   `~/.botwpelago/toast_queue.json` → fige le layout exact du nœud 0x54 + la string.
+3. Write-test : reproduire l'enqueue (freelist→nœud, FixedSafeString, splice, count++) +
+   nom d'actor, sur état réversible (backup des octets touchés). Si le bandeau s'affiche →
+   `push_toast(actor_name)` dans `memory_injector`, câblé sur la réception AP.
+
+**Dispatcher priorité** (slot vtable+8, `FUN_02fd1534`) : les écrans guides/tips
+0x1a/0x19/0x49 passent avant (`FUN_03074fc0/af8`, `FUN_030756b4(0..3)` → `FUN_030751f0(n)`
+→ `FUN_02f8f608(screen49, n)`). L'écran 0x49 (guides) : état @+0x1b90 (2=open), type
+courant @+0x1bbc, show direct = `FUN_02f8f3f0`. (Non bloquant pour le toast.)
 
 **Correction structurelle POUCH (importante, hors toast)** : le layout SafeString WiiU est
 `{mStringTop, vtable, [size], buf}` → dans le nœud PouchItem le nom est un
@@ -1008,10 +1043,10 @@ c'était le mStringTop du nœud SUIVANT (cadrage décalé de 0x20). Le « splice
 de live_create_item réécrit en réalité un mStringTop — à réauditer (il marche parce qu'il
 re-pointe le buffer du même cadre, mais le code mérite un nettoyage V1.1).
 
-**RESTE (session en cours)** : décompiler slot +0x2C de base (FUN_036066EC) et close
-(FUN_03606750) ; protocole utilisateur = toast affiché + pause → lire vtable exacte de
-l'instance, état, backrefs → identifier l'événement « show toast » et tester le POST par
-bit pending ; write-test push_toast (nom ctx + trigger) sur profil 80000010.
+**NB outillage** : la base .text du RPX v208 est **0x02000020** (pas 0x02000000 — décalage
+0x20 corrigé dans `tools/disasm_func.py` et les scripts `rpx_find_*`) ; la base .data est
+**0x10462BC0**. Le mapping guest→host de `toast_recon` couvre TOUT l'espace guest (les
+singletons `DAT_10xxxxxx` se lisent en direct via `g:0x...`).
 
 ---
 
