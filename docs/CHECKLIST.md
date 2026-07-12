@@ -85,6 +85,14 @@
 ### Transverse / dette
 - [x] Réconcilier la doc : status.md re-cadré (journal RE, CHECKLIST+CLAUDE.md font foi),
       README (livraison mémoire, layout), CLAUDE.md (tests, TODOs, régions, règle .sav)
+- [x] **Bug 1er attach — livraison ratée + spam wallet (2026-07-12)** : au 1er attach juste
+      après un load, la poche fraîchement réallouée laisse une COPIE freed mappée ; le
+      localisateur s'y accrochait → `heap_base` décalé → `wallet: flagobj hors mapping guest`
+      en boucle + items pas livrés jusqu'à un redémarrage client. Fix (sans reco) : sélection
+      du buffer VIVANT par ancre rubis (`_flagobj_guest_ok`), validation de couple, reset de
+      `heap_base`/wallet à la relocation, détection de dérive de base, warning rate-limité.
+      Tests : `tests/test_memory_injector_locate.py` (7). Détails : status.md §gdt-live.
+      **RESTE : confirmer in-game** (items de départ livrés au 1er attach, sans déco/reco).
 - [ ] TODO-9 : valider `memory_injector` sur Cemu 2.x (si upgrade)
 
 ---

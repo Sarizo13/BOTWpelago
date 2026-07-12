@@ -949,6 +949,21 @@ cook_data=...)` (live-only, préfère un template sub=0xA, ne stack jamais). Val
 Mushroom Skewer (heal 16) + Spicy Elixir (fx 5.0 lvl 1 600 s) créés et relus conformes.
 Énum CookEffectId (decomp uking) à confirmer à l'écran au premier élixir goûté.
 
+**Robustesse localisation « 1er attach » (2026-07-12)** : bug — au 1er attach juste après un
+chargement de save, BotW réalloue la poche et laisse une COPIE freed encore mappée. Le flagobj
+rubis (gdt) n'est PAS réalloué (adresse fixe/live) ; `_find_inventory_start` renvoyait parfois
+l'ANCIEN buffer (meilleur score transitoire) → `heap_base` décalé → `wallet: flagobj hors
+mapping guest` en boucle + items queués mais PAS livrés, jusqu'à un redémarrage client. Fix
+(sans reco) : (1) **sélection par ANCRE** — `_find_inventory_start` retient en priorité le
+candidat pouch dont la base tas dérivée place le flagobj rubis à un guest 32-bit valide
+(`_flagobj_guest_ok`, plafonné `_ANCHOR_CHECK_CAP`) = buffer VIVANT prouvé, à l'exclusion de la
+copie ; (2) **validation de couple** dans `_locate_live_inventory` (idem, sinon repli
+historique) qui fixe `heap_base` à la base validée ; (3) `_relocate_inventory` **jette**
+`heap_base`+wallet périmés → re-dérivés frais ; (4) `refresh_inventory_if_stale` détecte la
+**dérive de base** (buffer self-cohérent mais base ≠ base validée = copie) → re-localise ;
+(5) warning wallet **rate-limité** (5 s). Couvert par `tests/test_memory_injector_locate.py`.
+Reste : confirmer in-game la livraison des items de départ SANS reco (protocole de test).
+
 ---
 
 ## 6c. §toast-natif — architecture du toast « item reçu » RE (session 2026-07-11, décomp v208 + live)

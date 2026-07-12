@@ -75,6 +75,9 @@ _INV_SCAN_CHUNK   = 16 * 1024 * 1024
 # prefer_free : nb MAX de vérifications "ce buffer a-t-il un nœud libre ?" par scan. Chaque check
 # coûte des centaines de lectures mémoire → plafonné pour ne pas monopoliser le thread (keepalive AP).
 _FREE_NODE_CHECK_CAP = 8
+# Idem pour la validation d'ancre rubis d'un candidat pouch (dérive base + compare au flagobj) —
+# plafonné pour la même raison ; au-delà on retombe sur la sélection historique (score/nœud libre).
+_ANCHOR_CHECK_CAP = 8
 # Items PouchItem GÉRÉS PAR LE JEU : ne JAMAIS créer un nœud live (compteur d'orbes) — un faux
 # nœud fait crasher le jeu à la réconciliation d'inventaire (sortie de sanctuaire). Bump seulement.
 _NO_LIVE_CREATE = {"Obj_DungeonClearSeal"}
@@ -108,6 +111,10 @@ _GDT_S32_STORE_TYPEINFO = 0x10297C88
 _RUPEE_FLAG_HASH        = 0x23149BF8      # zlib.crc32(b"CurrentRupee")
 _FLAG_S32_OFF_VALUE     = 0x14            # value dans l'objet gdt::Flag<s32>
 _FLAG_S32_OFF_HASH      = 0x18            # hash CRC32 du nom dans l'objet
+# Les adresses GUEST (Wii U) sont des u32 : host = heap_base + guest ⇒ guest ∈ [0, 4 Gio).
+# Un heap_base PÉRIMÉ (dérivé d'un buffer post-réallocation) décale les guests hors de cette
+# plage → sert d'ancre pour DÉTECTER une base invalide (cf. _flagobj_guest_ok).
+_GUEST_MAX = 0x100000000
 
 # Bloc CookData des PouchItem type 8 (offsets nœud host-cadré ; décodé 2026-07-10 via
 # tools/dump_cook.py sur 4 plats live) :
@@ -242,6 +249,7 @@ class CemuMemoryBridge:
         self._prev_hp:     Optional[int] = None  # dernier HP courant lu (détection de mort)
         self._last_inv_relocate: float = 0.0     # cooldown re-localisation inventaire
         self._last_base_warn:    float = 0.0     # rate-limit du warning "base douteuse"
+        self._last_wallet_warn:  float = 0.0     # rate-limit du warning "flagobj hors mapping guest"
         self._pool_exhausted:    bool  = False   # plus de nœud libre → créations impossibles
         self._pool_exhausted_at: float = 0.0     # instant du dernier épuisement (retry après cooldown)
         self._last_freenode_warn: float = 0.0    # rate-limit du warning "aucun nœud libre"
@@ -552,6 +560,27 @@ class CemuMemoryBridge:
                         start = i + 1
                 off += n
 
+    def _flagobj_guest_ok(self, rupees_addr: Optional[int],
+                          heap_base: Optional[int]) -> Optional[int]:
+        """ANCRE EXTERNE de validité du heap_base. L'objet gdt::Flag<s32> CurrentRupee vit à
+        `rupees_addr - 0x14` (adresse LIVE trouvée par AOB, indépendante du buffer pouch).
+        Si sa vtable + son hash matchent ET que son guest (= host - heap_base) tombe dans la
+        plage 32-bit valide, alors heap_base est cohérent avec CE flagobj → retourne le flagobj
+        host. Un heap_base dérivé d'un buffer pouch PÉRIMÉ (copie post-réallocation, cas du 1er
+        attach après un load) est décalé → guest hors plage → None (couple à écarter)."""
+        if rupees_addr is None or heap_base is None:
+            return None
+        flagobj = rupees_addr - _FLAG_S32_OFF_VALUE
+        head = self._read(flagobj, 4)
+        h = self._read(flagobj + _FLAG_S32_OFF_HASH, 4)
+        if not (head and h):
+            return None
+        if struct.unpack(">I", head)[0] != _GDT_FLAG_S32_VTABLE \
+                or struct.unpack(">I", h)[0] != _RUPEE_FLAG_HASH:
+            return None
+        guest = flagobj - heap_base
+        return flagobj if 0 < guest < _GUEST_MAX else None
+
     def _find_wallet(self) -> bool:
         """Localise le VRAI portefeuille (entrée CurrentRupee du storage gdt s32 live).
         Topologie/preuve : bloc de constantes _GDT_* en tête de fichier. Nécessite la base
@@ -583,9 +612,23 @@ class CemuMemoryBridge:
             log.info("[Mem] wallet: objet gdt::Flag<s32> CurrentRupee introuvable")
             return False
         guest = flagobj - self._heap_base
-        if not (0 < guest <= 0xFFFFFFFF):
-            log.info("[Mem] wallet: flagobj hors mapping guest (base périmée ?)")
-            return False
+        if not (0 < guest < _GUEST_MAX):
+            # heap_base PÉRIMÉ (dérivé d'un buffer post-réallocation) alors que le flagobj est
+            # LIVE (vtable+hash OK) → re-dérive la base depuis le pouch COURANT une fois. Si le
+            # pouch courant est lui aussi périmé, la re-dérivation échoue → warning rate-limité
+            # (l'appelant re-localisera via refresh_inventory_if_stale au poll suivant).
+            fresh = self._derive_heap_base(self._scan_pouch_nodes())
+            if fresh is not None and fresh != self._heap_base \
+                    and 0 < flagobj - fresh < _GUEST_MAX:
+                self._heap_base = fresh
+                guest = flagobj - fresh
+            else:
+                now = time.monotonic()
+                if now - self._last_wallet_warn > 5.0:
+                    self._last_wallet_warn = now
+                    log.info("[Mem] wallet: flagobj hors mapping guest (base périmée) — "
+                             "re-localisation au prochain cycle")
+                return False
         for a in self._scan_u32be(guest):
             head = self._read(a - 4, 4)
             if head and struct.unpack(">I", head)[0] == _GDT_S32_STORE_TYPEINFO:
@@ -653,7 +696,13 @@ class CemuMemoryBridge:
     def _find_inventory_start(self, rupees_addr: int, prefer_free: bool = False) -> Optional[int]:
         """Scanne la region contenant rupees_addr pour le tableau PouchItem (stride 544).
         prefer_free=True : préfère un buffer qui possède un nœud LIBRE (le jeu réalloue la poche
-        → l'ancien buffer paraît encore valide mais n'a PLUS de nœud libre ; on veut le VIVANT)."""
+        → l'ancien buffer paraît encore valide mais n'a PLUS de nœud libre ; on veut le VIVANT).
+
+        SÉLECTION PAR ANCRE (fix bug 1er attach) : le flagobj rubis (gdt) n'est PAS réalloué avec
+        la poche → adresse fixe/live. On retient EN PRIORITÉ le candidat pouch dont la base tas
+        (dérivée de ses nœuds) place ce flagobj à un guest valide : c'est le buffer VIVANT, à
+        l'exclusion de l'ANCIEN buffer freed (base décalée) qui, juste après un load, marque
+        souvent un meilleur score et était renvoyé à tort → wallet cassé + créations ratées."""
         region_base, region_size = None, None
         for base, size in self._iter_regions():
             if base <= rupees_addr < base + size:
@@ -665,6 +714,8 @@ class CemuMemoryBridge:
         off = 0
         best, best_score = None, -1
         free_checks = 0
+        anchor_checks = 0
+        anchor_done = False        # plafond d'ancre atteint → repli sur la sélection historique
         while off < region_size:
             n = min(_INV_SCAN_CHUNK, region_size - off)
             read_n = min(n + _ITEM_STRIDE + 8, region_size - off)
@@ -685,10 +736,23 @@ class CemuMemoryBridge:
                     s = self._score_inventory_candidate(addr)
                     if s > best_score:
                         best, best_score = addr, s
-                    # early-exit sur un candidat FORT (≥ seuil). Le check "nœud libre" (coûteux,
-                    # ~centaines de lectures) est réservé aux candidats forts ET plafonné → sinon
-                    # il monopolise le thread et fait tomber le keepalive AP (1011).
+                    # early-exit sur un candidat FORT (≥ seuil). Les checks (ancre / nœud libre)
+                    # sont coûteux (~centaines de lectures) → réservés aux forts ET plafonnés,
+                    # sinon ils monopolisent le thread et font tomber le keepalive AP (1011).
                     if s >= _EARLY_EXIT_SCORE:
+                        # PRIORITÉ 1 : base cohérente avec l'ancre rubis = buffer VIVANT prouvé.
+                        if not anchor_done:
+                            if anchor_checks < _ANCHOR_CHECK_CAP:
+                                anchor_checks += 1
+                                b = self._derive_heap_base(self._scan_pouch_nodes(addr))
+                                if b is not None and \
+                                        self._flagobj_guest_ok(rupees_addr, b) is not None:
+                                    return addr
+                                # ancre non tranchée sur CE candidat → on CONTINUE de scanner
+                                # (le buffer vivant est peut-être plus loin) sans early-return.
+                                continue
+                            anchor_done = True     # plafond atteint → repli historique ci-dessous
+                        # PRIORITÉ 2 (repli) : comportement historique score / nœud libre.
                         if not prefer_free:
                             return best
                         if free_checks < _FREE_NODE_CHECK_CAP:
@@ -696,24 +760,43 @@ class CemuMemoryBridge:
                             if self._addr_has_free_node(addr):
                                 return addr        # candidat fort AVEC nœud libre = buffer vivant
             off += n
-        # aucun candidat fort avec nœud libre → on retombe sur `best` (fallback).
+        # aucun candidat tranché par l'ancre / nœud libre → on retombe sur `best` (fallback).
         return best if best_score > 0 else None
 
     def _locate_live_inventory(self, prefer_free: bool = False) -> None:
-        """Trouve rupeesAddress + inventoryStartAddress live. Echec silencieux (fallback save-file)."""
+        """Trouve rupeesAddress + inventoryStartAddress live. Echec silencieux (fallback save-file).
+
+        VALIDATION DE COUPLE (fix bug 1er attach) : l'AOB rubis peut matcher PLUSIEURS objets
+        (le buffer live + des copies périmées encore mappées, fréquentes juste après un load où
+        le jeu réalloue la poche). On adopte en PRIORITÉ le couple (rupees, pouch) dont la base
+        tas — dérivée du pouch — place le flagobj rubis (ancre live indépendante) à un guest
+        valide : ça garantit un buffer VIVANT (heap_base correct → wallet trouvé + créations OK).
+        Repli sur le 1er couple parsable si aucun n'est validé (save sans objet rubis distinct)."""
+        fallback: Optional[tuple[int, int]] = None    # (rupees_addr, inv_base) non validé
         for rupees_addr in self._find_rupees_addresses():
             inv_base = self._find_inventory_start(rupees_addr, prefer_free=prefer_free)
-            if inv_base is not None:
+            if inv_base is None:
+                continue
+            base = self._derive_heap_base(self._scan_pouch_nodes(inv_base))
+            if base is not None and self._flagobj_guest_ok(rupees_addr, base) is not None:
                 self._rupees_addr = rupees_addr
                 self._inv_base = inv_base
-                log.info("[Mem] Inventaire live localise @ 0x%012X (rupees @ 0x%012X)",
+                self._heap_base = base                # base VALIDÉE par l'ancre → fixe/correcte
+                log.info("[Mem] Inventaire live localise @ 0x%012X (rupees @ 0x%012X, base validée)",
                          inv_base, rupees_addr)
-                # VRAI portefeuille (storage gdt) — best effort : 2 scans de plus à l'attach ;
-                # en cas d'échec, live_add_rupees re-tentera (lazy) au premier besoin. En
-                # RE-localisation (réalloc pouch), inutile si l'entrée est encore valide.
                 if not self._wallet_valid():
                     self._find_wallet()
                 return
+            if fallback is None:
+                fallback = (rupees_addr, inv_base)
+        if fallback is not None:
+            # Aucun couple validé par l'ancre rubis → repli historique (heap_base dérivé lazy).
+            self._rupees_addr, self._inv_base = fallback
+            log.info("[Mem] Inventaire live localise @ 0x%012X (rupees @ 0x%012X, non validé)",
+                     fallback[1], fallback[0])
+            if not self._wallet_valid():
+                self._find_wallet()
+            return
         log.info("[Mem] Inventaire live introuvable — injection PorchItem (save-file) uniquement")
 
     def _relocate_inventory(self, prefer_free: bool = False) -> bool:
@@ -728,30 +811,43 @@ class CemuMemoryBridge:
         prev = self._inv_base
         self._inv_base = None
         self._rupees_addr = None
+        # heap_base + wallet dérivés du buffer PÉRIMÉ → on les jette : _locate_live_inventory
+        # re-valide un couple vivant et re-dérive une base correcte (sinon le wallet reste cassé
+        # après relocation — c'était le cœur du bug « items pas livrés au 1er attach »).
+        self._heap_base = None
+        self._wallet_addr = None
+        self._wallet_flagobj = None
         self._locate_live_inventory(prefer_free=prefer_free)
         if self._inv_base is not None and self._inv_base != prev:
             log.info("[Mem] Inventaire re-localisé (réallocation détectée) → 0x%012X", self._inv_base)
         return self._inv_base is not None
 
     def refresh_inventory_if_stale(self) -> None:
-        """Re-localise l'inventaire quand il est périmé. Deux signaux :
+        """Re-localise l'inventaire quand il est périmé. Trois signaux :
           1. base périmée « dure » : plus aucun nœud cohérent (0 self-ref) ;
           2. réallocation « douce » : le pool paraît épuisé (aucun nœud LIBRE dans le buffer
              courant) alors que le jeu a réalloué la poche ailleurs → on est collé sur l'ANCIEN
              buffer (il paraît encore valide, d'où non-détection par le seul test self-ref). Sans
              ça, les créations ne repartaient qu'après une déco/reco client. On re-localise en
              PRÉFÉRANT un buffer avec nœuds libres.
+          3. DÉRIVE DE BASE (fix bug 1er attach) : le buffer courant reste self-cohérent mais la
+             base qu'il implique diverge de la base VALIDÉE (self._heap_base) → c'est une COPIE
+             périmée (post-réallocation, encore mappée) sur laquelle on est resté collé ; ses
+             guests sont décalés (wallet + toast cassés) → re-localiser vers le buffer vivant.
         À appeler une fois par cycle de livraison (pas par item)."""
         if self._inv_base is None:
             return
         nodes = self._scan_pouch_nodes()
-        hard_stale = not (nodes and self._derive_heap_base(nodes) is not None)
+        fresh_base = self._derive_heap_base(nodes) if nodes else None
+        hard_stale = fresh_base is None
+        base_drift = (not hard_stale and self._heap_base is not None
+                      and fresh_base != self._heap_base)
         has_free = any(n["type"] == 0xFFFFFFFF and not n["name"] for n in nodes)
         need_free = self._pool_exhausted and not has_free
-        if not hard_stale and not need_free:
+        if not hard_stale and not need_free and not base_drift:
             return                                   # inventaire frais → on GARDE _pool_exhausted
         # Re-localise (réarme les créations si un buffer avec nœuds libres est trouvé).
-        if self._relocate_inventory(prefer_free=need_free):
+        if self._relocate_inventory(prefer_free=need_free or base_drift):
             self._pool_exhausted = False
 
     def reassert_qty_targets(self) -> int:
@@ -1322,16 +1418,19 @@ class CemuMemoryBridge:
     _NODE_OFF_SECHOOK = 0x28   # cible des pointeurs de la liste secondaire (= région du nom, vérifié hexdump)
     _NODE_OFF_NAME = 0x28      # buffer du FixedSafeString
 
-    def _scan_pouch_nodes(self) -> list[dict]:
+    def _scan_pouch_nodes(self, inv_base: Optional[int] = None) -> list[dict]:
         """Liste les nœuds PouchItem (host=vrai début, name, type, sub, raw 0x220).
 
         On détecte toujours le motif du nom (FixedSafeString), mais on cadre le nœud sur
-        son vrai début (motif - 0x20) pour lire type/value/liens du BON item."""
-        if self._inv_base is None:
+        son vrai début (motif - 0x20) pour lire type/value/liens du BON item.
+        `inv_base` explicite : scanne un buffer candidat AVANT de l'adopter (validation de
+        couple à la localisation) ; par défaut = self._inv_base (buffer courant)."""
+        base = inv_base if inv_base is not None else self._inv_base
+        if base is None:
             return []
         nodes = []
         for slot in range(self._PORCH_SLOTS):
-            a = self._inv_base + slot * _ITEM_STRIDE          # position du motif (nom)
+            a = base + slot * _ITEM_STRIDE          # position du motif (nom)
             head = self._read(a, 8)
             if not self._matches_item_pattern(head):
                 break
