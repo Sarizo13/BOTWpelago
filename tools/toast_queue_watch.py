@@ -78,8 +78,8 @@ class Q:
         self.heap = int(st["heap_base"], 16)
         self.b = open_bridge()
         reg = self.rd32(REG_PTR)
-        arr = self.rd32(reg + 0x18) if reg else 0
-        self.hud = self.rd32(arr + HUD_ID * 4) if arr else 0
+        self.arr = self.rd32(reg + 0x18) if reg else 0
+        self.hud = self.rd32(self.arr + HUD_ID * 4) if self.arr else 0
         self.reqmgr = self.rd32(self.hud + REQMGR_OFF) if self.hud else 0
         print(f"HUD g:0x{self.hud:08X}  reqMgr g:0x{self.reqmgr:08X}")
         if not self.reqmgr:
@@ -161,6 +161,7 @@ class Q:
             "dirty_word": f"0x{self.rd32(uiroot + DIRTY_OFF):08X}" if uiroot else None,
             "defstr_top": f"0x{deftop:08X}",
             "defstr": self.cstr(deftop) if self.plausible(deftop) else "",
+            "screen24": f"0x{self.rd32(self.arr + 0x24 * 4):08X}",  # slot MessageGet
         }
         return snap
 
@@ -170,7 +171,7 @@ def print_snap(tag: str, s: dict) -> None:
     print(f"  file: head={s['head']} tail={s['tail']} vide={s['empty']} "
           f"count={s['count']} freelist={s['freelist']} cap={s['cap']}")
     print(f"  ctx actor={s['ctx_actor']!r} (top={s['ctx_top']})  "
-          f"defstr={s['defstr']!r}  dirty={s['dirty_word']}")
+          f"defstr={s['defstr']!r}  dirty={s['dirty_word']}  screen24={s.get('screen24')}")
     for i, n in enumerate(s["active_nodes"]):
         print(f"  ACTIF[{i}] @{n['node']} type={n.get('type_or_freenext')} "
               f"str={n.get('str')!r} vt_ok={n.get('vt_ok')} top_ok={n.get('top_ok')}")
@@ -192,24 +193,28 @@ def main() -> None:
         win_g, win_n = q.reqmgr + WIN_LO, WIN_HI - WIN_LO
         ctx = q.rd32(CTX_PTR)
         sent = q.reqmgr + SENT_NEXT
+        slot24 = q.arr + 0x24 * 4                 # slot registre écran MessageGet
         last_w = q.rd(win_g, win_n)
         last_c = q.rd(ctx + 0x2C, 0x40) if ctx else b""
+        last_s24 = q.rd32(slot24)
         events, iters = [], 0
         t0 = time.monotonic()
         while time.monotonic() - t0 < secs:
             iters += 1
             w = q.rd(win_g, win_n)
             c = q.rd(ctx + 0x2C, 0x40) if ctx else b""
-            if w != last_w or c != last_c:
+            s24 = q.rd32(slot24)
+            if w != last_w or c != last_c or s24 != last_s24:
                 ev = {"t": round(time.monotonic() - t0, 4),
                       "actor": c.split(b"\x00")[0].decode("ascii", "replace"),
+                      "screen24": f"0x{s24:08X}",
                       "win": [f"{struct.unpack_from('>I', w, k)[0]:08X}"
                               for k in range(0, len(w) - 3, 4)]}
                 head = struct.unpack_from(">I", w, SENT_NEXT - WIN_LO)[0]
                 if head and head != sent:
                     ev["head_node"] = q.decode_node(head - 0x54)
                 events.append(ev)
-                last_w, last_c = w, c
+                last_w, last_c, last_s24 = w, c, s24
                 if len(events) >= 400:
                     break
         rate = iters / max(time.monotonic() - t0, 1e-9)
