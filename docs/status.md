@@ -1065,23 +1065,31 @@ FixedSafeString, splicer, `count++`.
   FUN_03073184 : ils passent le nom d'arme — types 8 vs 0xC etc. choisis selon MS ou non).
   Poussé avec la string « Weapon_Sword_001 » → « Vous avez lâché Épée de voyageur. » : le
   jeu résout le nom LOCALISÉ (articles français corrects).
-- **SOLUTION FINALE : type 0xA + patch MSBT en RAM.** La string UTF-16BE
-  « Vous avez lâché » (message 0xA, tag UiInfoString) existe en UNE occurrence en RAM ;
-  « lâché » → « **gagné** » (5 unités UTF-16 chacune, remplacement in-place strict, tag
-  intact) → bandeau « **Vous avez gagné {item}.** » VALIDÉ in-game (« la pomme »,
-  « l'épée royale »). (« reçu␣ » testé d'abord : double espace — « gagné » est exact.)
-  Outil : `tools/toast_msbt_patch.py` (scan ~35 s, --patch/--restore, backup JSON).
+- **SOLUTION FINALE : type 0xA + REDIRECTION MSBT en RAM (phrase custom + QUANTITÉ).**
+  Le bloc TXT2 du MSBT (header « MsgStdBn » retrouvé en amont de la string, table
+  d'offsets u32be) référence chaque message par OFFSET. Les entrées [257]-[262] sont des
+  **placeholders de dev jamais affichés** (« TESHEIKAHSLATE… », ~0xC6 octets). On écrit
+  « **Vous avez reçu {tag item} xN.** » dans la zone [257] (tag item {2,0x0B}+UiInfoString
+  copié byte-exact ; le tag article {201,1} OMIS → nom nu « flèche en bois », pas
+  « la flèche ») et on redirige l'offset de l'entrée toast dessus. La QUANTITÉ (« xN »,
+  masquée si N≤1) est réécrite au suffixe avant chaque bandeau (budget large, NUL-padded).
+  VALIDÉ in-game : « Vous avez reçu flèche en bois x5 », « Vous avez reçu pomme x5 ».
+  La string originale reste INTACTE (localisateur par scan toujours valide). Outils :
+  `tools/toast_msbt_redirect.py` (--install/--qty/--restore/--status, backup JSON) ;
+  `tools/toast_msbt_patch.py` (patch-mot « gagné », 1re itération — OBSOLÈTE, gardé
+  pour référence). Un patch-mot résiduel en RAM est inoffensif (string plus référencée).
 
-**IMPLÉMENTÉ (BotWClient)** : `CemuMemoryBridge.push_toast(actor)` +
-`toast_enqueue(actor)` (deque maxlen 20) + `toast_pump()` (1 bandeau max/cycle, throttle
-4 s) dans `memory_injector.py` ; préparation (dérivation heap_base si absente + scan/patch
-MSBT) sur THREAD DAEMON au 1er toast ; revalidation du patch avant chaque bandeau (buffer
-message rechargeable par le jeu) ; sanity stricte avant chaque push (file vide, freelist
-plausible, cap==3) → best-effort intégral, ne bloque JAMAIS une livraison. Câblage :
-`_apply_actions_memory` → toast_enqueue (pouch/plats : item_name ; SetFlag `IsGet_<actor>`
-→ actor — convention BotW) ; `flush()` → toast_pump. Langue ≠ FR : motif introuvable →
-texte vanilla (« lâché ») ; prévoir des motifs par langue si demande. RESTE : validation
-end-to-end en session AP réelle.
+**IMPLÉMENTÉ (BotWClient)** : `CemuMemoryBridge.push_toast(actor, qty)` +
+`toast_enqueue(actor, qty)` (deque maxlen 20) + `toast_pump()` (1 bandeau max/cycle,
+throttle 4 s) dans `memory_injector.py` ; préparation (dérivation heap_base si absente +
+localisation MSBT + REDIRECTION) sur THREAD DAEMON au 1er toast ; revalidation avant
+chaque bandeau (offset d'entrée + préfixe de la zone — MSBT rechargeable par le jeu →
+re-préparation auto) ; sanity stricte avant chaque push (file vide, freelist plausible,
+cap==3) → best-effort intégral, ne bloque JAMAIS une livraison. Câblage :
+`_apply_actions_memory` → toast_enqueue((actor, qty)) (pouch/plats : item_name+amount ;
+SetFlag `IsGet_<actor>` → actor, qty 1 — convention BotW) ; `flush()` → toast_pump.
+Langue ≠ FR : motif introuvable → texte vanilla ; prévoir des motifs par langue si
+demande. RESTE : validation end-to-end en session AP réelle.
 
 **Dispatcher priorité** (slot vtable+8, `FUN_02fd1534`) : les écrans guides/tips
 0x1a/0x19/0x49 passent avant (`FUN_03074fc0/af8`, `FUN_030756b4(0..3)` → `FUN_030751f0(n)`

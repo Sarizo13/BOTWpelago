@@ -113,27 +113,30 @@
       - NB : comme les tenues, l'ouverture du mur après réception ≠ instantanée
         (flags reload-gated) → cf. piste bools live.
 - [x] Popup natif « item reçu » — **VALIDÉ IN-GAME + IMPLÉMENTÉ (2026-07-12)** : bandeau
-      natif MessageGet « **Vous avez gagné {item}.** » (nom LOCALISÉ résolu par le jeu,
-      articles français corrects : « la pomme », « l'épée royale »). Détail → status §6c.
+      natif MessageGet « **Vous avez reçu {item} xN.** » (nom LOCALISÉ sans article,
+      quantité au suffixe : « Vous avez reçu flèche en bois x5 »). Détail → status §6c.
       **Recette complète** : (1) enqueue pur-mémoire dans la file du HUD (reqMgr =
       *(HUD+0x1B84), HUD = écran registre 0x25) — sentinel {head +0x14C, tail +0x150},
       count +0x154, freelist +0x158 (pop = 1er mot), cap 3 ; nœud 0x54+8 {type @0,
       top→+0x10, vt 0x1021D0FC, 0x40, char[64] nom d'ACTOR @+0x10, u8 @+0x50, links
-      @+0x54/58} ; type **0xA** (« Vous avez lâché {string du nœud} ») ; + nom d'actor au
-      ctx *(0x1047B054)+0x2C + bit dirty *(*(0x1046BDD8))+0x4075C |= 1. (2) **patch MSBT
-      en RAM** : « lâché »→« gagné » (UTF-16BE, 5 unités, in-place strict, occurrence
-      UNIQUE ; scan ~35 s 1×/session). Cartographie COMPLÈTE des 0x30 types de toasts
+      @+0x54/58} ; type **0xA** (message à placeholder {item} = string du nœud) ; + nom
+      d'actor au ctx *(0x1047B054)+0x2C + bit dirty *(*(0x1046BDD8))+0x4075C |= 1.
+      (2) **REDIRECTION MSBT en RAM** : phrase custom « Vous avez reçu {tag} xN. » écrite
+      dans une string placeholder de dev (~0xC6 o, jamais affichée) + offset TXT2 de
+      l'entrée toast redirigé dessus ; tag article omis → nom nu ; « xN » réécrit avant
+      chaque bandeau (masqué si N≤1). Cartographie COMPLÈTE des 0x30 types de toasts
       faite in-game (0-7 compartiments pleins, 8/9/0xA placeholder-item, 0xB-0xD Master
       Sword, 0xE-0x11 compagnons, 0x12-0x18 exposition/équipement, 0x19-0x2F annonces
-      diverses) : AUCUN « vous obtenez » natif → le patch verbe est LA solution.
-      **Implémenté** : `push_toast`/`toast_enqueue`/`toast_pump` dans memory_injector
-      (deque throttlée 4 s, préparation heap_base+MSBT sur thread daemon, revalidation
-      du patch avant chaque bandeau, best-effort intégral), câblé dans
-      `_apply_actions_memory` (pouch/plats → item_name ; SetFlag `IsGet_<actor>` →
-      actor) + `flush()` (pump). RESTE : valider le câblage en session AP réelle ;
-      langues ≠ FR = texte vanilla (« lâché ») en attendant des motifs par langue.
+      diverses) : AUCUN « vous obtenez » natif → la redirection est LA solution.
+      **Implémenté** : `push_toast(actor,qty)`/`toast_enqueue`/`toast_pump` dans
+      memory_injector (deque throttlée 4 s, préparation heap_base+MSBT sur thread daemon,
+      revalidation offset+préfixe avant chaque bandeau → re-préparation auto si le jeu
+      recharge le MSBT, best-effort intégral), câblé dans `_apply_actions_memory`
+      (pouch/plats → item_name+amount ; SetFlag `IsGet_<actor>` → actor) + `flush()`
+      (pump). RESTE : valider le câblage en session AP réelle ; langues ≠ FR = texte
+      vanilla en attendant des motifs par langue.
       Outils : tools/{toast_recon,toast_screens,toast_queue_watch,toast_push_test,
-      toast_msbt_patch}.py.
+      toast_msbt_redirect,toast_msbt_patch}.py.
 - [x] Passe de test des murs in-game — **VALIDÉE (2026-07-12)** par le joueur ; warps
       Zora/Gerudo réajustés à la main dans zone_walls.json (coords in-game du joueur)
 - [ ] **Cap cœurs / endurance + overflow en rubis** : plafonner le max de cœurs et
