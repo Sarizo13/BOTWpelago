@@ -299,6 +299,19 @@
       NB validé au passage : cœurs/endurance MAX bien montés au reload — les nouveaux cœurs
       arrivent VIDES (on monte MaxHartValue, pas CurrentHart qui est un miroir non-écrivable)
       → manger un plat les remplit ; comportement documenté, pas un bug.
+- [x] **11e run (2026-07-15) — SOURCE PROBABLE de la corruption trouvée : mCount écrit hors
+      sentinelle** : coalescence validée in-game (×47 orbes, arrows ×22… en un bump chacun),
+      MAIS 2 splices (Master Sword, Urbosa) ont suffi à re-désorganiser la poche. Cause
+      identifiée : (a) `_scan_pouch_nodes`/`_iter_inventory_slots` S'ARRÊTAIENT au premier
+      slot atypique → sur une poche FRAGMENTÉE (mature, post-rafale), scan TRONQUÉ →
+      node_bases incomplet ; (b) `_bump_pouch_count` refaisait sa propre marche « lâche »
+      APRÈS le splice et prenait le premier lien inconnu pour la sentinelle → **mCount écrit
+      DANS UN NŒUD** (petites valeurs plausibles fréquentes) → liste désorganisée → crash au
+      ramassage/reload. FIX : scans COMPLETS des 420 slots (skip des slots atypiques, plus de
+      troncature) ; **sentinelle OBLIGATOIRE pré-validée** (marche défensive) AVANT tout
+      splice — pas de sentinelle sûre = pas de splice ; mCount incrémenté À cette sentinelle ;
+      `_bump_pouch_count` SUPPRIMÉ. Si la corruption persiste malgré ça → plan B : créations
+      d'équipement reload-gated pendant les replays de backlog.
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

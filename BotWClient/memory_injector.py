@@ -1219,8 +1219,11 @@ class CemuMemoryBridge:
         for slot in range(max_slots):
             addr = self._inv_base + slot * _ITEM_STRIDE
             head = self._read(addr, 8)
+            if head is None:
+                return                              # mémoire illisible = fin du buffer
             if not self._matches_item_pattern(head):
-                return
+                continue                            # slot atypique : poche fragmentée — on
+                                                    # inspecte les 420 slots (cf. _scan_pouch_nodes)
             item_addr = addr + 7
             raw = self._read(item_addr + 1, 64) or b""
             item_id = raw.split(b"\x00")[0].decode("ascii", errors="replace")
@@ -1795,12 +1798,18 @@ class CemuMemoryBridge:
         for slot in range(self._PORCH_SLOTS):
             a = base + slot * _ITEM_STRIDE          # position du motif (nom)
             head = self._read(a, 8)
+            if head is None:
+                break                               # mémoire illisible = fin du buffer
             if not self._matches_item_pattern(head):
-                break
+                # NE PAS s'arrêter : sur une poche FRAGMENTÉE un slot atypique tronquait le
+                # scan → node_bases incomplet → les marches de liste sortaient du set connu
+                # et _bump_pouch_count écrivait mCount DANS UN NŒUD (corruption, runs 9-11).
+                # Le tableau fait exactement 420 slots : on les inspecte TOUS.
+                continue
             host = a - self._NODE_HEADER_OFF                  # vrai début du nœud
             raw = self._read(host, _ITEM_STRIDE)
             if not raw:
-                break
+                continue
             name = raw[self._NODE_OFF_NAME:self._NODE_OFF_NAME + 40] \
                 .split(b"\x00")[0].decode("ascii", errors="replace")
             typ = struct.unpack_from(">I", raw, self._NODE_OFF_TYPE)[0]
@@ -2137,6 +2146,16 @@ class CemuMemoryBridge:
             log.debug("[Mem] (live) pas d'ancre triée pour %s (sortKey=%s, desc=%s) — reporté",
                       item_name, new_sk, descending)
             return False
+        # SENTINELLE OBLIGATOIRE avant TOUT splice : mCount sera incrémenté À la sentinelle
+        # VALIDÉE (marche défensive qui échoue sur un nœud inconnu). L'ancien _bump_pouch_count
+        # refaisait sa propre marche « lâche » APRÈS le splice et, sur un scan incomplet,
+        # écrivait mCount DANS UN NŒUD (source de corruption des runs 9-11 : 2 splices
+        # suffisaient à désorganiser la poche). Pas de sentinelle sûre → pas de splice.
+        sent_g = self._find_list_sentinel(selfref, base)
+        if sent_g is None:
+            log.debug("[Mem] (live) sentinelle non validée (liste instable ?) — %s reporté",
+                      item_name)
+            return False
         # CONTENU (clone) : nœud live du MÊME type, le plus PROCHE en sortKey (icône/structure/clé de
         # tri cohérentes ; on évite les grillés sub=0xA), sinon le TEMPLATE caché du type.
         # NB sub VÉRIFIÉ sur nœuds naturels (2026-07-11) : plats CUISINÉS Item_Cook_* = sub 0x8,
@@ -2271,10 +2290,13 @@ class CemuMemoryBridge:
         # prev du suivant : old_next+4 (nœud → N_g+0x08 ; sentinelle → S_g+0x04 — même arithmétique)
         ok &= self._write(g2h(old_next) + 4, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
         if ok:
-            # mCount += 1 (sead::OffsetList, à tête+0x08) : le jeu COMPTE notre nœud -> il ne
-            # réutilise plus ce nœud libre (plus de corruption en rafale) et le sérialise au
-            # save (persistance fiable). Sentinelle = on suit la liste jusqu'à sortir du pool.
-            bumped = self._bump_pouch_count(nodes, base, F_g)
+            # mCount += 1 À LA SENTINELLE PRÉ-VALIDÉE (sead::OffsetList, S+0x08) : le jeu
+            # COMPTE notre nœud -> il ne réutilise plus ce nœud libre et le sérialise au save.
+            bumped = False
+            cnt_r = self._read(g2h(sent_g) + 0x08, 4)
+            cnt = struct.unpack(">i", cnt_r)[0] if cnt_r else -1
+            if 0 <= cnt < 2000:
+                bumped = self._write(g2h(sent_g) + 0x08, struct.pack(">i", cnt + 1))
             if cook_data is None:                     # cible qty à ré-asserter après réallocation
                 self._qty_targets[item_name] = value  # (pas pour un plat : 1 nœud = 1 assiette)
             # VÉRIF POST-SPLICE : notre insertion doit laisser l'anneau PARFAITEMENT cohérent.
@@ -2396,29 +2418,3 @@ class CemuMemoryBridge:
             link = struct.unpack(">I", r)[0]
         return None
 
-    def _bump_pouch_count(self, nodes: list, base: int, start_g: int) -> bool:
-        """Suit la liste primaire depuis start_g jusqu'à la sentinelle (tête) et fait
-        mCount += 1 (à tête+0x08). Garde-fou : n'écrit que si le compteur est plausible."""
-        node_bases = {n["host"] - base for n in nodes}
-        node_bases.add(start_g)
-        cur = start_g
-        for _ in range(2048):
-            r = self._read(cur + base + self._NODE_OFF_NEXT, 4)
-            if not r:
-                return False
-            nxt = struct.unpack(">I", r)[0]
-            nb = nxt - self._NODE_OFF_NEXT
-            if nb in node_bases:
-                cur = nb
-                continue
-            # nxt = adresse de la sentinelle (tête) ; mCount à tête+0x08
-            head_h = nxt + base
-            cnt_r = self._read(head_h + 0x08, 4)
-            if not cnt_r:
-                return False
-            cnt = struct.unpack(">i", cnt_r)[0]
-            if not (0 <= cnt < 2000):
-                log.warning("[Mem] (live) mCount=%d implausible — non incrémenté", cnt)
-                return False
-            return self._write(head_h + 0x08, struct.pack(">i", cnt + 1))
-        return False
