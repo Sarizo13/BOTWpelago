@@ -804,6 +804,7 @@ class DeferredSaveInjector(ItemInjector):
         self._last_banked_orb  = 0     # dernière valeur d'orbe (pouch) bankée dans la save
         self._last_banked_seal = 0     # dernière valeur DungeonClearSealNum bankée dans la save
         self._last_not_ready_log = 0.0  # rate-limit du log « jeu pas prêt » (pré-tablette/load)
+        self._last_companion_full_log = 0.0  # rate-limit « progression en attente d'un slot »
 
     def _resolve(self) -> Optional[Path]:
         """Return the current game_data.sav (slot-dir aware)."""
@@ -1000,6 +1001,15 @@ class DeferredSaveInjector(ItemInjector):
                         # bandeau natif (nom localisé par le jeu) — la paravoile/les capacités/
                         # tenues passaient par ce chemin SANS toast (constat 2026-07-14)
                         b.toast_enqueue(iname, 1)
+                    elif getattr(b, "_last_create_overflow", False):
+                        # PROGRESSION (Master Sword, Arc de Lumière…) jamais convertie en
+                        # rubis : l'objet attend qu'un slot se libère (retenté chaque cycle).
+                        # Les FLAGS (goal, murs) sont déjà posés par la rétention.
+                        now = time.monotonic()
+                        if now - self._last_companion_full_log > 60.0:
+                            self._last_companion_full_log = now
+                            log.info("  [Live] %s en ATTENTE : onglet plein — jette/casse un "
+                                     "équipement pour libérer un slot (retenté en continu)", iname)
 
     def _inject_pending(self) -> list[InjectionSpec]:
         if not self._queue:
