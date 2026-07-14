@@ -227,14 +227,21 @@
          · nourriture 8) n'est en poche ; reporté avec retry, jamais perdu. NB : le layout
          « pack Enforcement séparé » est PÉRIMÉ — build_mod FUSIONNE tout dans BOTWpelago
          (un seul pack à cocher dans Cemu).
-- [x] **Kit de départ RE-ANCRÉ (2026-07-14 soir)** : greffé sur `Common` ET `CommonFirst`
-      de Demo003_0, gardé par le flag inerte **`TestQuest_shimizu01_Finish`** (2e mailbox
-      TestQuest — Takano_01 = mur Ganon, ne pas croiser) : entry → Switch `CheckFlag` →
-      cas 0 = kit (8 × Demo_IncreasePorchItem) → `Demo_FlagON` → tête d'origine ; cas 1 =
-      tête d'origine. Une seule exécution par partie (le flag survit dans la save), quel que
-      soit le socle (chambre, tour…). Structures copiées de flows réels (CheckFlag/FlagON
-      de Demo033_0). Appliqué au prochain play_local (pack_builder → build_mod).
-      **À valider in-game : les 8 items du kit tombent au 1er socle, une seule fois.**
+- [x] **Kit de départ v3 — ancré à la FIN DU RÉVEIL rando (2026-07-14 soir)**. Historique :
+      v1 `CommonFirst` (Demo003_0) ne joue jamais sur partie moddée ; v2 `Common` gardée par
+      flag a TOURNÉ (flag `TestQuest_shimizu01_Finish` = 1 sur la save du 6e run) mais dans
+      un contexte où la poche ne recevait PAS (0 item livré, grants no-op, flag brûlé) —
+      leçon : `Demo_IncreasePorchItem` (params {PorchItemName, Value, IsWaitFinish}, 1122
+      usages positifs dans le jeu = LE mécanisme standard) ne prend que dans un contexte
+      poche vivant. **v3** : le rando VIDE `Demo700_0` (réveil, 72→25 events) et y enchaîne
+      don de la tablette (SUBFLOW GetDemo::GetItemByName) + ses flags de quêtes
+      (`FindDungeon_Activated` → `Open_Door` → FIN) → le kit est APPENDU en queue :
+      `Open_Door → Demo_WaitFrame(30) → 8 × Demo_IncreasePorchItem → FIN`. Poche garantie
+      vivante (elle vient de recevoir la tablette), délai demandé par le joueur, cinématique
+      one-shot → pas de garde. Ancre = marqueur rando `FindDungeon_Activated` (une copie non
+      -rando est REFUSÉE proprement). Validé hors-jeu (chemin d'exécution complet, idempotence,
+      round-trip) + appliqué au pack installé. **À valider in-game : les 8 items tombent ~1 s
+      après la fin de la cinématique du réveil.**
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau
