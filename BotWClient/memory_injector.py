@@ -300,6 +300,15 @@ class CemuMemoryBridge:
         # convertit le filler en rubis au lieu de retenter en boucle. + rate-limit du log.
         self._last_create_overflow: bool = False
         self._last_capfull_warn: float = 0.0
+        # Anti-course RAMASSAGE (crashs des 7e/8e runs : le jeu crashe en insérant un ramassage
+        # dans une liste que nos splices viennent de toucher) : (a) fenêtre CALME — pas de
+        # création dans le même cycle qu'un changement de poche non provoqué par nous ;
+        # (b) INTÉGRITÉ — liste vérifiée avant chaque batch ; incohérente → créations
+        # SUSPENDUES jusqu'au prochain rechargement (le jeu reconstruit une liste propre).
+        self._last_pouch_sig: Optional[tuple] = None
+        self._creates_suspended: bool = False
+        self._suspend_logged: bool = False
+        self._last_integrity_check: float = 0.0
         # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
         # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
@@ -447,6 +456,10 @@ class CemuMemoryBridge:
         # L'ancre statique poche SURVIT (slot de la section data, constant pour le process) ;
         # la tablette est re-vérifiée (une nouvelle partie n'en a pas encore).
         self._slate_seen = False
+        # Reload = liste pouch reconstruite PROPRE par le jeu → suspension levée.
+        self._creates_suspended = False
+        self._suspend_logged = False
+        self._last_pouch_sig = None
 
     def detach(self) -> None:
         if self._handle:
@@ -1933,6 +1946,8 @@ class CemuMemoryBridge:
         self._last_create_overflow = False       # signal « onglet plein » de CET appel
         if not self.has_live_inventory:
             return False
+        if self._creates_suspended:
+            return False                         # liste incohérente → attendre le reload
         # Suivi de l'ancre statique AVANT tout splice : poche réallouée → re-ciblée ; jeu en
         # plein load → création REPORTÉE (splicer une copie freed corrompt la mémoire recyclée).
         if not self._refresh_inv_from_static():
@@ -2011,6 +2026,33 @@ class CemuMemoryBridge:
                     log.info("[Mem] (live) onglet plein (%d/%d, type %d) — création %s en "
                              "overflow", have, cap, item_type, item_name)
                 return False
+        # FENÊTRE CALME (anti-course ramassage, crashs 7e/8e runs) : la poche a changé depuis
+        # notre dernier passage (ramassage joueur, réallocation) → on laisse le jeu finir son
+        # insertion, création différée d'UN cycle. Nos propres créations remettent la
+        # signature à jour en fin de splice → un batch de livraisons reste fluide.
+        sig = tuple(n["name"] for n in nodes)
+        if sig != self._last_pouch_sig:
+            self._last_pouch_sig = sig
+            log.debug("[Mem] (live) poche active — création %s différée d'un cycle", item_name)
+            return False
+        # INTÉGRITÉ de la liste (1×/4 s) : réciprocité next/prev + mCount sur la marche réelle.
+        # Une liste incohérente = le précurseur des crashs « ramassage » → plus AUCUN splice
+        # jusqu'au prochain RECHARGEMENT (le jeu reconstruit une liste propre depuis la save).
+        now = time.monotonic()
+        if now - self._last_integrity_check > 4.0:
+            self._last_integrity_check = now
+            if not self._list_integrity_ok(selfref, base):
+                time.sleep(0.25)                       # peut-être une insertion du jeu EN COURS
+                nodes2 = self._scan_pouch_nodes()
+                selfref2 = [n for n in nodes2 if n["name"] and is_selfref(n)]
+                if not selfref2 or not self._list_integrity_ok(selfref2, base):
+                    self._creates_suspended = True
+                    if not self._suspend_logged:
+                        self._suspend_logged = True
+                        log.error("[Mem] liste pouch INCOHÉRENTE — créations live SUSPENDUES "
+                                  "jusqu'au prochain RECHARGEMENT de la save (items en file, "
+                                  "rien n'est perdu)")
+                    return False
         # ANCRE par ORDRE DE TRI (sortKey) : la poche est UNE liste chaînée triée par (type, puis
         # sortKey au sein du type). On insère à la position triée EXACTE (voir la détection de sens
         # ci-dessous). Insérer ailleurs désorganise l'inventaire → catégories fracturées / crash.
@@ -2227,6 +2269,9 @@ class CemuMemoryBridge:
             bumped = self._bump_pouch_count(nodes, base, F_g)
             if cook_data is None:                     # cible qty à ré-asserter après réallocation
                 self._qty_targets[item_name] = value  # (pas pour un plat : 1 nœud = 1 assiette)
+            # la signature « fenêtre calme » intègre NOTRE création → le batch suivant du même
+            # cycle n'est pas différé par notre propre changement (seuls les ramassages le sont)
+            self._last_pouch_sig = tuple(n["name"] for n in self._scan_pouch_nodes())
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s%s",
                      item_name, item_type, value, anchor_name,
                      "" if bumped else "  (!! mCount NON incrémenté)")
@@ -2256,6 +2301,33 @@ class CemuMemoryBridge:
                 return nxt
             return None
         return None
+
+    def _list_integrity_ok(self, selfref: list, base: int) -> bool:
+        """Marche la liste RÉELLE (sentinelle → sentinelle) et vérifie : réciprocité
+        next/prev de CHAQUE maillon + mCount == nombre de nœuds traversés. Une liste
+        incohérente (course avec un ramassage, splice raté, mémoire recyclée) est le
+        précurseur des crashs « ramassage » des 7e/8e runs — on n'y splice PLUS RIEN."""
+        sent = self._find_list_sentinel(selfref, base)
+        if sent is None:
+            return False
+        cur, count = sent, 0
+        for _ in range(600):
+            r = self._read(base + cur, 4)
+            if not r:
+                return False
+            nxt = struct.unpack(">I", r)[0]
+            if not (0x02000000 <= nxt < _GUEST_MAX):
+                return False
+            r2 = self._read(base + nxt + 4, 4)          # prev du suivant doit repointer cur
+            if not r2 or struct.unpack(">I", r2)[0] != cur:
+                return False
+            if nxt == sent:
+                r3 = self._read(base + sent + 8, 4)     # mCount de la sentinelle
+                cnt = struct.unpack(">i", r3)[0] if r3 else -1
+                return count == cnt
+            cur = nxt
+            count += 1
+        return False                                    # jamais rebouclé → cycle cassé
 
     def _find_insert_link(self, sentinel_g: int, base: int, target: tuple,
                           descending: bool, known_by_g: dict) -> Optional[int]:

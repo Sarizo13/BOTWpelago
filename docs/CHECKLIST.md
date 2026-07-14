@@ -255,6 +255,22 @@
       retry jusqu'à libération d'un slot. Tests +2 (69 OK). NB : cœurs/endurance NON encore
       confirmés in-game — reload-gated, le freeze est arrivé avant tout rechargement
       (attendu au reload : 3+12 cœurs, +14/5 roues d'endurance).
+- [x] **Retour du 8e run (2026-07-14 nuit) — crash au RAMASSAGE élucidé + gardes anti-course** :
+      après la rafale (release re-rejoué), le jeu crashe quand LE JOUEUR ramasse un item
+      (drops d'ennemi ; un casque barbare de coffre a même disparu) : le jeu INSÈRE son
+      ramassage dans une liste pouch que nos splices ont perturbée (ordre interne divergent
+      de son comparateur / course insertion-jeu vs splice-client pendant la rafale). Gardes :
+      1. **Fenêtre calme** : si la poche a changé depuis notre dernier cycle (ramassage,
+         réallocation), la création est différée d'UN cycle (nos propres créations mettent
+         la signature à jour → un batch reste fluide) ;
+      2. **Intégrité de liste avant chaque batch** (marche réelle sentinelle→sentinelle,
+         réciprocité next/prev de chaque maillon, mCount == nœuds traversés ; re-test à
+         +250 ms pour tolérer une insertion du jeu en cours) : liste incohérente →
+         `créations live SUSPENDUES jusqu'au prochain RECHARGEMENT` (le jeu reconstruit une
+         liste propre depuis la save ; suspension levée à l'invalidation gd). Items en file,
+         rien n'est perdu. Tests +3 (72 OK).
+      **Consigne de run : après une grosse rafale, RECHARGER la save avant de reprendre
+      l'exploration** (consolide la liste + applique cœurs/endurance/flags).
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

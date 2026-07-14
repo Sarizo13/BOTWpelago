@@ -333,3 +333,44 @@ def test_live_create_cap_falls_back_to_vanilla_default():
     b = _bridge_with_full_weapon_tab(cap_flag_value=None)
     assert b.live_create_item("Weapon_Sword_001", 0, 0, 10) is False
     assert b._last_create_overflow is True
+
+
+# ── list integrity (pickup-crash guard, 2026-07-14 night) ──────────────────────
+#
+# The game crashed while INSERTING a natural pickup into a list our splices had
+# perturbed (7th/8th runs; a chest's Barbarian Helm even vanished). Before any create
+# batch the client now walks the REAL ring (sentinel → sentinel), checking next/prev
+# reciprocity and mCount; a broken ring suspends creates until the next reload.
+
+def _ring_bridge(count_val=1, break_prev=False) -> CemuMemoryBridge:
+    """One-node circular list with full next/prev reciprocity served from a dict."""
+    b = CemuMemoryBridge()
+    prev_of_node = _SENT_G if not break_prev else 0x0DEAD000
+    mem = {
+        (_HOST_BASE + _SENT_G, 4): _u32(_NODE_G + 0x04),          # S.next → node link
+        (_HOST_BASE + _SENT_G, 12): _u32(_NODE_G + 0x04) + _u32(_NODE_G + 0x04) + _u32(count_val),
+        (_HOST_BASE + _SENT_G + 4, 4): _u32(_NODE_G + 0x04),      # S.prev (tail) → node link
+        (_HOST_BASE + _SENT_G + 8, 4): _u32(count_val),           # mCount
+        (_HOST_BASE + _NODE_G + 0x04, 4): _u32(_SENT_G),          # node.next → S
+        (_HOST_BASE + _NODE_G + 0x08, 4): _u32(prev_of_node),     # node.prev → S (ou cassé)
+    }
+    b._read = lambda addr, size: mem.get((addr, size))  # type: ignore[assignment]
+    return b
+
+
+def test_list_integrity_accepts_consistent_ring():
+    node = _make_node(_HOST_BASE + _NODE_G, _NODE_G)
+    b = _ring_bridge(count_val=1)
+    assert b._list_integrity_ok([node], _HOST_BASE) is True
+
+
+def test_list_integrity_rejects_broken_prev():
+    node = _make_node(_HOST_BASE + _NODE_G, _NODE_G)
+    b = _ring_bridge(count_val=1, break_prev=True)
+    assert b._list_integrity_ok([node], _HOST_BASE) is False
+
+
+def test_list_integrity_rejects_mcount_mismatch():
+    node = _make_node(_HOST_BASE + _NODE_G, _NODE_G)
+    b = _ring_bridge(count_val=3)                     # 1 nœud réel mais mCount=3
+    assert b._list_integrity_ok([node], _HOST_BASE) is False
