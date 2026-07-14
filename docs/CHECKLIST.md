@@ -227,10 +227,14 @@
          · nourriture 8) n'est en poche ; reporté avec retry, jamais perdu. NB : le layout
          « pack Enforcement séparé » est PÉRIMÉ — build_mod FUSIONNE tout dans BOTWpelago
          (un seul pack à cocher dans Cemu).
-- [ ] Re-ancrer le kit de départ sur un événement qui JOUE réellement sur partie moddée
-      (ex. entry `Common` de Demo003_0 gardée par un flag « déjà donné », ou l'événement du
-      réveil) — pour du confort (livraisons immédiates dès la tablette) ; la garde client
-      rend le kit non-bloquant.
+- [x] **Kit de départ RE-ANCRÉ (2026-07-14 soir)** : greffé sur `Common` ET `CommonFirst`
+      de Demo003_0, gardé par le flag inerte **`TestQuest_shimizu01_Finish`** (2e mailbox
+      TestQuest — Takano_01 = mur Ganon, ne pas croiser) : entry → Switch `CheckFlag` →
+      cas 0 = kit (8 × Demo_IncreasePorchItem) → `Demo_FlagON` → tête d'origine ; cas 1 =
+      tête d'origine. Une seule exécution par partie (le flag survit dans la save), quel que
+      soit le socle (chambre, tour…). Structures copiées de flows réels (CheckFlag/FlagON
+      de Demo033_0). Appliqué au prochain play_local (pack_builder → build_mod).
+      **À valider in-game : les 8 items du kit tombent au 1er socle, une seule fois.**
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

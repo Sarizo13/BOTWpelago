@@ -1,16 +1,23 @@
 """
-Patch « kit de départ » — débloque TOUS les onglets de la sacoche dès le réveil.
+Patch « kit de départ » — débloque TOUS les onglets de la sacoche dès le socle de la tablette.
 
-Problème : un item AP livré dans une catégorie VIDE (jamais débloquée) reste invisible
-jusqu'au reload (onglet grisé — couche ksys::ui non rafraîchissable de l'extérieur,
-investigué côté client et différé). Idée du joueur : débloquer les sections au démarrage,
-comme le rando valide la tour du Prélude.
+Problème : un item AP livré dans un onglet JAMAIS débloqué corrompt la poche (crash plat du
+2026-07-14) ; le client REPORTE désormais ces créations (garde « onglet verrouillé »), mais
+sans kit les livraisons attendent les premiers ramassages du joueur.
 
-Solution : greffer en TÊTE de l'entry `CommonFirst` de `Demo003_0.bfevfl` (l'événement du
-SOCLE de la tablette Sheikah — premier téléchargement de la partie, une seule fois, c'est
-là que le rando pose les flags des runes) une chaîne de `Demo_IncreasePorchItem` silencieux :
-un item humble par onglet. Grant NATIF → le jeu construit ses onglets normalement → plus
-jamais de catégorie grisée, et les livraisons AP tombent toujours dans des listes non vides.
+Point d'accroche (RÉVISÉ 2026-07-14) : l'entry `CommonFirst` de `Demo003_0.bfevfl` (variante
+« premier téléchargement » du socle) NE JOUE JAMAIS sur une partie moddée — le rando pré-valide
+les démos d'intro et la première tour (InitValue `MapTower_DemoFirst`, `IsPlayed_Demo*`), donc
+c'est la variante `Common` qui joue au socle de la chambre. Le kit est maintenant greffé sur
+LES DEUX entries, gardé par un flag « déjà donné » :
+
+    entry ── Switch CheckFlag(TestQuest_shimizu01_Finish) ──1──> tête d'origine
+                        └──0──> kit (8 × Demo_IncreasePorchItem) ─> Demo_FlagON ─> tête d'origine
+
+Le flag de garde = `TestQuest_shimizu01_Finish` : quête de TEST interne Nintendo, bool inerte
+présent dans gamedata (vérifié à 0 sur save réelle), jamais posé par le jeu/le rando/le client,
+exclu des locations AP (motif TestQuest de build_locations). Même famille que la mailbox du mur
+Ganon (`TestQuest_Takano_01_Finish` — NE PAS réutiliser celle-là).
 
 Layering : on patche la copie DU RANDO (préservée), et pack_builder ré-applique après
 chaque régénération de seed. Idempotent (marqueur = présence du Tree Branch du kit).
@@ -24,18 +31,20 @@ from evfl import EventFlow
 from evfl.actor import ActorIdentifier
 from evfl.common import StringHolder
 from evfl.container import Container
-from evfl.event import ActionEvent, Event
+from evfl.event import ActionEvent, Event, SwitchEvent
 from evfl.util import make_index, make_rindex
 
 from . import PatchError
 
 NAME = "starter-kit"
 DESCRIPTION = ("Kit de départ au socle de la tablette : 1 item par onglet de sacoche — "
-               "plus de catégorie grisée, les livraisons AP tombent en liste non vide.")
+               "plus de catégorie grisée, les livraisons AP tombent en liste non vide. "
+               "Gardé par flag (une seule fois), greffé sur Common ET CommonFirst.")
 
 EVENTPACK_REL = "Event/Demo003_0.sbeventpack"
 FLOW_INNER = "EventFlow/Demo003_0.bfevfl"
-ENTRY = "CommonFirst"
+ENTRIES = ("Common", "CommonFirst")     # Common = ce qui JOUE réellement sur partie moddée
+GUARD_FLAG = "TestQuest_shimizu01_Finish"
 
 # (actor, quantité) — un représentant humble par onglet de sacoche
 KIT = [
@@ -64,30 +73,55 @@ def _patched_flow(flow_bytes: bytes) -> bytes | None:
             return None                                   # déjà patché (layering)
 
     esa = fc.find_actor(ActorIdentifier("EventSystemActor"))
-    if not any(a.v == "Demo_IncreasePorchItem" for a in esa.actions):
-        esa.actions.append(StringHolder("Demo_IncreasePorchItem"))
+    for action_name in ("Demo_IncreasePorchItem", "Demo_FlagON"):
+        if not any(a.v == action_name for a in esa.actions):
+            esa.actions.append(StringHolder(action_name))
+    if not any(q.v == "CheckFlag" for q in esa.queries):
+        esa.queries.append(StringHolder("CheckFlag"))
     give = esa.find_action("Demo_IncreasePorchItem")
+    flag_on = esa.find_action("Demo_FlagON")
+    check = esa.find_query("CheckFlag")
 
-    entry = next((e for e in fc.entry_points if e.name == ENTRY), None)
-    if entry is None:
-        raise PatchError(f"entry {ENTRY} absente de {FLOW_INNER} "
-                         "(structure rando inattendue)")
-
-    # chaîne construite à l'envers, dernier item → ancienne tête de l'entry
-    nxt = entry.main_event.v
-    for i, (item, amount) in enumerate(reversed(KIT)):
+    def _action(name: str, params: dict, nxt) -> Event:
         ev = Event()
-        ev.name = f"BOTWSK{len(KIT) - 1 - i}"
+        ev.name = name
         ev.data = ActionEvent()
         ev.data.actor = make_rindex(esa)
-        ev.data.actor_action = make_rindex(give)
         ev.data.params = Container()
-        ev.data.params.data = {"IsWaitFinish": True, "PorchItemName": item,
-                               "Value": amount}
-        ev.data.nxt = make_index(nxt)
+        ev.data.params.data = dict(params)
+        if nxt is not None:
+            ev.data.nxt = make_index(nxt)
         fc.events.append(ev)
-        nxt = ev
-    entry.main_event = make_index(nxt)
+        return ev
+
+    for tag, entry_name in (("A", "Common"), ("B", "CommonFirst")):
+        entry = next((e for e in fc.entry_points if e.name == entry_name), None)
+        if entry is None:
+            raise PatchError(f"entry {entry_name} absente de {FLOW_INNER} "
+                             "(structure rando inattendue)")
+        old_head = entry.main_event.v
+        # garde : le kit ne se donne qu'UNE fois (le flag survit dans la save)
+        done = _action(f"BOTWSK{tag}F", {"IsWaitFinish": True, "FlagName": GUARD_FLAG},
+                       old_head)
+        done.data.actor_action = make_rindex(flag_on)
+        # chaîne du kit, construite à l'envers : dernier item → Demo_FlagON → tête d'origine
+        nxt = done
+        for i, (item, amount) in enumerate(reversed(KIT)):
+            ev = _action(f"BOTWSK{tag}{len(KIT) - 1 - i}",
+                         {"IsWaitFinish": True, "PorchItemName": item, "Value": amount}, nxt)
+            ev.data.actor_action = make_rindex(give)
+            nxt = ev
+        sw = Event()
+        sw.name = f"BOTWSK{tag}S"
+        sw.data = SwitchEvent()
+        sw.data.actor = make_rindex(esa)
+        sw.data.actor_query = make_rindex(check)
+        sw.data.params = Container()
+        sw.data.params.data = {"FlagName": GUARD_FLAG}
+        # cases = RequiredIndex (cf. evfl.event.SwitchEvent), pas Index comme nxt
+        sw.data.cases = {0: make_rindex(nxt), 1: make_rindex(old_head)}
+        fc.events.append(sw)
+        entry.main_event = make_index(sw)
 
     buf = io.BytesIO()
     flow.write(buf)
@@ -107,18 +141,24 @@ def build(read_source, log=print) -> dict[str, bytes]:
         log(f"    {EVENTPACK_REL}: kit déjà présent — inchangé")
         return {}
 
-    # vérif : re-parse + le kit est bien en tête de l'entry
+    # vérif : re-parse + chaque entry commence par le Switch gardé, dont le cas 0 mène au kit
     reparsed = EventFlow()
     reparsed.read(patched)
-    ep = next(e for e in reparsed.flowchart.entry_points if e.name == ENTRY)
-    head = ep.main_event.v
-    if not (isinstance(head.data, ActionEvent) and head.data.params and
-            str(head.data.params.data.get("PorchItemName", "")) == _MARKER):
-        raise PatchError("vérif échouée : le kit n'est pas en tête de l'entry")
+    for tag, entry_name in (("A", "Common"), ("B", "CommonFirst")):
+        ep = next(e for e in reparsed.flowchart.entry_points if e.name == entry_name)
+        head = ep.main_event.v
+        if not (isinstance(head.data, SwitchEvent) and head.data.params and
+                str(head.data.params.data.get("FlagName", "")) == GUARD_FLAG):
+            raise PatchError(f"vérif échouée : {entry_name} ne commence pas par le Switch gardé")
+        kit_head = head.data.cases[0].v
+        if not (isinstance(kit_head.data, ActionEvent) and kit_head.data.params and
+                str(kit_head.data.params.data.get("PorchItemName", "")) == _MARKER):
+            raise PatchError(f"vérif échouée : le cas 0 de {entry_name} ne mène pas au kit")
 
     writer = oead.SarcWriter.from_sarc(sarc)
     writer.set_mode(oead.SarcWriter.Mode.Legacy)
     writer.files[FLOW_INNER] = oead.Bytes(patched)
     _, data = writer.write()
-    log(f"    {EVENTPACK_REL}: kit de {len(KIT)} items en tête de {ENTRY}")
+    log(f"    {EVENTPACK_REL}: kit gardé ({GUARD_FLAG}) greffé sur "
+        f"{' + '.join(ENTRIES)} ({len(KIT)} items)")
     return {EVENTPACK_REL: bytes(oead.yaz0.compress(bytes(data)))}
