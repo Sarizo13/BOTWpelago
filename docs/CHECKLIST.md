@@ -202,6 +202,19 @@
          pré-clearés. Génération 1 slot revalidée (708 items, playthrough OK). Pack rebuild
          (843 lieux) — ⚠️ `--install` à faire PopTracker FERMÉ. Tests 67 OK (+ miroir
          worlds/client par lecture source).
+- [x] **Retour du 5e run (2026-07-14 soir) — gate tablette/ancre/livraisons/toasts/PopTracker
+      VALIDÉS in-game** ; deux nouveaux bugs corrigés dans la foulée :
+      1. **Crash plat sur catégorie nourriture VIDE** : Meat Stew (Item_Cook_K_01) livré avant
+         tout ramassage d'aliment → splice dans une section que le jeu n'a pas encore créée
+         (indépendant de la tablette) → crash. Fix : verrou type 8 comme les flèches — un
+         plat/aliment est REPORTÉ (retry auto) tant qu'AUCUN item type 8 n'est en poche ;
+         log `catégorie nourriture vide — … reporté`. (Si un crash similaire apparaît sur les
+         matériaux type 7, étendre le même verrou.)
+      2. **Items-clés AP dans les coffres du RANDO** (casque Zora + Urbosa's Fury tirés au
+         sort) : `BotwRandoTable` exclut désormais en mode AP (apMode = apConfig != null) les
+         acteurs gérés par AP — 4 HeroSouls, Weapon_Bow_071, tenues de gate Armor_011/009/
+         053/006 (miroir de gate_items.json). `BotwRandoCLI.exe` recompilé (dotnet Release).
+         ⚠️ Nouveau pack/seed requis pour que ça prenne effet (play_local régénère tout).
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

@@ -78,7 +78,7 @@ public class Randomizer
 		paragliderChest = paragliderChests[random.Next(paragliderChests.Count)];
 		eventsToDisable = LibHelpers.GetEventsToDisable();
 		overworldObjectsTable = new BotwObjects();
-		chestObjectsTable = new BotwRandoTable(1398);
+		chestObjectsTable = new BotwRandoTable(1398, apConfig != null);   // AP: items-clés hors tirage
 		if (!string.IsNullOrWhiteSpace(basePath) && !string.IsNullOrWhiteSpace(updatePath) && !string.IsNullOrWhiteSpace(dlcPath) && !string.IsNullOrWhiteSpace(gfxPackPath))
 		{
 			if (!LibHelpers.IsDirectoryValid(basePath) && !LibHelpers.IsDirectoryValid(updatePath) && !LibHelpers.IsDirectoryValid(dlcPath) && !LibHelpers.IsDirectoryValid(gfxPackPath))

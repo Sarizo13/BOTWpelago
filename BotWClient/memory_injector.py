@@ -1972,6 +1972,15 @@ class CemuMemoryBridge:
         if item_type == 2 and not any(n["type"] in (1, 2) for n in selfref):
             log.debug("[Mem] (live) catégorie arc/flèche vide — %s reporté", item_name)
             return False
+        # Nourriture (type 8) : MÊME verrou — la section n'existe pas tant que le joueur n'a
+        # ramassé AUCUN aliment (indépendant de la tablette Sheikah) ; un plat inséré dans la
+        # catégorie vide a CRASHÉ Cemu (2026-07-14, Meat Stew sur save neuve, splicé après un
+        # objet-clé). Reporté (retry auto) jusqu'au 1er aliment en poche ; les matériaux (7)
+        # ne débloquent PAS cette section.
+        if item_type == 8 and not any(n["type"] == 8 for n in selfref):
+            log.info("[Mem] (live) catégorie nourriture vide — %s reporté "
+                     "(ramasse/cuisine un aliment d'abord)", item_name)
+            return False
         # ANCRE par ORDRE DE TRI (sortKey) : la poche est UNE liste chaînée triée par (type, puis
         # sortKey au sein du type). On insère à la position triée EXACTE (voir la détection de sens
         # ci-dessous). Insérer ailleurs désorganise l'inventaire → catégories fracturées / crash.

@@ -10,7 +10,21 @@ internal class BotwRandoTable
 
 	public List<KeyValuePair<string, string>> ChestItems = new List<KeyValuePair<string, string>>();
 
-	public BotwRandoTable(int chestsCount)
+	// AP: items-clés distribués EXCLUSIVEMENT par Archipelago — retirés du tirage aléatoire
+	// des coffres en mode AP, sinon un coffre du rando peut les donner et court-circuiter le
+	// multiworld (constaté 2026-07-14 : casque Zora + Urbosa's Fury dans deux coffres).
+	// Miroir de data/gate_items.json (capacités de Champion, Arc de Lumière, tenues de gate).
+	private static readonly HashSet<string> ApManagedItems = new HashSet<string>
+	{
+		"Obj_HeroSoul_Rito", "Obj_HeroSoul_Gerudo", "Obj_HeroSoul_Zora", "Obj_HeroSoul_Goron",
+		"Weapon_Bow_071",                                        // Bow of Light
+		"Armor_011_Head", "Armor_011_Upper", "Armor_011_Lower",  // Flamebreaker
+		"Armor_009_Head", "Armor_009_Upper", "Armor_009_Lower",  // Snowquill
+		"Armor_053_Head", "Armor_053_Upper", "Armor_053_Lower",  // Vai
+		"Armor_006_Head", "Armor_006_Upper", "Armor_006_Lower",  // Zora
+	};
+
+	public BotwRandoTable(int chestsCount, bool apMode = false)
 	{
 		ChestDropTable.Add(new KeyValuePair<string, string>("Obj_DungeonClearSeal", "Spirit Orb"), 200);
 		ChestDropTable.Add(new KeyValuePair<string, string>("Obj_KorokNuts", "Korok Seed"), 100);
@@ -379,6 +393,10 @@ internal class BotwRandoTable
 		ChestDropTable.Add(new KeyValuePair<string, string>("Obj_IceArrow_A_03", ""), 6);
 		for (int i = 0; i < ChestDropTable.Count; i++)
 		{
+			if (apMode && ApManagedItems.Contains(ChestDropTable.ElementAt(i).Key.Key))
+			{
+				continue;   // item-clé AP : jamais dans le tirage des coffres en mode AP
+			}
 			for (int j = 0; j < ChestDropTable.ElementAt(i).Value; j++)
 			{
 				ChestItems.Add(ChestDropTable.ElementAt(i).Key);
