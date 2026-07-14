@@ -37,8 +37,9 @@ Cible : **profil Cemu du run AP = `80000002`** (celui vers lequel pointe `save_p
    - Si tu veux **repartir de zéro** (save neuve), lance SANS `--keep-save` (⚠️ WIPE la save).
    - Note dans la bannière : le **slot** (défaut `Shorizo`) et la **seed**.
 
-2. **Cemu** : Options ▸ Graphic Packs ▸ coche **BOTWpelago** (et **BOTWpelago_Enforcement**
-   si tu testes les murs de région). Lance BotW, **charge ta save** (profil `80000002`).
+2. **Cemu** : Options ▸ Graphic Packs ▸ coche **BOTWpelago** (UN SEUL pack : build_mod y
+   FUSIONNE enforcement paravoile + murs + kit — l'ancien pack séparé « Enforcement »
+   n'existe plus). Lance BotW, **charge ta save** (profil `80000002`).
    > Ordre important pour tester le bug du 1er attach : **charge la save AVANT de lancer le
    > client** (l'attache tombe juste après le load, inventaire pas encore stabilisé).
 

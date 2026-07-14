@@ -215,6 +215,22 @@
          acteurs gérés par AP — 4 HeroSouls, Weapon_Bow_071, tenues de gate Armor_011/009/
          053/006 (miroir de gate_items.json). `BotwRandoCLI.exe` recompilé (dotnet Release).
          ⚠️ Nouveau pack/seed requis pour que ça prenne effet (play_local régénère tout).
+      3. **Kit de départ JAMAIS JOUÉ sur partie moddée (élucidé)** : le kit (starter-kit,
+         8 items dont un type 8) est bien FUSIONNÉ dans le pack (CommonFirst → BOTWSK0
+         vérifié dans le .sbeventpack installé) MAIS son entry `CommonFirst` (variante
+         « premier téléchargement » du socle) ne joue pas : le rando pré-valide les démos
+         d'intro + la première tour (`MapTower_DemoFirst` etc. en InitValue) → c'est la
+         variante `Common` qui joue. Tous les tests précédents étaient sur saves aux onglets
+         déjà débloqués → jamais vu. Parade côté client : **garde GÉNÉRALE onglet verrouillé**
+         (remplace les verrous flèches/nourriture) — aucune création live tant qu'aucun item
+         du même ONGLET (armes 0 · arcs/flèches 1-2 · boucliers 3 · armures 4-6 · matériaux 7
+         · nourriture 8) n'est en poche ; reporté avec retry, jamais perdu. NB : le layout
+         « pack Enforcement séparé » est PÉRIMÉ — build_mod FUSIONNE tout dans BOTWpelago
+         (un seul pack à cocher dans Cemu).
+- [ ] Re-ancrer le kit de départ sur un événement qui JOUE réellement sur partie moddée
+      (ex. entry `Common` de Demo003_0 gardée par un flag « déjà donné », ou l'événement du
+      réveil) — pour du confort (livraisons immédiates dès la tablette) ; la garde client
+      rend le kit non-bloquant.
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

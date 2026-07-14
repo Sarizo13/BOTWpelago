@@ -1966,20 +1966,21 @@ class CemuMemoryBridge:
         # Sans ancre du même type, on échoue -> voie save-fichier (le 1er item d'un type
         # arrive au rechargement, les suivants en live).
         selfref = [n for n in nodes if n["name"] and is_selfref(n)]
-        # Flèches (type 2) : la catégorie arc/flèche est VERROUILLÉE quand elle est vide → insérer
-        # une flèche sans arc(1) ni flèche(2) présent CORROMPT l'inventaire. On reporte (save-file
-        # /file) jusqu'à ce qu'un arc existe.
-        if item_type == 2 and not any(n["type"] in (1, 2) for n in selfref):
-            log.debug("[Mem] (live) catégorie arc/flèche vide — %s reporté", item_name)
-            return False
-        # Nourriture (type 8) : MÊME verrou — la section n'existe pas tant que le joueur n'a
-        # ramassé AUCUN aliment (indépendant de la tablette Sheikah) ; un plat inséré dans la
-        # catégorie vide a CRASHÉ Cemu (2026-07-14, Meat Stew sur save neuve, splicé après un
-        # objet-clé). Reporté (retry auto) jusqu'au 1er aliment en poche ; les matériaux (7)
-        # ne débloquent PAS cette section.
-        if item_type == 8 and not any(n["type"] == 8 for n in selfref):
-            log.info("[Mem] (live) catégorie nourriture vide — %s reporté "
-                     "(ramasse/cuisine un aliment d'abord)", item_name)
+        # ONGLET VERROUILLÉ : une section de sacoche n'EXISTE pas tant que le joueur n'a jamais
+        # possédé d'item de son onglet ; y splicer CORROMPT/CRASH (flèches sans arc constaté
+        # 2026-07-03 ; plat sans aliment → crash Cemu 2026-07-14 sur save neuve). Le kit de
+        # départ du mod (starter-kit, greffé sur Demo003_0·CommonFirst) devait tout débloquer
+        # au socle de la tablette, mais cette entry ne JOUE PAS sur partie moddée (le rando
+        # pré-valide démos d'intro + première tour → variante Common jouée) → garde GÉNÉRALE :
+        # création reportée (retry auto, jamais perdue) tant qu'aucun item du même ONGLET
+        # n'est en poche. Onglets : armes 0 · arcs/flèches 1-2 · boucliers 3 · armures 4-6 ·
+        # matériaux 7 · nourriture 8 · objets-clés 9 (toujours OK : la tablette y est).
+        _TAB_TYPES = {0: (0,), 1: (1, 2), 2: (1, 2), 3: (3,), 4: (4, 5, 6),
+                      5: (4, 5, 6), 6: (4, 5, 6), 7: (7,), 8: (8,), 9: (9,)}
+        tab = _TAB_TYPES.get(item_type, (item_type,))
+        if not any(n["type"] in tab for n in selfref):
+            log.info("[Mem] (live) onglet de sacoche (types %s) encore verrouillé — %s "
+                     "reporté (retry auto au prochain ramassage)", tab, item_name)
             return False
         # ANCRE par ORDRE DE TRI (sortKey) : la poche est UNE liste chaînée triée par (type, puis
         # sortKey au sein du type). On insère à la position triée EXACTE (voir la détection de sens
