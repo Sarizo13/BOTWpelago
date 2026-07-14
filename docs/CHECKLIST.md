@@ -287,6 +287,18 @@
          re-sauvegarder » (plus d'empilement sur du cassé entre deux contrôles périodiques).
       À re-valider : rafale complète sans corruption ; si suspension → la save d'AVANT la
       rafale reste saine (slots multiples BotW).
+- [x] **10e run (2026-07-15) — les gardes v1 SUR-bloquaient, corrigées** : en jeu actif,
+      « poche active — différée d'un cycle » tournait en boucle À VIE (la fenêtre calme
+      comparait à l'état de la TENTATIVE précédente, parfois 1 min plus tôt → toujours un
+      ramassage entre-temps) → « l'envoi n'est pas repris », Urbosa/Master Sword coincés en
+      file ; et 2 suspensions « liste INCOHÉRENTE » étaient des FAUX POSITIFS (vérif
+      post-splice lue pendant une insertion du jeu, 0,3 s après un ramassage). Fixes :
+      1. fenêtre calme TEMPORELLE : splice autorisé dès que la poche est stable ≥ 3 s
+         (l'horodatage n'est re-armé que par l'activité du JOUEUR, pas par nos créations) ;
+      2. vérif post-splice avec RE-TEST à +250 ms avant suspension (comme la périodique).
+      NB validé au passage : cœurs/endurance MAX bien montés au reload — les nouveaux cœurs
+      arrivent VIDES (on monte MaxHartValue, pas CurrentHart qui est un miroir non-écrivable)
+      → manger un plat les remplit ; comportement documenté, pas un bug.
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

@@ -306,6 +306,7 @@ class CemuMemoryBridge:
         # (b) INTÉGRITÉ — liste vérifiée avant chaque batch ; incohérente → créations
         # SUSPENDUES jusqu'au prochain rechargement (le jeu reconstruit une liste propre).
         self._last_pouch_sig: Optional[tuple] = None
+        self._sig_changed_at: float = 0.0        # dernier changement de poche NON provoqué par nous
         self._creates_suspended: bool = False
         self._suspend_logged: bool = False
         self._last_integrity_check: float = 0.0
@@ -2028,19 +2029,24 @@ class CemuMemoryBridge:
                     log.info("[Mem] (live) onglet plein (%d/%d, type %d) — création %s en "
                              "overflow", have, cap, item_type, item_name)
                 return False
-        # FENÊTRE CALME (anti-course ramassage, crashs 7e/8e runs) : la poche a changé depuis
-        # notre dernier passage (ramassage joueur, réallocation) → on laisse le jeu finir son
-        # insertion, création différée d'UN cycle. Nos propres créations remettent la
-        # signature à jour en fin de splice → un batch de livraisons reste fluide.
+        # FENÊTRE CALME (anti-course ramassage, crashs 7e/8e runs — CORRIGÉE 2026-07-15) : on
+        # ne splice que si la poche est STABLE depuis ≥ 3 s. V1 (10e run) comparait à l'état
+        # de la TENTATIVE précédente (parfois 1 min plus tôt) → en jeu actif, quelque chose
+        # avait toujours changé entre-temps → différé À VIE (« l'envoi n'est pas repris »).
+        # Nos propres créations mettent la signature à jour SANS toucher l'horodatage → un
+        # batch reste fluide ; seule l'activité du JOUEUR (re)arme la fenêtre.
         sig = tuple(n["name"] for n in nodes)
+        now = time.monotonic()
         if sig != self._last_pouch_sig:
             self._last_pouch_sig = sig
-            log.debug("[Mem] (live) poche active — création %s différée d'un cycle", item_name)
+            self._sig_changed_at = now
+        if now - self._sig_changed_at < 3.0:
+            log.debug("[Mem] (live) poche active (il y a %.1fs) — création %s différée",
+                      now - self._sig_changed_at, item_name)
             return False
         # INTÉGRITÉ de la liste (1×/4 s) : réciprocité next/prev + mCount sur la marche réelle.
         # Une liste incohérente = le précurseur des crashs « ramassage » → plus AUCUN splice
         # jusqu'au prochain RECHARGEMENT (le jeu reconstruit une liste propre depuis la save).
-        now = time.monotonic()
         if now - self._last_integrity_check > 4.0:
             self._last_integrity_check = now
             if not self._list_integrity_ok(selfref, base):
@@ -2274,19 +2280,27 @@ class CemuMemoryBridge:
             # VÉRIF POST-SPLICE : notre insertion doit laisser l'anneau PARFAITEMENT cohérent.
             # Sinon on suspend IMMÉDIATEMENT (le contrôle périodique de 4 s laissait plusieurs
             # splices s'empiler sur une liste déjà cassée → save corrompue → crash au reload,
-            # constaté au 9e run). La signature « fenêtre calme » intègre NOTRE création au
-            # passage (le batch du même cycle n'est pas différé par notre propre changement).
+            # constaté au 9e run). RE-TEST à +250 ms avant de conclure : une insertion du JEU
+            # en cours (ramassage simultané) rend l'anneau transitoirement illisible — les 2
+            # suspensions du 10e run étaient ces faux positifs. La signature « fenêtre calme »
+            # intègre NOTRE création SANS re-armer l'horodatage (le batch reste fluide).
             nodes_after = self._scan_pouch_nodes()
             selfref_after = [n for n in nodes_after
                              if n["name"] and self._node_is_selfref(n["raw"], n["host"] - base)]
             self._last_pouch_sig = tuple(n["name"] for n in nodes_after)
             if not selfref_after or not self._list_integrity_ok(selfref_after, base):
-                self._creates_suspended = True
-                if not self._suspend_logged:
-                    self._suspend_logged = True
-                    log.error("[Mem] splice %s : liste incohérente APRÈS insertion — créations "
-                              "SUSPENDUES ; RECHARGE la save au plus vite (sans re-sauvegarder "
-                              "par-dessus si possible)", item_name)
+                time.sleep(0.25)
+                nodes_after = self._scan_pouch_nodes()
+                selfref_after = [n for n in nodes_after
+                                 if n["name"] and self._node_is_selfref(n["raw"], n["host"] - base)]
+                self._last_pouch_sig = tuple(n["name"] for n in nodes_after)
+                if not selfref_after or not self._list_integrity_ok(selfref_after, base):
+                    self._creates_suspended = True
+                    if not self._suspend_logged:
+                        self._suspend_logged = True
+                        log.error("[Mem] splice %s : liste incohérente APRÈS insertion — créations "
+                                  "SUSPENDUES ; RECHARGE la save au plus vite (sans re-sauvegarder "
+                                  "par-dessus si possible)", item_name)
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s%s",
                      item_name, item_type, value, anchor_name,
                      "" if bumped else "  (!! mCount NON incrémenté)")
