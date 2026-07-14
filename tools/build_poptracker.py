@@ -36,6 +36,17 @@ CATEGORY_LABEL = {
 # Ordre d'affichage des catégories dans chaque région
 CAT_ORDER = ["shrine", "beast", "tower", "memory", "quest", "location", "shrine_chest"]
 
+# Locations PRÉ-VRAIES à toute nouvelle partie (InitValue=1 posé par le rando — skip plateau) :
+# HORS POOL AP (worlds/botw/locations.py RANDO_INIT_LOCATION_IDS) → hors pack aussi, sinon
+# elles resteraient rouges à vie. Les sanctuaires du plateau se suivent via leur LIEU
+# (Location_DungeonNNN, renommé au nom du sanctuaire) + leur COFFRE (demande user 2026-07-14).
+RANDO_INIT_LOCATION_IDS = {
+    6_081_009, 6_081_038, 6_081_041, 6_081_065,   # 4 sanctuaires du plateau (Clear_Dungeon*)
+    6_081_307,                                     # Great Plateau Tower (MapTower_07)
+    6_081_642,                                     # lieu Map Tower07 (Location_MapTower07)
+    6_082_508,                                     # Souvenir 008 (IsGet_MemoryPhoto_008)
+}
+
 # Règles d'accès PopTracker par région — miroir de worlds/botw/rules.py. Posées sur le
 # nœud RÉGION (héritées par catégories/checks/pins carte) : un check dont la règle n'est
 # pas satisfaite s'affiche en ROUGE (inaccessible) dans l'arbre ET sur la carte.
@@ -139,6 +150,8 @@ def build() -> None:
     loc_mapping: dict[int, str] = {}
     seen_paths: set[str] = set()
     for loc in locs:
+        if int(loc["ap_id"]) in RANDO_INIT_LOCATION_IDS:
+            continue                                # pré-vraie (hors pool AP) → hors pack
         region = loc.get("region") or "Hyrule World"
         cat = loc["category"]
         label = CATEGORY_LABEL.get(cat, cat.title())

@@ -495,7 +495,19 @@ class CemuMemoryBridge:
             return False
         if not self._slate_seen:
             if self.live_find_item("Obj_DRStone_Get") is None:
-                return False
+                # Tablette introuvable = soit vraiment pré-tablette, soit poche PÉRIMÉE (le
+                # début de partie réalloue agressivement, et l'early-return « pas prêt » du
+                # flush court-circuite la re-localisation de _inject_pending — bug du run du
+                # 14/07 soir : gate jamais levée). On re-localise ici, avec cooldown, via
+                # l'oracle rubis (seule validation qui distingue le buffer VIVANT).
+                now = time.monotonic()
+                if now - self._last_inv_locate_try >= _INV_LOCATE_RETRY_COOLDOWN:
+                    self._last_inv_locate_try = now
+                    self._relocate_inventory()
+                    if self.live_find_item("Obj_DRStone_Get") is None:
+                        return False
+                else:
+                    return False
             self._slate_seen = True
             log.info("[Mem] tablette Sheikah détectée en poche — livraisons AUTORISÉES")
         return True
@@ -936,6 +948,18 @@ class CemuMemoryBridge:
                 self._heap_base = base                # base VALIDÉE par l'ancre → fixe/correcte
                 log.info("[Mem] Inventaire live localise @ 0x%012X (rupees @ 0x%012X, base validée)",
                          inv_base, rupees_addr)
+                # COHÉRENCE de l'ancre statique : si elle existe mais ne désigne PAS le buffer
+                # qu'on vient de VALIDER (oracle rubis), c'était un faux positif (mot de données
+                # quelconque) → on la jette et on re-résout depuis le buffer validé.
+                if self._pouch_static_host is not None:
+                    r = self._read(self._pouch_static_host, 4)
+                    cur = struct.unpack(">I", r)[0] if r else None
+                    if cur is None or base + cur + (self._pouch_buf_off or 0) != inv_base:
+                        log.info("[Mem] ancre statique poche incohérente avec le buffer validé "
+                                 "— re-résolution")
+                        self._pouch_static_host = None
+                        self._pouch_buf_off = None
+                        self._pouch_static_val = None
                 # Localisation VALIDÉE → on résout (one-shot) l'ancre statique qui suivra
                 # désormais le buffer vivant à chaque accès (anti copie-freed).
                 self._find_pouch_static()
@@ -1017,7 +1041,10 @@ class CemuMemoryBridge:
                 while pos != -1:
                     if pos % 4 == 0 and pos + 4 <= len(chunk):    # slots alignés u32
                         val = struct.unpack_from(">I", chunk, pos)[0]
-                        if lo_val <= val <= inv_g:
+                        # offset objet ALIGNÉ requis : un vrai pointeur de gestionnaire est
+                        # aligné 4 — le faux positif du 2026-07-14 (offset +0x24B1, un mot de
+                        # données quelconque) « confirmait » à vie un buffer périmé.
+                        if lo_val <= val <= inv_g and (inv_g - val) % 4 == 0:
                             off = inv_g - val
                             if best is None or off < best[0]:
                                 best = (off, self._heap_base + g + pos)

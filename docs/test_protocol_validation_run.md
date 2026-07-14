@@ -1,16 +1,20 @@
 # BOTWpelago — Protocole de RUN DE VALIDATION V1 (2026-07-13, màj 2026-07-14 soir)
 
-> **Màj 2026-07-14 (post-crash 3e run)** — comportements NOUVEAUX attendus sur save neuve :
-> - **Plateau offert** : à la connexion, 7 checks partent SEULS (« freebies » : 4 sanctuaires
->   du plateau, Grand Plateau Tower, lieu Map Tower07, Souvenir 008) — le rando les pré-init
->   à toute nouvelle partie. C'est NORMAL. `ShrinesCleared` démarre à **0** (les 4 pré-clearés
->   ne comptent pas) ; le goal « N sanctuaires » = N sanctuaires réellement joués (hors plateau).
+> **Màj 2026-07-14 (post-crash 3e run, révisé après le 4e run)** — comportements NOUVEAUX :
+> - **7 locations pré-vraies HORS POOL** (4 sanctuaires du plateau, Grand Plateau Tower, lieu
+>   Map Tower07, Souvenir 008 — InitValue=1 posé par le rando à toute nouvelle partie) :
+>   AUCUN item n'y est placé (fini le « Paraglider gratuit » du 4e run), le client ne les émet
+>   plus, elles n'apparaissent plus dans PopTracker. `ShrinesCleared` démarre à **0** ; un
+>   sanctuaire du plateau se suit dans PopTracker via son **LIEU + son COFFRE**.
 > - **Gel pré-tablette** : AUCUNE livraison/écriture avant que la **tablette Sheikah** soit en
->   poche. Log attendu : `jeu pas prêt (pré-tablette Sheikah / load en cours)` pendant la
->   cinématique, puis `tablette Sheikah détectée en poche — livraisons AUTORISÉES`.
-> - **Ancre statique poche** : log attendu à la 1re localisation validée :
->   `ancre statique poche @ host …` puis, aux réallocations, `poche re-suivie via l'ancre
->   statique → …` (fini les splices dans des copies freed → fini le crash 0xc0000005 au reload).
+>   poche. Log : `jeu pas prêt (pré-tablette Sheikah / load en cours)` pendant la cinématique,
+>   puis `tablette Sheikah détectée en poche — livraisons AUTORISÉES`. Tant que la tablette
+>   n'est pas vue, le client RE-LOCALISE la poche (~20 s) — le 4e run restait collé sur un
+>   buffer périmé « confirmé » par une fausse ancre (offset non aligné) → gate jamais levée.
+> - **Ancre statique poche** : log attendu à la 1re localisation validée : `ancre statique
+>   poche @ host … (offset objet +0x…)` — l'offset doit être ALIGNÉ (multiple de 4) ; aux
+>   réallocations : `poche re-suivie via l'ancre statique → …` ; si l'ancre ne suit pas un
+>   buffer re-validé : `ancre statique poche incohérente … — re-résolution` (auto-guérison).
 
 Run de bout en bout pour valider les correctifs de cette session **et** le flux complet.
 ⚠️ = point qui doit être confirmé IN-GAME (impossible hors jeu). Coche au fur et à mesure.

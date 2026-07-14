@@ -99,18 +99,27 @@ def test_dungeon_counter_counts_clear_flags(tmp_path):
     assert p.get_dungeon_counter() == 2
 
 
-def test_freebies_rando_jamais_baselines(tmp_path):
-    """« Plateau offert » (2026-07-14) : le rando force InitValue=1 sur 7 locations à toute
-    NOUVELLE partie (4 sanctuaires du plateau, tour, lieu tour, souvenir 008) → elles ne
-    doivent JAMAIS être baselinées (sinon mangées à vie) mais ÉMISES comme des freebies."""
+def test_locations_preclears_hors_table_client(tmp_path):
+    """Les 7 locations pré-vraies (InitValue=1 posé par le rando à toute nouvelle partie)
+    sont HORS POOL (2026-07-14 : un Paraglider placé sur « Map Tower07 » arrivait gratuit
+    à la connexion) → le client ne doit plus les émettre du tout."""
     from BotWClient.providers.save_file import _RANDO_INIT_LOCATION_IDS
-    inv = {a: h for h, a in _LOC_HASH_TO_AP_ID.items()}
-    free_ids = sorted(a for a in _RANDO_INIT_LOCATION_IDS if a in inv)
-    assert free_ids, "les locations init du rando doivent exister dans la table"
-    p = _provider(tmp_path, [inv[a] for a in free_ids], seed="seed-A")
-    assert sorted(p.poll()) == free_ids                      # émis, PAS baselinés (room vierge)
-    data = json.loads((tmp_path / "ap_baseline.json").read_text(encoding="utf-8"))
-    assert data["ids"] == []
+    assert len(_RANDO_INIT_LOCATION_IDS) == 7
+    assert not (_RANDO_INIT_LOCATION_IDS & set(_LOC_HASH_TO_AP_ID.values()))
+
+
+def test_preclears_miroir_worlds_client():
+    """La liste d'exclusion du POOL (worlds/botw/locations.py, import AP impossible ici →
+    lecture source) doit rester le MIROIR exact de celle du client."""
+    import re
+    from pathlib import Path
+    from BotWClient.providers.save_file import _RANDO_INIT_LOCATION_IDS
+    src = (Path(__file__).resolve().parents[1] / "worlds" / "botw" / "locations.py") \
+        .read_text(encoding="utf-8")
+    m = re.search(r"RANDO_INIT_LOCATION_IDS[^=]*= frozenset\(\{(.*?)\}\)", src, re.S)
+    assert m, "RANDO_INIT_LOCATION_IDS introuvable dans worlds/botw/locations.py"
+    ids = {int(x.replace("_", "")) for x in re.findall(r"6_[\d_]+", m.group(1))}
+    assert ids == _RANDO_INIT_LOCATION_IDS
 
 
 def test_dungeon_counter_exclut_les_preclears_du_rando(tmp_path):

@@ -280,6 +280,11 @@ _RANDO_INIT_LOCATION_IDS: set[int] = {
 _RANDO_INIT_SHRINE_FLAG_IDS = [int(loc["flag_hash"], 16) for loc in _LOCATIONS
                                if loc.get("category") == "shrine"
                                and loc["ap_id"] in _RANDO_INIT_LOCATION_IDS]
+# HORS POOL (2026-07-14, miroir de worlds/botw/locations.py RANDO_INIT_LOCATION_IDS) : ces
+# locations n'existent plus côté serveur (un item de progression y arrivait « gratuit » —
+# Paraglider sur Map Tower07). Le client ne les émet donc plus du tout.
+_LOC_HASH_TO_AP_ID = {h: a for h, a in _LOC_HASH_TO_AP_ID.items()
+                      if a not in _RANDO_INIT_LOCATION_IDS}
 # Flags requis EN PLUS du compteur de sanctuaires, par mode de goal (option goal_mode) :
 #   "shrines" = [] (sanctuaires seuls) ; "full" = 4 Créatures + Master Sword + Arc de Lumière.
 _GOAL_MODE_FLAG_IDS = {
@@ -617,11 +622,8 @@ class SaveFileProvider(GameStateProvider):
                 # Réutilisable si la seed correspond (ou si on n'a pas de contexte serveur —
                 # usage hors-AP). Une seed différente / un fichier legacy → re-snapshot.
                 if self._server_seed is None or seed == self._server_seed:
-                    # filtre défensif : une baseline capturée AVANT la whitelist des freebies
-                    # du rando (plateau offert) peut les contenir → on ne les recharge pas.
-                    kept = [int(i) for i in ids if int(i) not in _RANDO_INIT_LOCATION_IDS]
-                    self._reported.update(kept)
-                    log.info("[Baseline] %d check(s) déjà faits ignorés (run en cours)", len(kept))
+                    self._reported.update(int(i) for i in ids)
+                    log.info("[Baseline] %d check(s) déjà faits ignorés (run en cours)", len(ids))
                     return
                 log.info("[Baseline] seed différente (%s → %s) — re-capture",
                          seed, self._server_seed)
@@ -629,10 +631,6 @@ class SaveFileProvider(GameStateProvider):
                 pass
         done = [ap_id for fhash, ap_id in _LOC_HASH_TO_AP_ID.items()
                 if self._save.get_bool(fhash)]
-        # Freebies du rando (« plateau offert ») : pré-vrais par InitValue sur toute partie
-        # neuve → JAMAIS baselinés, ils partent comme des checks normaux au 1er poll (le
-        # serveur dédoublonne si déjà connus).
-        done = [i for i in done if i not in _RANDO_INIT_LOCATION_IDS]
         if self._server_checked:
             # Room EN COURS : un flag vrai que le serveur ne connaît pas = progression jamais
             # envoyée (crash / client down) → on NE le baseline PAS, il partira au poll suivant.

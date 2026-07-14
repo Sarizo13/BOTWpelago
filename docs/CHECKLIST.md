@@ -184,6 +184,24 @@
          sanctuaires réellement joués). Tests : +2 baseline.
       **RESTE : re-valider in-game** (ancre statique résolue au log, livraisons qui attendent
       la tablette, freebies émis à la connexion, ShrinesCleared=0 au départ).
+- [x] **Retour du 4e run (2026-07-14 soir, correctifs du 3e run RÉVISÉS)** : deux ratés —
+      1. **Fausse ancre statique** (offset +0x24B1 NON aligné = mot de données quelconque) :
+         elle « confirmait » à vie le buffer d'origine périmé → tablette jamais vue → gate
+         jamais levée → « je n'ai reçu aucun objet ». Fixes : offset objet ALIGNÉ requis ;
+         à chaque localisation VALIDÉE (oracle rubis), une ancre qui ne désigne pas le buffer
+         validé est JETÉE et re-résolue ; tant que la tablette n'est pas vue, `delivery_ready`
+         force une RE-LOCALISATION complète (cooldown 20 s) — l'early-return « pas prêt »
+         court-circuitait la re-localisation du flush.
+      2. **« Plateau offert » mal implémenté** : les 7 locations pré-vraies étaient restées
+         dans le POOL → la seed y a placé le PARAGLIDER (« Map Tower07 ») → gate morte
+         d'entrée + items freebies non désirés. Décision RÉVISÉE (demande user) : **HORS POOL
+         partout** — `RANDO_INIT_LOCATION_IDS` dans worlds/botw/locations.py (filtre
+         active_locations, pool auto-réduit), table de polling client filtrée (plus d'émission),
+         pack PopTracker sans ces checks (**un sanctuaire du plateau se suit via son LIEU +
+         son COFFRE** — c'était la demande initiale). Compteur sanctuaires : toujours hors
+         pré-clearés. Génération 1 slot revalidée (708 items, playthrough OK). Pack rebuild
+         (843 lieux) — ⚠️ `--install` à faire PopTracker FERMÉ. Tests 67 OK (+ miroir
+         worlds/client par lecture source).
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

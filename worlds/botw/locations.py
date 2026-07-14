@@ -27,6 +27,22 @@ MODE_CATEGORIES: dict[str, set[str]] = {
     "all":         {"shrine", "shrine_chest", "tower", "beast", "location", "quest", "memory"},
 }
 
+# Locations PRÉ-VRAIES à toute nouvelle partie moddée : le rando force InitValue=1 dans
+# bootup.pack/gamedata.ssarc (rando/BotwRandoLib/Randomizer.cs · UpdateGameData — son
+# « skip plateau »). Injouables comme checks (déjà vraies au 1er poll) → JAMAIS dans le
+# pool, sinon un item de progression peut y être placé et arrive « gratuit » à la connexion
+# (constaté le 2026-07-14 : Paraglider sur « Map Tower07 » → gate morte d'entrée).
+# Miroir de BotWClient.providers.save_file._RANDO_INIT_LOCATION_IDS (test data-integrity).
+RANDO_INIT_LOCATION_IDS: frozenset[int] = frozenset({
+    6_081_009,  # Owa Daim Shrine     (Clear_Dungeon009)
+    6_081_038,  # Oman Au Shrine      (Clear_Dungeon038)
+    6_081_041,  # Ja Baij Shrine      (Clear_Dungeon041)
+    6_081_065,  # Keh Namut Shrine    (Clear_Dungeon065)
+    6_081_307,  # Great Plateau Tower (MapTower_07)
+    6_081_642,  # Map Tower07         (Location_MapTower07)
+    6_082_508,  # Souvenir 008        (IsGet_MemoryPhoto_008)
+})
+
 
 @dataclass
 class BotWLocationData:
@@ -77,6 +93,7 @@ def active_locations(mode_key: str, include_dlc: bool) -> dict[str, BotWLocation
     return {
         n: d for n, d in location_table.items()
         if d.category in cats and (include_dlc or not d.dlc)
+        and d.code not in RANDO_INIT_LOCATION_IDS      # pré-vraies (InitValue rando) → hors pool
     }
 
 
