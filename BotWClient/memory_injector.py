@@ -2272,6 +2272,44 @@ class CemuMemoryBridge:
         if not f_now or struct.unpack(">I", f_now)[0] != 0xFFFFFFFF:
             log.debug("[Mem] (live) nœud libre alloué entre-temps — %s reporté", item_name)
             return False
+        # RETRAIT DE LA FREE-LIST — le chaînon manquant depuis juin (« latent issue » de la
+        # note du 2026-06-13, jamais traité) : F restait chaîné dans la liste LIBRE du jeu
+        # même après notre splice actif + mCount++. Or le jeu ALLOUE ses ramassages depuis
+        # cette chaîne → au ramassage suivant il ré-allouait NOTRE nœud, l'écrasait et le
+        # re-spliçait dans la liste active → anneau cassé → inventaire désorganisé → crash.
+        # (Signature de TOUS les incidents runs 7-12 : la corruption suit un ramassage
+        # post-livraison.) On délie F AVANT de l'écraser : ses champs next/prev d'origine
+        # pointent encore la chaîne libre ; réciprocité exigée, sinon on ne touche à rien.
+        f_link = F_g + self._NODE_OFF_NEXT
+        fn_r = self._read(F_h + self._NODE_OFF_NEXT, 4)
+        fp_r = self._read(F_h + self._NODE_OFF_PREV, 4)
+        if not fn_r or not fp_r:
+            return False
+        f_next = struct.unpack(">I", fn_r)[0]
+        f_prev = struct.unpack(">I", fp_r)[0]
+        if not (0x02000000 <= f_next < _GUEST_MAX and 0x02000000 <= f_prev < _GUEST_MAX):
+            log.debug("[Mem] (live) chaîne libre implausible autour du nœud — %s reporté",
+                      item_name)
+            return False
+        r1 = self._read(g2h(f_next) + 4, 4)           # prev du suivant doit repointer F
+        r2 = self._read(g2h(f_prev), 4)               # next du précédent doit repointer F
+        if not (r1 and struct.unpack(">I", r1)[0] == f_link and
+                r2 and struct.unpack(">I", r2)[0] == f_link):
+            log.debug("[Mem] (live) nœud libre hors chaîne cohérente — %s reporté", item_name)
+            return False
+        if not (self._write(g2h(f_prev), struct.pack(">I", f_next)) and
+                self._write(g2h(f_next) + 4, struct.pack(">I", f_prev))):
+            return False
+        # compteur de la free-list (2e sead::OffsetList de la sentinelle : next S+0x10,
+        # prev S+0x14, count S+0x18 — cf. diff PauseMenuDataMgr du 2026-07-05) : décrément
+        # best-effort, uniquement si la valeur est plausible.
+        fc_r = self._read(g2h(sent_g) + 0x18, 4)
+        if fc_r:
+            fcnt = struct.unpack(">i", fc_r)[0]
+            if 0 < fcnt < 2000:
+                self._write(g2h(sent_g) + 0x18, struct.pack(">i", fcnt - 1))
+            else:
+                log.debug("[Mem] (live) free-count S+0x18=%d implausible — non décrémenté", fcnt)
         link_h = g2h(anchor_link_g)                       # champ next du prédécesseur (nœud/sentinelle)
         a_links = self._read(link_h, 4)
         if not a_links:

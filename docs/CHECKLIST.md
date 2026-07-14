@@ -312,6 +312,17 @@
       splice — pas de sentinelle sûre = pas de splice ; mCount incrémenté À cette sentinelle ;
       `_bump_pouch_count` SUPPRIMÉ. Si la corruption persiste malgré ça → plan B : créations
       d'équipement reload-gated pendant les replays de backlog.
+- [x] **12e run (2026-07-15) — LE chaînon manquant : le nœud consommé restait dans la
+      FREE-LIST du jeu**. Le run a livré 37 créations PROPRES en 8 min (ancres triées,
+      sentinelle pré-validée, coalescence ×N) puis l'anneau a cassé entre la dernière
+      création et un ramassage — comme à CHAQUE incident depuis le 7e run. Cause (déjà
+      notée « latent issue » le 2026-06-13, jamais traitée) : on splice F dans la liste
+      ACTIVE + mCount++, mais F reste chaîné dans la liste LIBRE (l'allocateur du jeu) →
+      le ramassage suivant RÉ-ALLOUE F, l'écrase et le re-splice → anneau cassé →
+      inventaire désorganisé → crash. FIX : F est DÉLIÉ de la free-list AVANT d'être
+      écrasé (réciprocité next/prev exigée sinon report ; décrément best-effort du
+      free-count S+0x18). **À valider in-game : rafale puis RAMASSAGES + save/reload —
+      c'est LE test qui a toujours échoué.**
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau
