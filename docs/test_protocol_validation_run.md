@@ -30,6 +30,10 @@ Cible : **profil Cemu du run AP = `80000002`** (celui vers lequel pointe `save_p
    ```
    python -m BotWClient.BotWClient --name Shorizo --reset
    ```
+   > Depuis le 2026-07-13, `--reset` est SANS DANGER en cours de run : la baseline des checks
+   > est indexée par seed et n'est plus re-snapshotée à chaque relance (les checks faits
+   > pendant un crash/trou de couverture sont ÉMIS à la reconnexion, plus jamais mangés).
+   > Relance après crash : la MÊME commande (avec ou sans `--reset`) suffit.
 
 4. (option) PopTracker : ouvre le pack `poptracker/botw-ap-tracker`, connecte l'autotracking
    à `localhost:38281`.
@@ -38,9 +42,11 @@ Cible : **profil Cemu du run AP = `80000002`** (celui vers lequel pointe `save_p
 
 ## 1. 🔴 CORRECTIF CLÉ — Livraison dès le 1er attach, SANS déco/reco
 
-> Bug corrigé : au 1er attach juste après un load, la poche fraîchement réallouée laissait une
-> copie périmée → `heap_base` décalé → spam `wallet: flagobj hors mapping guest` + items non
-> livrés jusqu'à un redémarrage client.
+> Bugs corrigés : (a) au 1er attach juste après un load, la poche fraîchement réallouée
+> laissait une copie périmée → `heap_base` décalé → spam `wallet: flagobj hors mapping guest`
+> + items non livrés jusqu'à un redémarrage client ; (b) attach pendant la cinématique/save
+> neuve → inventaire jamais re-cherché → **rien livré avant relance du client** (run du 13/07) ;
+> (c) Cemu relancé après crash → le client ne se ré-attachait pas.
 
 - [ ] ⚠️ Au **premier** connect (client fraîchement lancé, save déjà chargée) : les items de
       départ (**précollectés** : runes, + tout ce que la seed donne au départ) sont livrés
@@ -52,6 +58,14 @@ Cible : **profil Cemu du run AP = `80000002`** (celui vers lequel pointe `save_p
       détectée)` puis livraison — jamais de boucle de warnings.
 - [ ] ⚠️ Reçois un lot de rubis (le pool en contient) → le **portefeuille monte** dès le 1er
       attach (avant tout sanctuaire).
+- [ ] ⚠️ **Ré-attache auto** : lance le client AVANT Cemu (ou tue/relance Cemu en cours de
+      run) → dans les 15-20 s après le chargement de la save, log `game_data localise` (ou
+      `re-localisé`) et les livraisons repartent SEULES (aucune relance du client).
+- [ ] ⚠️ **Partie neuve / cinématique d'intro** : client connecté pendant la cinématique →
+      log `[Pending] … inventaire live pas encore localisé (retry auto …)` puis, une fois
+      in-game, localisation + livraison AUTOMATIQUES (≤ ~20 s).
+- [ ] ⚠️ Les logs de la session sont dans `~/.botwpelago/logs/client-<date>.log` (niveau
+      DEBUG) — en cas de pépin, ce fichier est la source du diagnostic.
 
 ## 2. Checks sortants (détection)
 
@@ -61,11 +75,20 @@ Cible : **profil Cemu du run AP = `80000002`** (celui vers lequel pointe `save_p
       la région **Great Plateau** est **verte d'emblée** — ses 16 checks (4 sanctuaires, la
       tour, 6 coffres, + 6 lieux dont *Times Shrine* / Temple du Temps) ne sont PAS rouges.
       Le reste d'Hyrule reste rouge tant que la paravoile n'est pas reçue.
+      **NB (2026-07-13)** : le pack de PopTracker vit dans `D:/poptracker/packs/` — il a été
+      réinstallé (l'ancien datait d'avant le fix régions, d'où le plateau rouge). **Relance
+      PopTracker** et recharge le pack ; après tout rebuild → `build_poptracker.py --install`
+      + redémarrage de PopTracker (il verrouille le dossier du pack).
 
-## 3. Toast natif « item reçu »
+## 3. Toast natif « item reçu » + « item envoyé »
 
 - [ ] ⚠️ À chaque réception (pouch/plat), bandeau **« Vous avez reçu {item} xN. »** en jeu
       (nom localisé, `xN` masqué si 1). Pas de crash, throttle ~4 s.
+- [ ] ⚠️ **NOUVEAU** : ouvre un coffre/check qui contient l'item d'un AUTRE monde → bandeau
+      **« {item} envoyé à {joueur}. »** (texte libre, même canal). Alternance reçu/envoyé OK
+      (la zone MSBT est réécrite à chaque bandeau).
+- [ ] ⚠️ **NOUVEAU** : Réceptacle de Cœur / Fiole d'Endurance reçu → bandeau natif (nom
+      localisé du jeu) ; en overflow → bandeau « … converti en 500 rubis. »
 
 ## 4. 🔴 CORRECTIF — Tenues de région (3 pièces) + mur au reload
 
@@ -82,32 +105,19 @@ Cible : **profil Cemu du run AP = `80000002`** (celui vers lequel pointe `save_p
 - [ ] ⚠️ **Arc de Lumière** reçu → l'arc apparaît en poche + (au reload) le mur du Sanctum
       s'ouvre (flag mailbox `TestQuest_Takano_01_Finish`).
 
-## 5. 🔴 NOUVEAU — Cap cœurs / endurance + overflow rubis (⚠️ constantes à confirmer)
+## 5. Cap cœurs / endurance + overflow rubis (✅ flags confirmés 2026-07-13)
 
 > Réceptacle de Cœur (6080128) / Fiole d'Endurance (6080129) ajoutés au pool. Montent le max
-> jusqu'au plafond du jeu ; au-delà → 500 rubis. **Le flag de max-PV n'est pas confirmé** pour
-> cette version (`Item_LifeMaxUp` absent du dump) → tant qu'il ne l'est pas, un Réceptacle
-> donne 500 rubis + un log « à confirmer » (jamais de perte, jamais d'écriture hasardeuse).
+> jusqu'au plafond du jeu ; au-delà → 500 rubis. **Flags CONFIRMÉS par lecture des saves
+> réelles** : cœurs = `MaxHartValue` (s32 ¼-cœurs, 12=3♥ / 36=9♥) ; endurance = `StaminaMax`
+> **et** `StaminaCurrentMax` (f32 égaux, 1000 base / 1200 base+1 fiole) — les deux écrits.
+> Plus AUCUN diff-saves requis — validation directe dans le run :
 
-**Confirmer les flags (sur `80000010`, à part du run)** :
-1. En jeu, note l'état, **sauvegarde** → copie `game_data.sav` en `av.sav`.
-2. Ramasse/obtiens **1 réceptacle de cœur** (statue de la déesse, 4 orbes) et **1 fiole
-   d'endurance**, **sauvegarde** → copie en `ap.sav`.
-3. Diff :
-   ```
-   python -m BotWClient.BotWClient --diff-saves av.sav ap.sav
-   ```
-4. Repère le flag s32 qui monte de **+4** (cœur : le vrai nom du max-PV) et le f32 de
-   `StaminaMax` (échelle/plafond) → mets à jour `_MAX_STAT` dans
-   `BotWClient/providers/save_file.py` (clé `heart.flag`, `stamina.per_unit`, `.cap`).
-
-**Puis, dans le run** :
-- [ ] ⚠️ Reçois un **Réceptacle de Cœur** en dessous du max → au **reload**, +1 cœur.
-- [ ] ⚠️ Reçois-en un **au max (30 cœurs)** → log `au-delà du plafond → +500 rubis`, le
-      portefeuille monte de 500, aucun cœur en trop.
-- [ ] ⚠️ Idem **Fiole d'Endurance** (roue au reload ; overflow → 500 rubis au max).
-- [ ] ⚠️ **Avant confirmation du flag cœurs** : un Réceptacle donne 500 rubis + log
-      `max 'Item_LifeMaxUp' introuvable/hors plage … À CONFIRMER IN-GAME` (comportement SÛR).
+- [ ] ⚠️ Reçois un **Réceptacle de Cœur** en dessous du max → bandeau natif + au **reload**,
+      +1 cœur (le user du 13/07 : 3 cœurs → 4 cœurs attendus au reload).
+- [ ] ⚠️ Reçois-en un **au max (30 cœurs)** → log `au-delà du plafond → +500 rubis`, bandeau
+      « converti en 500 rubis », le portefeuille monte de 500, aucun cœur en trop.
+- [ ] ⚠️ Idem **Fiole d'Endurance** (+1/5 de roue au reload ; overflow → 500 rubis au max).
 
 ## 6. Gates & progression (rappel — voir aussi ingame_test_checklist.md §B)
 
@@ -119,6 +129,11 @@ Cible : **profil Cemu du run AP = `80000002`** (celui vers lequel pointe `save_p
 
 - [ ] ⚠️ Mode **shrines** : atteindre N sanctuaires → « Goal complete! » envoyé au serveur.
 - [ ] ⚠️ Mode **full** : N sanctuaires + 4 Créatures + Master Sword + Arc de Lumière → goal.
+- [ ] ⚠️ **À SURVEILLER (constat 2026-07-13)** : sur la save du run (4 sanctuaires du Plateau
+      `Clear_Dungeon*` = 1), **`DungeonClearCounter` était encore à 0** dans la save disque.
+      Après le prochain sanctuaire terminé, vérifie `--check-flags` : si le compteur ne monte
+      toujours pas, le goal « shrines » ne se déclenchera jamais → on basculera le calcul du
+      goal sur le comptage des flags `Clear_Dungeon*` (fix trivial côté client).
 
 ## 8. Robustesse (surveiller pendant tout le run)
 

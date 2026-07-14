@@ -132,7 +132,7 @@ class ClientRunner:
 
     @property
     def live_injection(self) -> bool:
-        return self._bridge is not None
+        return self._bridge is not None and self._bridge.is_attached
 
     # ── controle ────────────────────────────────────────────────────────────────
     def start(self, cfg: Config) -> None:
@@ -153,7 +153,10 @@ class ClientRunner:
 
     def _run(self, cfg: Config) -> None:
         root = logging.getLogger(_ROOT_LOGGER)
-        root.setLevel(logging.INFO)
+        # DEBUG au logger (le log FICHIER de build_client/setup_file_log reçoit tout) ;
+        # la queue de l'UI reste filtrée à INFO via le niveau du handler.
+        root.setLevel(logging.DEBUG)
+        self._handler.setLevel(logging.INFO)
         root.addHandler(self._handler)
         loop = asyncio.new_event_loop()
         self._loop = loop
@@ -164,8 +167,11 @@ class ClientRunner:
                 cemu=cfg.cemu_folder or None, slot=cfg.user_slot or None,
                 save=cfg.save_path or None,
             )
-            self._log("Cemu attaché : DeathLink actif — objets écrits dans la save (menu titre + recharge)"
-                      if self._bridge else "Cemu non détecté : objets via save-file (recharge requis)")
+            # build_client renvoie désormais TOUJOURS un bridge (ré-attache auto en tâche de
+            # fond) → tester l'état d'attache, pas la présence de l'objet.
+            self._log("Cemu attaché : livraison LIVE active"
+                      if (self._bridge is not None and self._bridge.is_attached)
+                      else "Cemu non attaché pour l'instant : ré-attache auto en arrière-plan")
             self._task = loop.create_task(self._client.run())
             loop.run_until_complete(self._task)
         except asyncio.CancelledError:

@@ -94,6 +94,13 @@ _POOL_RETRY_COOLDOWN = 6.0
 # (l'ancienne garde bloquait le strip ; avec le miroir AOB périmable elle évitait une
 # corruption type 300 -> 2, désormais impossible par construction).
 _RUPEE_STALE_DROP  = 50
+# Ré-attach automatique (ensure_attached) : cooldown entre deux tentatives. Le scan gd complet
+# coûte quelques secondes (thread mémoire dédié) → on ne martèle pas pendant le boot/menu titre.
+_ATTACH_RETRY_COOLDOWN = 15.0
+# Retry de localisation d'inventaire quand on est ATTACHÉ mais SANS inventaire (attach pendant
+# la cinématique d'intro / save neuve : la poche n'existe pas encore). Sans retry, AUCUNE
+# livraison ne partait jusqu'à un redémarrage du client (bug « rien avant le 1er sanctuaire »).
+_INV_LOCATE_RETRY_COOLDOWN = 20.0
 
 # ── Vrai portefeuille (gdt live, v208) ─────────────────────────────────────────
 # Le jeu tient TROIS copies de CurrentRupee (prouvé 2026-07-10, tools/hunt_wallet.py puis
@@ -258,6 +265,15 @@ class CemuMemoryBridge:
         self._wallet_addr: Optional[int] = None    # VRAI portefeuille : value de l'entrée storage gdt s32
         self._wallet_flagobj: Optional[int] = None # objet gdt::Flag<s32> CurrentRupee (host) — miroir HUD
         self._heap_base: Optional[int] = None      # mapping guest->host (fixe pour la vie du process)
+        # Identité du buffer gd VIVANT : les 16 premiers flag_ids (constants pour une save BotW —
+        # le SET de flags ne change jamais, seules les valeurs bougent). Si le jeu RÉALLOUE le
+        # buffer (load, nouvelle partie), l'ancien est libéré/réutilisé → header/canari cassés →
+        # on INVALIDE tout au lieu d'écrire dans de la mémoire recyclée (corruption heap → crash
+        # Cemu différé, constaté « avant menu » / « cinématique d'intro » le 2026-07-13).
+        self._gd_canary: Optional[bytes] = None
+        self._gd_invalid_logged = False          # log d'invalidation émis une fois par épisode
+        self._last_attach_try: float = 0.0       # cooldown ensure_attached
+        self._last_inv_locate_try: float = 0.0   # cooldown ensure_live_inventory
         # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
         # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
@@ -284,7 +300,9 @@ class CemuMemoryBridge:
         #        suffix: addr du suffixe qty, budget: octets dispo}
         self._toast_msbt: Optional[dict] = None
         self._toast_last_push: float = 0.0            # throttle (~1 bandeau / 4 s)
-        self._toast_pending: deque[tuple[str, int]] = deque(maxlen=20)  # (actor, qty)
+        # entrées : {"actor_name": str, "qty": int} (item reçu, nom localisé par le jeu)
+        #        ou {"text": str} (texte libre, ex. « X envoyé à Y. »)
+        self._toast_pending: deque[dict] = deque(maxlen=20)
         self._toast_prep_thread: Optional[threading.Thread] = None  # heap_base + MSBT
 
     @staticmethod
@@ -312,10 +330,94 @@ class CemuMemoryBridge:
         if self._gd_base is None:
             log.warning("[Mem] game_data buffer introuvable en memoire")
             return False
+        self._snapshot_gd_canary()
         log.info("[Mem] game_data localise @ 0x%012X (pid=%d)", self._gd_base, self._pid)
         self._locate_live_inventory()
         self._auto_capture_templates()
         return True
+
+    def ensure_attached(self) -> bool:
+        """(Ré)attache automatiquement, avec cooldown — sûr d'appeler à chaque cycle.
+        Couvre : client lancé avant Cemu, Cemu relancé après un crash, buffer gd RÉALLOUÉ
+        par le jeu (load / nouvelle partie → gd_base invalidé par le canari). Sans ça, un
+        gd_base perdu bloquait TOUTE livraison jusqu'au redémarrage du client."""
+        if self.is_attached:
+            return True
+        now = time.monotonic()
+        if now - self._last_attach_try < _ATTACH_RETRY_COOLDOWN:
+            return False
+        self._last_attach_try = now
+        pid = _find_pid(self.exe_name)
+        if pid is None:
+            return False                        # Cemu éteint — rien à tenter
+        if self._handle is not None and pid != self._pid:
+            log.info("[Mem] Cemu relancé (pid %s → %d) — ré-attache", self._pid, pid)
+            self.detach()                       # handle du process mort → tout re-scanner
+        if self._handle is None:
+            ok = self.attach()
+        else:
+            # Même process, gd_base perdu/invalidé : re-scan sans réouvrir le handle.
+            self._gd_base = self._scan_for_gamedata()
+            ok = self._gd_base is not None
+            if ok:
+                self._snapshot_gd_canary()
+                log.info("[Mem] game_data re-localisé @ 0x%012X (buffer réalloué par le jeu)",
+                         self._gd_base)
+                self._locate_live_inventory()
+                self._auto_capture_templates()
+        if ok:
+            self._gd_invalid_logged = False
+        return ok
+
+    def ensure_live_inventory(self) -> bool:
+        """Re-tente la localisation de l'inventaire live quand l'attach l'a manquée (attach
+        pendant la cinématique d'intro / save neuve : poche pas encore allouée). Cooldown
+        interne — le scan AOB coûte quelques secondes (thread mémoire dédié)."""
+        if not self.is_attached:
+            return False
+        if self._inv_base is not None:
+            return True
+        now = time.monotonic()
+        if now - self._last_inv_locate_try < _INV_LOCATE_RETRY_COOLDOWN:
+            return False
+        self._last_inv_locate_try = now
+        self._locate_live_inventory()
+        if self._inv_base is not None:
+            self._auto_capture_templates()
+            return True
+        return False
+
+    # ── Validation du buffer gd (anti buffer réalloué) ────────────────────────
+
+    def _snapshot_gd_canary(self) -> None:
+        """Capture l'identité du buffer gd : les 16 premiers flag_ids (constants par save)."""
+        raw = self._read(self._gd_base + 12, 16 * 8) if self._gd_base else None
+        self._gd_canary = bytes(b"".join(raw[i * 8:i * 8 + 4] for i in range(16))) if raw else None
+
+    def _gd_head_ok(self, head: bytes) -> bool:
+        """Valide header + canari sur les 140 premiers octets du buffer (header 12 + 16 entrées)."""
+        if len(head) < 12 + 16 * 8 or head[:12] != SAVE_HEADER:
+            return False
+        if self._gd_canary is None:
+            return True
+        return bytes(b"".join(head[12 + i * 8:12 + i * 8 + 4] for i in range(16))) == self._gd_canary
+
+    def _invalidate_gd(self) -> None:
+        """Le buffer gd a été réalloué (load/nouvelle partie) : on jette TOUTES les adresses qui
+        dépendent de l'état du jeu — écrire dessus corromprait de la mémoire recyclée (crash
+        Cemu différé). heap_base (mapping process-wide) et les templates sont conservés ;
+        ensure_attached re-scannera au prochain cycle."""
+        if not self._gd_invalid_logged:
+            log.warning("[Mem] buffer game_data invalidé (réalloué par le jeu — load / nouvelle "
+                        "partie ?) — écritures suspendues, ré-attache auto en cours")
+            self._gd_invalid_logged = True
+        self._gd_base = None
+        self._gd_canary = None
+        self._inv_base = None
+        self._rupees_addr = None
+        self._wallet_addr = None
+        self._wallet_flagobj = None
+        self._toast_reqmgr = None
 
     def detach(self) -> None:
         if self._handle:
@@ -1146,15 +1248,17 @@ class CemuMemoryBridge:
             fixed = self._TOAST_PREFIX + self._TOAST_TAG_NOART + self._TOAST_TAG_ITEM
             if len(fixed) + 0x10 > budget:
                 raise RuntimeError(f"budget victime trop petit (0x{budget:X})")
-            self._write(victim, fixed + self._TOAST_DOT_NUL)
-            self._write(txt2 + 4 + 4 * toast_idx, struct.pack(">I", offs[victim_idx]))
-            self._toast_msbt = {
+            m = {
                 "entry": txt2 + 4 + 4 * toast_idx,
                 "entry_val": offs[victim_idx],
                 "victim": victim,
-                "suffix": victim + len(fixed),
+                "fixed": fixed,          # préfixe+tags du mode « reçu » (réécrit à chaque bandeau)
                 "budget": budget,
+                "written": b"",          # dernier contenu écrit (revalidation reload MSBT)
             }
+            self._toast_write_victim(m, fixed + self._TOAST_DOT_NUL)
+            self._write(txt2 + 4 + 4 * toast_idx, struct.pack(">I", offs[victim_idx]))
+            self._toast_msbt = m
             log.info("[Toast] message custom installé (MSBT @0x%012X, victime idx %d)",
                      hdr, victim_idx)
         except Exception as exc:                       # le toast ne doit JAMAIS casser le client
@@ -1167,12 +1271,32 @@ class CemuMemoryBridge:
                 target=self._toast_prepare, name="toast-prep", daemon=True)
             self._toast_prep_thread.start()
 
+    def _toast_write_victim(self, m: dict, payload: bytes) -> bool:
+        """Écrit `payload` dans la zone victime, TOUJOURS paddée sur tout le budget (NUL) —
+        aucun résidu d'un message précédent plus long. Mémorise le contenu (revalidation)."""
+        data = payload[:m["budget"] - 2].ljust(m["budget"], b"\x00")
+        if not self._write(m["victim"], data):
+            return False
+        m["written"] = data
+        return True
+
     def toast_enqueue(self, actor_name: str, qty: int = 1) -> None:
         """File un bandeau « Vous avez reçu <item> xN. » (émis par toast_pump, throttlé).
         Lance la préparation (heap_base + redirection MSBT) au premier appel."""
         if not actor_name:
             return
-        self._toast_pending.append((actor_name, max(1, int(qty))))
+        self._toast_pending.append({"actor_name": actor_name, "qty": max(1, int(qty))})
+        if self._toast_msbt is None:
+            self._toast_start_prep()
+
+    def toast_enqueue_text(self, text: str) -> None:
+        """File un bandeau à TEXTE LIBRE (ex. « Master Sword envoyé à Bob. ») — même canal
+        MessageGet que les « reçus », même throttle. Nécessite la redirection MSBT (sinon le
+        bandeau afficherait le texte vanilla) → silencieusement ignoré si non préparée après
+        coup (toast_pump saute les entrées texte quand _toast_msbt == {})."""
+        if not text:
+            return
+        self._toast_pending.append({"text": text})
         if self._toast_msbt is None:
             self._toast_start_prep()
 
@@ -1184,35 +1308,49 @@ class CemuMemoryBridge:
         if time.monotonic() - self._toast_last_push < self._TOAST_MIN_INTERVAL:
             return
         m = self._toast_msbt
-        if m:                                         # revalide la redirection (rechargeable)
+        if not m:
+            # Redirection MSBT indisponible (langue ≠ FR…) : les bandeaux « reçu » passent en
+            # texte vanilla ; les bandeaux TEXTE LIBRE, eux, sont impossibles → on les purge.
+            while self._toast_pending and "text" in self._toast_pending[0]:
+                self._toast_pending.popleft()
+            if not self._toast_pending:
+                return
+        else:                                         # revalide la redirection (rechargeable)
             entry = self._read(m["entry"], 4)
-            pfx = self._read(m["victim"], len(self._TOAST_PREFIX))
+            cur = self._read(m["victim"], 16)
             if not entry or struct.unpack(">I", entry)[0] != m["entry_val"] \
-                    or pfx != self._TOAST_PREFIX:
+                    or not m["written"] or cur != m["written"][:16]:
                 self._toast_msbt = None               # MSBT rechargé → re-préparation
                 self._toast_start_prep()
                 return
-        actor, qty = self._toast_pending[0]
-        if self.push_toast(actor, qty):
+        if self.push_toast(**self._toast_pending[0]):
             self._toast_pending.popleft()
 
-    def push_toast(self, actor_name: str, qty: int = 1) -> bool:
-        """Affiche le bandeau natif MessageGet « Vous avez reçu <item> xN. ». True si
-        enfilé. Exige la file AU REPOS (vide, freelist saine) — sinon échec silencieux."""
+    def push_toast(self, actor_name: str = "", qty: int = 1,
+                   text: Optional[str] = None) -> bool:
+        """Affiche le bandeau natif MessageGet. Deux modes :
+          - actor_name/qty : « Vous avez reçu <item localisé> xN. » (tag résolu par le jeu) ;
+          - text : message COMPLET à texte libre (aucun tag — ex. « X envoyé à Y. »).
+        True si enfilé. Exige la file AU REPOS (vide, freelist saine) — sinon échec silencieux."""
         try:
             if not self.is_attached or self._heap_base is None:
                 return False
+            if text is not None and not self._toast_msbt:
+                return True                           # texte libre impossible sans redirection → drop
             mgr = self._toast_locate()
             if not mgr:
                 return False
-            # suffixe quantité (« xN » masqué si qty ≤ 1) écrit AVANT l'enqueue ;
-            # padding NUL pour effacer un précédent suffixe plus long
+            # message écrit AVANT l'enqueue — la victime est réécrite EN ENTIER à chaque bandeau
+            # (mode « reçu » : préfixe+tags+suffixe qty ; mode texte : la phrase complète)
             if self._toast_msbt:
-                sfx = (f" x{qty}".encode("utf-16-be") if qty > 1 else b"") + self._TOAST_DOT_NUL
-                room = self._toast_msbt["budget"] - (self._toast_msbt["suffix"]
-                                                     - self._toast_msbt["victim"])
-                if len(sfx) + 8 <= room:
-                    self._write(self._toast_msbt["suffix"], sfx.ljust(len(sfx) + 8, b"\x00"))
+                m = self._toast_msbt
+                if text is not None:
+                    payload = text.encode("utf-16-be", "replace") + b"\x00\x00"
+                else:
+                    sfx = (f" x{qty}".encode("utf-16-be") if qty > 1 else b"") + self._TOAST_DOT_NUL
+                    payload = m["fixed"] + sfx
+                if not self._toast_write_victim(m, payload):
+                    return False
             sent = mgr + self._TOAST_SENT
             head = self._toast_rd32(sent)
             tail = self._toast_rd32(mgr + self._TOAST_TAIL)
@@ -1221,7 +1359,7 @@ class CemuMemoryBridge:
             if head != sent or tail != sent or count != 0 \
                     or not (0x02000000 <= node < 0x80000000) or node % 4:
                 return False                          # toast du jeu en cours / état inattendu
-            name = actor_name.encode("ascii", "ignore")[:0x3F].ljust(0x40, b"\x00")
+            name = (actor_name or "AP").encode("ascii", "ignore")[:0x3F].ljust(0x40, b"\x00")
             # nom d'actor au contexte (consommé par le refresh de l'écran)
             ctx = self._toast_rd32(self._TOAST_CTX_PTR)
             if ctx and self._toast_rd32(ctx + 0x20) == ctx + 0x2C:
@@ -1244,7 +1382,10 @@ class CemuMemoryBridge:
                 w = self._toast_rd32(uiroot + self._TOAST_DIRTY_OFF)
                 self._toast_wr32(uiroot + self._TOAST_DIRTY_OFF, w | 1)
             self._toast_last_push = time.monotonic()
-            log.info("[Toast] bandeau natif : %s x%d", actor_name, qty)
+            if text is not None:
+                log.info("[Toast] bandeau natif (texte) : %s", text)
+            else:
+                log.info("[Toast] bandeau natif : %s x%d", actor_name, qty)
             return True
         except Exception as exc:
             log.debug("[Toast] push échoué: %s", exc)
@@ -1253,11 +1394,14 @@ class CemuMemoryBridge:
     # ── Flag read/write ───────────────────────────────────────────────────────
 
     def _find_flag_offset(self, flag_id: int) -> Optional[int]:
-        """Binary search dans le buffer mémoire. Retourne l'offset depuis gd_base."""
+        """Binary search dans le buffer mémoire. Retourne l'offset depuis gd_base.
+        Revalide header + canari à CHAQUE accès (1 lecture de 140 o) : un buffer gd réalloué
+        par le jeu est détecté ici → invalidation au lieu d'un write dans la mémoire recyclée."""
         if not self.is_attached:
             return None
-        header = self._read(self._gd_base, 12)
-        if header is None:
+        head = self._read(self._gd_base, 12 + 16 * 8)
+        if head is None or not self._gd_head_ok(head):
+            self._invalidate_gd()
             return None
         n = (SAVE_SIZE - 12) // 8
         needle = struct.pack(">I", flag_id)
@@ -1279,10 +1423,16 @@ class CemuMemoryBridge:
     def read_gamedata(self) -> Optional[bytes]:
         """Lit TOUT le buffer game_data EN MÉMOIRE (même format que le fichier save). Permet au
         provider de détecter les checks SANS ouvrir game_data.sav → ne bloque plus les autosaves
-        de Cemu (cause du 'FSC: File create failed' → crash au reload)."""
+        de Cemu (cause du 'FSC: File create failed' → crash au reload).
+        Valide header + canari : un buffer réalloué (load/nouvelle partie) rendrait des données
+        recyclées → checks fantômes. Invalidé → repli fichier, ré-attache auto ensuite."""
         if not self.is_attached:
             return None
-        return self._read(self._gd_base, SAVE_SIZE)
+        raw = self._read(self._gd_base, SAVE_SIZE)
+        if raw is not None and not self._gd_head_ok(raw[:12 + 16 * 8]):
+            self._invalidate_gd()
+            return None
+        return raw
 
     def read_flag(self, flag_name: str) -> Optional[int]:
         """Lit la valeur d'un flag par son nom."""

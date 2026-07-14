@@ -46,20 +46,20 @@ MAX_DELIVER_PER_FLUSH = 6
 # gamedata, reload-gated) jusqu'au plafond DUR de BotW. Chaque unité qui dépasserait le plafond
 # (joueur déjà au max) est convertie en don de rubis (le réceptacle/fiole serait sinon perdu).
 #
-# ⚠️ CONSTANTES À CONFIRMER IN-GAME (procédure : diff save avant/après avoir ramassé UN
-# réceptacle et UNE fiole en jeu — `python -m BotWClient.BotWClient --diff-saves av.sav ap.sav`) :
-#   • CŒURS : le flag de max-PV persistant N'EST PAS dans le dump de cette version
-#     (`Item_LifeMaxUp`, nom STANDARD BotW, absent ; le dump n'a que `Item_LifeMaxAdd`). On
-#     TENTE `Item_LifeMaxUp` ; si `read_flag` renvoie None (flag absent) OU une valeur hors
-#     plage, on ne CORROMPT rien : on convertit l'unité en rubis et on logue « flag à confirmer ».
-#     Unité présumée = ¼-cœurs (1 réceptacle = +4 = 1 cœur ; base 12 = 3 cœurs ; plafond 120 = 30).
-#   • ENDURANCE : `StaminaMax` (f32) est présent. Échelle présumée : 1 roue = 1000, 1 fiole =
-#     +200 (1/5 roue), plafond 3000 = 3 roues. À confirmer (unité/plafond exacts).
+# CONSTANTES CONFIRMÉES PAR LECTURE DES SAVES RÉELLES (2026-07-13) — l'ancien candidat
+# `Item_LifeMaxUp` n'existe pas dans cette version ; les VRAIS flags sont :
+#   • CŒURS : `MaxHartValue` (s32, ¼-cœurs) — lu 12 sur une save 3 cœurs et 36 sur une save
+#     9 cœurs (CurrentHart ≤ MaxHartValue partout). 1 réceptacle = +4 ; plafond 120 = 30 cœurs.
+#   • ENDURANCE : `StaminaMax` ET `StaminaCurrentMax` (f32, TOUJOURS égaux dans les saves —
+#     on écrit les DEUX via `also`) — lus 1000.0 (base) et 1200.0 (base + 1 fiole vanilla).
+#     1 fiole = +200 (1/5 de roue) ; plafond 3000 = 3 roues.
+# Repli sûr conservé : flag absent / valeur hors [lo, hi] → tout en rubis, aucune écriture.
+# (Validation finale in-game : premier Réceptacle/Fiole reçu d'AP → +1 cœur / +1/5 roue au reload.)
 _MAX_STAT: dict[str, dict] = {
-    "heart":   {"flag": "Item_LifeMaxUp", "kind": "s32",
-                "per_unit": 4,     "cap": 120,    "lo": 0,   "hi": 200},
-    "stamina": {"flag": "StaminaMax",     "kind": "f32",
-                "per_unit": 200.0, "cap": 3000.0, "lo": 0.0, "hi": 4000.0},
+    "heart":   {"flag": "MaxHartValue", "kind": "s32", "also": [],
+                "per_unit": 4,     "cap": 120,    "lo": 4,     "hi": 200},
+    "stamina": {"flag": "StaminaMax",   "kind": "f32", "also": ["StaminaCurrentMax"],
+                "per_unit": 200.0, "cap": 3000.0, "lo": 500.0, "hi": 4000.0},
 }
 
 
@@ -131,10 +131,16 @@ def pouch_item_info(item_name: str) -> Optional[dict]:
 
 def reset_ap_state(provider_root: Path) -> int:
     """Supprime l'état AP persisté (file d'attente + item_index) pour repartir de zéro
-    sur une nouvelle seed. Retourne le nombre de fichiers supprimés."""
+    sur une nouvelle seed. Retourne le nombre de fichiers supprimés.
+
+    NB : la BASELINE n'est PLUS supprimée ici — elle est désormais indexée par seed et gérée
+    par le provider (_apply_baseline) : re-snapshotée seulement quand la seed CHANGE. Un
+    --reset en cours de run (relance après crash) re-livrait les items MAIS re-snapshotait
+    aussi la baseline → les checks faits pendant le trou de couverture étaient MANGÉS
+    (constaté 2026-07-13 : 4 sanctuaires du Plateau + tour jamais émis)."""
     qdir = provider_root if provider_root.is_dir() else provider_root.parent
     n = 0
-    for name in ("ap_pending_items.json", "ap_client_state.json", "ap_baseline.json"):
+    for name in ("ap_pending_items.json", "ap_client_state.json"):
         f = qdir / name
         if f.exists():
             try:
@@ -508,6 +514,18 @@ class SaveFileProvider(GameStateProvider):
         qdir            = save_path if save_path.is_dir() else save_path.parent
         self._baseline_path = qdir / "ap_baseline.json"
         self._baselined = False
+        self._server_seed: Optional[str] = None   # seed de la room (RoomInfo.seed_name)
+        self._server_checked: set[int] = set()    # checks déjà connus du serveur (Connected)
+
+    def set_server_context(self, seed_name: Optional[str], checked: set[int]) -> None:
+        """Contexte serveur transmis par le client à la connexion — utilisé par la baseline :
+        (1) la baseline est indexée par SEED (re-snapshot seulement quand la seed change,
+        les relances/--reset ne re-mangent plus les checks) ; (2) au snapshot d'une room EN
+        COURS, seuls les checks que le serveur connaît déjà sont baselinés — un flag vrai
+        mais missing côté serveur = progression non envoyée (crash/trou de couverture) →
+        ÉMIS au poll suivant au lieu d'être perdu."""
+        self._server_seed = seed_name
+        self._server_checked = set(checked)
 
     def _resolve(self) -> Optional[Path]:
         """Return the game_data.sav to read (handles both exact-file and slot-dir)."""
@@ -557,25 +575,47 @@ class SaveFileProvider(GameStateProvider):
             return False
 
     def _apply_baseline(self) -> None:
-        """Au 1er poll : charge (ou capture) la baseline = checks déjà faits au démarrage
-        du run. Ils ne seront jamais ré-émis (anti-spam au démarrage + flags d'intro).
-        Effacée par « Réinitialiser (nouvelle seed) » → re-capturée au prochain run."""
+        """Au 1er poll : charge (ou capture) la baseline = checks « déjà vrais » à ignorer.
+        Indexée par SEED : réutilisée tant que la seed ne change pas (les relances client /
+        --reset ne re-snapshotent plus — un re-snapshot en cours de run MANGEAIT les checks
+        faits pendant un trou de couverture, constaté 2026-07-13). Au snapshot d'une room EN
+        COURS, seuls les checks connus du serveur sont baselinés — le reste sera émis."""
         self._baselined = True
         if self._save is None:
             return
         if self._baseline_path.exists():
             try:
-                ids = json.loads(self._baseline_path.read_text(encoding="utf-8"))
-                self._reported.update(int(i) for i in ids)
-                log.info("[Baseline] %d check(s) déjà faits ignorés (run en cours)", len(ids))
-                return
+                data = json.loads(self._baseline_path.read_text(encoding="utf-8"))
+                ids, seed = (data.get("ids", []), data.get("seed")) \
+                    if isinstance(data, dict) else (data, None)   # legacy = liste nue, sans seed
+                # Réutilisable si la seed correspond (ou si on n'a pas de contexte serveur —
+                # usage hors-AP). Une seed différente / un fichier legacy → re-snapshot.
+                if self._server_seed is None or seed == self._server_seed:
+                    self._reported.update(int(i) for i in ids)
+                    log.info("[Baseline] %d check(s) déjà faits ignorés (run en cours)", len(ids))
+                    return
+                log.info("[Baseline] seed différente (%s → %s) — re-capture",
+                         seed, self._server_seed)
             except Exception:
                 pass
         done = [ap_id for fhash, ap_id in _LOC_HASH_TO_AP_ID.items()
                 if self._save.get_bool(fhash)]
+        if self._server_checked:
+            # Room EN COURS : un flag vrai que le serveur ne connaît pas = progression jamais
+            # envoyée (crash / client down) → on NE le baseline PAS, il partira au poll suivant.
+            missed = [i for i in done if i not in self._server_checked]
+            done = [i for i in done if i in self._server_checked]
+            if missed:
+                log.info("[Baseline] %d check(s) faits hors-couverture seront ÉMIS "
+                         "(inconnus du serveur) : %s", len(missed), missed)
+        elif done:
+            log.warning("[Baseline] room vierge + save déjà entamée : %d check(s) existants "
+                        "IGNORÉS pour cette seed (supprime ap_baseline.json pour les émettre)",
+                        len(done))
         self._reported.update(done)
         try:
-            self._baseline_path.write_text(json.dumps(done), encoding="utf-8")
+            self._baseline_path.write_text(
+                json.dumps({"seed": self._server_seed, "ids": done}), encoding="utf-8")
         except Exception:
             pass
         log.info("[Baseline] %d check(s) déjà faits au démarrage ignorés "
@@ -808,6 +848,13 @@ class DeferredSaveInjector(ItemInjector):
           - poche/compteur/rubis → _inject_pending écrit dans la LATEST save quand elle est
             idle (menu titre) ; différé tant que le joueur est en jeu.
         """
+        # Ré-attache/re-localise automatiquement : client lancé avant Cemu, Cemu relancé après
+        # un crash, gd_base invalidé (buffer réalloué au load), inventaire absent à l'attach
+        # (cinématique d'intro / save neuve — bug « rien livré avant le 1er sanctuaire »).
+        # Cooldowns internes → appels sans coût quand tout va bien.
+        if self._bridge is not None:
+            self._bridge.ensure_attached()
+            self._bridge.ensure_live_inventory()
         self._enforce_retention()
         # Orbes : le jeu reverte le compteur → (1) on le maintient EN LIVE chaque poll, (2) on le
         # BANQUE dans la save pour qu'il survive au reload (le live seul ne persiste pas).
@@ -949,7 +996,13 @@ class DeferredSaveInjector(ItemInjector):
                         and not self._save_is_idle:
                     deferred += 1
         if deferred:
-            log.info("[Pending] %d objet(s) en attente — lance Cemu/BotW (admin) ou passe au menu titre.", deferred)
+            if self._bridge is not None and self._bridge.is_attached:
+                log.info("[Pending] %d objet(s) en attente — inventaire live pas encore "
+                         "localisé (retry auto ; charge une save si tu es au menu/cinématique).",
+                         deferred)
+            else:
+                log.info("[Pending] %d objet(s) en attente — lance Cemu/BotW (admin) ou "
+                         "passe au menu titre.", deferred)
         self._queue = remaining
         self._persist_queue()
         # Une grosse rafale a pu faire réallouer l'inventaire en cours de route → BotW reset les
@@ -1163,31 +1216,46 @@ class DeferredSaveInjector(ItemInjector):
         plausible = cur is not None and cfg["lo"] <= cur <= cfg["hi"]
         if not plausible:
             rupees = amount * action.overflow_rupees
-            log.warning("[MaxStat] %s : max '%s' introuvable/hors plage (lu=%r) — À CONFIRMER "
-                        "IN-GAME ; converti en %d rubis (aucune écriture du flag)",
+            log.warning("[MaxStat] %s : max '%s' introuvable/hors plage (lu=%r) — converti en "
+                        "%d rubis (aucune écriture du flag)",
                         spec.ap_item_name, cfg["flag"], cur, rupees)
-            return self._award_rupees(rupees, memory=memory, p=p)
+            ok = self._award_rupees(rupees, memory=memory, p=p)
+            if ok and memory:
+                self._bridge.toast_enqueue_text(
+                    f"{spec.ap_item_name} converti en {rupees} rubis.")
+            return ok
 
         new_val, applied, overflow = _plan_max_stat(cur, cfg["per_unit"], cfg["cap"], amount)
 
         ok = True
         if applied > 0:
+            flags = [cfg["flag"]] + list(cfg.get("also", []))
             if memory:
-                ok = (self._bridge.write_flag_f32(cfg["flag"], new_val) if is_f32
-                      else self._bridge.write_flag(cfg["flag"], int(new_val) & 0xFFFFFFFF))
+                for fn in flags:
+                    ok = ok and (self._bridge.write_flag_f32(fn, new_val) if is_f32
+                                 else self._bridge.write_flag(fn, int(new_val) & 0xFFFFFFFF))
             else:
                 bits = (struct.unpack(">I", struct.pack(">f", new_val))[0] if is_f32
                         else int(new_val) & 0xFFFFFFFF)
-                ok = _write_flag_to_save(p, crc32_id(cfg["flag"]), bits)
+                for fn in flags:
+                    ok = ok and _write_flag_to_save(p, crc32_id(fn), bits)
             if ok:
                 log.info("  [MaxStat] %s : +%d %s (max %s %s→%s, RECHARGE pour appliquer)",
                          spec.ap_item_name, applied, action.stat, cfg["flag"],
                          _fmt_stat(cur, is_f32), _fmt_stat(new_val, is_f32))
+                if memory:
+                    # bandeau natif : nom localisé par le jeu (actor du réceptacle / de la fiole)
+                    actor = "Obj_HeartUtuwa_A_01" if action.stat == "heart" \
+                        else "Obj_StaminaUtuwa_A_01"
+                    self._bridge.toast_enqueue(actor, applied)
         if ok and overflow > 0:
             rupees = overflow * action.overflow_rupees
             log.info("  [MaxStat] %s : %d unité(s) au-delà du plafond → +%d rubis",
                      spec.ap_item_name, overflow, rupees)
             ok = self._award_rupees(rupees, memory=memory, p=p)
+            if ok and memory:
+                self._bridge.toast_enqueue_text(
+                    f"{spec.ap_item_name} au max — converti en {rupees} rubis.")
         return ok
 
     def _award_rupees(self, amount: int, *, memory: bool, p: Optional[Path] = None) -> bool:

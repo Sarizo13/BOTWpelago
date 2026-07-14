@@ -3,9 +3,13 @@ Cap cœurs / endurance + overflow rubis (save_file._deliver_max_stat / _plan_max
 
 Un Réceptacle de Cœur / une Fiole d'Endurance monte le MAX persistant jusqu'au plafond DUR
 du jeu ; toute unité au-delà (joueur déjà au max) devient un don de rubis. Ces tests
-verrouillent la LOGIQUE (planificateur pur + livraison) sans jeu : les constantes de flags
-(cf. _MAX_STAT) restent À CONFIRMER IN-GAME, mais le repli SÛR (flag absent → rubis, jamais
-d'écriture hasardeuse) est garanti ici.
+verrouillent la LOGIQUE (planificateur pur + livraison) sans jeu.
+
+Flags CONFIRMÉS par lecture des saves réelles (2026-07-13) :
+  cœurs = MaxHartValue (s32 ¼-cœurs : 12 sur save 3 cœurs, 36 sur save 9 cœurs) ;
+  endurance = StaminaMax ET StaminaCurrentMax (f32, toujours égaux : 1000.0 base,
+  1200.0 base+1 fiole) — les DEUX sont écrits (champ `also`).
+Le repli SÛR (flag absent/hors plage → rubis, jamais d'écriture hasardeuse) est garanti ici.
 """
 import struct
 
@@ -52,6 +56,7 @@ class _MockBridge:
         self._flags = dict(flags)         # nom -> valeur (u32 pour s32, float pour f32)
         self.writes = {}                  # nom -> valeur écrite
         self.rupees = 0
+        self.toasts = []                  # bandeaux enfilés (actor/qty ou texte)
         self.has_live_inventory = True
 
     def read_flag(self, name):
@@ -73,6 +78,12 @@ class _MockBridge:
         self.rupees += amount
         return self.rupees
 
+    def toast_enqueue(self, actor, qty=1):
+        self.toasts.append((actor, qty))
+
+    def toast_enqueue_text(self, text):
+        self.toasts.append(text)
+
 
 def _injector(tmp_path, bridge):
     inj = DeferredSaveInjector(tmp_path, bridge=bridge)
@@ -88,45 +99,48 @@ def _spec(stat, amount=1, overflow=500):
 
 
 def test_deliver_heart_below_cap_writes_stat_no_rupees(tmp_path):
-    b = _MockBridge({"Item_LifeMaxUp": 12})          # 3 cœurs
+    b = _MockBridge({"MaxHartValue": 12})            # 3 cœurs
     inj = _injector(tmp_path, b)
     spec = _spec("heart", amount=2)
     assert inj._deliver_max_stat(spec.actions[0], spec, memory=True) is True
-    assert b.writes["Item_LifeMaxUp"] == 20          # +2 cœurs (8 ¼-cœurs)
+    assert b.writes["MaxHartValue"] == 20            # +2 cœurs (8 ¼-cœurs)
     assert b.rupees == 0
+    assert ("Obj_HeartUtuwa_A_01", 2) in b.toasts    # bandeau natif localisé
 
 
 def test_deliver_heart_overflow_gives_rupees(tmp_path):
-    b = _MockBridge({"Item_LifeMaxUp": 112})         # 28 cœurs (près du max 30)
+    b = _MockBridge({"MaxHartValue": 112})           # 28 cœurs (près du max 30)
     inj = _injector(tmp_path, b)
     spec = _spec("heart", amount=5, overflow=500)
     assert inj._deliver_max_stat(spec.actions[0], spec, memory=True) is True
-    assert b.writes["Item_LifeMaxUp"] == 120         # clampé au plafond
+    assert b.writes["MaxHartValue"] == 120           # clampé au plafond
     assert b.rupees == 3 * 500                        # 3 réceptacles au-delà → rubis
 
 
 def test_deliver_heart_flag_absent_all_rupees_no_write(tmp_path):
-    """Flag introuvable (cas RÉEL de cette version : Item_LifeMaxUp absent du dump) →
-    repli SÛR : tout en rubis, AUCUNE écriture de flag hasardeuse."""
+    """Flag introuvable (save exotique) → repli SÛR : tout en rubis, AUCUNE écriture."""
     b = _MockBridge({})                              # pas de flag cœurs
     inj = _injector(tmp_path, b)
     spec = _spec("heart", amount=2, overflow=500)
     assert inj._deliver_max_stat(spec.actions[0], spec, memory=True) is True
-    assert "Item_LifeMaxUp" not in b.writes          # jamais écrit
+    assert "MaxHartValue" not in b.writes            # jamais écrit
     assert b.rupees == 2 * 500
 
 
-def test_deliver_stamina_f32_below_cap(tmp_path):
-    b = _MockBridge({"StaminaMax": 1000.0})          # 1 roue
+def test_deliver_stamina_f32_below_cap_writes_both_flags(tmp_path):
+    b = _MockBridge({"StaminaMax": 1000.0, "StaminaCurrentMax": 1000.0})   # 1 roue
     inj = _injector(tmp_path, b)
     spec = _spec("stamina", amount=2)
     assert inj._deliver_max_stat(spec.actions[0], spec, memory=True) is True
+    # le jeu tient les DEUX flags égaux → on écrit les deux (also)
     assert b.writes["StaminaMax"] == pytest.approx(1400.0)
+    assert b.writes["StaminaCurrentMax"] == pytest.approx(1400.0)
     assert b.rupees == 0
+    assert ("Obj_StaminaUtuwa_A_01", 2) in b.toasts
 
 
 def test_deliver_stamina_at_cap_all_rupees(tmp_path):
-    b = _MockBridge({"StaminaMax": 3000.0})          # 3 roues (max)
+    b = _MockBridge({"StaminaMax": 3000.0, "StaminaCurrentMax": 3000.0})   # 3 roues (max)
     inj = _injector(tmp_path, b)
     spec = _spec("stamina", amount=1, overflow=500)
     assert inj._deliver_max_stat(spec.actions[0], spec, memory=True) is True
@@ -136,15 +150,18 @@ def test_deliver_stamina_at_cap_all_rupees(tmp_path):
 
 def test_deliver_heart_implausible_value_falls_back_to_rupees(tmp_path):
     """Valeur hors plage plausible (lecture douteuse) → repli rubis, pas d'écriture."""
-    b = _MockBridge({"Item_LifeMaxUp": 999999})      # hors [lo, hi]
+    b = _MockBridge({"MaxHartValue": 999999})        # hors [lo, hi]
     inj = _injector(tmp_path, b)
     spec = _spec("heart", amount=1, overflow=500)
     assert inj._deliver_max_stat(spec.actions[0], spec, memory=True) is True
-    assert "Item_LifeMaxUp" not in b.writes
+    assert "MaxHartValue" not in b.writes
     assert b.rupees == 500
 
 
 def test_max_stat_config_present():
     assert set(_MAX_STAT) == {"heart", "stamina"}
-    assert _MAX_STAT["stamina"]["kind"] == "f32"
+    assert _MAX_STAT["heart"]["flag"] == "MaxHartValue"
     assert _MAX_STAT["heart"]["kind"] == "s32"
+    assert _MAX_STAT["stamina"]["flag"] == "StaminaMax"
+    assert _MAX_STAT["stamina"]["kind"] == "f32"
+    assert "StaminaCurrentMax" in _MAX_STAT["stamina"]["also"]

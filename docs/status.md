@@ -1153,3 +1153,58 @@ singletons `DAT_10xxxxxx` se lisent en direct via `g:0x...`).
 - `require_shrine_count` for the goal — pick a default (e.g. 20) and expose as an apworld option.
 - Should champion abilities & Master Sword be retained (AP items) or left vanilla + goal-checked? Current `gate_items.json` marks them `ap_progression` (retained) for a meaningful multiworld; confirm the design intent.
 - Region grouping source for TODO-7 (objmap export vs manual).
+
+---
+
+## 10. Session 2026-07-13/14 — robustesse post-crashs + flags cœurs/endurance (résumé)
+
+> Détails opérationnels dans `docs/CHECKLIST.md` (§Transverse) et
+> `docs/test_protocol_validation_run.md`. Ici : la trace RE/diagnostic.
+
+**Crashs Cemu du 13/07 (Event Log Windows, WER id 1000)** — Cemu 2.6, build 0x67a4adb3 :
+- 00:33:00 `0xc0000409` (fail-fast, corruption détectée) dans Cemu.exe — « avant menu ».
+- 00:49:39 `0xc0000005` module *unknown* (code PPC recompilé, offset 0x220_92284671) —
+  « tri d'inventaire » : déréférencement pourri dans les structures du jeu.
+- Le crash « cinématique » n'a pas laissé d'event (le 23:08 était ElgatoAudioControlServer).
+
+**Cause plausible identifiée** : le client écrivait la retention/les livraisons dans un buffer
+`gd_base` PÉRIMÉ. `is_attached` ne revalidait JAMAIS gd_base après l'attach ; or le jeu
+RÉALLOUE ce buffer (menu titre → load, nouvelle partie). Écritures toutes les 5 s dans de la
+mémoire libérée/recyclée → corruption heap guest → crash différé n'importe où. Fix :
+**canari gd** (header 12 o + 16 premiers flag_ids, constants par save) revalidé à CHAQUE
+`_find_flag_offset`/`read_gamedata` (1 lecture de 140 o) → invalidation totale (gd, inventaire,
+wallet, toast reqmgr) au moindre décalage, puis **ré-attache auto** (`ensure_attached`,
+cooldown 15 s, appelée chaque flush). Corollaire UX : Cemu relancé après un crash → le client
+se ré-attache SEUL (avant : relance manuelle du client obligatoire).
+
+**« Aucun item avant le 1er sanctuaire » (run du 13/07, partie neuve)** : l'attach est tombé
+pendant la cinématique d'intro → `_locate_live_inventory` échoue (poche pas allouée) → AUCUN
+retry nulle part (`refresh_inventory_if_stale` sort si `_inv_base is None`) → aucune livraison
+jusqu'à re-attach par redémarrage du client. Fix : `ensure_live_inventory` (retry 20 s).
+
+**Baseline mangée** : `--reset` supprimait `ap_baseline.json` → re-snapshot au 1er poll →
+les checks faits pendant les crashs (4 sanctuaires Plateau + tour + lieu + souvenir, vus dans
+`ap_baseline.json` du profil 80000002) devenaient invisibles d'AP. Fix : baseline par SEED
+(`RoomInfo.seed_name` + `set_server_context`), `--reset` ne la touche plus, et au snapshot
+d'une room EN COURS seuls les checks connus du serveur sont baselinés (le reste est émis).
+
+**Flags cœurs/endurance CONFIRMÉS sans test in-game** (lecture directe de 4 saves réelles,
+profils 80000002 + 80000010) : `MaxHartValue` (s32, ¼-cœurs — 12 sur save 3♥, 36 sur save 9♥ ;
+`Item_LifeMaxUp` n'existe PAS dans cette version) ; `StaminaMax` **et** `StaminaCurrentMax`
+(f32, toujours égaux — 1000.0 base, 1200.0 base+1 fiole vanilla → +200/fiole, cap 3000).
+`_MAX_STAT` câblé (stamina écrit les DEUX via `also`).
+
+**Toast texte libre** : la zone MSBT victime est désormais réécrite EN ENTIER à chaque bandeau
+(paddée sur tout le budget ~0xC6 o) → deux modes : « Vous avez reçu {tag} xN. » (actor localisé)
+et texte libre ~90 chars (« {item} envoyé à {joueur}. » sur PrintJSON ItemSend dont on est le
+finder ; conversions rubis des Réceptacles/Fioles). Revalidation du reload MSBT par comparaison
+au dernier contenu écrit (plus au préfixe fixe).
+
+**Divers** : log fichier DEBUG `~/.botwpelago/logs/client-*.log` (10 gardés) ; pack PopTracker
+réinstallé dans `D:/poptracker/packs` (l'installé datait d'avant le fix régions → « plateau
+rouge ») ; PopTracker verrouille le dossier du pack (fermer avant `--install`).
+
+**À SURVEILLER in-game** : `DungeonClearCounter` lu à 0 sur la save du run alors que 4
+`Clear_Dungeon*` sont à 1 — si le compteur ne monte pas au prochain sanctuaire, basculer le
+goal sur le comptage des `Clear_Dungeon*`. Le crash « tri d'inventaire » reste suspect d'un
+nœud pouch mal formé → diagnostiquer avec les nouveaux logs DEBUG à la prochaine occurrence.

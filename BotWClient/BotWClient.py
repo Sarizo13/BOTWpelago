@@ -46,6 +46,43 @@ from BotWClient.memory_injector import CemuMemoryBridge
 log = logging.getLogger("BotWClient")
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
+_LOG_DIR = Path.home() / ".botwpelago" / "logs"
+_KEEP_LOG_FILES = 10
+_file_log_installed = False
+
+
+def setup_file_log() -> None:
+    """Ajoute un log FICHIER persistant (~/.botwpelago/logs/client-<date>.log, niveau DEBUG)
+    à toute la hiérarchie BotWClient.* — le diagnostic post-mortem était impossible (stdout
+    seul) : crashs Cemu / livraisons ratées de la nuit du 2026-07-13 non reconstituables.
+    Garde les 10 derniers fichiers. Idempotent (CLI et GUI passent tous deux par ici)."""
+    global _file_log_installed
+    if _file_log_installed:
+        return
+    _file_log_installed = True
+    try:
+        _LOG_DIR.mkdir(parents=True, exist_ok=True)
+        stamp = time.strftime("%Y%m%d-%H%M%S")
+        fh = logging.FileHandler(_LOG_DIR / f"client-{stamp}.log", encoding="utf-8")
+        fh.setLevel(logging.DEBUG)
+        fh.setFormatter(logging.Formatter(
+            "%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+        root = logging.getLogger()
+        root.addHandler(fh)
+        root.setLevel(logging.DEBUG)          # le fichier reçoit DEBUG…
+        for h in root.handlers:               # …la console reste à INFO
+            if isinstance(h, logging.StreamHandler) and not isinstance(h, logging.FileHandler):
+                h.setLevel(logging.INFO)
+        old = sorted(_LOG_DIR.glob("client-*.log"))[:-_KEEP_LOG_FILES]
+        for f in old:
+            try:
+                f.unlink()
+            except OSError:
+                pass
+        log.info("Log fichier : %s", _LOG_DIR / f"client-{stamp}.log")
+    except Exception as exc:                  # le log fichier ne doit jamais bloquer le client
+        log.warning("Log fichier indisponible : %s", exc)
+
 # Human-readable reason for each location category.
 _CHECK_REASON: dict[str, str] = {
     "shrine": "sanctuaire valide",
@@ -221,6 +258,7 @@ class BotWClient:
     _dp_loc:    dict = field(default_factory=dict)   # game -> {location_id: name}
     _slot_game: dict = field(default_factory=dict)   # slot -> game
     _slot_name: dict = field(default_factory=dict)   # slot -> nom du joueur
+    _seed_name: Optional[str] = None                 # seed de la room (RoomInfo)
 
     async def run(self) -> None:
         log.info("Connecting to %s as '%s' …", self.server_url, self.slot)
@@ -275,6 +313,11 @@ class BotWClient:
                 self._slot_game[int(sslot)] = info.get("game", "")
             for pl in msg.get("players", []):
                 self._slot_name[pl["slot"]] = pl.get("alias") or pl.get("name") or str(pl["slot"])
+            # Contexte serveur pour la baseline du provider : seed (re-snapshot uniquement si
+            # elle change) + checks déjà connus (les flags vrais NON connus seront émis, plus
+            # jamais mangés par un --reset en cours de run).
+            if isinstance(self.provider, SaveFileProvider):
+                self.provider.set_server_context(self._seed_name, self.checked)
             # Restore item_index from disk so restarts don't re-queue old items.
             self.item_index = self.injector.load_item_index()
             # Restore previously received items into the injector's received set.
@@ -307,6 +350,7 @@ class BotWClient:
                     log.info("[Rando] %s", line)
 
         elif cmd == "RoomInfo":
+            self._seed_name = msg.get("seed_name")   # identifie la seed (baseline par seed)
             # Demande le DataPackage (id<->nom de tous les jeux) pour résoudre les noms
             # d'items/locations dans les messages PrintJSON (sinon ce ne sont que des IDs).
             games = msg.get("games", [])
@@ -352,9 +396,35 @@ class BotWClient:
 
         elif cmd == "PrintJSON":
             log.info("[AP] %s", self._render_json(msg.get("data", [])))
+            self._maybe_toast_item_send(msg)
 
         elif cmd in ("InvalidPacket", "ConnectionRefused"):
             log.error("AP refused connection: %s", msg)
+
+    def _maybe_toast_item_send(self, msg: dict) -> None:
+        """Bandeau natif « {item} envoyé à {joueur}. » quand UN DE NOS CHECKS contient l'item
+        d'un AUTRE monde (PrintJSON type ItemSend : item.player = le finder, receiving = le
+        destinataire). Nos propres réceptions ont déjà leur bandeau « Vous avez reçu … » à la
+        livraison → on ne toaste ici QUE les envois sortants (finder = nous ≠ receveur)."""
+        try:
+            if msg.get("type") != "ItemSend" or self._slot_num is None:
+                return
+            item = msg.get("item") or {}
+            receiving = msg.get("receiving")
+            if item.get("player") != self._slot_num or receiving == self._slot_num:
+                return
+            game = self._slot_game.get(receiving, "")
+            name = self._dp_item.get(game, {}).get(item.get("item")) \
+                or f"Item#{item.get('item')}"
+            player = self._slot_name.get(receiving, f"Joueur {receiving}")
+            text = f"{name} envoyé à {player}."
+            if len(text) > 88:                        # budget MSBT ~90 chars utiles
+                text = text[:85] + "…"
+            bridge = self.injector._bridge
+            if bridge is not None and bridge.is_attached:
+                bridge.toast_enqueue_text(text)
+        except Exception as exc:                      # le toast ne bloque jamais le protocole
+            log.debug("[Toast] ItemSend ignoré : %s", exc)
 
     def _render_json(self, parts: list) -> str:
         """Rend un message PrintJSON en résolvant les IDs en noms : items/locations via le
@@ -536,7 +606,9 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--save",      default=None, help="Direct path to game_data.sav (overrides --slot)")
     p.add_argument("--reset",     action="store_true",
                    help="Réinitialise l'état AP (file d'attente + items reçus) avant de "
-                        "connecter — tous les items seront re-livrés à la reconnexion.")
+                        "connecter — tous les items seront re-livrés à la reconnexion. "
+                        "(La baseline des checks suit la seed automatiquement : un --reset "
+                        "en cours de run ne mange plus les checks déjà faits.)")
     p.add_argument("--rando-log", default=None, metavar="PATH",
                    help="Path to the Melonspeedruns randomizer spoiler-log.txt. "
                         "Auto-detected from the Cemu graphicPacks folder if omitted.")
@@ -592,6 +664,8 @@ def build_client(connect: str, name: str, password: str = "",
     en attachant le bridge mémoire si Cemu tourne. Réutilisé par le CLI et par l'appli GUI.
     Retourne (client, bridge | None).
     """
+    setup_file_log()                 # diagnostic post-mortem (GUI et CLI)
+
     # spoiler-log d'un randomizer TIERS (Waikuteru/Melonspeedrun) — chargé UNIQUEMENT
     # si explicitement fourni. Pas d'auto-détection : sans ça, on chargeait un vieux
     # spoiler sans rapport avec la seed AP (logs "Seed HZZE…" trompeurs).
@@ -600,14 +674,16 @@ def build_client(connect: str, name: str, password: str = "",
     # localisation de la save : --save > --slot > auto-détection
     provider_root = resolve_provider_root(cemu, slot, save)
 
-    # bridge mémoire (injection live si Cemu tourne)
+    # bridge mémoire (injection live si Cemu tourne). Le bridge est GARDÉ même si l'attach
+    # initial échoue : ensure_attached() (appelé à chaque flush) ré-attache automatiquement
+    # dès que Cemu/la save sont prêts — plus besoin de relancer le client après un crash
+    # Cemu ou quand le client est lancé avant le jeu.
     bridge = CemuMemoryBridge()
     if bridge.attach():
-        log.info("[Mem] Cemu attache — DeathLink actif ; objets ecrits dans la save "
-                 "(menu titre) puis appliques au rechargement")
+        log.info("[Mem] Cemu attache — livraison LIVE active")
     else:
-        log.info("[Mem] Cemu non detecte — injection via save file (reload requis)")
-        bridge = None
+        log.info("[Mem] Cemu non attache pour l'instant — ré-attache auto en arrière-plan "
+                 "(voie save-file en attendant, reload requis)")
 
     provider = SaveFileProvider(provider_root, bridge=bridge)
     injector = DeferredSaveInjector(provider_root, rando=rando, bridge=bridge)
@@ -704,6 +780,8 @@ def main() -> None:
     if not args.name:
         print("ERROR: --name <slot> is required.")
         sys.exit(1)
+
+    setup_file_log()
 
     if args.reset:
         n = reset_ap_state(resolve_provider_root(args.cemu, args.slot, args.save))

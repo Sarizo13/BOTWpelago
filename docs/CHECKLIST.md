@@ -78,6 +78,13 @@
 
 ### PopTracker
 - [ ] Tester le pack dans PopTracker (autotracking — construit, jamais testé)
+- [x] **« Plateau rouge » élucidé (2026-07-13)** : le pack que PopTracker charge vit dans
+      `D:/poptracker/packs/botw-ap-tracker` — c'était une copie du 10/07, ANTÉRIEURE au fix
+      régions du 12/07 (les 6 lieux du plateau y étaient encore sous « Hyrule World » → rouges).
+      Pack reconstruit + réinstallé (`python tools/build_poptracker.py --install`, 16 checks
+      plateau vérifiés des deux côtés). ⚠️ Après chaque rebuild du pack : relancer `--install`
+      ET redémarrer PopTracker (il tient un handle sur le dossier du pack). **À re-vérifier au
+      prochain lancement PopTracker** (plateau vert d'emblée).
 - [x] Checks non accessibles en **ROUGE** : `access_rules` par région (miroir de rules.py,
       héritées par les checks + pins carte) — à vérifier lors du test PopTracker
 - [x] **Grand Plateau accessible AVANT la paravoile — VÉRIFIÉ + CORRIGÉ (2026-07-12)** : la
@@ -95,6 +102,35 @@
 ### Transverse / dette
 - [x] Réconcilier la doc : status.md re-cadré (journal RE, CHECKLIST+CLAUDE.md font foi),
       README (livraison mémoire, layout), CLAUDE.md (tests, TODOs, régions, règle .sav)
+- [x] **Robustesse post-crashs (2026-07-13)** — réponse aux 3 crashs Cemu + livraisons ratées
+      de la run du 13/07 (Event Log : 0xc0000409 avant menu 00:33, 0xc0000005 code recompilé
+      au tri d'inventaire 00:49) :
+      1. **Validation gd_base à CHAQUE accès** (header + canari des 16 premiers flag_ids) :
+         un buffer game_data RÉALLOUÉ par le jeu (load/nouvelle partie) est détecté →
+         invalidation + AUCUNE écriture dans la mémoire recyclée (cause plausible des crashs
+         boot/cinématique : retention écrite sur le buffer du menu titre, freed au vrai load).
+      2. **Ré-attache AUTO** (`ensure_attached`, cooldown 15 s, appelé chaque flush) : client
+         lancé avant Cemu, Cemu relancé après crash, gd invalidé → plus jamais besoin de
+         relancer le client.
+      3. **Retry localisation inventaire** (`ensure_live_inventory`, cooldown 20 s) : attach
+         pendant la cinématique d'intro / save neuve → l'inventaire absent n'était JAMAIS
+         re-cherché → **AUCUNE livraison jusqu'au redémarrage client** (bug « rien reçu avant
+         le 1er sanctuaire »). Corrigé.
+      4. **Baseline PAR SEED + intersection serveur** : un `--reset` en cours de run
+         re-snapshotait la baseline → checks faits pendant les crashs MANGÉS (constaté : 4
+         sanctuaires Plateau + tour). Désormais : baseline réutilisée tant que la seed ne
+         change pas (`--reset` ne la supprime plus) ; au snapshot d'une room EN COURS, seuls
+         les checks connus du serveur sont baselinés, le reste est ÉMIS. tests/test_baseline.py.
+      5. **Log fichier persistant** (`~/.botwpelago/logs/client-*.log`, DEBUG, 10 fichiers) —
+         le diagnostic post-mortem était impossible (stdout seul).
+      **RESTE : confirmer in-game** (les protections sont passives tant que le jeu ne
+      réalloue pas). Le crash « tri d'inventaire » (0xc0000005 dans le code recompilé) reste
+      SUSPECT d'un nœud pouch mal formé — à surveiller avec les nouveaux logs.
+- [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
+      le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
+      `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau
+      (mode « reçu » = préfixe+tags+suffixe ; mode texte = phrase complète, ~90 chars max,
+      paddée sur tout le budget). Même canal/throttle que les « reçus ». **À valider in-game.**
 - [x] **Bug 1er attach — livraison ratée + spam wallet (2026-07-12)** : au 1er attach juste
       après un load, la poche fraîchement réallouée laisse une COPIE freed mappée ; le
       localisateur s'y accrochait → `heap_base` décalé → `wallet: flagobj hors mapping guest`
@@ -157,21 +193,21 @@
       toast_msbt_redirect,toast_msbt_patch}.py.
 - [x] Passe de test des murs in-game — **VALIDÉE (2026-07-12)** par le joueur ; warps
       Zora/Gerudo réajustés à la main dans zone_walls.json (coords in-game du joueur)
-- [x] **Cap cœurs / endurance + overflow en rubis — IMPLÉMENTÉ (2026-07-13, constantes À
-      CONFIRMER IN-GAME)** : nouveaux items AP **Réceptacle de Cœur** (6080128) + **Fiole
-      d'Endurance** (6080129) ajoutés à la loot table (`build_loot_table.py` SPECIALS, poids
-      27). Livraison via `InjectionSpec.AddMaxStat` → `_deliver_max_stat` : monte le MAX
-      persistant (flag gamedata, reload-gated) jusqu'au plafond DUR du jeu (30 cœurs / 3 roues) ;
-      chaque unité au-delà (joueur déjà au max) → **don de 500 rubis** (live via le portefeuille
-      câblé, ou CurrentRupee save hors-ligne). Planificateur pur `_plan_max_stat` + repli SÛR
-      (flag absent/valeur aberrante → tout en rubis, AUCUNE écriture hasardeuse). Tests :
-      `tests/test_max_stat.py` (12). ⚠️ **CONSTANTES À CONFIRMER IN-GAME** (`_MAX_STAT` dans
-      save_file.py) : le flag de max-PV **`Item_LifeMaxUp` est ABSENT du dump de cette version**
-      (42536 flags ; seul `Item_LifeMaxAdd` existe) → tant qu'il n'est pas confirmé, un
-      Réceptacle donne 500 rubis (jamais perdu) + log « à confirmer ». Endurance = `StaminaMax`
-      (f32, présent) mais échelle/plafond (1000/roue, +200/fiole, cap 3000) à vérifier.
-      **Procédure** : ramasser 1 réceptacle + 1 fiole en jeu, `--diff-saves av.sav ap.sav`,
-      mettre à jour `_MAX_STAT`.
+- [x] **Cap cœurs / endurance + overflow en rubis — IMPLÉMENTÉ + FLAGS CONFIRMÉS (2026-07-13)** :
+      nouveaux items AP **Réceptacle de Cœur** (6080128) + **Fiole d'Endurance** (6080129)
+      ajoutés à la loot table (`build_loot_table.py` SPECIALS, poids 27). Livraison via
+      `InjectionSpec.AddMaxStat` → `_deliver_max_stat` : monte le MAX persistant (flag gamedata,
+      reload-gated) jusqu'au plafond DUR du jeu (30 cœurs / 3 roues) ; chaque unité au-delà →
+      **don de 500 rubis** (live via le portefeuille câblé, ou CurrentRupee save hors-ligne).
+      Planificateur pur `_plan_max_stat` + repli SÛR (flag absent/aberrant → tout en rubis).
+      **FLAGS CONFIRMÉS par lecture des saves réelles** (l'ancien candidat `Item_LifeMaxUp`
+      n'existe pas dans cette version) : cœurs = **`MaxHartValue`** (s32 ¼-cœurs : lu 12 sur
+      save 3 cœurs / 36 sur save 9 cœurs, `CurrentHart` ≤ partout) ; endurance = **`StaminaMax`
+      + `StaminaCurrentMax`** (f32 toujours égaux : 1000.0 base, 1200.0 base+1 fiole → les DEUX
+      écrits via `also`). +200/fiole, caps 120 / 3000.0. Bandeau natif à la livraison (actors
+      `Obj_HeartUtuwa_A_01` / `Obj_StaminaUtuwa_A_01`, localisés par le jeu ; overflow → toast
+      texte). Tests : `tests/test_max_stat.py` (13). **Validation finale in-game : premier
+      Réceptacle/Fiole reçu d'AP → +1 cœur / +1/5 roue au reload.**
 - [x] **Flags BOOLS live — TRANCHÉ (2026-07-12, tests in-game mur Ganon)** : storage bool
       trouvé + write persistant en RAM, MAIS (a) **pas sérialisé** (le jeu ne resérialise
       que ses flags « dirty » — 3 saves manuelles, .sav resté à 0) et (b) **pas relu en
