@@ -9,6 +9,7 @@ Goal      : evaluates Master Sword + 4 HeroSouls + DungeonClearCounter >= N.
 """
 from __future__ import annotations
 
+import dataclasses
 import json
 import logging
 import struct
@@ -1011,6 +1012,37 @@ class DeferredSaveInjector(ItemInjector):
                             log.info("  [Live] %s en ATTENTE : onglet plein — jette/casse un "
                                      "équipement pour libérer un slot (retenté en continu)", iname)
 
+    @staticmethod
+    def _spec_coalescible(spec: InjectionSpec) -> bool:
+        """True si toutes les actions du spec s'ADDITIONNENT proprement : compteurs s32
+        (rubis, orbes), stacks pouch (flèches/matériaux/nourriture simple, items gérés
+        par le jeu) et max-stats (réceptacles/fioles — le planificateur gère n unités +
+        overflow). Équipement (1 nœud chacun) et plats (CookData) restent unitaires."""
+        if not spec.actions:
+            return False
+        for a in spec.actions:
+            if isinstance(a, (InjectionSpec.AddS32, InjectionSpec.AddMaxStat)):
+                continue
+            if isinstance(a, InjectionSpec.AddPouchItem):
+                info = pouch_item_info(a.item_name)
+                typ = info.get("type") if info else None
+                if a.item_name in _GAME_MANAGED_POUCH or typ in _STACKABLE_TYPES:
+                    continue
+            return False
+        return True
+
+    @staticmethod
+    def _scaled_spec(spec: InjectionSpec, n: int) -> InjectionSpec:
+        """Spec équivalent à n livraisons du même item (quantités × n)."""
+        if n <= 1:
+            return spec
+        acts = [dataclasses.replace(a, amount=a.amount * n)
+                if isinstance(a, (InjectionSpec.AddS32, InjectionSpec.AddPouchItem,
+                                  InjectionSpec.AddMaxStat)) else a
+                for a in spec.actions]
+        return dataclasses.replace(spec, ap_item_name=f"{spec.ap_item_name} ×{n}",
+                                   actions=acts)
+
     def _inject_pending(self) -> list[InjectionSpec]:
         if not self._queue:
             return []
@@ -1026,8 +1058,24 @@ class DeferredSaveInjector(ItemInjector):
         remaining: list[dict]          = []
         deferred = 0
         heavy = 0          # livraisons "lourdes" (pouch/rupees) déjà faites ce cycle
+        # COALESCENCE (2026-07-14, demande user) : les doublons EMPILABLES/compteurs de la
+        # file (flèches, matériaux, rubis, orbes, réceptacles/fioles) partent EN UNE opération
+        # à quantité cumulée — la rafale release-all passait 60 « Arrows x10 » un par un
+        # (60 écritures + 60 toasts). En cas d'échec, les n entrées restent en file
+        # (granularité d'origine préservée pour les relances).
+        counts: dict[int, int] = {}
+        ordered: list[dict] = []
         for entry in self._queue:
             spec = _get_spec(entry["ap_item_id"])
+            if self._spec_coalescible(spec):
+                if entry["ap_item_id"] in counts:
+                    counts[entry["ap_item_id"]] += 1
+                    continue
+                counts[entry["ap_item_id"]] = 1
+            ordered.append(entry)
+        for entry in ordered:
+            n = counts.get(entry["ap_item_id"], 1)
+            spec = self._scaled_spec(_get_spec(entry["ap_item_id"]), n)
             if not spec.actions:
                 continue   # logical item — nothing to inject
             # Gate flags are delivered by _enforce_retention (forced into the latest save
@@ -1039,7 +1087,7 @@ class DeferredSaveInjector(ItemInjector):
             # cycle, on reporte le reste (évite d'épuiser le pool de nœuds libres et de saturer
             # la save en un coup -> crash au reload). La file est persistée, ça repart après.
             if heavy >= MAX_DELIVER_PER_FLUSH:
-                remaining.append(entry)
+                remaining.extend([entry] * n)
                 continue
             # Livraison LIVE (instantanée + persistante) : live_create_item crée un VRAI
             # nœud PouchItem runtime que le jeu sérialise au save -> survit au reload (validé
@@ -1060,7 +1108,7 @@ class DeferredSaveInjector(ItemInjector):
                 injected.append(spec)
                 heavy += 1
             else:
-                remaining.append(entry)
+                remaining.extend([entry] * n)
                 if not (self._bridge is not None and self._bridge.has_live_inventory) \
                         and not self._save_is_idle:
                     deferred += 1

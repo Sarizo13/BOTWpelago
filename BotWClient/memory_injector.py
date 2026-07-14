@@ -1250,7 +1250,9 @@ class CemuMemoryBridge:
         addr = item_addr - 19
         raw = self._read(addr, 4)
         current = struct.unpack(">i", raw)[0] if raw else 0
-        new_val = max(0, current + amount)
+        # clamp au cap de stack du jeu (999) : avec la coalescence, un bump peut cumuler
+        # des centaines d'unités — dépasser 999 mettrait le stack dans un état non prévu.
+        new_val = max(0, min(999, current + amount))
         self._write(addr, struct.pack(">i", new_val & 0xFFFFFFFF))
         self._qty_targets[item_id] = new_val      # à ré-asserter si une réallocation reset le nœud
         if item_id == "Obj_DungeonClearSeal":
@@ -2269,9 +2271,22 @@ class CemuMemoryBridge:
             bumped = self._bump_pouch_count(nodes, base, F_g)
             if cook_data is None:                     # cible qty à ré-asserter après réallocation
                 self._qty_targets[item_name] = value  # (pas pour un plat : 1 nœud = 1 assiette)
-            # la signature « fenêtre calme » intègre NOTRE création → le batch suivant du même
-            # cycle n'est pas différé par notre propre changement (seuls les ramassages le sont)
-            self._last_pouch_sig = tuple(n["name"] for n in self._scan_pouch_nodes())
+            # VÉRIF POST-SPLICE : notre insertion doit laisser l'anneau PARFAITEMENT cohérent.
+            # Sinon on suspend IMMÉDIATEMENT (le contrôle périodique de 4 s laissait plusieurs
+            # splices s'empiler sur une liste déjà cassée → save corrompue → crash au reload,
+            # constaté au 9e run). La signature « fenêtre calme » intègre NOTRE création au
+            # passage (le batch du même cycle n'est pas différé par notre propre changement).
+            nodes_after = self._scan_pouch_nodes()
+            selfref_after = [n for n in nodes_after
+                             if n["name"] and self._node_is_selfref(n["raw"], n["host"] - base)]
+            self._last_pouch_sig = tuple(n["name"] for n in nodes_after)
+            if not selfref_after or not self._list_integrity_ok(selfref_after, base):
+                self._creates_suspended = True
+                if not self._suspend_logged:
+                    self._suspend_logged = True
+                    log.error("[Mem] splice %s : liste incohérente APRÈS insertion — créations "
+                              "SUSPENDUES ; RECHARGE la save au plus vite (sans re-sauvegarder "
+                              "par-dessus si possible)", item_name)
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s%s",
                      item_name, item_type, value, anchor_name,
                      "" if bumped else "  (!! mCount NON incrémenté)")

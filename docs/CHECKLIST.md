@@ -271,6 +271,22 @@
          rien n'est perdu. Tests +3 (72 OK).
       **Consigne de run : après une grosse rafale, RECHARGER la save avant de reprendre
       l'exploration** (consolide la liste + applique cœurs/endurance/flags).
+- [x] **9e run (2026-07-14 nuit) — coalescence + suspension immédiate** : la rafale rejouée a
+      montré (a) MaxStat ENFIN validés en livraison (cœurs 12→44, endurance 1000→3000 +
+      overflow 500 rubis ✓ — reste la vérif visuelle au reload), (b) la garde intégrité qui
+      détecte la liste cassée mais TROP TARD (contrôle périodique 4 s → plusieurs splices
+      s'étaient déjà empilés ; le save/reload du joueur a désérialisé la liste corrompue →
+      crash). Améliorations :
+      1. **COALESCENCE (idée user)** : les doublons empilables/compteurs de la file (flèches,
+         matériaux, rubis, orbes, réceptacles/fioles) sont livrés EN UNE opération à quantité
+         cumulée (`Arrows x10 ×60` = un bump +600) — la rafale passe de ~700 opérations à
+         ~60 ; granularité d'origine préservée en cas d'échec ; équipement/plats unitaires ;
+         stacks clampés à 999 (cap du jeu).
+      2. **Vérif post-splice** : l'intégrité de l'anneau est contrôlée immédiatement APRÈS
+         chaque insertion — incohérence → suspension SUR-LE-CHAMP + consigne « recharge sans
+         re-sauvegarder » (plus d'empilement sur du cassé entre deux contrôles périodiques).
+      À re-valider : rafale complète sans corruption ; si suspension → la save d'AVANT la
+      rafale reste saine (slots multiples BotW).
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau
