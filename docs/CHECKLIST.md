@@ -284,6 +284,16 @@
       `heap_base`/wallet à la relocation, détection de dérive de base, warning rate-limité.
       Tests : `tests/test_memory_injector_locate.py` (7). Détails : status.md §gdt-live.
       **RESTE : confirmer in-game** (items de départ livrés au 1er attach, sans déco/reco).
+- [ ] **Orbes reçus AVANT le 1er orbe naturel — vérifier le rattrapage** (question user
+      2026-07-14) : par design, on ne crée JAMAIS le nœud pouch `Obj_DungeonClearSeal`
+      (game-managed, un faux nœud crashe à la réconciliation — appris en juin). Sur une
+      save sans orbe, les orbes AP vivent dans `DungeonClearSealNum` (gamedata, persisté)
+      et le nœud visible n'apparaît qu'au 1er orbe NATUREL (vrai sanctuaire terminé).
+      Le rattrapage du stack complet passe par `_bank_spirit_orbs` (client tournant, Cemu
+      FERMÉ un instant) — À VÉRIFIER : après le 1er sanctuaire réel + un passage au menu
+      titre/Cemu fermé, le stack d'orbes doit refléter le total AP. Si le rattrapage live
+      s'avère nécessaire, attention au double-comptage (le joueur peut DÉPENSER des orbes
+      à la statue — un « minimum maintenu » naïf les re-créerait).
 - [ ] TODO-9 : valider `memory_injector` sur Cemu 2.x (si upgrade)
 
 ---
