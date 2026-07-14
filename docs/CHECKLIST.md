@@ -126,6 +126,20 @@
       **RESTE : confirmer in-game** (les protections sont passives tant que le jeu ne
       réalloue pas). Le crash « tri d'inventaire » (0xc0000005 dans le code recompilé) reste
       SUSPECT d'un nœud pouch mal formé — à surveiller avec les nouveaux logs.
+- [x] **Livraison sur POCHE QUASI-VIDE — CORRIGÉE (2026-07-14, run de validation raté)** :
+      sur save neuve (1-2 nœuds pouch), (a) la dérivation de base par ADJACENCE n'avait qu'un
+      couple → base GARBAGE (guests négatifs) → `wallet: flagobj hors mapping guest` en boucle,
+      et (b) AUCUNE ancre triée possible (ni paire encadrante ni borne) → « pas d'ancre triée …
+      reporté » à l'infini pour TOUT (paravoile `PlayerStole2` incluse) → « je n'ai reçu aucun
+      objet ». Fixes (memory_injector) : **base par SELF-POINTER** du nom (+0x1C → node+0x28,
+      exacte dès UN nœud, même libre) + filtre de plausibilité guest [0x02000000, 4 Gio) ;
+      **ancre par la LISTE RÉELLE** (`_find_list_sentinel` + `_find_insert_link` : marche depuis
+      la sentinelle sead::OffsetList, insertion en TÊTE/queue possible dès un nœud ; splice
+      généralisé aux links — sentinelle = S+0x00, nœud = N+0x04, prev du suivant = link+4) ;
+      **fallback non-validé** garde désormais la base dérivée et `_find_wallet` cherche le
+      flagobj VIVANT par scan de hash (cooldown 30 s) quand la copie AOB est morte. Les 4
+      « Flag introuvable » ponctuels du log = état transitoire pendant le reload (bénin, retry
+      au cycle suivant). Tests : test_memory_injector_locate.py (12). **À re-valider in-game.**
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

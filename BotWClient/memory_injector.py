@@ -696,41 +696,45 @@ class CemuMemoryBridge:
         flagobj = None
         # Raccourci (économise un full-scan, ~45 s) : l'AOB _RUPEE_PATTERN résolu à la
         # localisation d'inventaire matche le champ value du Flag<s32> CurrentRupee →
-        # flagobj = _rupees_addr - 0x14. VALIDÉ (vtable + hash) avant usage.
+        # flagobj = _rupees_addr - 0x14. VALIDÉ (vtable + hash) avant usage — MAIS ce peut
+        # être une COPIE freed encore mappée (fréquent sur save neuve) : on ne l'adopte que
+        # si son guest est plausible avec la base courante (self-pointer, fiable).
         if self._rupees_addr is not None:
             cand = self._rupees_addr - _FLAG_S32_OFF_VALUE
             head = self._read(cand, 4)
             h = self._read(cand + _FLAG_S32_OFF_HASH, 4)
             if head and h and struct.unpack(">I", head)[0] == _GDT_FLAG_S32_VTABLE \
                     and struct.unpack(">I", h)[0] == _RUPEE_FLAG_HASH:
-                flagobj = cand
+                if 0 < cand - self._heap_base < _GUEST_MAX:
+                    flagobj = cand
+                else:
+                    # guest hors plage : soit la BASE est périmée (re-dérive une fois), soit
+                    # le flagobj AOB est une copie morte → on cherchera le VIVANT par hash.
+                    fresh = self._derive_heap_base(self._scan_pouch_nodes())
+                    if fresh is not None and fresh != self._heap_base \
+                            and 0 < cand - fresh < _GUEST_MAX:
+                        self._heap_base = fresh
+                        flagobj = cand
         if flagobj is None:
+            # Scan du hash CurrentRupee (lourd, ~45 s pire cas) → SEULE la copie dont le guest
+            # est plausible avec la base est retenue (le flagobj VIVANT). Cooldown 30 s — appelé
+            # potentiellement à chaque write rubis (strip/award), le scan ne doit pas marteler.
+            now = time.monotonic()
+            if now - self._last_wallet_warn < 30.0:
+                return False
+            self._last_wallet_warn = now
             for a in self._scan_u32be(_RUPEE_FLAG_HASH):
                 head = self._read(a - _FLAG_S32_OFF_HASH, 4)
                 if head and struct.unpack(">I", head)[0] == _GDT_FLAG_S32_VTABLE:
-                    flagobj = a - _FLAG_S32_OFF_HASH
-                    break
+                    cand = a - _FLAG_S32_OFF_HASH
+                    if 0 < cand - self._heap_base < _GUEST_MAX:
+                        flagobj = cand
+                        break
         if flagobj is None:
-            log.info("[Mem] wallet: objet gdt::Flag<s32> CurrentRupee introuvable")
+            log.info("[Mem] wallet: objet gdt::Flag<s32> CurrentRupee (vivant) introuvable "
+                     "ce cycle — réessai différé")
             return False
         guest = flagobj - self._heap_base
-        if not (0 < guest < _GUEST_MAX):
-            # heap_base PÉRIMÉ (dérivé d'un buffer post-réallocation) alors que le flagobj est
-            # LIVE (vtable+hash OK) → re-dérive la base depuis le pouch COURANT une fois. Si le
-            # pouch courant est lui aussi périmé, la re-dérivation échoue → warning rate-limité
-            # (l'appelant re-localisera via refresh_inventory_if_stale au poll suivant).
-            fresh = self._derive_heap_base(self._scan_pouch_nodes())
-            if fresh is not None and fresh != self._heap_base \
-                    and 0 < flagobj - fresh < _GUEST_MAX:
-                self._heap_base = fresh
-                guest = flagobj - fresh
-            else:
-                now = time.monotonic()
-                if now - self._last_wallet_warn > 5.0:
-                    self._last_wallet_warn = now
-                    log.info("[Mem] wallet: flagobj hors mapping guest (base périmée) — "
-                             "re-localisation au prochain cycle")
-                return False
         for a in self._scan_u32be(guest):
             head = self._read(a - 4, 4)
             if head and struct.unpack(">I", head)[0] == _GDT_S32_STORE_TYPEINFO:
@@ -892,8 +896,12 @@ class CemuMemoryBridge:
             if fallback is None:
                 fallback = (rupees_addr, inv_base)
         if fallback is not None:
-            # Aucun couple validé par l'ancre rubis → repli historique (heap_base dérivé lazy).
+            # Aucun couple validé par l'ancre rubis (flagobj AOB périmé/copie — fréquent sur
+            # save neuve où la poche n'a que 1-2 nœuds). On adopte le pouch ET on dérive quand
+            # même sa base (self-pointer du nom → exacte dès un nœud) : wallet/toast peuvent
+            # fonctionner (_find_wallet re-scanne le VRAI flagobj par hash si l'AOB est périmé).
             self._rupees_addr, self._inv_base = fallback
+            self._heap_base = self._derive_heap_base(self._scan_pouch_nodes(fallback[1]))
             log.info("[Mem] Inventaire live localise @ 0x%012X (rupees @ 0x%012X, non validé)",
                      fallback[1], fallback[0])
             if not self._wallet_valid():
@@ -1615,21 +1623,35 @@ class CemuMemoryBridge:
     def _derive_heap_base(self, nodes: list[dict]) -> Optional[int]:
         """cemu_mem_base tel que guest = host - base.
 
-        On collecte des candidats par adjacence tableau/liste (next @+0x204 et prev @+0x208),
-        puis on RETIENT celui qui maximise la cohérence interne (nb de nœuds self-ref via
-        +0x64). L'adjacence seule échoue sur inventaire fragmenté (slot[i].next ≠ slot[i+1]) ;
-        le critère self-ref tranche de façon fiable."""
+        Candidats par DEUX voies, puis on RETIENT celui qui maximise la cohérence interne
+        (nb de nœuds self-ref via les pointeurs du nom) :
+          1. SELF-POINTER (+0x1C) : chaque nœud (même LIBRE) porte le pointeur de buffer de sa
+             FixedSafeString → node_guest+0x28. b = host + 0x28 − mot(+0x1C) — EXACT dès UN
+             nœud. Indispensable sur une poche quasi-vide (save neuve, 1-2 items) où
+             l'adjacence n'a qu'un couple et dérivait une base GARBAGE (guests négatifs →
+             wallet « hors mapping », créations impossibles — bug du 2026-07-14).
+          2. ADJACENCE tableau/liste (next @+0x04 / prev @+0x08 du VRAI début) — historique.
+        Filtre de PLAUSIBILITÉ : les guests sont des u32 de heap → on rejette tout candidat
+        plaçant le 1er nœud hors [0x02000000, 4 Gio) (élimine les bases garbage d'adjacence)."""
         from collections import Counter
+        if not nodes:
+            return None
         cands: Counter = Counter()
+        for n in nodes:
+            # self-pointer du nom : mot(+0x1C) == node_guest + 0x28 sur tout nœud bien formé
+            w = struct.unpack_from(">I", n["raw"], self._NODE_OFF_SEC)[0]
+            cands[n["host"] + self._NODE_OFF_NAME - w] += 1
         for i in range(len(nodes) - 1):
             nxt = struct.unpack_from(">I", nodes[i]["raw"], self._NODE_OFF_NEXT)[0]
             cands[nodes[i + 1]["host"] + self._NODE_OFF_NEXT - nxt] += 1
             prv = struct.unpack_from(">I", nodes[i + 1]["raw"], self._NODE_OFF_PREV)[0]
             cands[nodes[i]["host"] + self._NODE_OFF_NEXT - prv] += 1
-        if not cands:
+        h0 = nodes[0]["host"]
+        plausible = [b for b in cands if 0x02000000 <= h0 - b < _GUEST_MAX]
+        if not plausible:
             return None
-        # candidat qui maximise les nœuds self-ref ; départage par fréquence d'adjacence
-        best = max(cands, key=lambda b: (self._count_selfref(nodes, b), cands[b]))
+        # candidat qui maximise les nœuds self-ref ; départage par fréquence de votes
+        best = max(plausible, key=lambda b: (self._count_selfref(nodes, b), cands[b]))
         n_sr = self._count_selfref(nodes, best)
         if n_sr == 0:
             now = time.monotonic()
@@ -1831,7 +1853,25 @@ class CemuMemoryBridge:
             else:
                 cands = [n for n in selfref if _spos(n) <= target]
                 anchor = max(cands, key=_spos) if cands else None
-        if anchor is None:
+        # ANCRE = un LINK (adresse guest du champ next du prédécesseur) : nœud → N_g+0x04 ;
+        # SENTINELLE de l'OffsetList → S_g+0x00 (permet l'insertion en TÊTE/queue).
+        anchor_link_g: Optional[int] = None
+        anchor_name = ""
+        if anchor is not None:
+            anchor_link_g = h2g(anchor["host"]) + self._NODE_OFF_NEXT
+            anchor_name = anchor["name"]
+        elif selfref:
+            # POCHE QUASI-VIDE (save neuve : 1-2 nœuds, ni paire encadrante ni borne — bug
+            # 2026-07-14 « pas d'ancre triée … reporté » en boucle, paravoile incluse) :
+            # on ancre sur la LISTE RÉELLE en marchant depuis la sentinelle — l'insertion en
+            # tête (cible > tout) ou en queue (cible < tout) devient possible dès UN nœud.
+            sent = self._find_list_sentinel(selfref, base)
+            if sent is not None:
+                anchor_link_g = self._find_insert_link(
+                    sent, base, target, descending,
+                    {h2g(n["host"]): n for n in selfref})
+                anchor_name = "liste réelle (sentinelle)"
+        if anchor_link_g is None:
             log.debug("[Mem] (live) pas d'ancre triée pour %s (sortKey=%s, desc=%s) — reporté",
                       item_name, new_sk, descending)
             return False
@@ -1899,8 +1939,6 @@ class CemuMemoryBridge:
 
         F_h = free["host"]
         F_g = h2g(F_h)
-        A_h = anchor["host"]
-        A_g = h2g(A_h)
 
         # ── 3) Clone + re-base des pointeurs internes auto-référents (content_Tg -> F_g) ──
         raw = bytearray(content_raw)
@@ -1953,22 +1991,23 @@ class CemuMemoryBridge:
         if not f_now or struct.unpack(">I", f_now)[0] != 0xFFFFFFFF:
             log.debug("[Mem] (live) nœud libre alloué entre-temps — %s reporté", item_name)
             return False
-        a_links = self._read(A_h + self._NODE_OFF_NEXT, 4)
+        link_h = g2h(anchor_link_g)                       # champ next du prédécesseur (nœud/sentinelle)
+        a_links = self._read(link_h, 4)
         if not a_links:
             return False
-        A_next = struct.unpack(">I", a_links)[0]
-        on_node_h = g2h(A_next - self._NODE_OFF_NEXT)                 # nœud suivant (liste primaire)
-        # L'ancre doit pointer vers un nœud PLAUSIBLE (dans la région inventaire) — sinon la liste a
-        # bougé sous nos pieds → ne pas splicer (éviterait un write sur un pointeur périmé).
-        if not (0 < A_next < 0x100000000) or self._read(on_node_h, 8) is None:
-            log.debug("[Mem] (live) ancre %s instable — %s reporté", anchor["name"], item_name)
+        old_next = struct.unpack(">I", a_links)[0]        # link du suivant (X_g+4) ou sentinelle (S_g)
+        # Le suivant doit être PLAUSIBLE et lisible (son champ prev est à old_next+4) — sinon la
+        # liste a bougé sous nos pieds → ne pas splicer (write sur pointeur périmé = crash).
+        if not (0x02000000 <= old_next < _GUEST_MAX) or self._read(g2h(old_next), 8) is None:
+            log.debug("[Mem] (live) ancre %s instable — %s reporté", anchor_name, item_name)
             return False
-        struct.pack_into(">I", raw, self._NODE_OFF_NEXT, A_next)              # F.next = A.next
-        struct.pack_into(">I", raw, self._NODE_OFF_PREV, A_g + self._NODE_OFF_NEXT)  # F.prev = &A.next
+        struct.pack_into(">I", raw, self._NODE_OFF_NEXT, old_next)         # F.next = suivant
+        struct.pack_into(">I", raw, self._NODE_OFF_PREV, anchor_link_g)    # F.prev = link prédécesseur
 
         ok = self._write(F_h, bytes(raw))
-        ok &= self._write(A_h + self._NODE_OFF_NEXT, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
-        ok &= self._write(on_node_h + self._NODE_OFF_PREV, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
+        ok &= self._write(link_h, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
+        # prev du suivant : old_next+4 (nœud → N_g+0x08 ; sentinelle → S_g+0x04 — même arithmétique)
+        ok &= self._write(g2h(old_next) + 4, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
         if ok:
             # mCount += 1 (sead::OffsetList, à tête+0x08) : le jeu COMPTE notre nœud -> il ne
             # réutilise plus ce nœud libre (plus de corruption en rafale) et le sérialise au
@@ -1977,9 +2016,72 @@ class CemuMemoryBridge:
             if cook_data is None:                     # cible qty à ré-asserter après réallocation
                 self._qty_targets[item_name] = value  # (pas pour un plat : 1 nœud = 1 assiette)
             log.info("[Mem] (live) NOUVEL item %s (type=%d val=%d) insere apres %s%s",
-                     item_name, item_type, value, anchor["name"],
+                     item_name, item_type, value, anchor_name,
                      "" if bumped else "  (!! mCount NON incrémenté)")
         return bool(ok)
+
+    def _find_list_sentinel(self, selfref: list, base: int) -> Optional[int]:
+        """Adresse guest de la SENTINELLE (sead::OffsetList.mStartEnd {next@0, prev@4,
+        mCount@8}) de la liste pouch active : suit next depuis un nœud self-ref jusqu'à
+        sortir du pool scanné. Validation stricte : prev(S+4) == link du dernier nœud
+        traversé (on est bien arrivé au BOUT), head plausible, mCount ∈ [0, 2000). Un nœud
+        actif NON scanné rencontré en route échoue cette validation → None (reporté)."""
+        node_links = {(n["host"] - base) + self._NODE_OFF_NEXT for n in selfref}
+        cur = (selfref[0]["host"] - base) + self._NODE_OFF_NEXT
+        for _ in range(2048):
+            r = self._read(base + cur, 4)
+            if not r:
+                return None
+            nxt = struct.unpack(">I", r)[0]
+            if nxt in node_links:
+                cur = nxt
+                continue
+            hdr = self._read(base + nxt, 12)          # candidat sentinelle : head, tail, count
+            if not hdr or len(hdr) < 12:
+                return None
+            head, tail, cnt = struct.unpack(">IIi", hdr)
+            if tail == cur and 0 <= cnt < 2000 and 0x02000000 <= head < _GUEST_MAX:
+                return nxt
+            return None
+        return None
+
+    def _find_insert_link(self, sentinel_g: int, base: int, target: tuple,
+                          descending: bool, known_by_g: dict) -> Optional[int]:
+        """Marche la liste RÉELLE depuis la sentinelle et renvoie le LINK (adresse guest du
+        champ next) du PRÉDÉCESSEUR à la position triée de `target` — sentinelle elle-même
+        pour une insertion en TÊTE, link du dernier nœud pour la QUEUE. Fonctionne dès UN
+        nœud dans la liste (poche de save neuve). Nœud illisible/aberrant → None (reporté)."""
+        _BIG = 1 << 30
+        prev_link = sentinel_g
+        r = self._read(base + sentinel_g, 4)
+        if not r:
+            return None
+        link = struct.unpack(">I", r)[0]
+        for _ in range(600):
+            if link == sentinel_g:
+                return prev_link                      # fin de liste → insertion en queue
+            ng = link - self._NODE_OFF_NEXT
+            n = known_by_g.get(ng)
+            if n is not None:
+                spos = (n["type"], self._sort_keys.get(n["name"], _BIG))
+            else:                                     # nœud actif hors scan → lecture directe
+                raw = self._read(base + ng, self._NODE_OFF_NAME + 40)
+                if not raw or len(raw) < self._NODE_OFF_NAME + 40:
+                    return None
+                typ = struct.unpack_from(">I", raw, self._NODE_OFF_TYPE)[0]
+                if typ > 0x20:                        # aberrant (libre dans la liste active ?)
+                    return None
+                name = raw[self._NODE_OFF_NAME:self._NODE_OFF_NAME + 40].split(b"\x00")[0] \
+                    .decode("ascii", errors="replace")
+                spos = (typ, self._sort_keys.get(name, _BIG))
+            if (descending and spos < target) or (not descending and spos > target):
+                return prev_link                      # insérer AVANT ce nœud
+            prev_link = link
+            r = self._read(base + link, 4)
+            if not r:
+                return None
+            link = struct.unpack(">I", r)[0]
+        return None
 
     def _bump_pouch_count(self, nodes: list, base: int, start_g: int) -> bool:
         """Suit la liste primaire depuis start_g jusqu'à la sentinelle (tête) et fait

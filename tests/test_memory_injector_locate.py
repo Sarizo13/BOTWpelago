@@ -123,7 +123,10 @@ def test_locate_falls_back_when_no_pair_validates():
     b._locate_live_inventory()
     assert b._inv_base == INV_STALE                       # historical fallback still delivers
     assert b._rupees_addr == R_STALE
-    assert b._heap_base is None                           # NOT set from an unvalidated base
+    # Since 2026-07-14 the fallback DERIVES the adopted pouch's base anyway (self-pointer
+    # derivation is exact even on a 1-2 node pouch) so wallet/toast can work: _find_wallet
+    # rescans the LIVE flagobj by hash when the AOB one is a dead copy.
+    assert b._heap_base == BASE_STALE
 
 
 def test_relocate_resets_stale_heap_base():
@@ -138,3 +141,85 @@ def test_relocate_resets_stale_heap_base():
     assert b._inv_base == INV_LIVE
     assert b._heap_base == BASE_LIVE          # re-derived fresh, stale value discarded
     assert b._wallet_addr is None             # wallet re-derivation forced
+
+
+# ── _derive_heap_base : self-pointer derivation (near-empty pouch, 2026-07-14) ──
+#
+# Bug: with only 1-2 nodes (fresh save), adjacency has a single candidate pair and could
+# derive a GARBAGE base (guests negative/tiny → "flagobj hors mapping guest" loop, zero
+# deliveries). The name FixedSafeString buffer pointer at +0x1C (== node_guest+0x28) gives
+# an EXACT base from a single node; implausible candidates (guest outside
+# [0x02000000, 4 GiB)) are rejected.
+
+_NODE_G = 0x4000_0000                        # synthetic node guest addr
+_HOST_BASE = 0x0000_5000_0000_0000           # synthetic cemu_mem_base
+_STRIDE = 544
+
+
+def _make_node(host: int, guest: int, typ: int = 0, name: str = "Weapon_Sword_001") -> dict:
+    raw = bytearray(_STRIDE)
+    struct.pack_into(">I", raw, 0x04, 0x5000_0000)            # next (some link)
+    struct.pack_into(">I", raw, 0x08, 0x5000_0000)            # prev
+    struct.pack_into(">I", raw, 0x0C, typ)                    # type
+    struct.pack_into(">I", raw, 0x1C, guest + 0x28)           # name-buffer self-pointer
+    nb = name.encode("ascii")
+    raw[0x28:0x28 + len(nb)] = nb
+    # 3 in-node self-pointers past the name buffer (_node_is_selfref scans [0x20, stride)
+    # and needs >= 3 hits)
+    struct.pack_into(">I", raw, 0x6C, guest + 0x100)
+    struct.pack_into(">I", raw, 0x70, guest + 0x180)
+    struct.pack_into(">I", raw, 0x74, guest + 0x200)
+    return {"slot": 0, "host": host, "name": name, "type": typ, "sub": 0, "raw": bytes(raw)}
+
+
+def test_derive_base_from_single_node_self_pointer():
+    node = _make_node(_HOST_BASE + _NODE_G, _NODE_G)
+    b = CemuMemoryBridge()
+    assert b._derive_heap_base([node]) == _HOST_BASE
+
+
+def test_derive_base_rejects_garbage_candidates():
+    # +0x1C holds a small constant (0x40) instead of a self-pointer → candidate base would
+    # put the node at guest 0x18 (< 0x02000000) → rejected → None (old code returned garbage)
+    node = _make_node(_HOST_BASE + _NODE_G, _NODE_G)
+    raw = bytearray(node["raw"])
+    struct.pack_into(">I", raw, 0x1C, 0x40)
+    struct.pack_into(">I", raw, 0x6C, 0x64)
+    struct.pack_into(">I", raw, 0x70, 0x88)
+    struct.pack_into(">I", raw, 0x74, 0x224)
+    node["raw"] = bytes(raw)
+    b = CemuMemoryBridge()
+    assert b._derive_heap_base([node]) is None
+
+
+# ── real-list anchoring: sentinel walk (insertion on a near-empty pouch) ────────
+
+_SENT_G = 0x5000_0000                        # sentinel (sead::OffsetList.mStartEnd) guest
+
+
+def _bridge_with_list(node_g: int, sent_g: int, count: int = 1) -> CemuMemoryBridge:
+    """One-node circular list: S.next → node+4 ; node.next → S ; S.prev → node+4."""
+    b = CemuMemoryBridge()
+    mem = {
+        (_HOST_BASE + sent_g, 4): _u32(node_g + 0x04),
+        (_HOST_BASE + sent_g, 12): _u32(node_g + 0x04) + _u32(node_g + 0x04) + _u32(count),
+        (_HOST_BASE + node_g + 0x04, 4): _u32(sent_g),
+    }
+    b._read = lambda addr, size: mem.get((addr, size))  # type: ignore[assignment]
+    return b
+
+
+def test_find_list_sentinel_one_node():
+    node = _make_node(_HOST_BASE + _NODE_G, _NODE_G)
+    b = _bridge_with_list(_NODE_G, _SENT_G)
+    assert b._find_list_sentinel([node], _HOST_BASE) == _SENT_G
+
+
+def test_find_insert_link_head_and_tail():
+    node = _make_node(_HOST_BASE + _NODE_G, _NODE_G, typ=0)   # a weapon (type 0)
+    b = _bridge_with_list(_NODE_G, _SENT_G)
+    known = {_NODE_G: node}
+    # target type 8 (food) > type 0 → descending list → insert at HEAD (link = sentinel)
+    assert b._find_insert_link(_SENT_G, _HOST_BASE, (8, 123), True, known) == _SENT_G
+    # target smaller than everything → walk past the node → insert at TAIL (node's link)
+    assert b._find_insert_link(_SENT_G, _HOST_BASE, (-1, 0), True, known) == _NODE_G + 0x04
