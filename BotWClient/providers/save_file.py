@@ -254,6 +254,12 @@ _LOC_HASH_TO_AP_ID = {h: a for h, a in _LOC_HASH_TO_AP_ID.items() if h not in _C
 _GOAL = _GATE_ITEMS["goal"]
 _GOAL_FLAG_IDS = [crc32_id(f) for f in _GOAL["require_flags"]]   # legacy (compat)
 _DUNGEON_COUNTER_ID = int(_GOAL["shrine_counter"]["flag_hash"], 16)
+# Flags Clear_DungeonNNN des 120 sanctuaires : source de comptage FIABLE pour le goal et le
+# tracker. Constat 2026-07-14 (save réelle) : `DungeonClearCounter` reste à 0 alors que des
+# Clear_Dungeon* sont à 1 → un goal assis sur le seul compteur ne se déclencherait JAMAIS.
+# On prend le MAX des deux (le compteur reste pris en compte s'il fonctionne sur d'autres saves).
+_SHRINE_FLAG_IDS = [int(loc["flag_hash"], 16) for loc in _LOCATIONS
+                    if loc.get("category") == "shrine"]
 # Flags requis EN PLUS du compteur de sanctuaires, par mode de goal (option goal_mode) :
 #   "shrines" = [] (sanctuaires seuls) ; "full" = 4 Créatures + Master Sword + Arc de Lumière.
 _GOAL_MODE_FLAG_IDS = {
@@ -643,11 +649,16 @@ class SaveFileProvider(GameStateProvider):
             flag_ids = _GOAL_MODE_FLAG_IDS.get("shrines", [])
         if not all(self._save.get_bool(fid) for fid in flag_ids):
             return False
-        return self._save.get_s32(_DUNGEON_COUNTER_ID) >= required_shrine_count
+        return self.get_dungeon_counter() >= required_shrine_count
 
     def get_dungeon_counter(self) -> int:
-        """Nombre de sanctuaires réellement terminés (DungeonClearCounter) dans la save."""
-        return self._save.get_s32(_DUNGEON_COUNTER_ID) if self._save else 0
+        """Nombre de sanctuaires réellement terminés : MAX(DungeonClearCounter, nb de flags
+        Clear_Dungeon* à 1). Le compteur seul reste à 0 sur certaines saves (constaté
+        2026-07-14 : 4 sanctuaires clear, compteur 0) → goal/tracker assis dessus = morts."""
+        if self._save is None:
+            return 0
+        cleared = sum(1 for fid in _SHRINE_FLAG_IDS if self._save.get_bool(fid))
+        return max(self._save.get_s32(_DUNGEON_COUNTER_ID), cleared)
 
     def get_spirit_orbs(self) -> int:
         """Vraie valeur d'orbes (Obj_DungeonClearSeal) dans le PorchItem de la save. Utilise les
@@ -941,6 +952,9 @@ class DeferredSaveInjector(ItemInjector):
                     if b.live_create_item(iname, typ, info.get("sub"), val):
                         log.info("  [Live] %s livré (instantané ; flag associé au rechargement)",
                                  iname)
+                        # bandeau natif (nom localisé par le jeu) — la paravoile/les capacités/
+                        # tenues passaient par ce chemin SANS toast (constat 2026-07-14)
+                        b.toast_enqueue(iname, 1)
 
     def _inject_pending(self) -> list[InjectionSpec]:
         if not self._queue:
@@ -1039,6 +1053,10 @@ class DeferredSaveInjector(ItemInjector):
                     ok = new_val is not None
                 else:
                     ok = self._bridge.add_s32_flag(action.flag_name, action.amount)
+                if ok and action.flag_name == "CurrentRupee" and action.amount > 0:
+                    # bandeau natif pour les lots de rubis (pas d'actor résolvable → texte)
+                    self._bridge.toast_enqueue_text(
+                        f"Vous avez reçu {action.amount} rubis.")
                 if not ok:
                     all_ok = False
 
@@ -1086,7 +1104,10 @@ class DeferredSaveInjector(ItemInjector):
                                  spec.ap_item_name, action.amount, action.item_name)
                     self._bridge._last_create_empty_cat = False
                     if toast_actor is None:
-                        toast_actor = (action.item_name, max(1, action.amount))
+                        # ÉQUIPEMENT (arme/arc/bouclier/armure) : `amount` = DURABILITÉ, pas
+                        # une quantité → bandeau sans « xN » (bug « Boomerang x18 » 2026-07-14).
+                        qty = max(1, action.amount) if typ in _STACKABLE_TYPES else 1
+                        toast_actor = (action.item_name, qty)
                 else:
                     all_ok = False
 

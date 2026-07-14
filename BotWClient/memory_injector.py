@@ -1138,7 +1138,10 @@ class CemuMemoryBridge:
     # offsets reqMgr : sentinel {next=head @+0x14C, prev=tail @+0x150}, count, freelist, cap
     _TOAST_SENT, _TOAST_TAIL = 0x14C, 0x150
     _TOAST_COUNT, _TOAST_FREE, _TOAST_CAP = 0x154, 0x158, 0x160
-    _TOAST_MIN_INTERVAL = 4.0        # le bandeau reste ~3 s à l'écran
+    # Le bandeau reste ~3 s à l'écran ET le texte (string MSBT partagée) est re-résolu pendant
+    # l'affichage : écrire le suffixe « xN » du bandeau suivant trop tôt le fait FUIR sur le
+    # bandeau encore affiché (élixir montrant la qty d'un autre item — constat 2026-07-14).
+    _TOAST_MIN_INTERVAL = 5.0
     # — redirection MSBT (mêmes constantes que tools/toast_msbt_redirect.py) —
     _TOAST_NEEDLES = ("Vous avez lâché".encode("utf-16-be"),
                       "Vous avez gagné".encode("utf-16-be"))   # vanilla / ancien patch-mot

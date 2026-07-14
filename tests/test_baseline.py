@@ -91,6 +91,14 @@ def test_fichier_legacy_resnapshote(tmp_path):
     assert p.poll() == [_AP[1]]                              # le check non-serveur est émis
 
 
+def test_dungeon_counter_counts_clear_flags(tmp_path):
+    """DungeonClearCounter peut rester à 0 sur une save réelle (constat 2026-07-14) →
+    le compteur = MAX(compteur, nb de Clear_Dungeon* à 1), sinon goal/tracker morts."""
+    from BotWClient.providers.save_file import _SHRINE_FLAG_IDS
+    p = _provider(tmp_path, _SHRINE_FLAG_IDS[:2], seed=None)   # 2 sanctuaires clear, s32=0
+    assert p.get_dungeon_counter() == 2
+
+
 def test_reset_ap_state_preserve_baseline(tmp_path):
     (tmp_path / "ap_baseline.json").write_text(
         json.dumps({"seed": "s", "ids": []}), encoding="utf-8")

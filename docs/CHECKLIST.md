@@ -140,6 +140,21 @@
       flagobj VIVANT par scan de hash (cooldown 30 s) quand la copie AOB est morte. Les 4
       « Flag introuvable » ponctuels du log = état transitoire pendant le reload (bénin, retry
       au cycle suivant). Tests : test_memory_injector_locate.py (12). **À re-valider in-game.**
+- [x] **Retour de run 2026-07-14 (2e passe) — livraison VALIDÉE in-game** (plats, matériaux,
+      armes, paravoile objet+flag, rubis, re-localisation auto après réallocation, récupération
+      d'un create perdu par l'idempotence companion). Polish corrigé dans la foulée :
+      1. toast équipement SANS « xN » (l'amount d'une arme = durabilité → « Boomerang x18 ») ;
+      2. fuite du suffixe qty sur le bandeau PRÉCÉDENT (string MSBT partagée re-résolue pendant
+         l'affichage) → throttle 4 s → 5 s ;
+      3. toast des objets COMPANION câblé (paravoile/capacités/tenues/arc n'en avaient AUCUN) ;
+      4. toast des lots de rubis (texte : « Vous avez reçu N rubis. ») ;
+      5. **compteur de sanctuaires = MAX(DungeonClearCounter, nb Clear_Dungeon* à 1)** —
+         confirmé sur save réelle : le s32 reste à 0 malgré 4 sanctuaires clear → goal +
+         tracker (ShrinesCleared) étaient MORTS assis sur le seul compteur ;
+      6. toast « envoyé à » : rien à corriger — INVISIBLE EN SOLO par design (finder =
+         receveur = soi → le bandeau « Vous avez reçu » suffit) ; à valider en session 2 slots.
+      NB : les 4 sanctuaires du plateau restaient baselinés dans la ROOM du 13/07 (snapshot
+      pris quand la room était vierge) → sur la PROCHAINE seed (save neuve), baseline vide.
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau
