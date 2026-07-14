@@ -300,3 +300,36 @@ def test_refresh_without_anchor_keeps_historical_behavior():
     assert b._refresh_inv_from_static() is True
     b._inv_base = None
     assert b._refresh_inv_from_static() is False
+
+
+# ── tab capacity cap (release-all freeze, 2026-07-14) ──────────────────────────
+#
+# The game only has *PorchStockNum slots per equipment tab (8/5/4 vanilla). Creating nodes
+# beyond that put the tab in an illegal state → scrambled inventory then a FREEZE during
+# the 703-item release-all. At cap, live_create_item must refuse AND raise the overflow
+# signal so the caller converts filler gear to rupees instead of retrying forever.
+
+def _bridge_with_full_weapon_tab(cap_flag_value):
+    b = CemuMemoryBridge()
+    b._inv_base = _HOST_BASE + _INV_G
+    b._heap_base = _HOST_BASE
+    nodes = [_make_node(_HOST_BASE + _NODE_G + i * 0x1000, _NODE_G + i * 0x1000, typ=0)
+             for i in range(8)]                       # 8 armes actives (cap vanilla atteint)
+    b._scan_pouch_nodes = lambda inv_base=None: nodes           # type: ignore
+    b._derive_heap_base = lambda ns: _HOST_BASE                 # type: ignore
+    b.live_find_item = lambda name: None                        # type: ignore
+    b.read_flag = lambda name: cap_flag_value                   # type: ignore
+    return b
+
+
+def test_live_create_full_weapon_tab_signals_overflow():
+    b = _bridge_with_full_weapon_tab(cap_flag_value=8)
+    assert b.live_create_item("Weapon_Sword_001", 0, 0, 10) is False
+    assert b._last_create_overflow is True           # l'appelant convertit en rubis
+
+
+def test_live_create_cap_falls_back_to_vanilla_default():
+    # flag absent/aberrant (None) → cap vanilla 8 → toujours plein avec 8 armes
+    b = _bridge_with_full_weapon_tab(cap_flag_value=None)
+    assert b.live_create_item("Weapon_Sword_001", 0, 0, 10) is False
+    assert b._last_create_overflow is True

@@ -101,6 +101,11 @@ _ATTACH_RETRY_COOLDOWN = 15.0
 # la cinématique d'intro / save neuve : la poche n'existe pas encore). Sans retry, AUCUNE
 # livraison ne partait jusqu'à un redémarrage du client (bug « rien avant le 1er sanctuaire »).
 _INV_LOCATE_RETRY_COOLDOWN = 20.0
+# Capacité des onglets d'ÉQUIPEMENT : flags gamedata (base vanilla 8/5/4, montent avec les
+# bénédictions Korok). Créer un nœud AU-DELÀ du cap = onglet dans un état illégal →
+# inventaire désorganisé puis FREEZE (constaté 2026-07-14, rafale release-all).
+_TAB_CAP_FLAGS = {0: "WeaponPorchStockNum", 1: "BowPorchStockNum", 3: "ShieldPorchStockNum"}
+_TAB_CAP_DEFAULTS = {0: 8, 1: 5, 3: 4}
 
 # ── Vrai portefeuille (gdt live, v208) ─────────────────────────────────────────
 # Le jeu tient TROIS copies de CurrentRupee (prouvé 2026-07-10, tools/hunt_wallet.py puis
@@ -291,6 +296,10 @@ class CemuMemoryBridge:
         # début de partie), AUCUNE écriture mémoire — le jeu initialise/réalloue agressivement.
         # Re-vérifiée après chaque invalidation gd (load / nouvelle partie).
         self._slate_seen: bool = False
+        # Dernier live_create_item refusé pour ONGLET PLEIN (cap *PorchStockNum) : l'appelant
+        # convertit le filler en rubis au lieu de retenter en boucle. + rate-limit du log.
+        self._last_create_overflow: bool = False
+        self._last_capfull_warn: float = 0.0
         # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
         # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
@@ -1921,6 +1930,7 @@ class CemuMemoryBridge:
         effect_type, effect_level} écrit dans le bloc CookData (+0x68..+0x78). Un plat
         cuisiné ne s'empile JAMAIS (chaque assiette = un nœud, comme en jeu).
         """
+        self._last_create_overflow = False       # signal « onglet plein » de CET appel
         if not self.has_live_inventory:
             return False
         # Suivi de l'ancre statique AVANT tout splice : poche réallouée → re-ciblée ; jeu en
@@ -1982,6 +1992,25 @@ class CemuMemoryBridge:
             log.info("[Mem] (live) onglet de sacoche (types %s) encore verrouillé — %s "
                      "reporté (retry auto au prochain ramassage)", tab, item_name)
             return False
+        # CAPACITÉ D'ONGLET (armes 0 / arcs 1 / boucliers 3) : le jeu n'a que *PorchStockNum
+        # slots (8/5/4 de base, +bénédictions Korok). Créer AU-DELÀ met l'onglet dans un état
+        # illégal → inventaire désorganisé puis FREEZE (constaté 2026-07-14, rafale release-all :
+        # des dizaines d'armes créées sur 8 slots). Au cap : _last_create_overflow signale
+        # l'appelant (filler → converti en rubis ; progression companion → retenté quand un
+        # slot se libère).
+        if item_type in _TAB_CAP_FLAGS:
+            cap = self.read_flag(_TAB_CAP_FLAGS[item_type])
+            if not cap or not (0 < cap <= 60):          # flag absent/aberrant → base vanilla
+                cap = _TAB_CAP_DEFAULTS[item_type]
+            have = sum(1 for n in selfref if n["type"] == item_type)
+            if have >= cap:
+                self._last_create_overflow = True
+                now = time.monotonic()
+                if now - self._last_capfull_warn > 30.0:
+                    self._last_capfull_warn = now
+                    log.info("[Mem] (live) onglet plein (%d/%d, type %d) — création %s en "
+                             "overflow", have, cap, item_type, item_name)
+                return False
         # ANCRE par ORDRE DE TRI (sortKey) : la poche est UNE liste chaînée triée par (type, puis
         # sortKey au sein du type). On insère à la position triée EXACTE (voir la détection de sens
         # ci-dessous). Insérer ailleurs désorganise l'inventaire → catégories fracturées / crash.

@@ -31,6 +31,9 @@ SAFE_WRITE_IDLE_SECONDS = 5   # 5s idle = title screen (was 35s)
 # le jeu COMPTE le nœud -> il ne le réutilise plus (zéro corruption) et le sérialise au save
 # (instantané EN JEU + persistant, validé single + multi-items).
 _LIVE_CREATE_ENABLED = True
+# Filler d'équipement reçu quand l'onglet est PLEIN (cap *PorchStockNum) : converti en rubis
+# (retenter en boucle bloquerait la file — rafale release-all = dizaines d'armes sur 8 slots).
+_GEAR_OVERFLOW_RUPEES = 100
 
 # Throttle de livraison : un joueur qui "release" tout son monde envoie ~130 items D'UN COUP.
 # Tout livrer dans un seul cycle (1) épuise le pool de nœuds libres pré-alloués de BotW (les
@@ -1123,6 +1126,19 @@ class DeferredSaveInjector(ItemInjector):
                     # échoue proprement et l'item est reporté (livré après régénération du pool).
                     ok = bool(_LIVE_CREATE_ENABLED and self._bridge.live_create_item(
                         action.item_name, typ, info.get("sub"), action.amount))
+                    # ONGLET PLEIN (cap *PorchStockNum) : un filler d'équipement ne peut PAS
+                    # attendre qu'un slot se libère (rafale release-all = des dizaines au-delà
+                    # du cap → retry infini). Converti en rubis, l'item AP reste « reçu ».
+                    if not ok and getattr(self._bridge, "_last_create_overflow", False):
+                        ok = self._bridge.live_add_rupees(_GEAR_OVERFLOW_RUPEES) is not None
+                        if ok:
+                            log.info("  [Live] %s — onglet plein → converti en %d rubis",
+                                     spec.ap_item_name, _GEAR_OVERFLOW_RUPEES)
+                            self._bridge.toast_enqueue_text(
+                                f"{spec.ap_item_name} converti en {_GEAR_OVERFLOW_RUPEES} rubis.")
+                            continue           # bandeau texte posé — pas de toast actor
+                        all_ok = False
+                        continue
                 elif self._bridge.pool_exhausted:
                     # Pool de nœuds libres épuisé : création impossible. On ne tente qu'un bump
                     # d'item déjà présent ; absent -> échec silencieux -> save-file (bump-only)

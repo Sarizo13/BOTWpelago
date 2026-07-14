@@ -242,6 +242,19 @@
       -rando est REFUSÉE proprement). Validé hors-jeu (chemin d'exécution complet, idempotence,
       round-trip) + appliqué au pack installé. **À valider in-game : les 8 items tombent ~1 s
       après la fin de la cinématique du réveil.**
+- [x] **Retour du 7e run (2026-07-14 nuit) — rafale RELEASE-ALL (703 items)** : livraisons
+      live/toasts/tenues/Master Sword/Arc de Lumière/orbes/flèches/rubis TOUS OK pendant la
+      rafale (kit v3 OK aussi) — puis inventaire désorganisé et FREEZE (Cemu vivant, jeu
+      bloqué). Cause : la rafale a créé des DIZAINES d'armes/arcs/boucliers alors que les
+      onglets n'ont que 8/5/4 slots (`WeaponPorchStockNum`/`BowPorchStockNum`/
+      `ShieldPorchStockNum`, +Korok) → onglet dans un état illégal → tri/UI en boucle.
+      **FIX : cap d'onglet dans live_create_item** (lecture du flag de capacité, défaut
+      vanilla si absent) : au cap, le create refuse et signale `_last_create_overflow` →
+      le FILLER d'équipement est **converti en 100 rubis** (toast « converti en 100 rubis »,
+      item AP compté reçu) ; la progression companion (Master Sword, Arc, tenues) reste en
+      retry jusqu'à libération d'un slot. Tests +2 (69 OK). NB : cœurs/endurance NON encore
+      confirmés in-game — reload-gated, le freeze est arrivé avant tout rechargement
+      (attendu au reload : 3+12 cœurs, +14/5 roues d'endurance).
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau
