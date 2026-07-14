@@ -223,3 +223,80 @@ def test_find_insert_link_head_and_tail():
     assert b._find_insert_link(_SENT_G, _HOST_BASE, (8, 123), True, known) == _SENT_G
     # target smaller than everything → walk past the node → insert at TAIL (node's link)
     assert b._find_insert_link(_SENT_G, _HOST_BASE, (-1, 0), True, known) == _NODE_G + 0x04
+
+
+# ── static pouch anchor (anti freed-copy, 2026-07-14 crash) ─────────────────────
+#
+# Root cause of the 0xc0000005 reload crash: the AOB scan latched a FREED copy of the
+# pouch; a splice went into recycled memory (Eightfold Blade never serialized, then the
+# game's reuse of that memory mangled the real list — Sheikah Slate lost). The fix
+# resolves ONE static data-section slot (guest 0x10xxxxxx) pointing at the validated
+# buffer; every pouch access re-reads it, so a freed copy is unaddressable by design.
+
+_STATIC_G = 0x1040_0000                      # 1 MiB-aligned chunk start in the data window
+_SLOT_OFF = 0x10                             # slot position inside the chunk (u32-aligned)
+_INV_G = 0x4000_1000                         # validated pouch guest addr
+_OBJ_OFF = 0x1000                            # pouch buffer offset inside the manager object
+
+
+def _bridge_with_static(slot_value: int) -> CemuMemoryBridge:
+    """Bridge whose data-section scan window serves one chunk containing `slot_value`."""
+    b = CemuMemoryBridge()
+    b._heap_base = _HOST_BASE
+    b._inv_base = _HOST_BASE + _INV_G
+    chunk = bytearray(1 << 20)
+    struct.pack_into(">I", chunk, _SLOT_OFF, slot_value)
+    chunk = bytes(chunk)
+
+    def read(addr, size):
+        if size == 1 << 20:
+            return chunk if addr == _HOST_BASE + _STATIC_G else None
+        if (addr, size) == (_HOST_BASE + _STATIC_G + _SLOT_OFF, 4):
+            return _u32(struct.unpack_from(">I", chunk, _SLOT_OFF)[0])
+        return None
+
+    b._read = read  # type: ignore[assignment]
+    return b
+
+
+def test_find_pouch_static_resolves_backref():
+    b = _bridge_with_static(_INV_G - _OBJ_OFF)   # slot points at the manager object
+    b._find_pouch_static()
+    assert b._pouch_static_host == _HOST_BASE + _STATIC_G + _SLOT_OFF
+    assert b._pouch_buf_off == _OBJ_OFF
+    assert b._pouch_static_val == _INV_G - _OBJ_OFF
+
+
+def test_find_pouch_static_ignores_out_of_range_values():
+    b = _bridge_with_static(_INV_G + 0x10)       # points PAST the buffer → not a backref
+    b._find_pouch_static()
+    assert b._pouch_static_host is None          # feature stays off → historical behavior
+
+
+def test_refresh_follows_reallocation_through_static():
+    b = _bridge_with_static(_INV_G - _OBJ_OFF)
+    b._find_pouch_static()
+    new_obj = 0x4800_0000                        # game reallocated the manager/pouch
+    mem = {(b._pouch_static_host, 4): _u32(new_obj)}
+    b._read = lambda addr, size: mem.get((addr, size))  # type: ignore[assignment]
+    node = _make_node(_HOST_BASE + new_obj + _OBJ_OFF, new_obj + _OBJ_OFF)
+    b._scan_pouch_nodes = lambda inv_base=None: [node]  # type: ignore[assignment]
+    assert b._refresh_inv_from_static() is True
+    assert b._inv_base == _HOST_BASE + new_obj + _OBJ_OFF   # re-targeted to the LIVE buffer
+
+
+def test_refresh_defers_writes_during_load():
+    b = _bridge_with_static(_INV_G - _OBJ_OFF)
+    b._find_pouch_static()
+    # mid-load: the static slot reads 0 (torn state) → all pouch access must report NOT ready
+    b._read = lambda addr, size: _u32(0) if size == 4 else None  # type: ignore[assignment]
+    assert b._refresh_inv_from_static() is False
+    assert list(b._iter_inventory_slots()) == []   # iteration refuses recycled memory
+
+
+def test_refresh_without_anchor_keeps_historical_behavior():
+    b = CemuMemoryBridge()
+    b._inv_base = _HOST_BASE + _INV_G            # located, but no anchor resolved
+    assert b._refresh_inv_from_static() is True
+    b._inv_base = None
+    assert b._refresh_inv_from_static() is False

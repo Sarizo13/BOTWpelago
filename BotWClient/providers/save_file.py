@@ -260,6 +260,26 @@ _DUNGEON_COUNTER_ID = int(_GOAL["shrine_counter"]["flag_hash"], 16)
 # On prend le MAX des deux (le compteur reste pris en compte s'il fonctionne sur d'autres saves).
 _SHRINE_FLAG_IDS = [int(loc["flag_hash"], 16) for loc in _LOCATIONS
                     if loc.get("category") == "shrine"]
+# Locations PRÉ-VRAIES sur toute NOUVELLE PARTIE moddée : le rando vendorisé force InitValue=1
+# dans bootup.pack/gamedata.ssarc (rando/BotwRandoLib/Randomizer.cs · UpdateGameData) — c'est son
+# « skip plateau » : 4 Clear_Dungeon du plateau, tour (MapTower_07 + Location_MapTower07),
+# Souvenir 008. Constaté sur save neuve le 2026-07-14 (flags à 1 dès la 2e minute de jeu).
+# Décision « Plateau OFFERT » (2026-07-14) : ces checks partent en FREEBIES — jamais baselinés
+# (émis à la connexion, même sur room vierge) et EXCLUS du compteur de sanctuaires (goal+tracker),
+# sinon le goal « N sanctuaires » démarrerait à 4 et la baseline les mangerait à jamais.
+_RANDO_INIT_LOCATION_IDS: set[int] = {
+    6_081_009,  # Owa Daim Shrine     (Clear_Dungeon009)
+    6_081_038,  # Oman Au Shrine      (Clear_Dungeon038)
+    6_081_041,  # Ja Baij Shrine      (Clear_Dungeon041)
+    6_081_065,  # Keh Namut Shrine    (Clear_Dungeon065)
+    6_081_307,  # Great Plateau Tower (MapTower_07)
+    6_081_642,  # Map Tower07         (Location_MapTower07)
+    6_082_508,  # Souvenir 008        (IsGet_MemoryPhoto_008)
+}
+# Flags des 4 sanctuaires pré-clearés — soustraits du comptage (un joueur ne peut PAS les refaire).
+_RANDO_INIT_SHRINE_FLAG_IDS = [int(loc["flag_hash"], 16) for loc in _LOCATIONS
+                               if loc.get("category") == "shrine"
+                               and loc["ap_id"] in _RANDO_INIT_LOCATION_IDS]
 # Flags requis EN PLUS du compteur de sanctuaires, par mode de goal (option goal_mode) :
 #   "shrines" = [] (sanctuaires seuls) ; "full" = 4 Créatures + Master Sword + Arc de Lumière.
 _GOAL_MODE_FLAG_IDS = {
@@ -597,8 +617,11 @@ class SaveFileProvider(GameStateProvider):
                 # Réutilisable si la seed correspond (ou si on n'a pas de contexte serveur —
                 # usage hors-AP). Une seed différente / un fichier legacy → re-snapshot.
                 if self._server_seed is None or seed == self._server_seed:
-                    self._reported.update(int(i) for i in ids)
-                    log.info("[Baseline] %d check(s) déjà faits ignorés (run en cours)", len(ids))
+                    # filtre défensif : une baseline capturée AVANT la whitelist des freebies
+                    # du rando (plateau offert) peut les contenir → on ne les recharge pas.
+                    kept = [int(i) for i in ids if int(i) not in _RANDO_INIT_LOCATION_IDS]
+                    self._reported.update(kept)
+                    log.info("[Baseline] %d check(s) déjà faits ignorés (run en cours)", len(kept))
                     return
                 log.info("[Baseline] seed différente (%s → %s) — re-capture",
                          seed, self._server_seed)
@@ -606,6 +629,10 @@ class SaveFileProvider(GameStateProvider):
                 pass
         done = [ap_id for fhash, ap_id in _LOC_HASH_TO_AP_ID.items()
                 if self._save.get_bool(fhash)]
+        # Freebies du rando (« plateau offert ») : pré-vrais par InitValue sur toute partie
+        # neuve → JAMAIS baselinés, ils partent comme des checks normaux au 1er poll (le
+        # serveur dédoublonne si déjà connus).
+        done = [i for i in done if i not in _RANDO_INIT_LOCATION_IDS]
         if self._server_checked:
             # Room EN COURS : un flag vrai que le serveur ne connaît pas = progression jamais
             # envoyée (crash / client down) → on NE le baseline PAS, il partira au poll suivant.
@@ -658,7 +685,11 @@ class SaveFileProvider(GameStateProvider):
         if self._save is None:
             return 0
         cleared = sum(1 for fid in _SHRINE_FLAG_IDS if self._save.get_bool(fid))
-        return max(self._save.get_s32(_DUNGEON_COUNTER_ID), cleared)
+        # « Plateau offert » : les 4 sanctuaires pré-clearés par le rando (InitValue=1) ne
+        # comptent pas — le joueur ne peut pas les (re)faire. Le s32 du jeu reste pris tel
+        # quel (observé à 0 sur save moddée ; il ne compte pas les pré-clearés).
+        init_cleared = sum(1 for fid in _RANDO_INIT_SHRINE_FLAG_IDS if self._save.get_bool(fid))
+        return max(self._save.get_s32(_DUNGEON_COUNTER_ID), cleared - init_cleared)
 
     def get_spirit_orbs(self) -> int:
         """Vraie valeur d'orbes (Obj_DungeonClearSeal) dans le PorchItem de la save. Utilise les
@@ -771,6 +802,7 @@ class DeferredSaveInjector(ItemInjector):
         self._last_change_time = time.monotonic()
         self._last_banked_orb  = 0     # dernière valeur d'orbe (pouch) bankée dans la save
         self._last_banked_seal = 0     # dernière valeur DungeonClearSealNum bankée dans la save
+        self._last_not_ready_log = 0.0  # rate-limit du log « jeu pas prêt » (pré-tablette/load)
 
     def _resolve(self) -> Optional[Path]:
         """Return the current game_data.sav (slot-dir aware)."""
@@ -866,6 +898,18 @@ class DeferredSaveInjector(ItemInjector):
         if self._bridge is not None:
             self._bridge.ensure_attached()
             self._bridge.ensure_live_inventory()
+        # Jeu ATTACHÉ mais PAS PRÊT (cinématique pré-tablette Sheikah, load/réallocation en
+        # cours) : AUCUNE écriture mémoire — ni livraison, ni retention, ni toast. Tout reste
+        # en file et repart seul dès que delivery_ready passe (crash du 2026-07-14 : écritures
+        # pendant un reload → corruption de mémoire recyclée → 0xc0000005 Cemu).
+        if self._bridge is not None and self._bridge.is_attached \
+                and not self._bridge.delivery_ready:
+            now = time.monotonic()
+            if now - self._last_not_ready_log > 30.0:
+                self._last_not_ready_log = now
+                log.info("[Mem] jeu pas prêt (pré-tablette Sheikah / load en cours) — "
+                         "écritures mémoire en pause, livraisons en file")
+            return []
         self._enforce_retention()
         # Orbes : le jeu reverte le compteur → (1) on le maintient EN LIVE chaque poll, (2) on le
         # BANQUE dans la save pour qu'il survive au reload (le live seul ne persiste pas).

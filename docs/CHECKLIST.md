@@ -155,6 +155,35 @@
          receveur = soi → le bandeau « Vous avez reçu » suffit) ; à valider en session 2 slots.
       NB : les 4 sanctuaires du plateau restaient baselinés dans la ROOM du 13/07 (snapshot
       pris quand la room était vierge) → sur la PROCHAINE seed (save neuve), baseline vide.
+- [x] **Retour de run 2026-07-14 (3e run, soirée — crash élucidé + 2 causes racines)** :
+      run save neuve + seed neuve, crash Cemu 0xc0000005 (code recompilé) à 18:28:46 pendant
+      un reload volontaire. Enquête (logs client DEBUG + Event Log + diff des 4 autosaves) :
+      1. **Le client n'a RIEN écrit sur le disque** : les `FSC: File create failed` du log Cemu
+         = premières créations de dossiers de slots après le wipe (bénin, CreationTime = l'heure
+         du FSC fail, la save passe dans la même seconde). Toutes les gardes fichier ont tenu.
+      2. **Cause du crash : splice sur COPIE FREED de la poche.** Slot 2 : boomerang créé/inséré
+         trié ✓ mais l'Eightfold créée à 18:26 JAMAIS sérialisée (partie dans une copie freed —
+         les « 12/12 self-ref » passent sur de la mémoire libérée intacte) ; slot 3 : liste
+         massacrée (ordre aberrant, 5 nœuds perdus dont la **tablette Sheikah**) → reload →
+         0xc0000005. **FIX : ancre STATIQUE de la poche** (backref one-shot section data guest
+         0x10xxxxxx après une localisation validée → chaque accès RELIT le pointeur = on suit
+         toujours le buffer vivant, une copie freed n'est plus adressable) + **gel de TOUTES les
+         écritures mémoire** tant que `delivery_ready` est faux : gd-canari re-validé à l'accès,
+         poche suivie par l'ancre, **tablette Sheikah en poche** (rien avant la prise de la
+         tablette ; re-vérifié après chaque load). Tests : +5 memory_injector.
+      3. **« Baseline pas vide » élucidé : le rando pré-init des flags à toute NOUVELLE partie**
+         (`rando/BotwRandoLib/Randomizer.cs · UpdateGameData` : InitValue=1 dans
+         bootup.pack/gamedata.ssarc) : 4 `Clear_Dungeon` du plateau (en dur, même en AP),
+         `MapTower_07`(+Demo), `Location_MapTower07`, `IsGet_MemoryPhoto_008`, runes(+Lv2),
+         IsGet_Weapon*/Item*, démos d'intro, `Open_StartPoint` — c'est son « skip plateau »
+         (quête donnée au réveil, tour pré-activée). Jamais vu avant : tous les tests couraient
+         sur des saves existantes. **Décision : PLATEAU OFFERT** — ces 7 locations partent en
+         FREEBIES (whitelist `_RANDO_INIT_LOCATION_IDS` : jamais baselinées, émises à la
+         connexion, filtrées aussi au rechargement d'une baseline contaminée) et les 4
+         sanctuaires pré-clearés sont EXCLUS du compteur (goal + ShrinesCleared comptent les
+         sanctuaires réellement joués). Tests : +2 baseline.
+      **RESTE : re-valider in-game** (ancre statique résolue au log, livraisons qui attendent
+      la tablette, freebies émis à la connexion, ShrinesCleared=0 au départ).
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

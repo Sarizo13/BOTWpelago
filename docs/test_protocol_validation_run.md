@@ -1,4 +1,16 @@
-# BOTWpelago — Protocole de RUN DE VALIDATION V1 (2026-07-13)
+# BOTWpelago — Protocole de RUN DE VALIDATION V1 (2026-07-13, màj 2026-07-14 soir)
+
+> **Màj 2026-07-14 (post-crash 3e run)** — comportements NOUVEAUX attendus sur save neuve :
+> - **Plateau offert** : à la connexion, 7 checks partent SEULS (« freebies » : 4 sanctuaires
+>   du plateau, Grand Plateau Tower, lieu Map Tower07, Souvenir 008) — le rando les pré-init
+>   à toute nouvelle partie. C'est NORMAL. `ShrinesCleared` démarre à **0** (les 4 pré-clearés
+>   ne comptent pas) ; le goal « N sanctuaires » = N sanctuaires réellement joués (hors plateau).
+> - **Gel pré-tablette** : AUCUNE livraison/écriture avant que la **tablette Sheikah** soit en
+>   poche. Log attendu : `jeu pas prêt (pré-tablette Sheikah / load en cours)` pendant la
+>   cinématique, puis `tablette Sheikah détectée en poche — livraisons AUTORISÉES`.
+> - **Ancre statique poche** : log attendu à la 1re localisation validée :
+>   `ancre statique poche @ host …` puis, aux réallocations, `poche re-suivie via l'ancre
+>   statique → …` (fini les splices dans des copies freed → fini le crash 0xc0000005 au reload).
 
 Run de bout en bout pour valider les correctifs de cette session **et** le flux complet.
 ⚠️ = point qui doit être confirmé IN-GAME (impossible hors jeu). Coche au fur et à mesure.

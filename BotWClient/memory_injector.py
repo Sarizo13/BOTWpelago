@@ -274,6 +274,23 @@ class CemuMemoryBridge:
         self._gd_invalid_logged = False          # log d'invalidation émis une fois par épisode
         self._last_attach_try: float = 0.0       # cooldown ensure_attached
         self._last_inv_locate_try: float = 0.0   # cooldown ensure_live_inventory
+        # Ancrage STATIQUE de la poche (fix crash 2026-07-14) : le scan AOB peut se verrouiller
+        # sur une COPIE freed de la poche (staging de save) — un splice y part « dans le vide »
+        # puis corrompt la mémoire recyclée par le jeu (liste pouch massacrée, tablette Sheikah
+        # perdue, 0xc0000005 au reload — prouvé par le diff des autosaves du run du 14/07).
+        # Remède : après UNE localisation VALIDÉE, on résout par backref un pointeur STATIQUE
+        # (section data guest 0x10xxxxxx, l'équivalent du sInstance du gestionnaire de poche)
+        # qui désigne le buffer vivant. Chaque accès poche RELIT ce pointeur : on suit toujours
+        # la poche vivante, une copie freed n'est plus adressable par construction.
+        self._pouch_static_host: Optional[int] = None  # adresse HOST du slot statique (constante/process)
+        self._pouch_buf_off: Optional[int] = None      # inv_guest − valeur du slot (offset dans l'objet)
+        self._pouch_static_val: Optional[int] = None   # dernière valeur suivie (détection de mouvement)
+        self._last_inv_refresh: float = 0.0            # cooldown du refresh par pointeur statique
+        self._last_refresh_ok: bool = False            # dernier verdict du refresh (rejoué au cooldown)
+        # Tablette Sheikah vue en poche : tant qu'elle n'y est pas (cinématique d'intro, tout
+        # début de partie), AUCUNE écriture mémoire — le jeu initialise/réalloue agressivement.
+        # Re-vérifiée après chaque invalidation gd (load / nouvelle partie).
+        self._slate_seen: bool = False
         # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
         # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
@@ -418,6 +435,9 @@ class CemuMemoryBridge:
         self._wallet_addr = None
         self._wallet_flagobj = None
         self._toast_reqmgr = None
+        # L'ancre statique poche SURVIT (slot de la section data, constant pour le process) ;
+        # la tablette est re-vérifiée (une nouvelle partie n'en a pas encore).
+        self._slate_seen = False
 
     def detach(self) -> None:
         if self._handle:
@@ -432,6 +452,10 @@ class CemuMemoryBridge:
         self._heap_base = None
         self._toast_reqmgr = None
         self._toast_msbt = None           # adresses de session ; _toast_pending survit
+        self._pouch_static_host = None    # adresse host → morte avec le process
+        self._pouch_buf_off = None
+        self._pouch_static_val = None
+        self._slate_seen = False
         # NB: _persistent_qty / _seal_target ne sont PAS effacés (valeurs, pas adresses) : sur un
         # ré-attach le compteur d'orbes en jeu est inchangé et les orbes ne sont pas re-livrés →
         # les oublier stopperait la maintenance et l'orbe reverterait.
@@ -452,6 +476,28 @@ class CemuMemoryBridge:
         if time.monotonic() - self._pool_exhausted_at >= _POOL_RETRY_COOLDOWN:
             self._pool_exhausted = False          # cooldown écoulé → on autorise une nouvelle tentative
             return False
+        return True
+
+    @property
+    def delivery_ready(self) -> bool:
+        """Écritures mémoire AUTORISÉES : gd vivant (canari re-validé à l'instant), poche
+        suivie par l'ancre statique, et TABLETTE SHEIKAH en poche. Avant la tablette
+        (cinématique / tout début de partie) le jeu initialise et réalloue agressivement →
+        aucune écriture (livraisons, flags, toasts) tant que ce n'est pas prêt ; tout est
+        déjà en file et repartira seul. Re-vérifié après chaque load (invalidation gd)."""
+        if not self.is_attached:
+            return False
+        head = self._read(self._gd_base, 12 + 16 * 8)
+        if head is None or not self._gd_head_ok(head):
+            self._invalidate_gd()
+            return False
+        if not self.has_live_inventory or not self._refresh_inv_from_static():
+            return False
+        if not self._slate_seen:
+            if self.live_find_item("Obj_DRStone_Get") is None:
+                return False
+            self._slate_seen = True
+            log.info("[Mem] tablette Sheikah détectée en poche — livraisons AUTORISÉES")
         return True
 
     @property
@@ -890,6 +936,9 @@ class CemuMemoryBridge:
                 self._heap_base = base                # base VALIDÉE par l'ancre → fixe/correcte
                 log.info("[Mem] Inventaire live localise @ 0x%012X (rupees @ 0x%012X, base validée)",
                          inv_base, rupees_addr)
+                # Localisation VALIDÉE → on résout (one-shot) l'ancre statique qui suivra
+                # désormais le buffer vivant à chaque accès (anti copie-freed).
+                self._find_pouch_static()
                 if not self._wallet_valid():
                     self._find_wallet()
                 return
@@ -931,6 +980,91 @@ class CemuMemoryBridge:
         if self._inv_base is not None and self._inv_base != prev:
             log.info("[Mem] Inventaire re-localisé (réallocation détectée) → 0x%012X", self._inv_base)
         return self._inv_base is not None
+
+    # ── Ancre statique de la poche (suivi du buffer VIVANT, anti copie-freed) ──
+
+    # Section data guest (globals) : nos statiques connus y vivent (vtables 0x101E486C /
+    # 0x1021B5D4, ctx toast *(0x1047B054), dirty *(0x1046BDD8)) → on cherche le pointeur
+    # de poche dans cette fenêtre. Offset objet max : le buffer PouchItem est porté par un
+    # gestionnaire unique — on tolère un pointeur vers l'objet englobant (≤ 0x8000).
+    _POUCH_STATIC_LO = 0x10000000
+    _POUCH_STATIC_HI = 0x10C00000
+    _POUCH_MAX_OBJ_OFF = 0x8000
+
+    def _find_pouch_static(self) -> None:
+        """Backref ONE-SHOT (après une localisation VALIDÉE) : cherche dans la section data
+        guest un slot statique dont la valeur désigne la poche courante (le buffer même, ou
+        l'objet qui le contient à offset < _POUCH_MAX_OBJ_OFF). Relire ce slot à chaque accès
+        suit les réallocations SANS re-scan AOB — et n'adresse jamais une copie freed (aucun
+        statique ne pointe sur du staging). Échec silencieux → comportement historique."""
+        if self._pouch_static_host is not None \
+                or self._inv_base is None or self._heap_base is None:
+            return
+        inv_g = self._inv_base - self._heap_base
+        if not (0x02000000 <= inv_g < _GUEST_MAX):
+            return                                # base/inventaire incohérents → pas d'ancre
+        lo_val = max(0x02000000, inv_g - self._POUCH_MAX_OBJ_OFF)
+        prefixes = {struct.pack(">I", v)[:2] for v in (lo_val, inv_g)}
+        # les valeurs candidates partagent 1-2 préfixes 16 bits → recherche par bytes.find
+        best: Optional[tuple[int, int]] = None      # (offset_objet, host_addr_du_slot)
+        chunk_sz = 1 << 20
+        for g in range(self._POUCH_STATIC_LO, self._POUCH_STATIC_HI, chunk_sz):
+            chunk = self._read(self._heap_base + g, chunk_sz)
+            if not chunk:
+                continue
+            for pfx in prefixes:
+                pos = chunk.find(pfx)
+                while pos != -1:
+                    if pos % 4 == 0 and pos + 4 <= len(chunk):    # slots alignés u32
+                        val = struct.unpack_from(">I", chunk, pos)[0]
+                        if lo_val <= val <= inv_g:
+                            off = inv_g - val
+                            if best is None or off < best[0]:
+                                best = (off, self._heap_base + g + pos)
+                    pos = chunk.find(pfx, pos + 1)
+        if best is None:
+            log.debug("[Mem] ancre statique poche introuvable (backref) — suivi AOB conservé")
+            return
+        self._pouch_buf_off, self._pouch_static_host = best
+        self._pouch_static_val = inv_g - best[0]
+        log.info("[Mem] ancre statique poche @ host 0x%012X (guest 0x%08X, offset objet +0x%X)",
+                 self._pouch_static_host,
+                 self._pouch_static_host - self._heap_base, self._pouch_buf_off)
+
+    def _refresh_inv_from_static(self) -> bool:
+        """Suit le pointeur statique de la poche AVANT tout accès : True si l'inventaire
+        courant est le buffer VIVANT (re-ciblé au besoin), False si le jeu est en plein
+        load/réallocation (→ l'appelant REPORTE ses écritures au lieu de corrompre de la
+        mémoire recyclée — cause du crash 0xc0000005 du 2026-07-14)."""
+        if self._pouch_static_host is None or self._heap_base is None:
+            return self._inv_base is not None     # ancre non résolue → comportement historique
+        now = time.monotonic()
+        if now - self._last_inv_refresh < 0.5:
+            # cooldown : on rejoue le DERNIER verdict (un échec récent reste un échec —
+            # renvoyer True ici rouvrirait la fenêtre d'écriture sur mémoire recyclée)
+            return self._last_refresh_ok and self._inv_base is not None
+        self._last_inv_refresh = now
+        self._last_refresh_ok = False
+        r = self._read(self._pouch_static_host, 4)
+        if not r:
+            return False
+        val = struct.unpack(">I", r)[0]
+        if not (0x02000000 <= val < _GUEST_MAX):
+            return False                          # pointeur nul/transitoire : load en cours
+        new_base = self._heap_base + val + (self._pouch_buf_off or 0)
+        if val == self._pouch_static_val and self._inv_base == new_base:
+            self._last_refresh_ok = True
+            return True                           # rien n'a bougé (ni l'ancre ni notre cible)
+        nodes = self._scan_pouch_nodes(new_base)
+        if nodes and self._count_selfref(nodes, self._heap_base) >= 1:
+            if new_base != self._inv_base:
+                log.info("[Mem] poche re-suivie via l'ancre statique → 0x%012X", new_base)
+                self._rupee_shadow = None
+            self._inv_base = new_base
+            self._pouch_static_val = val
+            self._last_refresh_ok = True
+            return True
+        return False                              # buffer pas encore peuplé → écritures reportées
 
     def refresh_inventory_if_stale(self) -> None:
         """Re-localise l'inventaire quand il est périmé. Trois signaux :
@@ -1025,7 +1159,11 @@ class CemuMemoryBridge:
         return fixed
 
     def _iter_inventory_slots(self, max_slots: int = 420):
-        """Itere (slot, item_addr, item_id) sur le tableau PouchItem live."""
+        """Itere (slot, item_addr, item_id) sur le tableau PouchItem live. Suit d'abord
+        l'ancre statique : si le jeu a réalloué la poche, on itère le buffer VIVANT (et si
+        le jeu est en plein load, on n'itère RIEN plutôt que de la mémoire recyclée)."""
+        if not self._refresh_inv_from_static():
+            return
         if self._inv_base is None:
             return
         for slot in range(max_slots):
@@ -1757,6 +1895,11 @@ class CemuMemoryBridge:
         cuisiné ne s'empile JAMAIS (chaque assiette = un nœud, comme en jeu).
         """
         if not self.has_live_inventory:
+            return False
+        # Suivi de l'ancre statique AVANT tout splice : poche réallouée → re-ciblée ; jeu en
+        # plein load → création REPORTÉE (splicer une copie freed corrompt la mémoire recyclée).
+        if not self._refresh_inv_from_static():
+            log.debug("[Mem] (live) poche instable (load ?) — création %s reportée", item_name)
             return False
         # GARDE DUR : items gérés par le jeu (orbes) — jamais de création live (crash). Bump si présent.
         if item_name in _NO_LIVE_CREATE:
