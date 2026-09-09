@@ -46,7 +46,12 @@ class RequiredShrineCount(Range):
     """
     display_name = "Required Shrine Count"
     range_start = 0
-    range_end = 120
+    # 116, pas 120 : le rando pré-clear 4 sanctuaires du Grand Plateau à toute nouvelle
+    # partie (InitValue=1) et le client les EXCLUT du compte (le joueur ne peut pas les
+    # refaire). Comme `DungeonClearCounter` reste à 0 sur une partie moddée, le compte
+    # effectif vient des flags `Clear_Dungeon*` : 120 − 4 = 116. Un seuil au-dessus rendait
+    # l'objectif définitivement inatteignable (partie ingagnable).
+    range_end = 116
     default = 20
 
 

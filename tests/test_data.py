@@ -161,3 +161,50 @@ def test_shrine_chest_flag_naming(shrine_chests):
 def test_shrine_chest_flag_hashes_unique(shrine_chests):
     hashes = [c["flag_hash"] for c in shrine_chests]
     assert len(hashes) == len(set(hashes))
+
+
+def test_add_cooked_actions_deliver_exactly_one_plate():
+    """Un `add_cooked` livre UNE assiette (1 nœud pouch = 1 plat, ils ne s'empilent pas).
+
+    La boucle de livraison des plats (`_apply_actions_memory`) crée `amount` nœuds puis
+    renvoie un seul booléen : si la 3e création sur 5 échouait, la spec ENTIÈRE serait
+    rejouée et les 2 assiettes déjà créées dupliquées. Aucune donnée n'a `amount > 1`
+    aujourd'hui — ce test empêche d'introduire le cas par les données sans traiter
+    d'abord la reprise partielle côté client.
+    """
+    def walk(o):
+        if isinstance(o, dict):
+            if o.get("type") == "add_cooked":
+                yield o
+            for v in o.values():
+                yield from walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                yield from walk(v)
+
+    data = json.loads((DATA / "gate_items.json").read_text(encoding="utf-8"))
+    cooked = list(walk(data))
+    if not cooked:
+        pytest.skip("aucune action add_cooked dans la table de loot")
+    bad = [o["item"] for o in cooked if o.get("amount", 1) != 1]
+    assert not bad, f"add_cooked avec amount > 1 (reprise partielle non gérée) : {bad}"
+
+
+def test_required_shrine_count_ceiling_is_reachable():
+    """Le seuil max de l'objectif doit rester ATTEIGNABLE.
+
+    Le client compte les sanctuaires par les flags `Clear_Dungeon*` en excluant les 4
+    pré-clearés par le rando (`DungeonClearCounter` reste à 0 sur partie moddée). Le
+    maximum réel est donc 120 − 4 = 116 : un `range_end` au-dessus produit des seeds
+    dont l'objectif ne peut JAMAIS être validé.
+    """
+    import re
+    src = (Path(__file__).resolve().parents[1] / "worlds" / "botw" / "options.py").read_text(
+        encoding="utf-8")
+    block = src.split("class RequiredShrineCount", 1)[1].split("class ", 1)[0]
+    end = int(re.search(r"range_end\s*=\s*(\d+)", block).group(1))
+
+    locs = json.loads((DATA / "locations.json").read_text(encoding="utf-8"))
+    total = sum(1 for loc in locs if loc.get("category") == "shrine")
+    assert end <= total - 4, (
+        f"range_end={end} > {total - 4} sanctuaires atteignables (120 − 4 pré-clearés)")

@@ -310,6 +310,9 @@ class CemuMemoryBridge:
         self._creates_suspended: bool = False
         self._suspend_logged: bool = False
         self._last_integrity_check: float = 0.0
+        # Sentinelle validée du dernier splice — sert au rollback (_free_relink) pour ré-incrémenter
+        # le compteur de free-list qu'on venait de décrémenter.
+        self._free_sent_g: Optional[int] = None
         # Qty cibles des items LIVRÉS cette rafale. BotW restaure les nœuds PRÉEXISTANTS à leur
         # qty d'origine lors d'une réallocation (les bumps live sont perdus, seules les créations
         # survivent) → on ré-assert ces cibles jusqu'à stabilisation. Effacé quand la file vide.
@@ -1943,6 +1946,31 @@ class CemuMemoryBridge:
             log.info("[Mem] Templates PouchItem mis en cache (types %s) — création live "
                      "possible même sur inventaire vide", sorted(set(added)))
 
+    def _free_relink(self, F_g: int, f_prev: int, f_next: int, base: int) -> None:
+        """ROLLBACK : remet le nœud F dans la free-list du jeu après un splice avorté.
+
+        Sans ça, un échec d'écriture APRÈS le retrait de la free-list laissait F dans aucune
+        des deux listes (nœud perdu, free-count faux) — et, si l'écriture du contenu avait
+        partiellement abouti, un nœud à moitié écrit que le scan suivant pouvait reprendre.
+        On restaure les liens de F, ceux de ses deux voisins libres, son type « libre » et
+        son nom vide, puis on ré-incrémente le compteur. Best-effort : si la mémoire ne
+        répond plus, il n'y a de toute façon plus rien à réparer depuis ici."""
+        def g2h(g):
+            return g + base
+        f_link = F_g + self._NODE_OFF_NEXT
+        self._write(g2h(F_g) + self._NODE_OFF_NEXT, struct.pack(">I", f_next))
+        self._write(g2h(F_g) + self._NODE_OFF_PREV, struct.pack(">I", f_prev))
+        self._write(g2h(F_g) + self._NODE_OFF_TYPE, struct.pack(">I", 0xFFFFFFFF))
+        self._write(g2h(F_g) + self._NODE_OFF_NAME, b"\x00" * 64)
+        self._write(g2h(f_prev), struct.pack(">I", f_link))
+        self._write(g2h(f_next) + 4, struct.pack(">I", f_link))
+        if self._free_sent_g is not None:
+            fc_r = self._read(g2h(self._free_sent_g) + 0x18, 4)
+            if fc_r:
+                fcnt = struct.unpack(">i", fc_r)[0]
+                if 0 <= fcnt < 2000:
+                    self._write(g2h(self._free_sent_g) + 0x18, struct.pack(">i", fcnt + 1))
+
     def live_create_item(self, item_name: str, item_type: int,
                           subtype: Optional[int] = None, value: int = 1,
                           cook_data: Optional[dict] = None) -> bool:
@@ -2098,11 +2126,18 @@ class CemuMemoryBridge:
                 succ_of[id(n)] = s
         # SENS DU TRI : constaté sur la 1re paire adjacente de clés différentes (défaut décroissant,
         # comme tous les dumps le montrent : flèches type 2 → armes type 0 en suivant 0x04).
+        # On ne déduit le sens QUE d'un changement de TYPE (correctif 2026-09-09). Le déduire
+        # d'une paire de MÊME type s'appuyait sur notre table sortKey, dont le code reconnaît
+        # lui-même qu'elle diverge de l'ordre interne du jeu : deux matériaux dont nos clés
+        # montent alors que la liste descend inversaient `descending` pour TOUTE l'insertion
+        # → repli sur une borne du mauvais côté → type 3 inséré derrière un type 2, catégories
+        # fracturées (sans que réciprocité ni mCount ne détectent quoi que ce soit). La
+        # frontière de TYPE, elle, est sans ambiguïté.
         descending = True
         for n in selfref:
             s = succ_of.get(id(n))
-            if s is not None and _spos(s) != _spos(n):
-                descending = _spos(s) < _spos(n)
+            if s is not None and s["type"] != n["type"]:
+                descending = s["type"] < n["type"]
                 break
         # PRÉDÉCESSEUR = le P d'une paire adjacente (P→S) telle que F tombe entre les deux :
         #   décroissant → _spos(P) ≥ cible > _spos(S) ;  croissant → _spos(P) ≤ cible < _spos(S).
@@ -2147,7 +2182,9 @@ class CemuMemoryBridge:
                       item_name, new_sk, descending)
             return False
         # SENTINELLE OBLIGATOIRE avant TOUT splice : mCount sera incrémenté À la sentinelle
-        # VALIDÉE (marche défensive qui échoue sur un nœud inconnu). L'ancien _bump_pouch_count
+        # VALIDÉE. La marche TRAVERSE les nœuds inconnus (poche fragmentée = scan incomplet
+        # par nature) mais REFUSE tout nœud libre : entrer dans la free-list ferait prendre
+        # son OffsetList (S+0x10) pour la sentinelle active. L'ancien _bump_pouch_count
         # refaisait sa propre marche « lâche » APRÈS le splice et, sur un scan incomplet,
         # écrivait mCount DANS UN NŒUD (source de corruption des runs 9-11 : 2 splices
         # suffisaient à désorganiser la poche). Pas de sentinelle sûre → pas de splice.
@@ -2281,6 +2318,48 @@ class CemuMemoryBridge:
         # post-livraison.) On délie F AVANT de l'écraser : ses champs next/prev d'origine
         # pointent encore la chaîne libre ; réciprocité exigée, sinon on ne touche à rien.
         f_link = F_g + self._NODE_OFF_NEXT
+        # ── 4a) VALIDATION COMPLÈTE DE L'ANCRE — lectures SEULES, aucune mutation encore.
+        # (Réordonné le 2026-09-09 : tout ce qui peut faire échouer le splice se produit
+        # AVANT la première écriture, pour que « live_create_item a renvoyé False » veuille
+        # dire « la mémoire du jeu n'a pas été touchée ». L'appelant REJOUE la spec sur un
+        # False — avec l'ancien ordre, un abandon après mutation produisait un 2e exemplaire
+        # spliced sur une liste déjà à moitié modifiée.)
+        link_h = g2h(anchor_link_g)                       # champ next du prédécesseur (nœud/sentinelle)
+        a_links = self._read(link_h, 4)
+        if not a_links:
+            return False
+        old_next = struct.unpack(">I", a_links)[0]        # link du suivant (X_g+4) ou sentinelle (S_g)
+        # Le suivant doit être PLAUSIBLE et lisible (son champ prev est à old_next+4) — sinon la
+        # liste a bougé sous nos pieds → ne pas splicer (write sur pointeur périmé = crash).
+        if not (0x02000000 <= old_next < _GUEST_MAX) or self._read(g2h(old_next), 8) is None:
+            log.debug("[Mem] (live) ancre %s instable — %s reporté", anchor_name, item_name)
+            return False
+        # RÉCIPROCITÉ de l'ancre : le prev du successeur doit repointer l'ancre. Le commentaire
+        # promettait « l'ancre pointe toujours vers un nœud connu » mais le code ne vérifiait que
+        # la plausibilité de old_next. Scénario réel : le joueur consomme l'item d'ancre entre le
+        # scan et le splice → l'ancre retourne à la free-list → son next désigne un lien LIBRE
+        # parfaitement lisible → on splicait F DANS LA FREE-LIST tout en incrémentant le mCount
+        # ACTIF. Au ramassage suivant le jeu ré-allouait ce F déjà rempli : exactement la
+        # signature « livraison, puis corruption au ramassage ».
+        recip = self._read(g2h(old_next) + 4, 4)
+        if not recip or struct.unpack(">I", recip)[0] != anchor_link_g:
+            log.debug("[Mem] (live) ancre %s non réciproque (liste modifiée) — %s reporté",
+                      anchor_name, item_name)
+            return False
+        # …et l'ancre elle-même doit toujours être un nœud VIVANT (hors cas sentinelle).
+        if anchor_link_g != sent_g:
+            a_g = anchor_link_g - self._NODE_OFF_NEXT
+            a_vt = self._read(g2h(a_g) + self._NODE_OFF_VTABLE, 4)
+            a_ty = self._read(g2h(a_g) + self._NODE_OFF_TYPE, 4)
+            if not a_vt or struct.unpack(">I", a_vt)[0] != self._POUCH_VTABLE or \
+               not a_ty or struct.unpack(">I", a_ty)[0] == 0xFFFFFFFF:
+                log.debug("[Mem] (live) ancre %s libérée entre-temps — %s reporté",
+                          anchor_name, item_name)
+                return False
+        struct.pack_into(">I", raw, self._NODE_OFF_NEXT, old_next)         # F.next = suivant
+        struct.pack_into(">I", raw, self._NODE_OFF_PREV, anchor_link_g)    # F.prev = link prédécesseur
+
+        # ── 4b) RETRAIT DE LA FREE-LIST (1re mutation) ──
         fn_r = self._read(F_h + self._NODE_OFF_NEXT, 4)
         fp_r = self._read(F_h + self._NODE_OFF_PREV, 4)
         if not fn_r or not fp_r:
@@ -2297,44 +2376,86 @@ class CemuMemoryBridge:
                 r2 and struct.unpack(">I", r2)[0] == f_link):
             log.debug("[Mem] (live) nœud libre hors chaîne cohérente — %s reporté", item_name)
             return False
-        if not (self._write(g2h(f_prev), struct.pack(">I", f_next)) and
-                self._write(g2h(f_next) + 4, struct.pack(">I", f_prev))):
+        # RE-CONTRÔLE du type de F À L'INSTANT de la 1re mutation (relecteur, 2026-09-09).
+        # La réciprocité ci-dessus ne prouve PAS que F est encore libre : si le jeu vient de
+        # l'allouer pour un ramassage, F est dans la liste ACTIVE et ses deux voisins actifs
+        # pointent aussi vers `f_link` — les deux tests passent. On désenchaînerait alors
+        # l'objet que le joueur vient de ramasser, on l'écraserait, et on le re-splicerait
+        # ailleurs : c'est la signature « le heaume du coffre s'est évaporé » des runs 7-8.
+        # Le contrôle initial est maintenant 9 lectures en amont (validation d'ancre insérée
+        # entre-temps) — trop loin pour servir de garde.
+        f_chk = self._read(F_h + self._NODE_OFF_TYPE, 4)
+        if not f_chk or struct.unpack(">I", f_chk)[0] != 0xFFFFFFFF:
+            log.debug("[Mem] (live) nœud libre alloué pendant la validation — %s reporté",
+                      item_name)
+            return False
+        if not self._write(g2h(f_prev), struct.pack(">I", f_next)):
+            return False                              # rien n'a bougé
+        if not self._write(g2h(f_next) + 4, struct.pack(">I", f_prev)):
+            self._write(g2h(f_prev), struct.pack(">I", f_link))   # rollback du 1er maillon
+            log.debug("[Mem] (live) retrait free-list partiel annulé — %s reporté", item_name)
             return False
         # compteur de la free-list (2e sead::OffsetList de la sentinelle : next S+0x10,
         # prev S+0x14, count S+0x18 — cf. diff PauseMenuDataMgr du 2026-07-05) : décrément
         # best-effort, uniquement si la valeur est plausible.
+        # `_free_sent_g` n'est armé que si le décrément a EFFECTIVEMENT eu lieu : sinon le
+        # rollback ré-incrémenterait un compteur jamais décrémenté (le jeu croirait disposer
+        # d'un nœud libre de plus). Le décrément reste best-effort.
+        self._free_sent_g = None
         fc_r = self._read(g2h(sent_g) + 0x18, 4)
         if fc_r:
             fcnt = struct.unpack(">i", fc_r)[0]
             if 0 < fcnt < 2000:
-                self._write(g2h(sent_g) + 0x18, struct.pack(">i", fcnt - 1))
+                if self._write(g2h(sent_g) + 0x18, struct.pack(">i", fcnt - 1)):
+                    self._free_sent_g = sent_g
             else:
                 log.debug("[Mem] (live) free-count S+0x18=%d implausible — non décrémenté", fcnt)
-        link_h = g2h(anchor_link_g)                       # champ next du prédécesseur (nœud/sentinelle)
-        a_links = self._read(link_h, 4)
-        if not a_links:
-            return False
-        old_next = struct.unpack(">I", a_links)[0]        # link du suivant (X_g+4) ou sentinelle (S_g)
-        # Le suivant doit être PLAUSIBLE et lisible (son champ prev est à old_next+4) — sinon la
-        # liste a bougé sous nos pieds → ne pas splicer (write sur pointeur périmé = crash).
-        if not (0x02000000 <= old_next < _GUEST_MAX) or self._read(g2h(old_next), 8) is None:
-            log.debug("[Mem] (live) ancre %s instable — %s reporté", anchor_name, item_name)
-            return False
-        struct.pack_into(">I", raw, self._NODE_OFF_NEXT, old_next)         # F.next = suivant
-        struct.pack_into(">I", raw, self._NODE_OFF_PREV, anchor_link_g)    # F.prev = link prédécesseur
 
-        ok = self._write(F_h, bytes(raw))
-        ok &= self._write(link_h, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
+        # ── 4c) ÉCRITURES, avec rollback à chaque échec ──
+        # ORDRE : contenu de F, puis lien ARRIÈRE du successeur, puis PUBLICATION du lien avant
+        # EN DERNIER. Contre un jeu LECTEUR qui parcourt la liste vers l'avant, F reste
+        # invisible jusqu'au dernier write, puis apparaît complet et réciproque. L'ancien ordre
+        # publiait F en marche avant AVANT de réparer le lien arrière — une insertion du jeu
+        # dans cette fenêtre partait d'un `prev` faux. (Et `ok &= self._write(...)` n'étant PAS
+        # court-circuité, un échec d'écriture du CONTENU n'empêchait pas la publication d'un
+        # nœud non initialisé.)
+        # DEUX RÉSERVES, à ne pas oublier au prochain incident (relecteur 2026-09-09) :
+        #  · insertion en QUEUE (`old_next == sent_g`) : l'étape 2 écrit S+0x04, le pointeur de
+        #    queue du conteneur — F est donc visible d'une itération ARRIÈRE avant le dernier
+        #    write. L'anneau reste cohérent, mais « F est invisible » est faux dans ce cas ;
+        #  · contre un jeu ÉCRIVAIN, AUCUN ordre n'est sûr (un pushFront concurrent écrase
+        #    notre écriture de prev). Ce qui protège réellement, c'est la fenêtre calme de 3 s
+        #    et la vérif post-splice — pas cet ordre.
+        if not self._write(F_h, bytes(raw)):
+            self._free_relink(F_g, f_prev, f_next, base)
+            log.debug("[Mem] (live) écriture du nœud échouée — %s reporté (nœud rendu)", item_name)
+            return False
         # prev du suivant : old_next+4 (nœud → N_g+0x08 ; sentinelle → S_g+0x04 — même arithmétique)
-        ok &= self._write(g2h(old_next) + 4, struct.pack(">I", F_g + self._NODE_OFF_NEXT))
+        if not self._write(g2h(old_next) + 4, struct.pack(">I", f_link)):
+            self._free_relink(F_g, f_prev, f_next, base)
+            log.debug("[Mem] (live) lien arrière échoué — %s reporté (nœud rendu)", item_name)
+            return False
+        if not self._write(link_h, struct.pack(">I", f_link)):
+            self._write(g2h(old_next) + 4, struct.pack(">I", anchor_link_g))   # rollback arrière
+            self._free_relink(F_g, f_prev, f_next, base)
+            log.debug("[Mem] (live) publication échouée — %s reporté (nœud rendu)", item_name)
+            return False
+        ok = True
         if ok:
             # mCount += 1 À LA SENTINELLE PRÉ-VALIDÉE (sead::OffsetList, S+0x08) : le jeu
             # COMPTE notre nœud -> il ne réutilise plus ce nœud libre et le sérialise au save.
+            # Le nœud est DÉJÀ dans l'anneau : renoncer au compteur laisserait un conteneur dont
+            # le nombre déclaré est faux (et la vérif post-splice le signalerait, à juste titre —
+            # ce n'est pas un faux positif). On relit et on retente une fois avant d'abandonner.
             bumped = False
-            cnt_r = self._read(g2h(sent_g) + 0x08, 4)
-            cnt = struct.unpack(">i", cnt_r)[0] if cnt_r else -1
-            if 0 <= cnt < 2000:
-                bumped = self._write(g2h(sent_g) + 0x08, struct.pack(">i", cnt + 1))
+            for _ in range(2):
+                cnt_r = self._read(g2h(sent_g) + 0x08, 4)
+                cnt = struct.unpack(">i", cnt_r)[0] if cnt_r else -1
+                if not (0 <= cnt < 2000):
+                    break
+                if self._write(g2h(sent_g) + 0x08, struct.pack(">i", cnt + 1)):
+                    bumped = True
+                    break
             if cook_data is None:                     # cible qty à ré-asserter après réallocation
                 self._qty_targets[item_name] = value  # (pas pour un plat : 1 nœud = 1 assiette)
             # VÉRIF POST-SPLICE : notre insertion doit laisser l'anneau PARFAITEMENT cohérent.
@@ -2366,20 +2487,86 @@ class CemuMemoryBridge:
                      "" if bumped else "  (!! mCount NON incrémenté)")
         return bool(ok)
 
+    def _node_array_range_g(self, base: int) -> Optional[tuple]:
+        """Bornes GUEST [lo, hi) du tableau de nœuds PouchItem (420 × 544 o). La sentinelle
+        est un membre de PauseMenuDataMgr : elle vit DEHORS. C'est l'invariant qui permet de
+        distinguer un nœud d'une sentinelle sans ambiguïté."""
+        if self._inv_base is None:
+            return None
+        lo = (self._inv_base - base) - self._NODE_HEADER_OFF   # début du 1er nœud (motif -0x20)
+        hi = lo + self._PORCH_SLOTS * _ITEM_STRIDE
+        return (lo, hi) if 0 <= lo < hi else None
+
+    def _looks_like_node(self, guest: int, base: int) -> bool:
+        """True si `guest` est le DÉBUT d'un nœud PouchItem : dans le tableau de nœuds, ou
+        porteur de la vtable PouchItem. Sert à REFUSER un nœud pris pour une sentinelle."""
+        rng = self._node_array_range_g(base)
+        if rng is not None and rng[0] <= guest < rng[1]:
+            # Dans le tableau : ce n'est un DÉBUT de nœud que si c'est aligné sur un slot.
+            # Un pointeur corrompu qui tombe au milieu d'un nœud n'est pas un nœud.
+            return (guest - rng[0]) % _ITEM_STRIDE == 0
+        vt = self._read(base + guest + self._NODE_OFF_VTABLE, 4)
+        return bool(vt) and struct.unpack(">I", vt)[0] == self._POUCH_VTABLE
+
     def _find_list_sentinel(self, selfref: list, base: int) -> Optional[int]:
         """Adresse guest de la SENTINELLE (sead::OffsetList.mStartEnd {next@0, prev@4,
         mCount@8}) de la liste pouch active : suit next depuis un nœud self-ref jusqu'à
-        sortir du pool scanné. Validation stricte : prev(S+4) == link du dernier nœud
-        traversé (on est bien arrivé au BOUT), head plausible, mCount ∈ [0, 2000). Un nœud
-        actif NON scanné rencontré en route échoue cette validation → None (reporté)."""
+        tomber sur un lien qui n'est PAS un nœud.
+
+        IDENTIFICATION POSITIVE (correctif 2026-09-09, cause racine des corruptions des
+        runs 7-12). L'ancienne version prenait pour sentinelle « le premier lien hors de
+        l'ensemble scanné » et se contentait de trois tests de plausibilité. Or lire 12 o
+        au LINK d'un nœud actif U (U+0x04) donne (U.next, U.prev, U.type) — et les trois
+        tests PASSENT sur une liste saine : `tail == cur` est vrai par construction
+        (U.prev = link du prédécesseur) et `U.type ∈ [0,9]` satisfait `0 <= cnt < 2000`.
+        Un nœud actif absent du scan (motif `_matches_item_pattern` non reconnu, lecture
+        ratée, filtre self-ref) était donc adopté comme sentinelle, après quoi :
+          · `mCount += 1` écrivait à S+0x08 = **U+0x0C, le champ type** (un matériau
+            devenait type 8 → catégorie fracturée) ;
+          · le décrément du free-count écrivait à S+0x18 = **U+0x1C, le self-pointer du
+            buffer de nom** (corruption « No Image » déjà connue de juin).
+        C'est le mécanisme attribué à `_bump_pouch_count` au 11e run, resté intact ici.
+
+        La sentinelle est désormais reconnue par ce qu'elle EST : un objet HORS du tableau
+        de nœuds et sans vtable PouchItem. Un nœud actif non scanné n'interrompt plus la
+        marche — on le TRAVERSE (ce qui rend aussi la marche correcte sur poche fragmentée,
+        cas où le scan est incomplet)."""
+        if not selfref:
+            return None
+        # AUCUN nœud LIBRE ne doit être traversé (correctif du relecteur, 2026-09-09). La
+        # free-list est le SECOND sead::OffsetList du même objet (S+0x10) : elle a exactement
+        # la même forme que la liste active, elle est hors du tableau de nœuds et sans vtable
+        # PouchItem — l'identification positive ci-dessus ne l'en distingue donc PAS. Or si
+        # le nœud de départ a été libéré entre le scan et la marche (le joueur consomme ou
+        # jette l'item), on part dans la chaîne LIBRE et on aboutit à S+0x10 : `mCount += 1`
+        # irait alors écrire dans le COMPTEUR DE LA FREE-LIST pendant qu'on splice dans la
+        # liste active — c'est-à-dire un mCount actif faux, précisément la condition décrite
+        # comme précurseur du crash au ramassage. Un nœud de la liste ACTIVE n'est jamais
+        # libre : le type 0xFFFFFFFF ferme les deux voies (départ et traversée).
+        def _is_free(node_g: int) -> bool:
+            ty = self._read(base + node_g + self._NODE_OFF_TYPE, 4)
+            return bool(ty) and struct.unpack(">I", ty)[0] == 0xFFFFFFFF
+
+        if _is_free(selfref[0]["host"] - base):
+            return None                       # nœud de départ rendu à la free-list
         node_links = {(n["host"] - base) + self._NODE_OFF_NEXT for n in selfref}
         cur = (selfref[0]["host"] - base) + self._NODE_OFF_NEXT
+        seen = {cur}
         for _ in range(2048):
             r = self._read(base + cur, 4)
             if not r:
                 return None
             nxt = struct.unpack(">I", r)[0]
-            if nxt in node_links:
+            if not (0x02000000 <= nxt < _GUEST_MAX):
+                return None
+            if nxt in node_links or self._looks_like_node(nxt - self._NODE_OFF_NEXT, base):
+                # nœud (scanné ou NON) → on continue la marche au lieu de le confondre
+                # avec la sentinelle. `seen` interdit de tourner en rond sur un anneau cassé.
+                if _is_free(nxt - self._NODE_OFF_NEXT):
+                    return None               # on est dans la free-list → ne rien conclure
+                if nxt in seen:
+                    return None
+                seen.add(nxt)
                 cur = nxt
                 continue
             hdr = self._read(base + nxt, 12)          # candidat sentinelle : head, tail, count

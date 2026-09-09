@@ -323,6 +323,96 @@
       écrasé (réciprocité next/prev exigée sinon report ; décrément best-effort du
       free-count S+0x18). **À valider in-game : rafale puis RAMASSAGES + save/reload —
       c'est LE test qui a toujours échoué.**
+- [x] **13e passe (2026-09-09) — revue croisée Claude × Codex : LA fausse sentinelle**.
+      Aucune run : audit du code. Codex (`codex exec`, sources JOINTES au prompt — son
+      exécuteur shell ne démarre pas sur cette machine, `CreateProcessAsUserW 740`) a
+      trouvé le défaut que 6 sessions de correctifs empilés avaient manqué, et il est
+      DÉMONTRÉ hors-jeu (comparaison ancien/nouveau code sur mémoire synthétique) :
+      **`_find_list_sentinel` prenait le lien d'un nœud ACTIF pour la sentinelle.** Elle
+      était identifiée comme « le premier lien hors de l'ensemble scanné » + 3 tests de
+      plausibilité. Or lire 12 o au LINK d'un nœud U (U+0x04) donne `(U.next, U.prev,
+      U.type)` et les 3 tests PASSENT sur une liste SAINE : `tail == cur` est vrai par
+      construction (U.prev = link du prédécesseur) et `U.type ∈ [0,9]` satisfait
+      `0 <= cnt < 2000`. Il suffisait qu'un nœud actif manque au scan (motif
+      `_matches_item_pattern` non reconnu, lecture ratée, filtre self-ref) — cas normal sur
+      poche fragmentée. Conséquences : `mCount += 1` écrivait dans **U+0x0C, le champ
+      TYPE** (un matériau devient type 8 → catégorie fracturée) et le décrément du
+      free-count dans **U+0x1C, le self-pointer du nom** (corruption « No Image » connue
+      depuis juin). **C'est le mécanisme attribué à `_bump_pouch_count` au 11e run, resté
+      intact dans le code censé l'avoir supprimé.** Correctifs (`memory_injector.py`) :
+      1. **Identification POSITIVE de la sentinelle** : elle est HORS du tableau de nœuds
+         (420 × 544 o, ancré par `_inv_base`) et sans vtable PouchItem (`_node_array_range_g`,
+         `_looks_like_node`). Un nœud actif non scanné est désormais TRAVERSÉ — ce qui rend
+         aussi la marche correcte sur poche fragmentée, où le scan est incomplet par nature.
+      2. **`ok &= self._write(...)` n'était pas court-circuité** → un échec d'écriture du
+         CONTENU de F n'empêchait pas sa publication dans la liste. Séquence éclatée en
+         écritures vérifiées une par une.
+      3. **Rollback** (`_free_relink`) : un échec après le retrait de la free-list rendait F
+         introuvable des DEUX listes (nœud perdu, free-count faux, nœud à demi écrit
+         reprenable par le scan suivant). F est rendu à la free-list (liens, type 0xFFFFFFFF,
+         nom effacé, compteur ré-incrémenté).
+      4. **Invariant « False ⇒ mémoire du jeu intacte »** : toutes les validations avant la
+         1re écriture. L'appelant REJOUE la spec sur un `False` — avec l'ancien ordre, un
+         abandon après mutation créait un 2e exemplaire spliced sur une liste déjà modifiée.
+      5. **Réciprocité de l'ancre revalidée** + ancre toujours vivante (vtable + type). Le
+         commentaire le promettait, le code ne vérifiait que la plausibilité de `old_next` :
+         une ancre consommée par le joueur entre le scan et le splice renvoyait vers un lien
+         LIBRE lisible → on splicait F **dans la free-list** en incrémentant le mCount ACTIF
+         → le jeu ré-allouait F au ramassage suivant. Signature exacte des runs 7-12.
+      6. **Ordre de publication** : contenu de F → lien ARRIÈRE du successeur → publication
+         du lien avant EN DERNIER. Une marche avant du jeu ne voit jamais d'état partiel.
+      7. **Sens du tri déduit d'un changement de TYPE seulement** (plus de la table sortKey,
+         dont le code reconnaît lui-même qu'elle diverge de l'ordre du jeu) : un `descending`
+         inversé fracturait les catégories sans qu'aucune garde ne le voie.
+      8. `mCount` : relu et retenté une fois. Un compteur faux est une vraie incohérence, pas
+         un faux positif de la vérif post-splice (point de Codex retenu CONTRE mon analyse).
+      Tests : 79 (+7). Non-régression prouvée sur l'ancienne implémentation.
+      **RESTE : la validation in-game** — rafale, puis RAMASSAGES, puis save/reload.
+- [x] **Objectif « sanctuaires » inatteignable au-dessus de 116 (2026-09-09)** :
+      `RequiredShrineCount.range_end` valait 120 alors que le client exclut du compte les 4
+      sanctuaires du plateau pré-clearés et que `DungeonClearCounter` reste à 0 sur partie
+      moddée → un seuil de 117-120 produisait une seed **ingagnable**. `range_end = 116`
+      + test de non-régression.
+- [ ] **Constats de la review projet Codex (2026-09-09) — À VÉRIFIER un par un.**
+      Codex n'a pas pu lire le dépôt (exécuteur bloqué) : il a travaillé sur les sources
+      JOINTES au prompt (worlds/botw/*, BotWClient.py, save_file.py, item_map.py).
+      `memory_injector.py` et les JSON ne lui ont PAS été fournis dans cette passe. Ces
+      points ne sont donc pas prouvés — ne rien cocher sans vérification :
+      1. `_enforce_retention()` ne teste `cemu_process_running()` **qu'une fois** puis
+         enchaîne lectures/écritures : Cemu démarré entre-temps → écriture fichier pendant
+         qu'il tourne. `_write_atomic()` ne reverifie rien (gravité annoncée : haute).
+      2. Course `queue_item()` (thread réseau) vs `_inject_pending()` (worker) : la file est
+         remplacée par `remaining` construit AVANT l'ajout → item reçu pendant un flush
+         perdu, perte persistée, index AP déjà avancé.
+      3. `_received` repart VIDE au redémarrage (l'état ne contient que `item_index`) : si
+         `Connected.items` est absent, la rétention peut remettre à zéro des flags de
+         progression déjà obtenus.
+      4. `persist_item_index()` avant la persistance de `queue_item()` : un arrêt entre les
+         deux perd la réception. Les deux fichiers d'état sont écrits par `write_text()`
+         direct (JSON tronqué → `_load_queue()` renvoie une file vide en silence).
+      5. Reprise après échec partiel : `_deliver_max_stat` peut re-créditer une fiole
+         (`StaminaMax` monté, `StaminaCurrentMax` échoué → nouvelle demande à +400).
+      6. Voie FICHIER : une arme reçue hors ligne AJOUTE sa durabilité à une arme du même
+         nom au lieu de créer un exemplaire ; companions créés avec `life=1` (Master Sword,
+         Arc de Lumière) alors que la voie mémoire lit `info["life"]`.
+      7. `_deliver_companion_pouch()` appelle `live_create_item()` sans consulter
+         `_LIVE_CREATE_ENABLED` ni le budget `MAX_DELIVER_PER_FLUSH` : le commutateur ne coupe
+         pas toutes les créations (gênant pour isoler une corruption).
+      8. Options `randomize_*` désactivées : les items sortent du pool côté serveur mais la
+         table de rétention garde tous les `ap_progression` → flags obtenus en vanilla remis
+         à zéro.
+      9. L'état de livraison (file + index) n'est lié ni à la seed ni au slot AP : réutiliser
+         un profil pour une nouvelle seed sans `--reset` fait ignorer les 1res réceptions.
+      10. Baseline : si le joueur fait ses premiers checks avant le 1er poll et que le serveur
+          n'en connaît aucun, tout est baseliné et jamais émis (location non rejouable = item
+          perdu). Supprimer `ap_baseline.json` reproduit le même snapshot.
+      11. `rules.py` exige TOUJOURS l'Arc de Lumière quel que soit `goal_mode`, alors que le
+          mode client `shrines` n'exige aucun flag → la génération évalue un objectif
+          différent de celui qui déclenche `StatusUpdate(30)`. **Vérifié : l'écart existe.**
+          Plus restrictif que nécessaire (pas insoluble), mais l'option est de fait ignorée.
+      12. Accès au bridge depuis le thread réseau (`BotWClient.py`) pendant que `flush()`
+          l'utilise sur le worker — sérialisation à instruire.
+      Priorité proposée : 1, 2, 4 (perte/corruption) puis 3, 8, 9, 10 (cohérence de run).
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
       `push_toast(text=…)`) : la zone MSBT victime est réécrite EN ENTIER à chaque bandeau

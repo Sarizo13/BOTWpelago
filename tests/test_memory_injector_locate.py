@@ -12,6 +12,7 @@ memory_injector binds kernel32 at import time → Windows-only. Skipped elsewher
 """
 import struct
 import sys
+import time
 
 import pytest
 
@@ -374,3 +375,257 @@ def test_list_integrity_rejects_mcount_mismatch():
     node = _make_node(_HOST_BASE + _NODE_G, _NODE_G)
     b = _ring_bridge(count_val=3)                     # 1 nœud réel mais mCount=3
     assert b._list_integrity_ok([node], _HOST_BASE) is False
+
+
+# ── sentinelle : identification POSITIVE (cause racine des corruptions, 2026-09-09) ──
+#
+# `_find_list_sentinel` prenait pour sentinelle « le premier lien hors de l'ensemble
+# scanné », validé par trois tests de plausibilité. Lire 12 o au LINK d'un nœud ACTIF U
+# donne (U.next, U.prev, U.type) — et les trois tests passent sur une liste SAINE :
+# `tail == cur` est vrai par construction et `U.type ∈ [0,9]` satisfait `0 <= cnt < 2000`.
+# Un nœud actif absent du scan (motif non reconnu, lecture ratée) était donc adopté comme
+# sentinelle, après quoi mCount écrivait dans U+0x0C (son TYPE) et le free-count dans
+# U+0x1C (le self-pointer de son nom). C'est le mécanisme des runs 9-11, resté intact
+# dans le code censé l'avoir supprimé.
+
+_A_G = _INV_G - 0x20                             # nœud 0 du tableau (scanné)
+_U_G = _INV_G - 0x20 + _STRIDE                   # nœud 1 : ACTIF mais ABSENT du scan
+
+
+def _bridge_ring_with_unscanned_node(u_type: int = 7, count: int = 2) -> CemuMemoryBridge:
+    """Anneau S → A → U → S où seul A est dans `selfref`. U est un nœud actif normal
+    placé DANS le tableau de nœuds (420 × 544 o) ancré par `_inv_base`."""
+    b = CemuMemoryBridge()
+    b._inv_base = _HOST_BASE + _INV_G
+    mem = {
+        (_HOST_BASE + _SENT_G, 4):  _u32(_A_G + 0x04),                     # S.next → A
+        (_HOST_BASE + _SENT_G, 12): _u32(_A_G + 0x04) + _u32(_U_G + 0x04) + _u32(count),
+        (_HOST_BASE + _SENT_G + 4, 4): _u32(_U_G + 0x04),                  # S.prev → U (queue)
+        (_HOST_BASE + _SENT_G + 8, 4): _u32(count),                        # mCount
+        (_HOST_BASE + _A_G + 0x04, 4): _u32(_U_G + 0x04),                  # A.next → U
+        (_HOST_BASE + _A_G + 0x08, 4): _u32(_SENT_G),                      # A.prev → S
+        (_HOST_BASE + _U_G + 0x04, 4): _u32(_SENT_G),                      # U.next → S
+        (_HOST_BASE + _U_G + 0x08, 4): _u32(_A_G + 0x04),                  # U.prev → A
+        # la lecture de 12 o au LINK de U — celle qui piégeait l'ancien validateur
+        (_HOST_BASE + _U_G + 0x04, 12): _u32(_SENT_G) + _u32(_A_G + 0x04) + _u32(u_type),
+    }
+    b._read = lambda addr, size: mem.get((addr, size))  # type: ignore[assignment]
+    return b
+
+
+def test_sentinel_walks_through_unscanned_active_node():
+    """Le nœud actif non scanné est TRAVERSÉ, pas confondu avec la sentinelle."""
+    a = _make_node(_HOST_BASE + _A_G, _A_G)
+    b = _bridge_ring_with_unscanned_node()
+    assert b._find_list_sentinel([a], _HOST_BASE) == _SENT_G
+
+
+def test_sentinel_never_returns_a_node_link():
+    """Régression directe : U+0x04 satisfait les 3 anciens tests et doit être REFUSÉ.
+    L'accepter faisait écrire mCount dans U+0x0C (type) et le free-count dans U+0x1C."""
+    a = _make_node(_HOST_BASE + _A_G, _A_G)
+    for u_type in (0, 7, 9):                       # types usuels : tous < 2000
+        b = _bridge_ring_with_unscanned_node(u_type=u_type)
+        assert b._find_list_sentinel([a], _HOST_BASE) != _U_G + 0x04
+
+
+def test_looks_like_node_uses_array_range_then_vtable():
+    b = CemuMemoryBridge()
+    b._inv_base = _HOST_BASE + _INV_G
+    assert b._looks_like_node(_U_G, _HOST_BASE) is True          # dans le tableau
+    b._read = lambda addr, size: _u32(b._POUCH_VTABLE)           # type: ignore[assignment]
+    assert b._looks_like_node(0x0700_0000, _HOST_BASE) is True   # hors tableau, vtable PouchItem
+    b._read = lambda addr, size: _u32(0x1234_5678)               # type: ignore[assignment]
+    assert b._looks_like_node(0x0700_0000, _HOST_BASE) is False  # ni l'un ni l'autre
+
+
+def test_integrity_ok_on_ring_with_unscanned_node():
+    """La marche d'intégrité compte les nœuds NON scannés (2 ici) — plus de faux positif
+    de « liste incohérente » sur une poche fragmentée."""
+    a = _make_node(_HOST_BASE + _A_G, _A_G)
+    b = _bridge_ring_with_unscanned_node(count=2)
+    assert b._list_integrity_ok([a], _HOST_BASE) is True
+
+
+# ── rollback : un splice avorté rend le nœud à la free-list ───────────────────
+#
+# Avant, un échec d'écriture APRÈS le retrait de la free-list laissait F dans AUCUNE des
+# deux listes (nœud perdu, free-count faux), et un nœud à demi écrit que le scan suivant
+# pouvait reprendre.
+
+def test_free_relink_restores_node_and_neighbours():
+    F_G, P_G, N_G = 0x4100_0000, 0x4100_1000, 0x4100_2000
+    f_link = F_G + 0x04
+    writes: dict[int, bytes] = {}
+    b = CemuMemoryBridge()
+    b._free_sent_g = _SENT_G
+    b._read = lambda addr, size: _u32(3)                      # type: ignore[assignment]
+    b._write = lambda addr, data: (writes.__setitem__(addr, data), True)[1]  # type: ignore
+
+    b._free_relink(F_G, P_G, N_G, _HOST_BASE)
+
+    assert writes[_HOST_BASE + F_G + 0x04] == _u32(N_G)       # F.next restauré
+    assert writes[_HOST_BASE + F_G + 0x08] == _u32(P_G)       # F.prev restauré
+    assert writes[_HOST_BASE + F_G + 0x0C] == _u32(0xFFFFFFFF)  # F re-marqué LIBRE
+    assert writes[_HOST_BASE + F_G + 0x28] == b"\x00" * 64    # nom effacé
+    assert writes[_HOST_BASE + P_G] == _u32(f_link)           # voisins re-chaînés sur F
+    assert writes[_HOST_BASE + N_G + 4] == _u32(f_link)
+    assert writes[_HOST_BASE + _SENT_G + 0x18] == struct.pack(">i", 4)  # free-count rendu
+
+
+# ── free-list : ne JAMAIS la prendre pour la liste active (relecteur, 2026-09-09) ──
+#
+# La free-list est le SECOND sead::OffsetList du même objet (S+0x10) : même forme, hors du
+# tableau de nœuds, sans vtable PouchItem — l'identification positive ne l'en distingue pas.
+# Si le nœud de départ a été libéré entre le scan et la marche (le joueur consomme l'item),
+# on part dans la chaîne libre et on aboutit à S+0x10 ; `mCount += 1` irait alors écrire
+# dans le COMPTEUR DE LA FREE-LIST pendant qu'on splice dans la liste active.
+
+_FREE_SENT_G = _SENT_G + 0x10
+
+
+def test_sentinel_refuses_when_start_node_was_freed():
+    """Nœud de départ rendu à la free-list → None (splice reporté), jamais S+0x10."""
+    a = _make_node(_HOST_BASE + _A_G, _A_G)
+    mem = {
+        (_HOST_BASE + _A_G + 0x0C, 4): _u32(0xFFFFFFFF),        # A est LIBRE désormais
+        (_HOST_BASE + _A_G + 0x04, 4): _u32(_FREE_SENT_G),      # …et chaîné à la free-list
+        (_HOST_BASE + _FREE_SENT_G, 12): _u32(_A_G + 0x04) + _u32(_A_G + 0x04) + _u32(9),
+    }
+    b = CemuMemoryBridge()
+    b._inv_base = _HOST_BASE + _INV_G
+    b._read = lambda addr, size: mem.get((addr, size))  # type: ignore[assignment]
+    assert b._find_list_sentinel([a], _HOST_BASE) is None
+
+
+def test_sentinel_refuses_when_walk_enters_a_free_node():
+    """Un nœud LIBRE rencontré en route → None (on est entré dans la chaîne libre)."""
+    a = _make_node(_HOST_BASE + _A_G, _A_G)
+    mem = {
+        (_HOST_BASE + _A_G + 0x0C, 4): _u32(0),                 # A actif
+        (_HOST_BASE + _A_G + 0x04, 4): _u32(_U_G + 0x04),       # A → U
+        (_HOST_BASE + _U_G + 0x0C, 4): _u32(0xFFFFFFFF),        # U est LIBRE
+        (_HOST_BASE + _U_G + 0x04, 4): _u32(_FREE_SENT_G),
+        (_HOST_BASE + _FREE_SENT_G, 12): _u32(_U_G + 0x04) + _u32(_U_G + 0x04) + _u32(9),
+    }
+    b = CemuMemoryBridge()
+    b._inv_base = _HOST_BASE + _INV_G
+    b._read = lambda addr, size: mem.get((addr, size))  # type: ignore[assignment]
+    assert b._find_list_sentinel([a], _HOST_BASE) is None
+
+
+def test_free_relink_does_not_credit_a_decrement_that_never_happened():
+    """`_free_sent_g` non armé (décrément jamais effectué) → aucun crédit du free-count.
+    Sinon le jeu croirait disposer d'un nœud libre de plus qu'en réalité."""
+    writes: dict = {}
+    b = CemuMemoryBridge()
+    b._free_sent_g = None
+    b._read = lambda addr, size: _u32(3)                      # type: ignore[assignment]
+    b._write = lambda addr, data: (writes.__setitem__(addr, data), True)[1]  # type: ignore
+    b._free_relink(0x4100_0000, 0x4100_1000, 0x4100_2000, _HOST_BASE)
+    assert _HOST_BASE + _SENT_G + 0x18 not in writes
+
+
+# ── live_create_item : l'invariant « False ⇒ mémoire du jeu INTACTE » ────────────
+#
+# L'appelant (providers/save_file.py) REJOUE la spec quand live_create_item renvoie False.
+# Si un abandon pouvait laisser une mutation derrière lui, la reprise créait un 2e exemplaire
+# sur une liste déjà modifiée. Tout ce qui peut échouer doit donc échouer AVANT la 1re
+# écriture — c'est ce que ces tests verrouillent.
+
+_SPLICE_A_G = _INV_G - 0x20                       # ancre : arme active, slot 0
+_SPLICE_F_G = _INV_G - 0x20 + _STRIDE             # nœud LIBRE cible, slot 1
+
+
+def _splice_bridge(recip_ok: bool = True, fail_write_at: int = -1):
+    """Bridge minimal qui pilote le VRAI chemin de splice de live_create_item.
+
+    Insertion en QUEUE : l'ancre est A, son successeur est la sentinelle. `fail_write_at`
+    = index (0-based) de l'écriture qui échoue, -1 = toutes réussissent.
+    """
+    b = CemuMemoryBridge()
+    b._inv_base = _HOST_BASE + _INV_G
+    b._heap_base = _HOST_BASE
+    a = _make_node(_HOST_BASE + _SPLICE_A_G, _SPLICE_A_G, typ=0, name="Weapon_Sword_ZZZ")
+    f = _make_node(_HOST_BASE + _SPLICE_F_G, _SPLICE_F_G, typ=0)
+    f = {**f, "name": "", "type": 0xFFFFFFFF}
+    nodes = [a, f]
+    anchor_link = _SPLICE_A_G + 0x04
+    f_link = _SPLICE_F_G + 0x04
+
+    mem = {
+        (_HOST_BASE + _SPLICE_F_G + 0x0C, 4): _u32(0xFFFFFFFF),      # F libre (2 lectures)
+        (_HOST_BASE + anchor_link, 4): _u32(_SENT_G),                # A.next → sentinelle
+        (_HOST_BASE + _SENT_G, 8): b"\x00" * 8,
+        (_HOST_BASE + _SENT_G + 4, 4): _u32(anchor_link if recip_ok else 0x0BAD_0000),
+        (_HOST_BASE + _SPLICE_A_G, 4): _u32(b._POUCH_VTABLE),        # ancre vivante
+        (_HOST_BASE + _SPLICE_A_G + 0x0C, 4): _u32(0),
+        (_HOST_BASE + _SPLICE_F_G + 0x04, 4): _u32(_FREE_SENT_G),    # F.next (free-list)
+        (_HOST_BASE + _SPLICE_F_G + 0x08, 4): _u32(_FREE_SENT_G),    # F.prev
+        (_HOST_BASE + _FREE_SENT_G + 4, 4): _u32(f_link),            # r1
+        (_HOST_BASE + _FREE_SENT_G, 4): _u32(f_link),                # r2
+        (_HOST_BASE + _SENT_G + 0x18, 4): struct.pack(">i", 5),      # free-count
+        (_HOST_BASE + _SENT_G + 0x08, 4): struct.pack(">i", 1),      # mCount
+    }
+    writes: dict = {}
+    order: list = []
+
+    def _read(addr, size):
+        return mem.get((addr, size))
+
+    def _write(addr, data):
+        if fail_write_at >= 0 and len(order) == fail_write_at:
+            order.append(addr)
+            return False
+        order.append(addr)
+        writes[addr] = data
+        return True
+
+    b._read = _read                                             # type: ignore[assignment]
+    b._write = _write                                           # type: ignore[assignment]
+    b._refresh_inv_from_static = lambda: True                   # type: ignore
+    b._scan_pouch_nodes = lambda inv_base=None: nodes           # type: ignore
+    b._derive_heap_base = lambda ns: _HOST_BASE                 # type: ignore
+    b.live_find_item = lambda name: None                        # type: ignore
+    b.read_flag = lambda name: 8                                # type: ignore
+    b._find_list_sentinel = lambda sr, base: _SENT_G            # type: ignore
+    b._list_integrity_ok = lambda sr, base: True                # type: ignore
+    b._last_pouch_sig = ("Weapon_Sword_ZZZ", "")
+    b._sig_changed_at = 0.0                                     # poche calme depuis longtemps
+    b._last_integrity_check = time.monotonic()                  # saute le contrôle périodique
+    return b, writes, order, anchor_link, f_link
+
+
+def test_create_aborts_without_touching_memory_when_anchor_not_reciprocal():
+    """Ancre non réciproque (liste modifiée sous nos pieds) → False ET ZÉRO écriture."""
+    b, writes, order, _, _ = _splice_bridge(recip_ok=False)
+    assert b.live_create_item("Weapon_Sword_502", 0, 0, 10) is False
+    assert writes == {}, f"la mémoire du jeu a été modifiée malgré l'abandon : {writes}"
+    assert order == []
+
+
+def test_create_publishes_in_the_documented_order():
+    """Contenu de F, puis lien ARRIÈRE du successeur, puis PUBLICATION du lien avant."""
+    b, writes, order, anchor_link, f_link = _splice_bridge()
+    assert b.live_create_item("Weapon_Sword_502", 0, 0, 10) is True
+    # 0-1 : retrait de la free-list · 2 : free-count · 3-5 : contenu, arrière, publication
+    splice = order[3:6]
+    assert splice == [_HOST_BASE + _SPLICE_F_G,          # contenu de F
+                      _HOST_BASE + _SENT_G + 4,          # prev du successeur (queue)
+                      _HOST_BASE + anchor_link]          # publication EN DERNIER
+    assert writes[_HOST_BASE + anchor_link] == _u32(f_link)
+
+
+def test_create_rolls_back_and_never_publishes_when_node_write_fails():
+    """Échec d'écriture du CONTENU → F rendu à la free-list, AUCUNE publication.
+
+    Avant, `ok &= self._write(...)` n'était pas court-circuité : un nœud dont l'écriture
+    avait échoué était publié quand même dans la liste du jeu.
+    """
+    b, writes, order, anchor_link, f_link = _splice_bridge(fail_write_at=3)
+    assert b.live_create_item("Weapon_Sword_502", 0, 0, 10) is False
+    assert _HOST_BASE + anchor_link not in writes, "nœud publié malgré l'échec d'écriture"
+    # rollback : F re-marqué libre et re-chaîné
+    assert writes[_HOST_BASE + _SPLICE_F_G + 0x0C] == _u32(0xFFFFFFFF)
+    assert writes[_HOST_BASE + _SPLICE_F_G + 0x04] == _u32(_FREE_SENT_G)
+    assert writes[_HOST_BASE + _FREE_SENT_G + 4] == _u32(f_link)
