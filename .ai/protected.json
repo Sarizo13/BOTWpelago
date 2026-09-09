@@ -1,0 +1,26 @@
+{
+  "_lisez_moi": [
+    "Ce qui ne doit JAMAIS partir de CE PROJET vers un service d'IA distant.",
+    "Se CUMULE avec %USERPROFILE%\\.ai\\protected.json (qui, sur cette machine, ne",
+    "filtre aucun chemin — décision tracée du 2026-09-09). Un fichier de projet",
+    "peut DURCIR, jamais alléger.",
+    "Le motif pplx-* vise la clé API Perplexity en clair dans .mcp.json : le",
+    "fichier est gitignoré et n'a jamais été commité, mais il est sur le disque et",
+    "un agent qui cite '.mcp.json' ferait sortir la clé.",
+    "Relancer gen-bridge-settings après toute modification."
+  ],
+
+  "chemins_interdits": [
+    "D:/Project arch BOTW/.mcp.json"
+  ],
+
+  "exceptions": [],
+
+  "motifs_interdits": [
+    "pplx-[A-Za-z0-9]{20,}",
+    "-----BEGIN [A-Z ]*PRIVATE KEY-----",
+    "\\bAKIA[0-9A-Z]{16}\\b"
+  ],
+
+  "refuser_emails": true
+}
