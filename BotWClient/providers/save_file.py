@@ -877,6 +877,9 @@ class DeferredSaveInjector(ItemInjector):
         self._last_companion_full_log = 0.0  # rate-limit « progression en attente d'un slot »
         # Plans _deliver_max_stat interrompus, par stat (reprise sans double crédit).
         self._max_stat_plans: dict[str, dict] = {}
+        # Livraisons lourdes du cycle courant (_inject_pending) : le reste du budget
+        # MAX_DELIVER_PER_FLUSH revient à _deliver_companion_pouch, appelé juste après.
+        self._heavy_this_flush = 0
 
     def _resolve(self) -> Optional[Path]:
         """Return the current game_data.sav (slot-dir aware)."""
@@ -1094,16 +1097,25 @@ class DeferredSaveInjector(ItemInjector):
         b = self._bridge
         if not (b and b.is_attached and b.has_live_inventory):
             return
+        # Mêmes garde-fous que les autres créations live : commutateur, pool de nœuds libres,
+        # et budget du cycle PARTAGÉ avec _inject_pending (sinon jusqu'à 19 créations d'un coup).
+        # Le reste part aux cycles suivants (create seulement si absent → pas de doublon).
+        if not _LIVE_CREATE_ENABLED or b.pool_exhausted:
+            return
+        budget = MAX_DELIVER_PER_FLUSH - self._heavy_this_flush
         for ap_id, items in _COMPANION_POUCH.items():
             if ap_id not in self._received:
                 continue
             for iname in items:
+                if budget <= 0:
+                    return
                 if b.live_find_item(iname) is None:
                     info = pouch_item_info(iname) or {}
                     typ = info.get("type", 9)              # défaut objet-clé (type 9)
                     # arme/arc/bouclier : value = durabilité ; armures/objets-clés : 1
                     val = info.get("life", 1) if typ in (0, 1, 3) else 1
                     if b.live_create_item(iname, typ, info.get("sub"), val):
+                        budget -= 1
                         log.info("  [Live] %s livré (instantané ; flag associé au rechargement)",
                                  iname)
                         # bandeau natif (nom localisé par le jeu) — la paravoile/les capacités/
@@ -1151,6 +1163,7 @@ class DeferredSaveInjector(ItemInjector):
                                    actions=acts)
 
     def _inject_pending(self) -> list[InjectionSpec]:
+        self._heavy_this_flush = 0
         with self._queue_lock:
             snapshot = list(self._queue)
         if not snapshot:
@@ -1229,6 +1242,7 @@ class DeferredSaveInjector(ItemInjector):
             else:
                 log.info("[Pending] %d objet(s) en attente — lance Cemu/BotW (admin) ou "
                          "passe au menu titre.", deferred)
+        self._heavy_this_flush = heavy
         # Seul queue_item modifie la file pendant ce temps, et uniquement par append : ce qui
         # dépasse le snapshot est arrivé pendant la livraison → conservé derrière le reste.
         with self._queue_lock:
