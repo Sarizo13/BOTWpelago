@@ -373,7 +373,9 @@
       sanctuaires du plateau pré-clearés et que `DungeonClearCounter` reste à 0 sur partie
       moddée → un seuil de 117-120 produisait une seed **ingagnable**. `range_end = 116`
       + test de non-régression.
-- [ ] **Constats de la review projet Codex (2026-09-09) — À VÉRIFIER un par un.**
+- [x] **Constats de la review projet Codex (2026-09-09) — les 12 vérifiés et CORRIGÉS
+      (2026-10-27, tests unitaires ; run in-game encore à faire). Suivis ouverts ci-dessous
+      (#5, #10, #12).**
       Codex n'a pas pu lire le dépôt (exécuteur bloqué) : il a travaillé sur les sources
       JOINTES au prompt (worlds/botw/*, BotWClient.py, save_file.py, item_map.py).
       `memory_injector.py` et les JSON ne lui ont PAS été fournis dans cette passe. Ces
