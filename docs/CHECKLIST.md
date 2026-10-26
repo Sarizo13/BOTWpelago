@@ -422,6 +422,12 @@
           mode client `shrines` n'exige aucun flag → la génération évalue un objectif
           différent de celui qui déclenche `StatusUpdate(30)`. **Vérifié : l'écart existe.**
           Plus restrictif que nécessaire (pas insoluble), mais l'option est de fait ignorée.
+          **✅ CORRIGÉ (2026-10-27, e69be95)** : `rules.goal_reached` suit `goal_mode` —
+          shrines = aucun item ; full = Bow of Light + Master Sword (si randomisée) + 4
+          Créatures atteignables (capacités Champions plus exigées, le client ne les lit pas).
+          Génération réelle validée dans les deux modes (seed 42). Test :
+          `tests/test_goal_rule.py`. Reste hors périmètre : comptage des sanctuaires en logique
+          (ne compte qu'avec `accessibility: minimal`).
       12. Accès au bridge depuis le thread réseau (`BotWClient.py`) pendant que `flush()`
           l'utilise sur le worker — sérialisation à instruire.
       Priorité proposée : 1, 2, 4 (perte/corruption) puis 3, 8, 9, 10 (cohérence de run).
