@@ -513,14 +513,7 @@ class BotWClient:
             # localisée), le strip était perdu et le +1 restait → "certains rubis pas retirés".
             # On ne solde la dette QUE si live_add_rupees réussit vraiment (retour non-None).
             if _RUPEE_STRIP_ENABLED and self._pending_rupee_strip:
-                bridge = self.injector._bridge
-                if bridge and bridge.is_attached and bridge.has_live_inventory:
-                    n = self._pending_rupee_strip
-                    total = bridge.live_add_rupees(-n * PLACEHOLDER_RUPEE_VALUE)
-                    if total is not None:
-                        self._pending_rupee_strip = 0
-                        log.info("[Coffre AP] %d rubis-placeholder retiré(s)  (portefeuille: %s)",
-                                 n * PLACEHOLDER_RUPEE_VALUE, total)
+                await self._settle_rupee_strip()
 
             required = self.slot_data.get("required_shrine_count", 20)
             goal_mode = self.slot_data.get("goal_mode", "shrines")
@@ -540,6 +533,25 @@ class BotWClient:
                 if bridge and bridge.is_attached and bridge.poll_player_death():
                     if time.monotonic() >= self._ignore_death_until:
                         await self._send_death(ws)
+
+    async def _settle_rupee_strip(self) -> None:
+        n = self._pending_rupee_strip
+        total = await asyncio.get_event_loop().run_in_executor(
+            self._exec, self._strip_rupees, n)
+        if total is not None:
+            self._pending_rupee_strip -= n
+            log.info("[Coffre AP] %d rubis-placeholder retiré(s)  (portefeuille: %s)",
+                     n * PLACEHOLDER_RUPEE_VALUE, total)
+
+    def _strip_rupees(self, n: int) -> int | None:
+        """Sur le WORKER mémoire (sérialisé avec flush) et seulement si delivery_ready : écrire
+        le portefeuille pendant un load / avant la tablette = la classe de crash du 14/07, et
+        depuis la boucle réseau c'était en concurrence avec les livraisons de rubis du flush."""
+        bridge = self.injector._bridge
+        if not (bridge and bridge.is_attached and bridge.has_live_inventory
+                and bridge.delivery_ready):
+            return None
+        return bridge.live_add_rupees(-n * PLACEHOLDER_RUPEE_VALUE)
 
     # ── DeathLink helpers ───────────────────────────────────────────────────────
 
@@ -570,7 +582,9 @@ class BotWClient:
         orbs = self.provider.get_spirit_orbs()
         bridge = getattr(self.injector, "_bridge", None)
         if bridge is not None and getattr(bridge, "has_live_inventory", False):
-            live_orbs = bridge.live_get_item_qty("Obj_DungeonClearSeal")
+            # Parcours de la poche → sur le worker mémoire, jamais pendant un splice du flush.
+            live_orbs = await asyncio.get_event_loop().run_in_executor(
+                self._exec, bridge.live_get_item_qty, "Obj_DungeonClearSeal")
             if live_orbs is not None and 0 <= live_orbs <= 900:
                 orbs = live_orbs
         state = {
