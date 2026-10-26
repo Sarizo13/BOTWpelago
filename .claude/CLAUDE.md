@@ -105,7 +105,9 @@ reste TODO-9 : valider `memory_injector` sur Cemu 2.x (si upgrade).
 - Use `Location_MainField_Dungeon*` flag names (old, wrong)
 
 ## Testing
-- Unit: `python -m pytest tests/` (data-integrity + save-parser)
+- Setup: `pip install -r requirements-dev.txt`
+- Unit: `python -m pytest` (testpaths = tests/ via pyproject.toml — data, save-parser, baseline, memory_injector)
+- Lint: `ruff check worlds/botw tests`
 - AP generation : rebuild apworld → `C:\ProgramData\Archipelago\custom_worlds\botw.apworld`,
   puis `ArchipelagoGenerate.exe --player_files_path <dossier du yaml>` (cf. tools/play_local.py).
   ⚠️ play_local.py complet WIPE la save Cemu et héberge un serveur — pour tester la génération
