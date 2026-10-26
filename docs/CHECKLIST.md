@@ -395,6 +395,12 @@
       3. `_received` repart VIDE au redémarrage (l'état ne contient que `item_index`) : si
          `Connected.items` est absent, la rétention peut remettre à zéro des flags de
          progression déjà obtenus.
+         **✅ CORRIGÉ (2026-10-27, 12f0e5e)** — pire qu'annoncé : `Connected` n'a JAMAIS de
+         champ `items` (protocole AP 0.6.7), donc CHAQUE redémarrage du client vidait
+         `_received` → Paravoile/Épée/capacités remis à 0 (reproduit sur save). Items
+         renvoyés (idx < item_index) marqués reçus sans être remis en file + `_received`
+         persisté dans `ap_client_state.json`. Test : `tests/test_received_restart.py`.
+         ⚠️ Aggrave #9 tant que l'état n'est pas lié à la seed.
       4. `persist_item_index()` avant la persistance de `queue_item()` : un arrêt entre les
          deux perd la réception. Les deux fichiers d'état sont écrits par `write_text()`
          direct (JSON tronqué → `_load_queue()` renvoie une file vide en silence).
