@@ -13,6 +13,7 @@ import dataclasses
 import json
 import logging
 import struct
+import threading
 import time
 from pathlib import Path
 from typing import Optional
@@ -799,6 +800,9 @@ class DeferredSaveInjector(ItemInjector):
         self._queue_path    = queue_dir / "ap_pending_items.json"
         self._state_path    = queue_dir / "ap_client_state.json"
         self._queue:        list[dict] = self._load_queue()
+        # queue_item (boucle réseau) et _inject_pending (worker mémoire) touchent la file en
+        # parallèle → verrou, sinon un item reçu pendant une livraison est écrasé (perdu).
+        self._queue_lock    = threading.Lock()
         self._received:     set[int]   = set()
         self._last_mtime    = 0.0
         self._last_change_time = time.monotonic()
@@ -853,8 +857,9 @@ class DeferredSaveInjector(ItemInjector):
             log.info("[Received] %s (logical — no save injection)", spec.ap_item_name)
             return
         entry = {"ap_item_id": spec.ap_item_id, "ap_item_name": spec.ap_item_name}
-        self._queue.append(entry)
-        self._persist_queue()
+        with self._queue_lock:
+            self._queue.append(entry)
+            self._persist_queue()
         log.info("[Queue +%d] %s", len(self._queue), spec.ap_item_name)
 
     def mark_received(self, ap_item_id: int) -> None:
@@ -1044,7 +1049,9 @@ class DeferredSaveInjector(ItemInjector):
                                    actions=acts)
 
     def _inject_pending(self) -> list[InjectionSpec]:
-        if not self._queue:
+        with self._queue_lock:
+            snapshot = list(self._queue)
+        if not snapshot:
             return []
         p = self._resolve()
         if p is None:
@@ -1065,7 +1072,7 @@ class DeferredSaveInjector(ItemInjector):
         # (granularité d'origine préservée pour les relances).
         counts: dict[int, int] = {}
         ordered: list[dict] = []
-        for entry in self._queue:
+        for entry in snapshot:
             spec = _get_spec(entry["ap_item_id"])
             if self._spec_coalescible(spec):
                 if entry["ap_item_id"] in counts:
@@ -1120,8 +1127,11 @@ class DeferredSaveInjector(ItemInjector):
             else:
                 log.info("[Pending] %d objet(s) en attente — lance Cemu/BotW (admin) ou "
                          "passe au menu titre.", deferred)
-        self._queue = remaining
-        self._persist_queue()
+        # Seul queue_item modifie la file pendant ce temps, et uniquement par append : ce qui
+        # dépasse le snapshot est arrivé pendant la livraison → conservé derrière le reste.
+        with self._queue_lock:
+            self._queue = remaining + self._queue[len(snapshot):]
+            self._persist_queue()
         # Une grosse rafale a pu faire réallouer l'inventaire en cours de route → BotW reset les
         # nœuds PRÉEXISTANTS à leur qty d'origine (les bumps live sont perdus, ex: l'orbe revient
         # à 22). On ré-assert les qty cibles ; quand la file est vidée, dernier passage puis on
