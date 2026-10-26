@@ -875,6 +875,8 @@ class DeferredSaveInjector(ItemInjector):
         self._last_banked_seal = 0     # dernière valeur DungeonClearSealNum bankée dans la save
         self._last_not_ready_log = 0.0  # rate-limit du log « jeu pas prêt » (pré-tablette/load)
         self._last_companion_full_log = 0.0  # rate-limit « progression en attente d'un slot »
+        # Plans _deliver_max_stat interrompus, par stat (reprise sans double crédit).
+        self._max_stat_plans: dict[str, dict] = {}
 
     def _resolve(self) -> Optional[Path]:
         """Return the current game_data.sav (slot-dir aware)."""
@@ -1438,6 +1440,18 @@ class DeferredSaveInjector(ItemInjector):
         amount = max(1, int(action.amount))
         is_f32 = cfg["kind"] == "f32"
 
+        # Reprise d'un plan interrompu (flag partiel / rubis indisponibles) : on le TERMINE au
+        # lieu de re-planifier depuis un max déjà monté (fiole re-créditée, rubis doublés).
+        # La quantité coalescée a pu grandir entre-temps → seul le reliquat est re-planifié.
+        memo = self._max_stat_plans.get(action.stat)
+        if memo is not None:
+            if not self._apply_max_stat_plan(memo, action, spec, cfg, memory=memory, p=p):
+                return False
+            del self._max_stat_plans[action.stat]
+            amount -= memo["amount"]
+            if amount <= 0:
+                return True
+
         # ── lecture du max courant ──
         if memory:
             cur = (self._bridge.read_flag_f32(cfg["flag"]) if is_f32
@@ -1473,37 +1487,54 @@ class DeferredSaveInjector(ItemInjector):
             return ok
 
         new_val, applied, overflow = _plan_max_stat(cur, cfg["per_unit"], cfg["cap"], amount)
+        memo = {"amount": amount, "cur": cur, "new_val": new_val, "applied": applied,
+                "overflow": overflow, "written": set(), "rupees_paid": overflow == 0}
+        self._max_stat_plans[action.stat] = memo
+        if not self._apply_max_stat_plan(memo, action, spec, cfg, memory=memory, p=p):
+            return False                      # plan conservé : la reprise le terminera
+        del self._max_stat_plans[action.stat]
+        return True
 
-        ok = True
-        if applied > 0:
-            flags = [cfg["flag"]] + list(cfg.get("also", []))
-            if memory:
-                for fn in flags:
-                    ok = ok and (self._bridge.write_flag_f32(fn, new_val) if is_f32
-                                 else self._bridge.write_flag(fn, int(new_val) & 0xFFFFFFFF))
-            else:
-                bits = (struct.unpack(">I", struct.pack(">f", new_val))[0] if is_f32
-                        else int(new_val) & 0xFFFFFFFF)
-                for fn in flags:
-                    ok = ok and _write_flag_to_save(p, crc32_id(fn), bits)
-            if ok:
-                log.info("  [MaxStat] %s : +%d %s (max %s %s→%s, RECHARGE pour appliquer)",
-                         spec.ap_item_name, applied, action.stat, cfg["flag"],
-                         _fmt_stat(cur, is_f32), _fmt_stat(new_val, is_f32))
+    def _apply_max_stat_plan(self, memo: dict, action, spec, cfg: dict, *, memory: bool,
+                             p: Path | None) -> bool:
+        """Exécute (ou termine) un plan de _deliver_max_stat. Chaque étape faite est notée
+        dans `memo` (flags écrits, rubis payés) → une reprise ne refait jamais une étape."""
+        is_f32 = cfg["kind"] == "f32"
+        new_val, applied = memo["new_val"], memo["applied"]
+        flags = [cfg["flag"]] + list(cfg.get("also", []))
+        if applied > 0 and len(memo["written"]) < len(flags):
+            bits = (struct.unpack(">I", struct.pack(">f", new_val))[0] if is_f32
+                    else int(new_val) & 0xFFFFFFFF)
+            for fn in flags:
+                if fn in memo["written"]:
+                    continue
                 if memory:
-                    # bandeau natif : nom localisé par le jeu (actor du réceptacle / de la fiole)
-                    actor = "Obj_HeartUtuwa_A_01" if action.stat == "heart" \
-                        else "Obj_StaminaUtuwa_A_01"
-                    self._bridge.toast_enqueue(actor, applied)
-        if ok and overflow > 0:
-            rupees = overflow * action.overflow_rupees
+                    ok = (self._bridge.write_flag_f32(fn, new_val) if is_f32
+                          else self._bridge.write_flag(fn, int(new_val) & 0xFFFFFFFF))
+                else:
+                    ok = p is not None and _write_flag_to_save(p, crc32_id(fn), bits)
+                if not ok:
+                    return False
+                memo["written"].add(fn)
+            log.info("  [MaxStat] %s : +%d %s (max %s %s→%s, RECHARGE pour appliquer)",
+                     spec.ap_item_name, applied, action.stat, cfg["flag"],
+                     _fmt_stat(memo["cur"], is_f32), _fmt_stat(new_val, is_f32))
+            if memory:
+                # bandeau natif : nom localisé par le jeu (actor du réceptacle / de la fiole)
+                actor = "Obj_HeartUtuwa_A_01" if action.stat == "heart" \
+                    else "Obj_StaminaUtuwa_A_01"
+                self._bridge.toast_enqueue(actor, applied)
+        if not memo["rupees_paid"]:
+            rupees = memo["overflow"] * action.overflow_rupees
             log.info("  [MaxStat] %s : %d unité(s) au-delà du plafond → +%d rubis",
-                     spec.ap_item_name, overflow, rupees)
-            ok = self._award_rupees(rupees, memory=memory, p=p)
-            if ok and memory:
+                     spec.ap_item_name, memo["overflow"], rupees)
+            if not self._award_rupees(rupees, memory=memory, p=p):
+                return False
+            memo["rupees_paid"] = True
+            if memory:
                 self._bridge.toast_enqueue_text(
                     f"{spec.ap_item_name} au max — converti en {rupees} rubis.")
-        return ok
+        return True
 
     def _award_rupees(self, amount: int, *, memory: bool, p: Optional[Path] = None) -> bool:
         """Crédite `amount` rubis : live (portefeuille câblé) si Cemu attaché, sinon dans la
