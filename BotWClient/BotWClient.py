@@ -624,6 +624,10 @@ def _parser() -> argparse.ArgumentParser:
                         "connecter — tous les items seront re-livrés à la reconnexion. "
                         "(La baseline des checks suit la seed automatiquement : un --reset "
                         "en cours de run ne mange plus les checks déjà faits.)")
+    p.add_argument("--ignore-existing-checks", action="store_true",
+                   help="Save réutilisée d'une autre partie : à la 1re connexion d'une room "
+                        "vierge, les checks déjà vrais dans la save sont ignorés au lieu "
+                        "d'être émis (par défaut ils sont émis).")
     p.add_argument("--rando-log", default=None, metavar="PATH",
                    help="Path to the Melonspeedruns randomizer spoiler-log.txt. "
                         "Auto-detected from the Cemu graphicPacks folder if omitted.")
@@ -673,7 +677,8 @@ def _ws_url(connect: str) -> str:
 
 def build_client(connect: str, name: str, password: str = "",
                  cemu: Optional[str] = None, slot: Optional[str] = None,
-                 save: Optional[str] = None, rando_log: Optional[str] = None):
+                 save: Optional[str] = None, rando_log: Optional[str] = None,
+                 ignore_existing: bool = False):
     """
     Construit un BotWClient prêt à `.run()`, en localisant la save, le spoiler-log et
     en attachant le bridge mémoire si Cemu tourne. Réutilisé par le CLI et par l'appli GUI.
@@ -700,7 +705,7 @@ def build_client(connect: str, name: str, password: str = "",
         log.info("[Mem] Cemu non attache pour l'instant — ré-attache auto en arrière-plan "
                  "(voie save-file en attendant, reload requis)")
 
-    provider = SaveFileProvider(provider_root, bridge=bridge)
+    provider = SaveFileProvider(provider_root, bridge=bridge, ignore_existing=ignore_existing)
     injector = DeferredSaveInjector(provider_root, rando=rando, bridge=bridge)
     client   = BotWClient(
         server_url = _ws_url(connect),
@@ -806,6 +811,7 @@ def main() -> None:
         connect=args.connect, name=args.name, password=args.password,
         cemu=args.cemu, slot=args.slot, save=args.save,
         rando_log=getattr(args, "rando_log", None),
+        ignore_existing=args.ignore_existing_checks,
     )
     asyncio.run(client.run())
 

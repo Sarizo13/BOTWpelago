@@ -586,8 +586,11 @@ class SaveFileProvider(GameStateProvider):
                                                        so Cemu's rotation is handled.
     """
 
-    def __init__(self, save_path: Path, bridge=None) -> None:
+    def __init__(self, save_path: Path, bridge=None, ignore_existing: bool = False) -> None:
         self._root      = save_path          # exact file OR slot dir
+        # Opt-in (--ignore-existing-checks) : room vierge sur une VIEILLE save → l'existant
+        # est baseliné au lieu d'être émis.
+        self._ignore_existing = ignore_existing
         self._bridge    = bridge             # CemuMemoryBridge : lecture game_data EN MÉMOIRE
         self._active:   Optional[Path] = None  # currently tracked file
         self._mtime     = 0.0
@@ -690,10 +693,17 @@ class SaveFileProvider(GameStateProvider):
             if missed:
                 log.info("[Baseline] %d check(s) faits hors-couverture seront ÉMIS "
                          "(inconnus du serveur) : %s", len(missed), missed)
+        elif done and self._ignore_existing:
+            log.warning("[Baseline] room vierge : %d check(s) existants IGNORÉS "
+                        "(--ignore-existing-checks). Pour les émettre : supprime "
+                        "ap_baseline.json et relance SANS cette option.", len(done))
         elif done:
+            # Room vierge : ces checks ont été faits avant le 1er poll (client lancé en
+            # retard) → ÉMIS. Les baseliner les perdait pour de bon (constat Codex #10).
             log.warning("[Baseline] room vierge + save déjà entamée : %d check(s) existants "
-                        "IGNORÉS pour cette seed (supprime ap_baseline.json pour les émettre)",
-                        len(done))
+                        "ÉMIS. Save réutilisée d'une autre partie ? Lance le client avec "
+                        "--ignore-existing-checks AVANT la 1re connexion.", len(done))
+            done = []
         self._reported.update(done)
         try:
             self._baseline_path.write_text(

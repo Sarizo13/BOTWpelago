@@ -11,7 +11,9 @@ Nouveau contrat :
   2. au snapshot d'une room EN COURS (le serveur connaît déjà des checks), seuls les
      checks connus du serveur sont baselinés — un flag vrai mais « missing » côté
      serveur est ÉMIS au poll suivant ;
-  3. room vierge : comportement historique (tout l'existant baseliné) + warning ;
+  3. room vierge : l'existant est ÉMIS par défaut + warning (constat Codex #10 : des checks
+     faits avant le 1er poll étaient mangés pour de bon, même en supprimant la baseline) ;
+     opt-in `--ignore-existing-checks` (vieille save réutilisée) → tout l'existant baseliné ;
   4. fichier legacy (liste nue) → re-snapshot avec la seed courante.
 """
 import json
@@ -40,19 +42,34 @@ _H = sorted(_LOC_HASH_TO_AP_ID)[:3]
 _AP = [_LOC_HASH_TO_AP_ID[h] for h in _H]
 
 
-def _provider(tmp_path, true_hashes, seed=None, checked=()):
-    p = SaveFileProvider(tmp_path)          # tmp dir : _reload() ne trouve rien → garde _save
+def _provider(tmp_path, true_hashes, seed=None, checked=(), ignore_existing=False):
+    # tmp dir : _reload() ne trouve rien → garde _save
+    p = SaveFileProvider(tmp_path, ignore_existing=ignore_existing)
     p._save = _FakeSave(true_hashes)
     p.set_server_context(seed, set(checked))
     return p
 
 
-def test_room_vierge_snapshot_all(tmp_path):
+def test_room_vierge_emet_l_existant(tmp_path):
+    # 2 sanctuaires faits AVANT le 1er poll (client lancé en retard) : émis, pas mangés
     p = _provider(tmp_path, _H[:2], seed="seed-A")
-    assert p.poll() == []                                    # tout baseliné (room vierge)
+    assert sorted(p.poll()) == sorted(_AP[:2])
     data = json.loads((tmp_path / "ap_baseline.json").read_text(encoding="utf-8"))
-    assert data["seed"] == "seed-A"
+    assert data == {"seed": "seed-A", "ids": []}
+
+
+def test_room_vierge_opt_in_ignore_l_existant(tmp_path):
+    p = _provider(tmp_path, _H[:2], seed="seed-A", ignore_existing=True)
+    assert p.poll() == []                                    # vieille save : tout baseliné
+    data = json.loads((tmp_path / "ap_baseline.json").read_text(encoding="utf-8"))
     assert sorted(data["ids"]) == sorted(_AP[:2])
+
+
+def test_opt_in_annulable_en_supprimant_la_baseline(tmp_path):
+    # le conseil du warning doit marcher : supprimer la baseline + relancer sans l'option
+    _provider(tmp_path, _H[:2], seed="seed-A", ignore_existing=True).poll()
+    (tmp_path / "ap_baseline.json").unlink()
+    assert sorted(_provider(tmp_path, _H[:2], seed="seed-A").poll()) == sorted(_AP[:2])
 
 
 def test_room_en_cours_emet_les_checks_hors_couverture(tmp_path):
@@ -66,7 +83,7 @@ def test_room_en_cours_emet_les_checks_hors_couverture(tmp_path):
 
 def test_baseline_reutilisee_meme_seed(tmp_path):
     # 1er run : snapshot {0}
-    p1 = _provider(tmp_path, _H[:1], seed="seed-A")
+    p1 = _provider(tmp_path, _H[:1], seed="seed-A", ignore_existing=True)
     p1.poll()
     # 2e run (relance client), la save a AVANCÉ ({0,1}) : baseline de seed-A réutilisée
     # → le nouveau check 1 est émis, PAS re-baseliné
@@ -77,8 +94,9 @@ def test_baseline_reutilisee_meme_seed(tmp_path):
 def test_baseline_resnapshot_si_seed_change(tmp_path):
     p1 = _provider(tmp_path, _H[:1], seed="seed-A")
     p1.poll()
-    # nouvelle seed, room vierge : re-snapshot (l'existant est re-baseliné pour CETTE seed)
-    p2 = _provider(tmp_path, _H[:2], seed="seed-B")
+    # nouvelle seed, room vierge : re-snapshot pour CETTE seed — l'existant est émis par
+    # défaut ; save réutilisée d'une autre partie → opt-in --ignore-existing-checks
+    p2 = _provider(tmp_path, _H[:2], seed="seed-B", ignore_existing=True)
     assert p2.poll() == []
     data = json.loads((tmp_path / "ap_baseline.json").read_text(encoding="utf-8"))
     assert data["seed"] == "seed-B"
