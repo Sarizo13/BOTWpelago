@@ -453,6 +453,13 @@
           (ne compte qu'avec `accessibility: minimal`).
       12. Accès au bridge depuis le thread réseau (`BotWClient.py`) pendant que `flush()`
           l'utilise sur le worker — sérialisation à instruire.
+          **✅ CORRIGÉ (2026-10-27, eca45eb)** — le vrai risque : le retrait des rubis-placeholder
+          écrivait le portefeuille depuis la boucle réseau SANS la garde `delivery_ready` (classe
+          du crash du 14/07) et en concurrence avec le flush. Retrait + lecture des orbes du
+          tracker passés sur le worker mémoire, retrait gardé par `delivery_ready`. Test :
+          `tests/test_client_bridge_thread.py`.
+          - [ ] Reste (non traité, consigne « DeathLink — ne pas toucher ») : `poll_player_death`
+            et `kill_player` tournent encore sur la boucle réseau, sans `delivery_ready`.
       Priorité proposée : 1, 2, 4 (perte/corruption) puis 3, 8, 9, 10 (cohérence de run).
 - [x] **Toast « {item} envoyé à {joueur} » (2026-07-13)** : sur PrintJSON ItemSend dont on est
       le FINDER (receveur ≠ nous) → bandeau natif à TEXTE LIBRE (`toast_enqueue_text` /
