@@ -839,7 +839,11 @@ class DeferredSaveInjector(ItemInjector):
         self._queue_lock    = threading.Lock()
         # Reçus persistés : la rétention doit les connaître dès le démarrage, avant tout
         # échange réseau (sinon elle remet à 0 Paravoile / Épée / capacités déjà obtenus).
-        self._received:     set[int]   = set(self._load_state().get("received", []))
+        state = self._load_state()
+        self._received:     set[int]   = set(state.get("received", []))
+        # Partie à laquelle appartient l'état (None = ancien format, adopté à la connexion).
+        self._state_seed:   str | None = state.get("seed")
+        self._state_slot:   str | None = state.get("slot")
         self._last_mtime    = 0.0
         self._last_change_time = time.monotonic()
         self._last_banked_orb  = 0     # dernière valeur d'orbe (pouch) bankée dans la save
@@ -880,8 +884,34 @@ class DeferredSaveInjector(ItemInjector):
     def persist_item_index(self, index: int) -> None:
         """Persist item_index (restarts don't re-queue processed items) and the received set
         (retention knows them at startup)."""
-        _write_json_atomic(self._state_path, json.dumps(
-            {"item_index": index, "received": sorted(self._received)}, ensure_ascii=False))
+        state = {"item_index": index, "received": sorted(self._received)}
+        if self._state_seed is not None:
+            state.update(seed=self._state_seed, slot=self._state_slot)
+        _write_json_atomic(self._state_path, json.dumps(state, ensure_ascii=False))
+
+    def set_server_context(self, seed: str | None, slot: str | None) -> None:
+        """Lie l'état à la partie (seed + slot AP), appelé au Connected AVANT load_item_index.
+        Profil réutilisé pour une autre partie sans --reset : l'ancien état sautait les 1res
+        réceptions, livrait l'ancienne file et donnait les gates déjà reçus (Paravoile…).
+        → état remis à zéro, ancienne file mise de côté (.old). Ancien format sans seed :
+        adopté (impossible de savoir d'où il vient ; le jeter re-livrerait tout en double)."""
+        if seed is None:
+            return
+        index = self.load_item_index()
+        if self._state_seed is not None and (self._state_seed, self._state_slot) != (seed, slot):
+            log.warning("[État] autre partie (%s/%s → %s/%s) : état AP remis à zéro, ancienne "
+                        "file mise de côté (%s.old)", self._state_seed, self._state_slot,
+                        seed, slot, self._queue_path.name)
+            index = 0
+            self._received.clear()
+            with self._queue_lock:
+                if self._queue:
+                    _write_json_atomic(self._queue_path.with_name(self._queue_path.name + ".old"),
+                                       json.dumps(self._queue, indent=2, ensure_ascii=False))
+                self._queue = []
+                self._persist_queue()
+        self._state_seed, self._state_slot = seed, slot
+        self.persist_item_index(index)
 
     # ── Public: called by client ──────────────────────────────────────────────
 
