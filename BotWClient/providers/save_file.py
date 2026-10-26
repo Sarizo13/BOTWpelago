@@ -12,6 +12,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import logging
+import os
 import struct
 import threading
 import time
@@ -496,6 +497,32 @@ def _write_atomic(path: Path, data: bytes) -> None:
     tmp.replace(path)                    # dernier essai — laisse remonter si ça échoue vraiment
 
 
+def _write_json_atomic(path: Path, text: str) -> None:
+    """État client (file d'items, item_index) : temp + os.replace. Un arrêt en cours d'écriture
+    laisse l'ancien fichier intact au lieu d'un JSON tronqué (relu ensuite comme file vide)."""
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    for _ in range(6):
+        try:
+            os.replace(tmp, path)
+            return
+        except OSError:
+            time.sleep(0.05)     # antivirus/indexeur qui tient la cible un instant
+    os.replace(tmp, path)
+
+
+def _set_aside_corrupt(path: Path) -> None:
+    """JSON illisible : on le renomme en `.corrupt` (preuve conservée, pas écrasée par la
+    prochaine persistance) et on le signale au lieu de repartir à vide en silence."""
+    aside = path.with_name(path.name + ".corrupt")
+    try:
+        os.replace(path, aside)
+    except OSError:
+        aside = path
+    log.warning("[État] %s illisible — mis de côté (%s), repart à vide. Items reçus avant "
+                "l'arrêt possiblement à re-livrer.", path.name, aside.name)
+
+
 def _write_flag_to_save(path: Path, flag_id_int: int, value: int) -> bool:
     """
     Find a flag entry (u32 flag_id, u32 value) in the save by binary search
@@ -822,14 +849,12 @@ class DeferredSaveInjector(ItemInjector):
             try:
                 return json.loads(self._queue_path.read_text(encoding="utf-8"))
             except Exception:
-                pass
+                _set_aside_corrupt(self._queue_path)
         return []
 
     def _persist_queue(self) -> None:
-        self._queue_path.write_text(
-            json.dumps(self._queue, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
+        _write_json_atomic(self._queue_path,
+                           json.dumps(self._queue, indent=2, ensure_ascii=False))
 
     def load_item_index(self) -> int:
         """Return the last saved item_index (0 if no state file exists)."""
@@ -837,15 +862,12 @@ class DeferredSaveInjector(ItemInjector):
             try:
                 return json.loads(self._state_path.read_text(encoding="utf-8")).get("item_index", 0)
             except Exception:
-                pass
+                _set_aside_corrupt(self._state_path)
         return 0
 
     def persist_item_index(self, index: int) -> None:
         """Persist item_index so restarts don't re-queue already-processed items."""
-        self._state_path.write_text(
-            json.dumps({"item_index": index}, ensure_ascii=False),
-            encoding="utf-8",
-        )
+        _write_json_atomic(self._state_path, json.dumps({"item_index": index}, ensure_ascii=False))
 
     # ── Public: called by client ──────────────────────────────────────────────
 

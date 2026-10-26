@@ -375,10 +375,12 @@ class BotWClient:
                 idx = start_idx + i
                 if idx < self.item_index:
                     continue
-                self.item_index = idx + 1
-                self.injector.persist_item_index(self.item_index)
+                # File persistée AVANT l'index : un arrêt entre les deux donne au pire un
+                # doublon renvoyé par le serveur, jamais un item perdu.
                 spec = get_spec(item["item"])
                 self.injector.queue_item(spec)
+                self.item_index = idx + 1
+                self.injector.persist_item_index(self.item_index)
                 log.info("[Item] %s%s",
                          spec.ap_item_name,
                          f"  — {spec.display_note}" if spec.display_note else "")
