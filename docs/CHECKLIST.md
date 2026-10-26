@@ -393,6 +393,10 @@
       4. `persist_item_index()` avant la persistance de `queue_item()` : un arrêt entre les
          deux perd la réception. Les deux fichiers d'état sont écrits par `write_text()`
          direct (JSON tronqué → `_load_queue()` renvoie une file vide en silence).
+         **✅ CORRIGÉ (2026-10-27, 116e698)** : écriture temp + `os.replace` des deux fichiers
+         d'état ; JSON illisible renommé en `.corrupt` + warning ; item mis en file AVANT
+         d'avancer l'index (pire cas : doublon renvoyé, jamais une perte). Test :
+         `tests/test_client_state_persist.py`.
       5. Reprise après échec partiel : `_deliver_max_stat` peut re-créditer une fiole
          (`StaminaMax` monté, `StaminaCurrentMax` échoué → nouvelle demande à +400).
       6. Voie FICHIER : une arme reçue hors ligne AJOUTE sa durabilité à une arme du même
