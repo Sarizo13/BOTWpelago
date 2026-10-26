@@ -381,6 +381,11 @@
       1. `_enforce_retention()` ne teste `cemu_process_running()` **qu'une fois** puis
          enchaîne lectures/écritures : Cemu démarré entre-temps → écriture fichier pendant
          qu'il tourne. `_write_atomic()` ne reverifie rien (gravité annoncée : haute).
+         **✅ CORRIGÉ (2026-10-27, 94d5279)** : `_write_atomic` revérifie
+         `cemu_process_running()` avant chaque remplacement ; Cemu présent → temp supprimé,
+         exception rattrapée par l'appelant (False, retenté au poll suivant). Fenêtre
+         résiduelle de quelques µs (inévitable sans verrou OS). Test :
+         `tests/test_save_write_guard.py`.
       2. Course `queue_item()` (thread réseau) vs `_inject_pending()` (worker) : la file est
          remplacée par `remaining` construit AVANT l'ajout → item reçu pendant un flush
          perdu, perte persistée, index AP déjà avancé.
