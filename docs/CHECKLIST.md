@@ -419,6 +419,11 @@
       6. Voie FICHIER : une arme reçue hors ligne AJOUTE sa durabilité à une arme du même
          nom au lieu de créer un exemplaire ; companions créés avec `life=1` (Master Sword,
          Arc de Lumière) alors que la voie mémoire lit `info["life"]`.
+         **✅ CORRIGÉ (2026-10-27, 21c4284)** — reproduit sur save synthétique (arme 30 → 50,
+         comptée livrée ; Épée créée à 1 au lieu de 40) + découverte : jusqu'à 19 slots fichier
+         créés d'un coup. Équipement (types 0,1,3-6) jamais bumpé en fichier → reporté en live ;
+         rétention fichier : slots créés pour les objets-clés type 9 seuls, épée/arc/tenues
+         livrés en live. Test : `tests/test_savefile_gear.py`.
       7. `_deliver_companion_pouch()` appelle `live_create_item()` sans consulter
          `_LIVE_CREATE_ENABLED` ni le budget `MAX_DELIVER_PER_FLUSH` : le commutateur ne coupe
          pas toutes les créations (gênant pour isoler une corruption).
