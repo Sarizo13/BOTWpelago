@@ -45,7 +45,15 @@ DEFAULT_YAML = PROJECT / "players" / "Shorizo.yaml"
 
 
 def log(msg: str = "") -> None:
-    print(msg, flush=True)
+    # La bannière contient des flèches et des accents. Quand la sortie n'est pas un
+    # terminal UTF-8 (redirection, pipe, tâche de fond → cp1252 sous Windows), un simple
+    # print() lève UnicodeEncodeError — et comme la bannière précède host(), le serveur
+    # n'était JAMAIS hébergé alors que la génération avait réussi.
+    try:
+        print(msg, flush=True)
+    except UnicodeEncodeError:
+        enc = sys.stdout.encoding or "ascii"
+        print(msg.encode(enc, "replace").decode(enc, "replace"), flush=True)
 
 
 # ── 0) suppression de l'ancienne save (fresh start) ──────────────────────────────
