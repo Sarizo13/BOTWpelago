@@ -343,6 +343,9 @@ _GAME_MANAGED_POUCH = {"Obj_DungeonClearSeal"}          # compteur d'orbes (Spir
 # Types de poche EMPILABLES (bump quantité). Les autres (armes 0/arcs 1/boucliers 3/armures 4-6)
 # sont UNIQUES → toujours un nouveau slot, jamais de bump de durabilité.
 _STACKABLE_TYPES = {2, 7, 8}
+# Équipement (arme 0, arc 1, bouclier 3, armures 4-6) : 1 nœud par exemplaire, value =
+# DURABILITÉ → jamais de bump ni de création de slot en voie fichier (live uniquement).
+_GEAR_TYPES = {0, 1, 3, 4, 5, 6}
 
 
 def _find_first_run(data: bytes, flag_id: int) -> int:
@@ -1415,6 +1418,11 @@ class DeferredSaveInjector(ItemInjector):
                     all_ok = False
 
             elif isinstance(action, InjectionSpec.AddPouchItem):
+                # Équipement : un bump ajouterait la DURABILITÉ à l'exemplaire déjà en save
+                # (pas de 2e arme, durabilité hors borne) → report, livré en live (vrai nœud).
+                if (pouch_item_info(action.item_name) or {}).get("type") in _GEAR_TYPES:
+                    all_ok = False
+                    continue
                 # Filler : JAMAIS de création de slot save-file (anti-crash). Bump si l'item
                 # existe déjà dans la save ; sinon report → livraison live après reload.
                 ok = _add_porch_item_to_save(p, action.item_name, action.amount,
@@ -1638,6 +1646,11 @@ class DeferredSaveInjector(ItemInjector):
         for ap_id, items in _COMPANION_POUCH.items():
             if ap_id in self._received:
                 for iname in items:
+                    # Seuls les OBJETS-CLÉS (type 9 : paravoile, capacités) créent un slot
+                    # fichier ; épée / arc / tenues → live (_deliver_companion_pouch : vraie
+                    # durabilité, budget par cycle) — ici ils sortaient à 1 et en rafale.
+                    if (pouch_item_info(iname) or {}).get("type", 9) != 9:
+                        continue
                     if not _pouch_has_item(_read_shared(p), iname) and _add_porch_item_to_save(p, iname, 1):
                         log.info("[OK] Objet clé ajouté : %s (recharge la save)", iname)
                         n += 1
