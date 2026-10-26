@@ -421,6 +421,12 @@
          à zéro.
       9. L'état de livraison (file + index) n'est lié ni à la seed ni au slot AP : réutiliser
          un profil pour une nouvelle seed sans `--reset` fait ignorer les 1res réceptions.
+         **✅ CORRIGÉ (2026-10-27, 7d99142)** — reproduit : 1re réception sautée, ancienne
+         file livrée, Paravoile donné via les reçus de l'ancienne seed. `ap_client_state.json`
+         porte seed + slot, vérifiés au Connected ; autre partie → état remis à zéro, ancienne
+         file en `ap_pending_items.json.old` ; ancien format adopté. Reste : une rétention
+         lancée AVANT le Connected (≥ 5 s après démarrage) voit encore l'ancien état. Test :
+         `tests/test_state_seed.py`.
       10. Baseline : si le joueur fait ses premiers checks avant le 1er poll et que le serveur
           n'en connaît aucun, tout est baseliné et jamais émis (location non rejouable = item
           perdu). Supprimer `ap_baseline.json` reproduit le même snapshot.
