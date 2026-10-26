@@ -371,9 +371,15 @@ class BotWClient:
             items     = msg.get("items", [])
             log.debug("[ReceivedItems] %d item(s) from index %d (item_index=%d)",
                       len(items), start_idx, self.item_index)
+            resent = False
             for i, item in enumerate(items):
                 idx = start_idx + i
                 if idx < self.item_index:
+                    # Renvoi (index 0 à la connexion = inventaire complet ; Connected n'a pas
+                    # de champ items) : déjà livré, jamais remis en file — mais compté comme
+                    # reçu, sinon la rétention remet à 0 Paravoile / Épée / capacités.
+                    self.injector.mark_received(item["item"])
+                    resent = True
                     continue
                 # File persistée AVANT l'index : un arrêt entre les deux donne au pire un
                 # doublon renvoyé par le serveur, jamais un item perdu.
@@ -384,6 +390,8 @@ class BotWClient:
                 log.info("[Item] %s%s",
                          spec.ap_item_name,
                          f"  — {spec.display_note}" if spec.display_note else "")
+            if resent:
+                self.injector.persist_item_index(self.item_index)   # rattrape les reçus
 
         elif cmd == "Bounced":
             # DeathLink : le serveur rediffuse les Bounce sous le nom "Bounced".

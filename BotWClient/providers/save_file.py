@@ -837,7 +837,9 @@ class DeferredSaveInjector(ItemInjector):
         # queue_item (boucle réseau) et _inject_pending (worker mémoire) touchent la file en
         # parallèle → verrou, sinon un item reçu pendant une livraison est écrasé (perdu).
         self._queue_lock    = threading.Lock()
-        self._received:     set[int]   = set()
+        # Reçus persistés : la rétention doit les connaître dès le démarrage, avant tout
+        # échange réseau (sinon elle remet à 0 Paravoile / Épée / capacités déjà obtenus).
+        self._received:     set[int]   = set(self._load_state().get("received", []))
         self._last_mtime    = 0.0
         self._last_change_time = time.monotonic()
         self._last_banked_orb  = 0     # dernière valeur d'orbe (pouch) bankée dans la save
@@ -863,18 +865,23 @@ class DeferredSaveInjector(ItemInjector):
         _write_json_atomic(self._queue_path,
                            json.dumps(self._queue, indent=2, ensure_ascii=False))
 
-    def load_item_index(self) -> int:
-        """Return the last saved item_index (0 if no state file exists)."""
+    def _load_state(self) -> dict:
         if self._state_path.exists():
             try:
-                return json.loads(self._state_path.read_text(encoding="utf-8")).get("item_index", 0)
+                return json.loads(self._state_path.read_text(encoding="utf-8"))
             except Exception:
                 _set_aside_corrupt(self._state_path)
-        return 0
+        return {}
+
+    def load_item_index(self) -> int:
+        """Return the last saved item_index (0 if no state file exists)."""
+        return self._load_state().get("item_index", 0)
 
     def persist_item_index(self, index: int) -> None:
-        """Persist item_index so restarts don't re-queue already-processed items."""
-        _write_json_atomic(self._state_path, json.dumps({"item_index": index}, ensure_ascii=False))
+        """Persist item_index (restarts don't re-queue processed items) and the received set
+        (retention knows them at startup)."""
+        _write_json_atomic(self._state_path, json.dumps(
+            {"item_index": index, "received": sorted(self._received)}, ensure_ascii=False))
 
     # ── Public: called by client ──────────────────────────────────────────────
 
