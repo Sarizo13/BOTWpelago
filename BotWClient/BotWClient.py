@@ -321,6 +321,8 @@ class BotWClient:
             # État lié à la partie : une autre seed / un autre slot le remet à zéro AVANT
             # la relecture de l'index (sinon 1res réceptions sautées, gates d'avant donnés).
             self.injector.set_server_context(self._seed_name, self.slot)
+            # Gates non randomisés (hors pool, obtenus en vanilla) → hors rétention.
+            self.injector.set_slot_options(self.slot_data)
             # Restore item_index from disk so restarts don't re-queue old items.
             self.item_index = self.injector.load_item_index()
             # Restore previously received items into the injector's received set.

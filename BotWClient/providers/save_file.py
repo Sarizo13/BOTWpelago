@@ -184,6 +184,18 @@ _GATE_HASH_TO_AP_ID: dict[int, int] = {
     if item["role"] == "ap_progression"
 }
 
+# Gates retirés du pool quand leur option randomize_* est OFF (miroir de create_items côté
+# apworld) : obtenus en vanilla → la rétention ne doit jamais les remettre à 0.
+_OPTIONAL_GATES: dict[str, list[str]] = {
+    "randomize_champion_abilities": ["Revali's Gale", "Daruk's Protection",
+                                     "Mipha's Grace", "Urbosa's Fury"],
+    "randomize_master_sword":       ["Master Sword"],
+}
+_GATE_ID_BY_NAME: dict[str, int] = {item["name"]: ap_id for ap_id, item in _GATE_BY_AP_ID.items()}
+_OPTIONAL_GATE_IDS: set[int] = {
+    _GATE_ID_BY_NAME[name] for names in _OPTIONAL_GATES.values() for name in names
+}
+
 # flag_hash (int) → item name  (for human-readable retention log messages)
 _GATE_HASH_TO_NAME: dict[int, str] = {
     int(item["flag_hash"], 16): item["name"]
@@ -844,6 +856,9 @@ class DeferredSaveInjector(ItemInjector):
         # Partie à laquelle appartient l'état (None = ancien format, adopté à la connexion).
         self._state_seed:   str | None = state.get("seed")
         self._state_slot:   str | None = state.get("slot")
+        # Gates hors rétention. Options du slot inconnues (avant Connected) → tous les gates
+        # optionnels sont laissés tranquilles : jamais d'effacement d'un flag obtenu en vanilla.
+        self._unretained:   set[int]   = set(_OPTIONAL_GATE_IDS)
         self._last_mtime    = 0.0
         self._last_change_time = time.monotonic()
         self._last_banked_orb  = 0     # dernière valeur d'orbe (pouch) bankée dans la save
@@ -888,6 +903,15 @@ class DeferredSaveInjector(ItemInjector):
         if self._state_seed is not None:
             state.update(seed=self._state_seed, slot=self._state_slot)
         _write_json_atomic(self._state_path, json.dumps(state, ensure_ascii=False))
+
+    def set_slot_options(self, slot_data: dict) -> None:
+        """Options du slot (Connected) : un gate dont l'option randomize_* est OFF est hors
+        pool → hors rétention. Option absente (ancien serveur) = randomisée (gate actif)."""
+        self._unretained = {
+            _GATE_ID_BY_NAME[name]
+            for option, names in _OPTIONAL_GATES.items() if not slot_data.get(option, True)
+            for name in names
+        }
 
     def set_server_context(self, seed: str | None, slot: str | None) -> None:
         """Lie l'état à la partie (seed + slot AP), appelé au Connected AVANT load_item_index.
@@ -1508,7 +1532,7 @@ class DeferredSaveInjector(ItemInjector):
         if self._bridge and self._bridge.is_attached:
             for fhash, ap_id in _GATE_HASH_TO_AP_ID.items():
                 fn = _GATE_BY_AP_ID.get(ap_id, {}).get("flag_name")
-                if not fn:
+                if not fn or ap_id in self._unretained:
                     continue
                 want = ap_id in self._received
                 if bool(self._bridge.read_flag(fn)) != want:
@@ -1535,6 +1559,8 @@ class DeferredSaveInjector(ItemInjector):
         except Exception:
             return 0
         for fhash, ap_id in _GATE_HASH_TO_AP_ID.items():
+            if ap_id in self._unretained:
+                continue
             want = ap_id in self._received
             if save.get_bool(fhash) != want:
                 if _write_flag_to_save(p, fhash, 1 if want else 0):
