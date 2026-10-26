@@ -9,9 +9,10 @@ Entrance rules (alignées sur les MURS physiques du mod V2) :
   "Enter Gerudo"          → requires Vai Outfit
   "Enter Gerudo Town"     → requires Vai Outfit
 
-Goal:
-  All 4 champion abilities (if randomized) + Master Sword (if randomized)
-  + Bow of Light (always — physical Sanctum wall, mod V2 region "Ganon").
+Goal (aligné sur l'option goal_mode et sur is_goal_complete côté client) :
+  shrines : aucune exigence d'item.
+  full    : Bow of Light (mur physique du Sanctum, mod V2 région "Ganon")
+            + Master Sword (si randomisée) + les 4 Créatures atteignables.
   DungeonClearCounter >= required_shrine_count is checked client-side only.
 
 Anti-soft-lock:
@@ -27,12 +28,25 @@ from worlds.generic.Rules import set_rule
 if TYPE_CHECKING:
     from . import BotWWorld
 
-CHAMPION_NAMES = [
-    "Revali's Gale",
-    "Daruk's Protection",
-    "Mipha's Grace",
-    "Urbosa's Fury",
+BEAST_LOCATIONS = [
+    "Divine Beast Vah Medoh",
+    "Divine Beast Vah Rudania",
+    "Divine Beast Vah Ruta",
+    "Divine Beast Vah Naboris",
 ]
+
+
+def goal_reached(state, player: int, full: bool, sword_required: bool) -> bool:
+    """Victoire au sens de la génération — miroir de is_goal_complete (client) : en "full",
+    le client exige Clear_Remains* (4 Créatures battues), Get_MasterSword_Finish et
+    IsGet_Weapon_Bow_071 (posé pendant Dark Beast, derrière le mur du Sanctum)."""
+    if not full:
+        return True
+    if not state.has("Bow of Light", player):
+        return False
+    if sword_required and not state.has("Master Sword", player):
+        return False
+    return all(state.can_reach_location(name, player) for name in BEAST_LOCATIONS)
 
 
 def set_rules(world: BotWWorld, regions: dict) -> None:
@@ -68,22 +82,10 @@ def set_rules(world: BotWWorld, regions: dict) -> None:
     )
 
     # ── Victory condition ────────────────────────────────────────────────────
-    champions_required = world.options.randomize_champion_abilities
-    sword_required     = world.options.randomize_master_sword
+    full           = world.options.goal_mode.current_key == "full"
+    sword_required = bool(world.options.randomize_master_sword)
 
     goal_loc = mw.get_location("Defeat Calamity Ganon", player)
-
-    def _goal(state):
-        if champions_required and not all(state.has(c, player) for c in CHAMPION_NAMES):
-            return False
-        if sword_required and not state.has("Master Sword", player):
-            return False
-        # Mur physique du Sanctum (mod V2, région "Ganon") : sans l'Arc de Lumière,
-        # entrer dans la salle du boss téléporte dehors — toujours requis.
-        if not state.has("Bow of Light", player):
-            return False
-        return True
-
-    set_rule(goal_loc, _goal)
+    set_rule(goal_loc, lambda state: goal_reached(state, player, full, sword_required))
 
     mw.completion_condition[player] = lambda state: state.has("Defeat Calamity Ganon", player)
