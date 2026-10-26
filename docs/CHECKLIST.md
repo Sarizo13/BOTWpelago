@@ -410,6 +410,12 @@
          `tests/test_client_state_persist.py`.
       5. Reprise après échec partiel : `_deliver_max_stat` peut re-créditer une fiole
          (`StaminaMax` monté, `StaminaCurrentMax` échoué → nouvelle demande à +400).
+         **✅ CORRIGÉ (2026-10-27, d84aeff)** — reproduit, + un 2e chemin : stat montée mais
+         rubis d'overflow indisponibles → rubis doublés. Plan mémorisé par stat (cible, flags
+         écrits, rubis payés) ; la reprise le termine sans refaire d'étape, reliquat replanifié
+         si la quantité coalescée grandit. Test : `tests/test_max_stat_retry.py`.
+         - [ ] Suivi : vider `_max_stat_plans` au changement de partie (`set_server_context`),
+           sinon un plan orphelin absorberait les 1res fioles de la nouvelle seed.
       6. Voie FICHIER : une arme reçue hors ligne AJOUTE sa durabilité à une arme du même
          nom au lieu de créer un exemplaire ; companions créés avec `life=1` (Master Sword,
          Arc de Lumière) alors que la voie mémoire lit `info["life"]`.
