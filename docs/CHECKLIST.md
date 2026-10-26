@@ -422,6 +422,10 @@
       7. `_deliver_companion_pouch()` appelle `live_create_item()` sans consulter
          `_LIVE_CREATE_ENABLED` ni le budget `MAX_DELIVER_PER_FLUSH` : le commutateur ne coupe
          pas toutes les créations (gênant pour isoler une corruption).
+         **✅ CORRIGÉ (2026-10-27, e845a3e)** — reproduit : 19 créations en un cycle avec le
+         commutateur à False ; `pool_exhausted` ignoré aussi. Commutateur + pool respectés,
+         budget du cycle partagé avec `_inject_pending` (`_heavy_this_flush`). Test :
+         `tests/test_companion_pouch_budget.py`.
       8. Options `randomize_*` désactivées : les items sortent du pool côté serveur mais la
          table de rétention garde tous les `ap_progression` → flags obtenus en vanilla remis
          à zéro.
