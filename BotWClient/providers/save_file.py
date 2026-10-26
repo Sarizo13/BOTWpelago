@@ -488,13 +488,20 @@ def _write_atomic(path: Path, data: bytes) -> None:
     CRASH. Le rename est quasi-instantané et remplace la cible d'un coup ; on réessaie si Cemu la tient."""
     tmp = path.with_name(path.name + ".botwtmp")
     tmp.write_bytes(data)
-    for _ in range(6):
+    for attempt in range(7):
+        # Garde au DERNIER moment : les appelants testent Cemu une fois puis enchaînent les
+        # écritures — Cemu lancé entre-temps ne doit jamais voir la save remplacée. L'exception
+        # est rattrapée par l'appelant (→ False : l'item reste en file, retenté au poll suivant).
+        if cemu_process_running():
+            tmp.unlink(missing_ok=True)
+            raise RuntimeError("Cemu en cours d'exécution — écriture de la save annulée")
         try:
             tmp.replace(path)            # rename atomique (MoveFileEx REPLACE_EXISTING) sur Windows
             return
         except OSError:
+            if attempt == 6:
+                raise                    # dernier essai — laisse remonter si ça échoue vraiment
             time.sleep(0.05)
-    tmp.replace(path)                    # dernier essai — laisse remonter si ça échoue vraiment
 
 
 def _write_json_atomic(path: Path, text: str) -> None:
