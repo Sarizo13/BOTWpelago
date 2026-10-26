@@ -435,6 +435,12 @@
       10. Baseline : si le joueur fait ses premiers checks avant le 1er poll et que le serveur
           n'en connaît aucun, tout est baseliné et jamais émis (location non rejouable = item
           perdu). Supprimer `ap_baseline.json` reproduit le même snapshot.
+          **✅ CORRIGÉ (2026-10-27, c5513f0)** — reproduit (3 × `[]`, y compris après
+          suppression). Room vierge : existant ÉMIS par défaut + warning ; opt-in CLI
+          `--ignore-existing-checks` pour une save réutilisée ; message corrigé. Changement
+          assumé : nouvelle seed sur une save avec progression → émise par défaut
+          (`play_local.py` vide le dossier, baseline comprise). Test : `tests/test_baseline.py`.
+          - [ ] Suivi : exposer l'opt-in dans la GUI (`botwpelago/runner.py` ne le passe pas).
       11. `rules.py` exige TOUJOURS l'Arc de Lumière quel que soit `goal_mode`, alors que le
           mode client `shrines` n'exige aucun flag → la génération évalue un objectif
           différent de celui qui déclenche `StatusUpdate(30)`. **Vérifié : l'écart existe.**
