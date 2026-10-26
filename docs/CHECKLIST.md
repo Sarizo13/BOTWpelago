@@ -419,6 +419,11 @@
       8. Options `randomize_*` désactivées : les items sortent du pool côté serveur mais la
          table de rétention garde tous les `ap_progression` → flags obtenus en vanilla remis
          à zéro.
+         **✅ CORRIGÉ (2026-10-27, 6859bf7)** — reproduit (Épée + HeroSoul vanilla remis à 0 ;
+         goal "full" impossible sans Épée randomisée). Gates non randomisés (slot_data au
+         Connected) exclus de la rétention ; avant Connected, gates optionnels non touchés.
+         Liste option → items dupliquée côté client (`_OPTIONAL_GATES`, miroir de
+         `create_items`). Test : `tests/test_retention_options.py`.
       9. L'état de livraison (file + index) n'est lié ni à la seed ni au slot AP : réutiliser
          un profil pour une nouvelle seed sans `--reset` fait ignorer les 1res réceptions.
          **✅ CORRIGÉ (2026-10-27, 7d99142)** — reproduit : 1re réception sautée, ancienne
