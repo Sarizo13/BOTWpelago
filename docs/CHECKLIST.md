@@ -384,6 +384,9 @@
       2. Course `queue_item()` (thread réseau) vs `_inject_pending()` (worker) : la file est
          remplacée par `remaining` construit AVANT l'ajout → item reçu pendant un flush
          perdu, perte persistée, index AP déjà avancé.
+         **✅ CORRIGÉ (2026-10-27, 3c3d60d)** : course reproduite puis corrigée — verrou sur
+         la file + snapshot ; les items arrivés pendant la livraison sont fusionnés derrière
+         `remaining`. Test : `tests/test_inject_queue.py`.
       3. `_received` repart VIDE au redémarrage (l'état ne contient que `item_index`) : si
          `Connected.items` est absent, la rétention peut remettre à zéro des flags de
          progression déjà obtenus.
